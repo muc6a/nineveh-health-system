@@ -1,73 +1,57 @@
 -- ========================================================
--- Smart Health Inspection System - PostgreSQL Schema
+-- Smart Health Inspection System - PostgreSQL Schema (Revised)
 -- ========================================================
 
 -- Enable UUID extension for unique identifiers
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. USERS TABLE
--- Store Directors, Field Teams, and Public Health Monitors
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     full_name VARCHAR(150) NOT NULL,
-    username VARCHAR(100) UNIQUE NOT NULL,
+    role VARCHAR(50) NOT NULL CHECK (role IN ('Admin', 'Manager', 'Team', 'Tracker')),
+    district_ids TEXT[], -- Array of districts the user manages/covers
     email VARCHAR(150) UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL CHECK (role IN ('director', 'central_director', 'team', 'monitor', 'superadmin')),
-    sector VARCHAR(100),
-    phone VARCHAR(20),
-    is_active BOOLEAN DEFAULT true,
-    permissions JSONB DEFAULT '{}'::jsonb,
+    phone_number VARCHAR(20),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 2. ESTABLISHMENTS TABLE
--- Store Restaurants, Salons, Bakeries, etc.
 CREATE TABLE establishments (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(200) NOT NULL,
-    type VARCHAR(100) NOT NULL,
-    owner_name VARCHAR(150) NOT NULL,
-    phone VARCHAR(20),
-    license_number VARCHAR(100) UNIQUE,
-    property_number VARCHAR(100),
-    sector VARCHAR(100) NOT NULL,
-    latitude DECIMAL(10, 8),
-    longitude DECIMAL(11, 8),
-    access_code VARCHAR(20) UNIQUE NOT NULL,
-    status VARCHAR(50) DEFAULT 'monitoring' CHECK (status IN ('compliant', 'monitoring', 'critical', 'closed', 'new')),
-    current_score INTEGER DEFAULT 0,
-    created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    est_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    est_name VARCHAR(200) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    district_id VARCHAR(100) NOT NULL, -- Links to specific district/sector
+    status VARCHAR(50) DEFAULT 'open' CHECK (status IN ('open', 'closed')),
+    last_eval_score INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. EVALUATIONS (INSPECTIONS) TABLE
--- Store inspection visits and their details (Audit Trail)
+-- 3. EVALUATIONS TABLE
 CREATE TABLE evaluations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    establishment_id UUID NOT NULL REFERENCES establishments(id) ON DELETE CASCADE,
-    team_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    eval_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    est_id UUID NOT NULL REFERENCES establishments(est_id) ON DELETE CASCADE,
+    team_id UUID NOT NULL REFERENCES users(user_id) ON DELETE RESTRICT,
     score INTEGER NOT NULL CHECK (score >= 0 AND score <= 100),
-    notes TEXT,
-    items_checked JSONB NOT NULL, -- Detailed checklist results
-    evidence_images TEXT[],       -- Array of image URLs/paths
+    penalty_type VARCHAR(50) CHECK (penalty_type IN ('none', 'warning', 'fine', 'closure')),
+    audit_log JSONB DEFAULT '[]'::jsonb, -- Edit history/audit trail
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. CLOSURES (PENALTIES & DIRECTIVES) TABLE
--- Store closures, warnings, and penalties
+-- 4. CLOSURES TABLE
 CREATE TABLE closures (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    establishment_id UUID NOT NULL REFERENCES establishments(id) ON DELETE CASCADE,
-    issued_by UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
-    type VARCHAR(50) NOT NULL CHECK (type IN ('warning', 'fine', 'closure')),
-    reason TEXT NOT NULL,
-    amount DECIMAL(10, 2) DEFAULT 0.00, -- For fines
-    is_active BOOLEAN DEFAULT true,
-    resolved_at TIMESTAMP WITH TIME ZONE,
-    resolved_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    closure_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    est_id UUID NOT NULL REFERENCES establishments(est_id) ON DELETE CASCADE,
+    duration_days INTEGER NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    closure_photo TEXT, -- URL to closure seal photo
+    breach_photo TEXT,  -- URL to broken seal photo
+    tracker_id UUID REFERENCES users(user_id) ON DELETE SET NULL, -- The tracker responsible
+    is_breached BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
