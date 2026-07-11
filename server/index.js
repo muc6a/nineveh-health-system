@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import db from './db.js';
 import authRoutes from './routes/authRoutes.js';
 import estRoutes from './routes/estRoutes.js';
@@ -41,6 +43,17 @@ app.get('/api/health', async (req, res) => {
       error: error.message
     });
   }
+});
+
+// Serve static frontend in production
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distPath = path.join(__dirname, '../dist');
+
+app.use(express.static(distPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Start Server
