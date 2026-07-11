@@ -4,6 +4,9 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import db from './db.js';
 import authRoutes from './routes/authRoutes.js';
+import estRoutes from './routes/estRoutes.js';
+import evalRoutes from './routes/evalRoutes.js';
+import closureRoutes from './routes/closureRoutes.js';
 
 dotenv.config();
 
@@ -17,6 +20,9 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/establishments', estRoutes);
+app.use('/api/evaluations', evalRoutes);
+app.use('/api/closures', closureRoutes);
 
 // Basic health check route
 app.get('/api/health', async (req, res) => {
