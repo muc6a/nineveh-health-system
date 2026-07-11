@@ -41,6 +41,42 @@ export const LoginGate = () => {
       return;
     }
 
+    // Attempt Real API Login first
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: identity, password })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Setup User from Database
+        setUser(data.user);
+        // Store JWT token
+        localStorage.setItem('auth_token', data.token);
+        notify(data.message || 'تم تسجيل الدخول بنجاح', 'success', true);
+        
+        // Navigate based on role
+        if (data.user.role === 'Admin') navigate('/admin/control');
+        else if (data.user.role === 'Manager') navigate('/dashboard/director');
+        else if (data.user.role === 'Tracker') navigate('/dashboard/tracker');
+        else navigate('/dashboard/team');
+        
+        return;
+      }
+      
+      // If API returns 401, don't fallback to mock, it means wrong password
+      if (response.status === 401 || response.status === 403) {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || 'بيانات الدخول غير صحيحة');
+        return;
+      }
+    } catch (error) {
+      console.log('API not available, falling back to mock local data...', error);
+    }
+
+    // --- FALLBACK MOCK LOGIC (For Development without DB) ---
     const input = identity.toLowerCase().trim();
 
     // 1. Check Teams
