@@ -6,26 +6,23 @@ const seedDatabase = async () => {
     console.log('🌱 Starting database seed...');
 
     // Create Super Admin user
-    const username = 'admin';
-    const email = 'admin@ninveh-health.gov.iq';
-    const rawPassword = 'admin'; // Using simple password for testing
+    const email = 'admin@ninveh.gov.iq';
+    const rawPassword = 'admin123'; 
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(rawPassword, saltRounds);
 
-    const checkAdmin = await db.query('SELECT * FROM users WHERE username = $1', [username]);
+    const checkAdmin = await db.query('SELECT * FROM users WHERE email = $1', [email]);
 
     if (checkAdmin.rows.length === 0) {
       await db.query(
-        `INSERT INTO users (full_name, username, email, password_hash, role, district_ids, is_active)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        ['مدير النظام العام', username, email, passwordHash, 'Admin', '{}', true]
+        `INSERT INTO users (full_name, email, password_hash, role, district_ids)
+         VALUES ($1, $2, $3, $4, $5)`,
+        ['Super Admin', email, passwordHash, 'Admin', '{}']
       );
-      console.log('✅ Super Admin account created successfully! (Username: admin, Password: admin)');
+      console.log('✅ Super Admin account created successfully!');
     } else {
       console.log('⚠️ Super Admin account already exists. Skipping...');
     }
-
-    // You can add more seed data here (e.g., sample establishments)
 
     console.log('🎉 Seeding finished.');
     process.exit(0);
