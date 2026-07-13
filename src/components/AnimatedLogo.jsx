@@ -6,7 +6,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
   // - 'sidebar': Top watermarked brand emblem.
   // - 'seal': Citizen QR Viewport header, pulsing 3D digital verification seal.
 
-  const baseVideoPath = '/logo-animated.mp4';
+  const baseVideoPath = '/animated-logo.mp4';
 
   if (variant === 'login') {
     return (
@@ -18,7 +18,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
           loop
           muted
           playsInline
-          className="w-48 h-48 md:w-56 md:h-56 object-contain z-10 drop-shadow-[0_15px_15px_rgba(13,148,136,0.2)] transition-transform duration-500 hover:scale-105 mix-blend-multiply dark:invert dark:mix-blend-screen"
+          className="w-48 h-48 md:w-56 md:h-56 object-contain z-10 drop-shadow-[0_15px_15px_rgba(13,148,136,0.2)] transition-transform duration-500 hover:scale-105 mix-blend-screen"
         />
       </div>
     );
@@ -34,7 +34,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover scale-110 mix-blend-multiply dark:invert dark:mix-blend-screen"
+            className="w-full h-full object-cover scale-110 mix-blend-screen"
           />
         </div>
         <div className="flex flex-col">
@@ -56,7 +56,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
             loop
             muted
             playsInline
-            className="w-24 h-24 object-contain rounded-full bg-slate-900/10 dark:bg-slate-950/20 mix-blend-multiply dark:invert dark:mix-blend-screen"
+            className="w-24 h-24 object-contain rounded-full bg-slate-900/10 dark:bg-slate-950/20 mix-blend-screen"
           />
         </div>
       </div>
@@ -71,7 +71,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
       loop
       muted
       playsInline
-      className={`w-20 h-20 object-contain mix-blend-multiply dark:invert dark:mix-blend-screen ${className}`}
+      className={`w-20 h-20 object-contain mix-blend-screen ${className}`}
     />
   );
 };
