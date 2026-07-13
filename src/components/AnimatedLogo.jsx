@@ -6,7 +6,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
   // - 'sidebar': Top watermarked brand emblem.
   // - 'seal': Citizen QR Viewport header, pulsing 3D digital verification seal.
 
-  const baseVideoPath = '/animated-logo.mp4';
+  const baseVideoPath = '/animated-logo-v2.mp4';
 
   if (variant === 'login') {
     return (
