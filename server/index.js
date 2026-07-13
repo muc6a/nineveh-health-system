@@ -49,15 +49,17 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Serve static frontend in production
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const distPath = path.join(__dirname, '../dist');
+if (!process.env.VERCEL) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const distPath = path.join(__dirname, '../dist');
 
-app.use(express.static(distPath));
+  app.use(express.static(distPath));
 
-app.use((req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
-});
+  app.use((req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 // Start Server (only if not in Vercel serverless environment)
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
