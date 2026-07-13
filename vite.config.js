@@ -4,7 +4,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   server: {
+    port: 5173,
     host: true,
+    allowedHosts: true, // Allow all hosts for localtunnel
     proxy: {
       '/api': {
         target: 'http://localhost:5000',

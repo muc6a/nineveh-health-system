@@ -12,7 +12,7 @@ export const LoginGate = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!identity.trim() || !password.trim()) {
       setErrorMessage('يرجى ملء كافة الحقول للدخول الآمن.');
