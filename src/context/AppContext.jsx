@@ -327,8 +327,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('teams_v2', JSON.stringify(teams));
-    fetch('/api/state/teams_v2', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(teams) }).catch(() => {});
+    syncToCloud('teams_v2', teams);
   }, [teams]);
 
   const [trackers, setTrackers] = useState(() => {
@@ -337,7 +336,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('trackers_v1', JSON.stringify(trackers));
+    syncToCloud('trackers_v1', trackers);
   }, [trackers]);
 
   const [closureVerifications, setClosureVerifications] = useState(() => {
@@ -346,7 +345,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('closureVerifications_v1', JSON.stringify(closureVerifications));
+    syncToCloud('closureVerifications_v1', closureVerifications);
   }, [closureVerifications]);
 
   const [inspectionItems, setInspectionItems] = useState(() => {
@@ -378,7 +377,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('auditLogs', JSON.stringify(auditLogs));
+    syncToCloud('auditLogs', auditLogs);
   }, [auditLogs]);
 
   // Global Broadcast State
@@ -388,7 +387,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('globalBroadcast', JSON.stringify(globalBroadcast));
+    syncToCloud('globalBroadcast', globalBroadcast);
   }, [globalBroadcast]);
 
   // Sync state across tabs in real-time and handle offline/online sync
@@ -441,7 +440,19 @@ export const AppProvider = ({ children }) => {
         }
       } catch (err) {}
     };
+    fetchState('establishments', setEstablishments);
+    fetchState('reports', setReports);
     fetchState('teams_v2', setTeams);
+    fetchState('trackers_v1', setTrackers);
+    fetchState('closureVerifications_v1', setClosureVerifications);
+    fetchState('inspectionItems', setInspectionItems);
+    fetchState('systemConfig', setConfig);
+    fetchState('auditLogs', setAuditLogs);
+    fetchState('globalBroadcast', setGlobalBroadcast);
+    fetchState('systemTickets', setTickets);
+    fetchState('sysNotifs', setSystemNotifications);
+    fetchState('publicCMS', setPublicCMS);
+    fetchState('directives', setDirectives);
     fetchState('directors', setDirectors);
   }, []);
 
@@ -470,7 +481,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('systemTickets', JSON.stringify(tickets));
+    syncToCloud('systemTickets', tickets);
   }, [tickets]);
 
   const addTicket = (type, text, teamName) => {
@@ -511,7 +522,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('sysNotifs', JSON.stringify(systemNotifications));
+    syncToCloud('sysNotifs', systemNotifications);
   }, [systemNotifications]);
 
   const addSystemNotification = (title, message, targetRole = 'all') => {
@@ -563,25 +574,34 @@ export const AppProvider = ({ children }) => {
     setNotification({ message, type, id: Date.now() });
   };
 
+  const syncToCloud = (key, data) => {
+    localStorage.setItem(key, JSON.stringify(data));
+    fetch('/api/state/' + key, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).catch(() => {});
+  };
+
   // Sync state to LocalStorage
   useEffect(() => {
-    localStorage.setItem('establishments', JSON.stringify(establishments));
+    syncToCloud('establishments', establishments);
   }, [establishments]);
 
   useEffect(() => {
-    localStorage.setItem('reports', JSON.stringify(reports));
+    syncToCloud('reports', reports);
   }, [reports]);
 
   useEffect(() => {
-    localStorage.setItem('teams_v2', JSON.stringify(teams));
+    syncToCloud('teams_v2', teams);
   }, [teams]);
 
   useEffect(() => {
-    localStorage.setItem('inspectionItems', JSON.stringify(inspectionItems));
+    syncToCloud('inspectionItems', inspectionItems);
   }, [inspectionItems]);
 
   useEffect(() => {
-    localStorage.setItem('systemConfig', JSON.stringify(config));
+    syncToCloud('systemConfig', config);
   }, [config]);
 
   // Public Search Page CMS
@@ -595,7 +615,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('publicCMS', JSON.stringify(publicCMS));
+    syncToCloud('publicCMS', publicCMS);
   }, [publicCMS]);
 
   // Handle HTML document class for theme
@@ -744,7 +764,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('directives', JSON.stringify(directives));
+    syncToCloud('directives', directives);
   }, [directives]);
 
   const [directors, setDirectors] = useState(() => {
@@ -756,8 +776,7 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('directors', JSON.stringify(directors));
-    fetch('/api/state/directors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(directors) }).catch(() => {});
+    syncToCloud('directors', directors);
   }, [directors]);
 
   const addDirective = (teamId, text, senderName = 'مدير الصحة') => {
