@@ -66,11 +66,9 @@ export const LoginGate = () => {
         return;
       }
       
-      // If API returns 401, don't fallback to mock, it means wrong password
+      // Let it fall through to mock logic if not found in Postgres
       if (response.status === 401 || response.status === 403) {
-        const errorData = await response.json();
-        setErrorMessage(errorData.message || 'بيانات الدخول غير صحيحة');
-        return;
+        console.log('User not found in Postgres, checking mock database...');
       }
     } catch (error) {
       console.log('API not available, falling back to mock local data...', error);

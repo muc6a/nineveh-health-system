@@ -328,6 +328,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('teams_v2', JSON.stringify(teams));
+    fetch('/api/state/teams_v2', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(teams) }).catch(() => {});
   }, [teams]);
 
   const [trackers, setTrackers] = useState(() => {
@@ -427,6 +428,21 @@ export const AppProvider = ({ children }) => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('online', handleOnline);
     };
+  }, []);
+
+  // Sync state from backend prototype DB on initial load
+  useEffect(() => {
+    const fetchState = async (key, setter) => {
+      try {
+        const res = await fetch('/api/state/' + key);
+        if (res.ok) {
+          const data = await res.json();
+          if (data) setter(data);
+        }
+      } catch (err) {}
+    };
+    fetchState('teams_v2', setTeams);
+    fetchState('directors', setDirectors);
   }, []);
 
   const logAudit = (action, entityId, oldData, newData, justification, userDetails) => {
@@ -741,6 +757,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('directors', JSON.stringify(directors));
+    fetch('/api/state/directors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(directors) }).catch(() => {});
   }, [directors]);
 
   const addDirective = (teamId, text, senderName = 'مدير الصحة') => {

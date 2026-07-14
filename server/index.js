@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes.js';
 import estRoutes from './routes/estRoutes.js';
 import evalRoutes from './routes/evalRoutes.js';
 import closureRoutes from './routes/closureRoutes.js';
+import stateRoutes from './routes/stateRoutes.js';
 
 dotenv.config();
 
@@ -21,13 +22,14 @@ app.use(cors({
   origin: '*',
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/establishments', estRoutes);
 app.use('/api/evaluations', evalRoutes);
 app.use('/api/closures', closureRoutes);
+app.use('/api/state', stateRoutes);
 
 // Basic health check route
 app.get('/api/health', async (req, res) => {
