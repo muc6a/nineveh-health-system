@@ -12,19 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body class="font-apple bg-slatebg-light text-slate-800 transition-colors duration-300 dark:bg-slatebg-dark dark:text-slate-100 antialiased overflow-x-hidden">
-    <div id="error-box" style="color: red; background: #fee; padding: 20px; font-family: sans-serif; display: none; z-index: 999999; position: fixed; top: 0; left: 0; right: 0; bottom: 0;"></div>
-    <script>
-      window.onerror = function(msg, url, line, col, error) {
-        var errBox = document.getElementById('error-box');
-        errBox.style.display = 'block';
-        errBox.innerHTML += '<b>Error:</b> ' + msg + '<br><b>File:</b> ' + url + ' (Line ' + line + ':' + col + ')<br><b>Stack:</b><pre>' + (error ? error.stack : '') + '</pre><hr>';
-      };
-      window.addEventListener("unhandledrejection", function(event) {
-        var errBox = document.getElementById('error-box');
-        errBox.style.display = 'block';
-        errBox.innerHTML += '<b>Promise Rejection:</b> ' + event.reason + '<br><hr>';
-      });
-    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
