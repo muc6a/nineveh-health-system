@@ -36,7 +36,7 @@ export const EstablishmentsManager = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-right border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+              <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                 <th className="p-3.5 font-bold">اسم المنشأة / الرخصة</th>
                 <th className="p-3.5 font-bold">نوع النشاط</th>
                 <th className="p-3.5 font-bold">المالك / الهاتف</th>

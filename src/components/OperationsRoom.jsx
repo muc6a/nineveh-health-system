@@ -189,7 +189,7 @@ export default function OperationsRoom() {
           <div className="overflow-x-auto border-t border-slate-200/50 dark:border-slate-800/50 pt-4">
             <table className="w-full text-right border-collapse text-xs font-bold">
               <thead>
-                <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-850 text-slate-500">
+                <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                   <th className="p-3">اسم فريق التفتيش</th>
                   <th className="p-3">القطاع المكلف</th>
                   <th className="p-3">حالة الحساب</th>
@@ -340,7 +340,7 @@ export default function OperationsRoom() {
           <div className="overflow-x-auto border-t border-slate-200/50 dark:border-slate-800/50 pt-4">
             <table className="w-full text-right border-collapse text-xs font-bold">
               <thead>
-                <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-850 text-slate-500">
+                <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                   <th className="p-3">الاسم الكامل للمتابع</th>
                   <th className="p-3">اسم المستخدم</th>
                   <th className="p-3">القطاع المرتبط</th>
