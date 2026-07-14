@@ -15,5 +15,22 @@
 
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+            console.log('ServiceWorker unregistered');
+          }
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then((keyList) => {
+          return Promise.all(keyList.map((key) => {
+            return caches.delete(key);
+          }));
+        }).then(() => console.log('Caches cleared'));
+      }
+    </script>
   </body>
 </html>
