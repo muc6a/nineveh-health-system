@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: nineveh-health-system
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: node server/index.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://postgres.poeenfuhcjqgigretqol:8lk7TaKGczPUXigf@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres
+      - key: JWT_SECRET
+        value: super_secret_key_ninveh_2026_pro

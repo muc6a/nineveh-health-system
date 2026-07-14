@@ -64,7 +64,7 @@ if (!process.env.VERCEL) {
 }
 
 // Start Server (only if not in Vercel serverless environment)
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);
   });
