@@ -198,7 +198,7 @@ export const ExecutivePortal = () => {
           {/* User Profile Card */}
           <div className="mb-4 p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 flex items-center justify-between text-right">
             <div className="flex flex-col">
-              <span className="text-xs font-black text-slate-850 dark:text-white">
+              <span className="text-xs font-black text-slate-800 dark:text-white">
                 {user?.name || 'مدير النظام'}
               </span>
               <span className="text-[9px] text-teal-650 dark:text-teal-400 font-extrabold uppercase mt-0.5">
@@ -329,7 +329,7 @@ export const ExecutivePortal = () => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-850 px-2.5 py-1 rounded-xl">
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300">|</span>
               <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -426,7 +426,7 @@ export const ExecutivePortal = () => {
               <span className="text-teal-400 text-[10px] font-black tracking-wider uppercase bg-teal-500/10 px-2 py-0.5 rounded-lg border border-teal-500/20">منشآت نينوى</span>
               <span className="text-xs text-slate-400">اضغط للمعاينة بالتصنيف 🔍</span>
             </div>
-            <h3 className="text-xs text-slate-350 font-bold">إجمالي المنشآت الخاضعة للرقابة الصحية</h3>
+            <h3 className="text-xs text-slate-300 font-bold">إجمالي المنشآت الخاضعة للرقابة الصحية</h3>
             <span className="text-5xl font-black text-white mt-1 block">{filteredEsts.length} <span className="text-sm text-slate-450 font-medium">منشأة مسجلة</span></span>
           </div>
 
@@ -549,7 +549,7 @@ export const ExecutivePortal = () => {
                       <select
                         value={targetRecipient}
                         onChange={(e) => setTargetRecipient(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-350 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
+                        className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
                       >
                         <option value="all">📢 كافة شعب ولجان التفتيش بالمحافظة</option>
                         <option value="public_health">🏢 مدير قسم الصحة العامة</option>
@@ -562,9 +562,9 @@ export const ExecutivePortal = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-slate-650 dark:text-slate-400">الأولوية ودرجة الإلحاح</label>
+                      <label className="text-slate-600 dark:text-slate-400">الأولوية ودرجة الإلحاح</label>
                       <select
-                        className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-350 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"
+                        className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"
                       >
                         <option value="high">🚨 عاجل وهام جداً - تنفيذ فوري</option>
                         <option value="medium">⚠️ متابعة روتينية يومية</option>
@@ -580,7 +580,7 @@ export const ExecutivePortal = () => {
                       placeholder="اكتب التوجيه هنا (مثال: يرجى إطلاق حملة تفتيشية مكثفة على المطاعم والعيادات في منطقة تلعفر للتأكد من رخص العمل الرسمية...)"
                       value={directiveText}
                       onChange={(e) => setDirectiveText(e.target.value)}
-                      className="w-full p-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-850 dark:text-slate-200 outline-none focus:border-amber-500 font-medium"
+                      className="w-full p-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-medium"
                     />
                   </div>
 
@@ -656,7 +656,7 @@ export const ExecutivePortal = () => {
 
             <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
               {Object.keys(categoryCounts).map((cat) => (
-                <div key={cat} className="flex justify-between items-center p-2.5 rounded-xl bg-slate-850 border border-slate-800/80">
+                <div key={cat} className="flex justify-between items-center p-2.5 rounded-xl bg-slate-800 border border-slate-800/80">
                   <span className="font-extrabold text-slate-200">{cat}</span>
                   <span className="px-3 py-1 rounded-lg bg-teal-500/10 text-teal-400 font-black text-xs border border-teal-500/20">
                     {categoryCounts[cat]} منشأة
@@ -730,7 +730,7 @@ export const ExecutivePortal = () => {
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
               {(reports || []).filter(r => !r.isDelivery).length > 0 ? (
                 (reports || []).filter(r => !r.isDelivery).map((comp, idx) => (
-                  <div key={idx} className="bg-slate-850 p-4 rounded-2xl border border-red-500/20 shadow-lg relative overflow-hidden">
+                  <div key={idx} className="bg-slate-800 p-4 rounded-2xl border border-red-500/20 shadow-lg relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
                     <div className="flex justify-between items-start mb-2">
                       <div>

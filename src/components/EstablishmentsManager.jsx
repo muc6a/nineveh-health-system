@@ -27,7 +27,7 @@ export const EstablishmentsManager = () => {
           placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
           value={estSearchTerm}
           onChange={(e) => setEstSearchTerm(e.target.value)}
-          className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 text-xs font-bold outline-none text-slate-850 dark:text-slate-200 focus:border-teal-500"
+          className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
         />
         <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
       </div>
@@ -63,7 +63,7 @@ export const EstablishmentsManager = () => {
                         <span className="text-[10px] text-slate-400 font-medium">الرخصة: {est.licenseNumber}</span>
                       </div>
                     </td>
-                    <td className="p-3.5 font-bold text-slate-600 dark:text-slate-350">{est.type}</td>
+                    <td className="p-3.5 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
                     <td className="p-3.5">
                       <div className="flex flex-col">
                         <span className="font-bold text-slate-700 dark:text-slate-300">{est.owner}</span>
@@ -179,7 +179,7 @@ export const EstablishmentsManager = () => {
               </button>
             </div>
             <div className="space-y-4 text-xs">
-              <div className="p-4 rounded-2xl bg-slate-850 border border-slate-800 text-right space-y-1.5">
+              <div className="p-4 rounded-2xl bg-slate-800 border border-slate-800 text-right space-y-1.5">
                 <h4 className="text-sm font-black text-white">{selectedEstDetails.name}</h4>
                 <p className="text-[10.5px] text-slate-300">النشاط: {selectedEstDetails.type}</p>
                 <p className="text-[10.5px] text-slate-300">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-teal-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>

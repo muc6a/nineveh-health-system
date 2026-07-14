@@ -278,7 +278,7 @@ export const InspectionForm = () => {
                     
                     {/* Item label */}
                     <div className="flex gap-3 min-w-0">
-                      <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-850 flex items-center justify-center text-[10px] font-black text-slate-400 shrink-0">
+                      <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400 shrink-0">
                         {item.id}
                       </span>
                       <span className="text-xs font-bold text-slate-700 dark:text-slate-300 leading-relaxed">

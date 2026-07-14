@@ -620,8 +620,8 @@ export const SuperAdminPanel = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-650 dark:text-slate-350">
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-850 px-2.5 py-1 rounded-xl">
+        <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
             <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             <span className="text-slate-300">|</span>
             <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -741,7 +741,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subRosterTab === 'committees'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 👥 إدارة حسابات اللجان الميدانية ({teams.length})
@@ -751,7 +751,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subRosterTab === 'directors'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 💼 إدارة حسابات المدراء ({directors?.length || 0})
@@ -761,7 +761,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subRosterTab === 'trackers'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 🕵️‍♂️ إدارة المتابعين ({trackers?.length || 0})
@@ -1071,7 +1071,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subSettingsTab === 'evaluations'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 📝 محرر بنود التقييم
@@ -1081,7 +1081,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subSettingsTab === 'appearance'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 🎨 تخصيص مظهر النظام
@@ -1091,7 +1091,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subSettingsTab === 'public_cms'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 🌐 واجهة المواطن (CMS)
@@ -1101,7 +1101,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subSettingsTab === 'database'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 💾 النسخ الاحتياطي
@@ -1112,7 +1112,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-1 ${
                   subSettingsTab === 'system_controls'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 <ShieldAlert className="w-4 h-4" />
@@ -1287,7 +1287,7 @@ export const SuperAdminPanel = () => {
                 {/* Export Action */}
                 <div className="flex items-center justify-between p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 text-right">
                   <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-850 dark:text-slate-800 dark:text-slate-200">تصدير قاعدة البيانات (.JSON)</span>
+                    <span className="text-xs font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">تصدير قاعدة البيانات (.JSON)</span>
                     <span className="text-[9px] text-slate-400 font-medium">تحميل نسخة احتياطية كاملة وحفظها على حاسوبك</span>
                   </div>
                   <button
@@ -1301,7 +1301,7 @@ export const SuperAdminPanel = () => {
                 {/* Import Action */}
                 <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-right">
                   <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-850 dark:text-slate-800 dark:text-slate-200">استيراد ودمج البيانات</span>
+                    <span className="text-xs font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">استيراد ودمج البيانات</span>
                     <span className="text-[9px] text-slate-400 font-medium font-bold">استرجاع البيانات من ملف نسخة احتياطية سابق</span>
                   </div>
                   <label className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-650 text-white font-extrabold text-[11px] transition-all cursor-pointer text-center whitespace-nowrap">
@@ -1472,7 +1472,7 @@ export const SuperAdminPanel = () => {
                 placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
                 value={estSearchTerm}
                 onChange={(e) => setEstSearchTerm(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 text-xs font-bold outline-none text-slate-850 dark:text-slate-200 focus:border-teal-500"
+                className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
               />
               <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
             </div>
@@ -1507,7 +1507,7 @@ export const SuperAdminPanel = () => {
                               <span className="text-[10px] text-slate-400 font-medium">الرخصة: {est.licenseNumber}</span>
                             </div>
                           </td>
-                          <td className="p-3.5 font-bold text-slate-600 dark:text-slate-350">{est.type}</td>
+                          <td className="p-3.5 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
                           <td className="p-3.5">
                             <div className="flex flex-col">
                               <span className="font-bold text-slate-700 dark:text-slate-300">{est.owner}</span>
@@ -1578,7 +1578,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subAuditTab === 'trail'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 🛡️ سجل التدقيق والأمان
@@ -1588,7 +1588,7 @@ export const SuperAdminPanel = () => {
                 className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
                   subAuditTab === 'tickets'
                     ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-650'
+                    : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 <span>الرد على بلاغات اللجان</span>
@@ -1677,8 +1677,8 @@ export const SuperAdminPanel = () => {
                         </thead>
                         <tbody>
                           {tickets.map((ticket) => (
-                            <tr key={ticket.id} className="border-b border-slate-100 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                              <td className="py-2.5 px-3 font-extrabold text-slate-700 dark:text-slate-350">{ticket.sender}</td>
+                            <tr key={ticket.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                              <td className="py-2.5 px-3 font-extrabold text-slate-700 dark:text-slate-300">{ticket.sender}</td>
                               <td className="py-2.5 px-3">
                                 <span className={`px-2 py-0.5 rounded text-[10px] ${
                                   ticket.type === 'bug' ? 'bg-red-500/10 text-red-500' :

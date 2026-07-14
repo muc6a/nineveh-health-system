@@ -85,7 +85,7 @@ export default function OperationsRoom() {
         <button
           onClick={() => setActiveTab('trackers_management')}
           className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'trackers_management' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-650'
+            activeTab === 'trackers_management' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <Users className="w-4 h-4" />
@@ -94,7 +94,7 @@ export default function OperationsRoom() {
         <button
           onClick={() => setActiveTab('teams_management')}
           className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'teams_management' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-650'
+            activeTab === 'teams_management' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
@@ -103,7 +103,7 @@ export default function OperationsRoom() {
         <button
           onClick={() => setActiveTab('penalties')}
           className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-650'
+            activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <AlertCircle className="w-4 h-4" />
@@ -112,7 +112,7 @@ export default function OperationsRoom() {
         <button
           onClick={() => setActiveTab('complaints')}
           className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'complaints' ? 'border-b-2 border-amber-600 text-amber-600 dark:text-amber-400 font-extrabold' : 'text-slate-400 hover:text-slate-650'
+            activeTab === 'complaints' ? 'border-b-2 border-amber-600 text-amber-600 dark:text-amber-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <Mail className="w-4 h-4" />
@@ -121,7 +121,7 @@ export default function OperationsRoom() {
         <button
           onClick={() => setActiveTab('dispatch')}
           className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'dispatch' ? 'border-b-2 border-fuchsia-600 text-fuchsia-600 dark:text-fuchsia-400 font-extrabold' : 'text-slate-400 hover:text-slate-650'
+            activeTab === 'dispatch' ? 'border-b-2 border-fuchsia-600 text-fuchsia-600 dark:text-fuchsia-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <Target className="w-4 h-4" />

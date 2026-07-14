@@ -348,8 +348,8 @@ export const TeamDashboard = () => {
               <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم قطاع: {userSector}</p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-650 dark:text-slate-350">
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-850 px-2.5 py-1 rounded-xl">
+          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300">|</span>
               <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -523,7 +523,7 @@ export const TeamDashboard = () => {
                 className={`px-4 py-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
                   filterExpiredOnly 
                     ? 'bg-red-500 text-white shadow-md shadow-red-500/10' 
-                    : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                    : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <span>⚠️ تصفية الإجازات المنتهية / القريبة</span>
@@ -612,7 +612,7 @@ export const TeamDashboard = () => {
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
                                   className={`px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print ${
                                     isEditLocked 
-                                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-650 cursor-not-allowed opacity-50' 
+                                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
                                       : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                                   }`}
                                   title={isEditLocked ? lockReason : 'تعديل التقييم الأخير'}

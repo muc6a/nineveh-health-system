@@ -251,8 +251,8 @@ export const TeamDashboard = () => {
               <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم قطاع: {userSector}</p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-650 dark:text-slate-350">
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-850 px-2.5 py-1 rounded-xl">
+          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300">|</span>
               <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -422,7 +422,7 @@ export const TeamDashboard = () => {
                 className={`px-4 py-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
                   filterExpiredOnly 
                     ? 'bg-red-500 text-white shadow-md shadow-red-500/10' 
-                    : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                    : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <span>⚠️ تصفية الإجازات المنتهية / القريبة</span>
@@ -643,7 +643,7 @@ export const TeamDashboard = () => {
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="p-4 rounded-2xl bg-slate-850 border border-slate-800 text-right space-y-1.5">
+              <div className="p-4 rounded-2xl bg-slate-800 border border-slate-800 text-right space-y-1.5">
                 <span className="text-[10px] text-teal-400 block font-black uppercase">البيانات الرسمية للمنشأة</span>
                 <h4 className="text-sm font-black text-white">{selectedEstDetails.name}</h4>
                 <p className="text-[10.5px] text-slate-300">النشاط: <strong className="text-slate-100">{selectedEstDetails.type}</strong></p>
@@ -687,7 +687,7 @@ export const TeamDashboard = () => {
               <button
                 type="button"
                 onClick={() => setSelectedEstDetails(null)}
-                className="mt-4 w-full py-2.5 rounded-xl bg-slate-850 hover:bg-slate-800 text-slate-400 font-extrabold transition-all"
+                className="mt-4 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-800 text-slate-400 font-extrabold transition-all"
               >
                 إغلاق وخروج
               </button>

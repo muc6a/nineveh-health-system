@@ -126,7 +126,7 @@ export const PublicQRScore = () => {
           <h1 className="text-lg md:text-xl font-black text-slate-800 dark:text-white leading-tight">
             {establishment.name}
           </h1>
-          <span className="inline-block mt-1 px-3 py-0.5 rounded-full bg-slate-100 dark:bg-slate-850 text-slate-500 text-[10px] font-bold">
+          <span className="inline-block mt-1 px-3 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold">
             نشاط المنشأة: {establishment.type}
           </span>
           <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
