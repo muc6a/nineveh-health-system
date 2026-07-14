@@ -197,7 +197,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             <div 
               key={hood} 
               onClick={() => toggleNeighborhood(hood)}
-              className={`flex items-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all duration-300 border shadow-sm ${isSelected ? 'bg-teal-500/20 border-teal-500/40 text-teal-300 shadow-[inset_0_0_15px_rgba(45,212,191,0.1)]' : 'bg-slate-800/60 border-white/5 text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'}`}
+              className={`flex items-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all duration-300 border shadow-sm ${isSelected ? 'bg-teal-500/20 border-teal-500/40 text-teal-600 dark:text-teal-300 shadow-[inset_0_0_15px_rgba(45,212,191,0.1)]' : 'bg-white dark:bg-slate-800/60 border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-400 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-200'}`}
             >
               <div className="shrink-0 transition-transform duration-300 group-hover:scale-110">
                 {isSelected ? <CheckSquare className="w-4 h-4 text-teal-600 dark:text-teal-400 drop-shadow-[0_0_5px_rgba(45,212,191,0.5)]" /> : <Square className="w-4 h-4" />}
