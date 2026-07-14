@@ -1,11 +1,11 @@
 import pg from 'pg';
 
 const { Pool } = pg;
-const connectionString = process.env.DATABASE_URL || '';
-const pool = connectionString ? new Pool({
+const connectionString = 'postgresql://postgres.poeenfuhcjqgigretqol:8lk7TaKGczPUXigf@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres';
+const pool = new Pool({
   connectionString,
   ssl: { rejectUnauthorized: false }
-}) : null;
+});
 
 export default async function handler(req, res) {
   const { key } = req.query;

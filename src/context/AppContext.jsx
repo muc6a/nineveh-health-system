@@ -574,13 +574,28 @@ export const AppProvider = ({ children }) => {
     setNotification({ message, type, id: Date.now() });
   };
 
-  const syncToCloud = (key, data) => {
+  const syncToCloud = async (key, data) => {
     localStorage.setItem(key, JSON.stringify(data));
-    fetch('/api/state/' + key, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).catch(() => {});
+    try {
+      const res = await fetch('/api/state/' + key, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Cloud Sync Error for', key, ':', errorText);
+        // Only notify for critical data to avoid spam
+        if (key === 'teams_v2' || key === 'establishments' || key === 'reports') {
+          notify(`فشل رفع البيانات للسحابة (${key}): ${errorText.substring(0, 50)}`, 'error');
+        }
+      }
+    } catch (err) {
+      console.error('Network Error:', err);
+      if (key === 'teams_v2') {
+        notify('خطأ في الاتصال بالسحابة! يرجى التأكد من توفر الإنترنت.', 'error');
+      }
+    }
   };
 
   // Sync state to LocalStorage
