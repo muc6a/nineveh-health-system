@@ -433,7 +433,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchState = async (key, setter) => {
       try {
-        const res = await fetch('/api/state/' + key);
+        const res = await fetch('https://muc6a-nineveh-health-system.vercel.app/api/state/' + key);
         if (res.ok) {
           const data = await res.json();
           if (data) setter(data);
@@ -577,7 +577,7 @@ export const AppProvider = ({ children }) => {
   const syncToCloud = async (key, data) => {
     localStorage.setItem(key, JSON.stringify(data));
     try {
-      const res = await fetch('/api/state/' + key, {
+      const res = await fetch('https://muc6a-nineveh-health-system.vercel.app/api/state/' + key, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
