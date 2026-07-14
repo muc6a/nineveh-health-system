@@ -1776,7 +1776,7 @@ export const SuperAdminPanel = () => {
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.doctors?.map((doc, idx) => (
                         <span key={idx} className="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-300 border border-teal-500/20 font-black">
-                          {doc?.name || doc}
+                          {typeof doc === 'object' ? doc.name : doc}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد أطباء بعد</span>}
                     </div>
@@ -1787,7 +1787,7 @@ export const SuperAdminPanel = () => {
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.assistants?.map((asst, idx) => (
                         <span key={idx} className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-300 border border-blue-500/20 font-black">
-                          {asst?.name || asst}
+                          {typeof asst === 'object' ? asst.name : asst}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد مساعدين بعد</span>}
                     </div>
@@ -1798,7 +1798,7 @@ export const SuperAdminPanel = () => {
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.technicians?.map((tech, idx) => (
                         <span key={idx} className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20 font-black">
-                          {tech?.name || tech}
+                          {typeof tech === 'object' ? tech.name : tech}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد ملاحظين فنيين بعد</span>}
                     </div>
