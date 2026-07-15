@@ -5,6 +5,23 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#3B82F6">
+    <!-- Global Error Catcher -->
+    <script>
+      window.onerror = function(message, source, lineno, colno, error) {
+        var errorDiv = document.createElement('div');
+        errorDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:red;color:white;z-index:999999;padding:20px;font-size:24px;word-wrap:break-word;overflow:auto;direction:ltr;text-align:left;';
+        errorDiv.innerHTML = '<h1>CRITICAL ERROR</h1><p>' + message + '</p><p>' + source + ':' + lineno + ':' + colno + '</p><pre>' + (error && error.stack ? error.stack : '') + '</pre>';
+        document.body.appendChild(errorDiv);
+        return false;
+      };
+      window.onunhandledrejection = function(event) {
+        var errorDiv = document.createElement('div');
+        errorDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:red;color:white;z-index:999999;padding:20px;font-size:24px;word-wrap:break-word;overflow:auto;direction:ltr;text-align:left;';
+        errorDiv.innerHTML = '<h1>PROMISE REJECTION</h1><p>' + (event.reason ? event.reason.toString() : 'Unknown error') + '</p><pre>' + (event.reason && event.reason.stack ? event.reason.stack : '') + '</pre>';
+        document.body.appendChild(errorDiv);
+      };
+    </script>
     <title>منظومة الرقابة الصحية الرقمية - محافظة نينوى</title>
     <!-- Google Fonts: Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
