@@ -429,31 +429,48 @@ export const AppProvider = ({ children }) => {
     };
   }, []);
 
-  // Sync state from backend prototype DB on initial load
+  // Sync state from Firebase Realtime Database on initial load and keep it synced
   useEffect(() => {
-    const fetchState = async (key, setter) => {
-      try {
-        const res = await fetch('/api/state/' + key);
-        if (res.ok) {
-          const data = await res.json();
-          if (data) setter(data);
-        }
-      } catch (err) {}
-    };
-    fetchState('establishments', setEstablishments);
-    fetchState('reports', setReports);
-    fetchState('teams_v2', setTeams);
-    fetchState('trackers_v1', setTrackers);
-    fetchState('closureVerifications_v1', setClosureVerifications);
-    fetchState('inspectionItems', setInspectionItems);
-    fetchState('systemConfig', setConfig);
-    fetchState('auditLogs', setAuditLogs);
-    fetchState('globalBroadcast', setGlobalBroadcast);
-    fetchState('systemTickets', setTickets);
-    fetchState('sysNotifs', setSystemNotifications);
-    fetchState('publicCMS', setPublicCMS);
-    fetchState('directives', setDirectives);
-    fetchState('directors', setDirectors);
+    import('../firebase.js').then(({ db }) => {
+      import('firebase/database').then(({ ref, onValue, set }) => {
+        
+        const setupFirebaseSync = (key, setter, localFallback) => {
+          const dbRef = ref(db, 'prototype_state/' + key);
+          
+          // Listen for changes from Firebase
+          onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              setter(data);
+              localStorage.setItem(key, JSON.stringify(data));
+            } else if (localFallback) {
+              // If Firebase is empty but we have local fallback, initialize Firebase
+              set(dbRef, localFallback);
+            }
+          }, (error) => {
+            console.error('Firebase Sync Error for', key, error);
+            // Fallback to local storage
+            const saved = localStorage.getItem(key);
+            if (saved) setter(JSON.parse(saved));
+          });
+        };
+
+        setupFirebaseSync('establishments', setEstablishments, establishments);
+        setupFirebaseSync('reports', setReports, reports);
+        setupFirebaseSync('teams_v2', setTeams, teams);
+        setupFirebaseSync('trackers_v1', setTrackers, trackers);
+        setupFirebaseSync('closureVerifications_v1', setClosureVerifications, closureVerifications);
+        setupFirebaseSync('inspectionItems', setInspectionItems, inspectionItems);
+        setupFirebaseSync('systemConfig', setConfig, config);
+        setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
+        setupFirebaseSync('globalBroadcast', setGlobalBroadcast, globalBroadcast);
+        setupFirebaseSync('systemTickets', setTickets, tickets);
+        setupFirebaseSync('sysNotifs', setSystemNotifications, systemNotifications);
+        setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
+        setupFirebaseSync('directives', setDirectives, directives);
+        setupFirebaseSync('directors', setDirectors, directors);
+      });
+    }).catch(err => console.error("Firebase load error", err));
   }, []);
 
   const logAudit = (action, entityId, oldData, newData, justification, userDetails) => {
@@ -479,10 +496,6 @@ export const AppProvider = ({ children }) => {
       { id: 't2', type: 'feature', text: 'نقترح إضافة خيار طباعة تقرير الكشف بصيغة PDF مباشرة من الميدان.', teamName: 'د. عماد (المدير العام)', status: 'resolved' }
     ];
   });
-
-  useEffect(() => {
-    syncToCloud('systemTickets', tickets);
-  }, [tickets]);
 
   const addTicket = (type, text, teamName) => {
     const newTicket = {
@@ -520,10 +533,6 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('sysNotifs');
     return saved ? JSON.parse(saved) : [];
   });
-
-  useEffect(() => {
-    syncToCloud('sysNotifs', systemNotifications);
-  }, [systemNotifications]);
 
   const addSystemNotification = (title, message, targetRole = 'all') => {
     const newNotif = {
@@ -577,47 +586,31 @@ export const AppProvider = ({ children }) => {
   const syncToCloud = async (key, data) => {
     localStorage.setItem(key, JSON.stringify(data));
     try {
-      const res = await fetch('/api/state/' + key, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Cloud Sync Error for', key, ':', errorText);
-        // Only notify for critical data to avoid spam
-        if (key === 'teams_v2' || key === 'establishments' || key === 'reports') {
-          notify(`فشل رفع البيانات للسحابة (${key}): ${errorText.substring(0, 50)}`, 'error');
-        }
-      }
+      const { db } = await import('../firebase.js');
+      const { ref, set } = await import('firebase/database');
+      const dbRef = ref(db, 'prototype_state/' + key);
+      await set(dbRef, data);
     } catch (err) {
-      console.error('Network Error:', err);
+      console.error('Firebase Write Error:', err);
       if (key === 'teams_v2') {
-        notify('خطأ في الاتصال بالسحابة! يرجى التأكد من توفر الإنترنت.', 'error');
+        notify('خطأ في الاتصال بقاعدة البيانات! يرجى التأكد من تفعيل Realtime Database في وضع الاختبار.', 'error');
       }
     }
   };
 
-  // Sync state to LocalStorage
-  useEffect(() => {
-    syncToCloud('establishments', establishments);
-  }, [establishments]);
+  // Sync state to Firebase whenever local state changes
+  useEffect(() => { syncToCloud('establishments', establishments); }, [establishments]);
+  useEffect(() => { syncToCloud('reports', reports); }, [reports]);
+  useEffect(() => { syncToCloud('teams_v2', teams); }, [teams]);
+  useEffect(() => { syncToCloud('trackers_v1', trackers); }, [trackers]);
+  useEffect(() => { syncToCloud('closureVerifications_v1', closureVerifications); }, [closureVerifications]);
+  useEffect(() => { syncToCloud('inspectionItems', inspectionItems); }, [inspectionItems]);
+  useEffect(() => { syncToCloud('systemConfig', config); }, [config]);
+  useEffect(() => { syncToCloud('systemTickets', tickets); }, [tickets]);
+  useEffect(() => { syncToCloud('sysNotifs', systemNotifications); }, [systemNotifications]);
+  useEffect(() => { syncToCloud('directives', directives); }, [directives]);
+  useEffect(() => { syncToCloud('directors', directors); }, [directors]);
 
-  useEffect(() => {
-    syncToCloud('reports', reports);
-  }, [reports]);
-
-  useEffect(() => {
-    syncToCloud('teams_v2', teams);
-  }, [teams]);
-
-  useEffect(() => {
-    syncToCloud('inspectionItems', inspectionItems);
-  }, [inspectionItems]);
-
-  useEffect(() => {
-    syncToCloud('systemConfig', config);
-  }, [config]);
 
   // Public Search Page CMS
   const [publicCMS, setPublicCMS] = useState(() => {
