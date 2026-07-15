@@ -1,4 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { db } from '../firebase';
+import { ref, onValue, set } from 'firebase/database';
 
 export const AppContext = createContext();
 
@@ -431,46 +433,45 @@ export const AppProvider = ({ children }) => {
 
   // Sync state from Firebase Realtime Database on initial load and keep it synced
   useEffect(() => {
-    import('../firebase.js').then(({ db }) => {
-      import('firebase/database').then(({ ref, onValue, set }) => {
+    try {
+      const setupFirebaseSync = (key, setter, localFallback) => {
+        const dbRef = ref(db, 'prototype_state/' + key);
         
-        const setupFirebaseSync = (key, setter, localFallback) => {
-          const dbRef = ref(db, 'prototype_state/' + key);
-          
-          // Listen for changes from Firebase
-          onValue(dbRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-              setter(data);
-              localStorage.setItem(key, JSON.stringify(data));
-            } else if (localFallback) {
-              // If Firebase is empty but we have local fallback, initialize Firebase
-              set(dbRef, localFallback);
-            }
-          }, (error) => {
-            console.error('Firebase Sync Error for', key, error);
-            // Fallback to local storage
-            const saved = localStorage.getItem(key);
-            if (saved) setter(JSON.parse(saved));
-          });
-        };
+        // Listen for changes from Firebase
+        onValue(dbRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setter(data);
+            localStorage.setItem(key, JSON.stringify(data));
+          } else if (localFallback) {
+            // If Firebase is empty but we have local fallback, initialize Firebase
+            set(dbRef, localFallback);
+          }
+        }, (error) => {
+          console.error('Firebase Sync Error for', key, error);
+          // Fallback to local storage
+          const saved = localStorage.getItem(key);
+          if (saved) setter(JSON.parse(saved));
+        });
+      };
 
-        setupFirebaseSync('establishments', setEstablishments, establishments);
-        setupFirebaseSync('reports', setReports, reports);
-        setupFirebaseSync('teams_v2', setTeams, teams);
-        setupFirebaseSync('trackers_v1', setTrackers, trackers);
-        setupFirebaseSync('closureVerifications_v1', setClosureVerifications, closureVerifications);
-        setupFirebaseSync('inspectionItems', setInspectionItems, inspectionItems);
-        setupFirebaseSync('systemConfig', setConfig, config);
-        setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
-        setupFirebaseSync('globalBroadcast', setGlobalBroadcast, globalBroadcast);
-        setupFirebaseSync('systemTickets', setTickets, tickets);
-        setupFirebaseSync('sysNotifs', setSystemNotifications, systemNotifications);
-        setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
-        setupFirebaseSync('directives', setDirectives, directives);
-        setupFirebaseSync('directors', setDirectors, directors);
-      });
-    }).catch(err => console.error("Firebase load error", err));
+      setupFirebaseSync('establishments', setEstablishments, establishments);
+      setupFirebaseSync('reports', setReports, reports);
+      setupFirebaseSync('teams_v2', setTeams, teams);
+      setupFirebaseSync('trackers_v1', setTrackers, trackers);
+      setupFirebaseSync('closureVerifications_v1', setClosureVerifications, closureVerifications);
+      setupFirebaseSync('inspectionItems', setInspectionItems, inspectionItems);
+      setupFirebaseSync('systemConfig', setConfig, config);
+      setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
+      setupFirebaseSync('globalBroadcast', setGlobalBroadcast, globalBroadcast);
+      setupFirebaseSync('systemTickets', setTickets, tickets);
+      setupFirebaseSync('sysNotifs', setSystemNotifications, systemNotifications);
+      setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
+      setupFirebaseSync('directives', setDirectives, directives);
+      setupFirebaseSync('directors', setDirectors, directors);
+    } catch (err) {
+      console.error("Firebase load error", err);
+    }
   }, []);
 
   const logAudit = (action, entityId, oldData, newData, justification, userDetails) => {
@@ -586,8 +587,6 @@ export const AppProvider = ({ children }) => {
   const syncToCloud = async (key, data) => {
     localStorage.setItem(key, JSON.stringify(data));
     try {
-      const { db } = await import('../firebase.js');
-      const { ref, set } = await import('firebase/database');
       const dbRef = ref(db, 'prototype_state/' + key);
       await set(dbRef, data);
     } catch (err) {
