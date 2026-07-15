@@ -23,7 +23,7 @@ export default defineConfig({
     })
   ],
   build: {
-    target: 'es2015',
+    target: 'es2019',
     cssTarget: 'chrome61'
   }
 })
