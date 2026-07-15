@@ -24,7 +24,6 @@ export default defineConfig({
   ],
   build: {
     target: 'es2015',
-    minify: 'terser', // terser is better for older browsers
     cssTarget: 'chrome61'
   }
 })
