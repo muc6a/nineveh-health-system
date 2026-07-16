@@ -597,18 +597,31 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Sync state to Firebase whenever local state changes
-  useEffect(() => { syncToCloud('establishments', establishments); }, [establishments]);
-  useEffect(() => { syncToCloud('reports', reports); }, [reports]);
-  useEffect(() => { syncToCloud('teams_v2', teams); }, [teams]);
-  useEffect(() => { syncToCloud('trackers_v1', trackers); }, [trackers]);
-  useEffect(() => { syncToCloud('closureVerifications_v1', closureVerifications); }, [closureVerifications]);
-  useEffect(() => { syncToCloud('inspectionItems', inspectionItems); }, [inspectionItems]);
-  useEffect(() => { syncToCloud('systemConfig', config); }, [config]);
-  useEffect(() => { syncToCloud('systemTickets', tickets); }, [tickets]);
-  useEffect(() => { syncToCloud('sysNotifs', systemNotifications); }, [systemNotifications]);
-  useEffect(() => { syncToCloud('directives', directives); }, [directives]);
-  useEffect(() => { syncToCloud('directors', directors); }, [directors]);
+  // Use refs to prevent initial mount sync from overwriting cloud data
+  const isMountedEst = React.useRef(false);
+  const isMountedRep = React.useRef(false);
+  const isMountedTeam = React.useRef(false);
+  const isMountedTrack = React.useRef(false);
+  const isMountedClosure = React.useRef(false);
+  const isMountedInsp = React.useRef(false);
+  const isMountedConf = React.useRef(false);
+  const isMountedTick = React.useRef(false);
+  const isMountedNotif = React.useRef(false);
+  const isMountedDir = React.useRef(false);
+  const isMountedDirst = React.useRef(false);
+
+  // Sync state to Firebase whenever local state changes (after initial load)
+  useEffect(() => { if (isMountedEst.current) syncToCloud('establishments', establishments); else isMountedEst.current = true; }, [establishments]);
+  useEffect(() => { if (isMountedRep.current) syncToCloud('reports', reports); else isMountedRep.current = true; }, [reports]);
+  useEffect(() => { if (isMountedTeam.current) syncToCloud('teams_v2', teams); else isMountedTeam.current = true; }, [teams]);
+  useEffect(() => { if (isMountedTrack.current) syncToCloud('trackers_v1', trackers); else isMountedTrack.current = true; }, [trackers]);
+  useEffect(() => { if (isMountedClosure.current) syncToCloud('closureVerifications_v1', closureVerifications); else isMountedClosure.current = true; }, [closureVerifications]);
+  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionItems', inspectionItems); else isMountedInsp.current = true; }, [inspectionItems]);
+  useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
+  useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
+  useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
+  useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
+  useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
 
 
   // Public Search Page CMS
