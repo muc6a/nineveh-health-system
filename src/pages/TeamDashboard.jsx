@@ -260,8 +260,15 @@ export const TeamDashboard = () => {
               >
                 <div className="flex items-center gap-3">
                   <FileText className="w-4.5 h-4.5" />
-                  <span>📑 التقارير الجغرافية</span>
+                  <span>📑 صندوق البلاغات والتقارير</span>
                 </div>
+                {(teamReports.length > 0 || myDirectives.length > 0) && (
+                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
+                    activeTab === 'reports' ? 'bg-white text-teal-700' : 'bg-red-500 text-white'
+                  }`}>
+                    {teamReports.length + myDirectives.length}
+                  </span>
+                )}
               </button>
             )}
 
@@ -276,15 +283,8 @@ export const TeamDashboard = () => {
               >
                 <div className="flex items-center gap-3">
                   <AlertCircle className="w-4.5 h-4.5" />
-                  <span>📦 صندوق البلاغات</span>
+                  <span>📦 المراسلات الإدارية</span>
                 </div>
-                {teamReports.length > 0 && (
-                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
-                    activeTab === 'directives' ? 'bg-white text-teal-700' : 'bg-red-500 text-white'
-                  }`}>
-                    {teamReports.length}
-                  </span>
-                )}
               </button>
             )}
 

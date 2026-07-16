@@ -1,8 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { X, MapPin, Store, User, Hash, Phone, FileBadge } from 'lucide-react';
 import { NINEVEH_GEOGRAPHY } from '../utils/constants';
+import { AppContext } from '../context/AppContext';
 
 export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave }) => {
+  const { user } = useContext(AppContext);
+  const isTeamMode = user?.role === 'team' || user?.isTeam;
+  const teamSector = user?.sector || '';
+
+  const parseSector = (sector) => {
+    let parsedMain = 'mosul_right';
+    let parsedSub = '';
+    if (!sector) return { parsedMain, parsedSub };
+    if (sector.includes('الجانب الأيمن')) {
+      parsedMain = 'mosul_right';
+      parsedSub = sector.split(' - ')[1] || '';
+    } else if (sector.includes('الجانب الأيسر')) {
+      parsedMain = 'mosul_left';
+      parsedSub = sector.split(' - ')[1] || '';
+    } else {
+      NINEVEH_GEOGRAPHY.districts.forEach(d => {
+        if (sector.includes(d.label)) {
+          parsedMain = d.id;
+          parsedSub = sector.split(' - ')[1] || '';
+        }
+      });
+    }
+    return { parsedMain, parsedSub };
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
@@ -12,39 +38,36 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
     propertyNumber: '',
     geoMain: 'mosul_right', // mosul_right, mosul_left, hamdaniya, etc.
     geoSub: '', // neighborhood or subdistrict
+    manualAddress: '', // NEW FIELD
     status: 'compliant'
   });
 
   useEffect(() => {
     if (isOpen) {
       if (mode === 'edit' && initialData) {
-        // Try to parse existing sector string back into geoMain and geoSub
-        let parsedMain = 'mosul_right';
-        let parsedSub = '';
-        const sector = initialData.sector || '';
-        
-        if (sector.includes('الجانب الأيمن')) {
-          parsedMain = 'mosul_right';
-          parsedSub = sector.split(' - ')[1] || '';
-        } else if (sector.includes('الجانب الأيسر')) {
-          parsedMain = 'mosul_left';
-          parsedSub = sector.split(' - ')[1] || '';
-        } else {
-          // Look for district match
-          NINEVEH_GEOGRAPHY.districts.forEach(d => {
-            if (sector.includes(d.label)) {
-              parsedMain = d.id;
-              parsedSub = sector.split(' - ')[1] || '';
-            }
-          });
-        }
-
+        const { parsedMain, parsedSub } = parseSector(initialData.sector);
         setFormData({
           ...initialData,
           geoMain: parsedMain,
-          geoSub: parsedSub
+          geoSub: parsedSub,
+          manualAddress: initialData.manualAddress || ''
         });
       } else {
+        const { parsedMain, parsedSub } = isTeamMode ? parseSector(teamSector) : { parsedMain: 'mosul_right', parsedSub: '' };
+        
+        // Ensure that if there are sub-options, we select the first one by default
+        let defaultSub = parsedSub;
+        if (!defaultSub) {
+          let subs = [];
+          if (parsedMain === 'mosul_right') subs = NINEVEH_GEOGRAPHY.mosul.sides.right.neighborhoods;
+          else if (parsedMain === 'mosul_left') subs = NINEVEH_GEOGRAPHY.mosul.sides.left.neighborhoods;
+          else {
+            const dist = NINEVEH_GEOGRAPHY.districts.find(d => d.id === parsedMain);
+            if (dist) subs = dist.subdistricts;
+          }
+          defaultSub = subs[0] || '';
+        }
+
         setFormData({
           name: '',
           type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
@@ -52,13 +75,14 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
           phone: '',
           licenseNumber: '',
           propertyNumber: '',
-          geoMain: 'mosul_right',
-          geoSub: '',
+          geoMain: parsedMain,
+          geoSub: defaultSub,
+          manualAddress: '',
           status: 'compliant'
         });
       }
     }
-  }, [isOpen, mode, initialData]);
+  }, [isOpen, mode, initialData, isTeamMode, teamSector]);
 
   if (!isOpen) return null;
 
@@ -232,6 +256,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-slate-500">القاطع الرئيسي (القضاء / الجانب)</label>
                   <select
+                    disabled={isTeamMode}
                     value={formData.geoMain}
                     onChange={(e) => {
                       const newMain = e.target.value;
@@ -271,6 +296,20 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   </select>
                 </div>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-teal-500" />
+                أضف العنوان الدقيق يدوياً (إلزامي للجان)
+              </label>
+              <textarea
+                required={isTeamMode}
+                value={formData.manualAddress}
+                onChange={(e) => setFormData({ ...formData, manualAddress: e.target.value })}
+                placeholder="اكتب العنوان بالتفصيل الدقيق (مثال: حي النصر، شارع المكاتب، مجاور صيدلية الشفاء...)"
+                className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm min-h-[100px]"
+              />
             </div>
 
           </form>
