@@ -442,6 +442,7 @@ export const AppProvider = ({ children }) => {
     try {
       const setupFirebaseSync = (key, setter, localFallback) => {
         const dbRef = ref(db, 'prototype_state/' + key);
+        let isFirstLoad = true;
         
         // Listen for changes from Firebase
         onValue(dbRef, (snapshot) => {
@@ -449,10 +450,16 @@ export const AppProvider = ({ children }) => {
           if (data) {
             setter(data);
             localStorage.setItem(key, JSON.stringify(data));
-          } else if (localFallback) {
-            // If Firebase is empty but we have local fallback, initialize Firebase
+          } else if (isFirstLoad && localFallback && (!Array.isArray(localFallback) || localFallback.length > 0)) {
+            // If Firebase is empty on first load and we have meaningful local fallback, initialize Firebase
             set(dbRef, localFallback);
+          } else {
+            // Firebase node was deleted or is genuinely empty
+            const emptyData = Array.isArray(localFallback) ? [] : null;
+            setter(emptyData);
+            localStorage.setItem(key, JSON.stringify(emptyData));
           }
+          isFirstLoad = false;
         }, (error) => {
           console.error('Firebase Sync Error for', key, error);
           // Fallback to local storage
