@@ -483,7 +483,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('directives', setDirectives, directives);
       setupFirebaseSync('directors', setDirectors, directors);
       setupFirebaseSync('deliveries', setDeliveries, deliveries);
-      setupFirebaseSync('penaltyRequests', setPenaltyRequests, penaltyRequests);
+      setupFirebaseSync('penaltyRequests_v2', setPenaltyRequests, penaltyRequests);
       setupFirebaseSync('dispatches', setDispatches, dispatches);
     } catch (err) {
       console.error("Firebase load error", err);
@@ -548,13 +548,10 @@ export const AppProvider = ({ children }) => {
   }, [deliveries]);
 
   const [penaltyRequests, setPenaltyRequests] = useState(() => {
-    const saved = localStorage.getItem('penaltyRequests');
+    const saved = localStorage.getItem('penaltyRequests_v2');
     return saved ? JSON.parse(saved) : [];
   });
 
-  useEffect(() => {
-    syncToCloud('penaltyRequests', penaltyRequests);
-  }, [penaltyRequests]);
 
   const [dispatches, setDispatches] = useState(() => {
     const saved = localStorage.getItem('dispatches');
@@ -665,7 +662,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
   useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
   useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
-  useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
+  useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
   useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
 
 
