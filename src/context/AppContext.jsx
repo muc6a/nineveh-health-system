@@ -407,6 +407,12 @@ export const AppProvider = ({ children }) => {
         setConfig(JSON.parse(e.newValue));
       } else if (e.key === 'teams' && e.newValue) {
         setTeams(JSON.parse(e.newValue));
+      } else if (e.key === 'penaltyRequests' && e.newValue) {
+        setPenaltyRequests(JSON.parse(e.newValue));
+      } else if (e.key === 'deliveries' && e.newValue) {
+        setDeliveries(JSON.parse(e.newValue));
+      } else if (e.key === 'dispatches' && e.newValue) {
+        setDispatches(JSON.parse(e.newValue));
       }
     };
     
@@ -522,9 +528,32 @@ export const AppProvider = ({ children }) => {
     }
   }, [user]);
 
-  const [deliveries, setDeliveries] = useState(INITIAL_DELIVERIES);
-  const [penaltyRequests, setPenaltyRequests] = useState([]);
-  const [dispatches, setDispatches] = useState([]);
+  const [deliveries, setDeliveries] = useState(() => {
+    const saved = localStorage.getItem('deliveries');
+    return saved ? JSON.parse(saved) : INITIAL_DELIVERIES;
+  });
+  
+  useEffect(() => {
+    syncToCloud('deliveries', deliveries);
+  }, [deliveries]);
+
+  const [penaltyRequests, setPenaltyRequests] = useState(() => {
+    const saved = localStorage.getItem('penaltyRequests');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    syncToCloud('penaltyRequests', penaltyRequests);
+  }, [penaltyRequests]);
+
+  const [dispatches, setDispatches] = useState(() => {
+    const saved = localStorage.getItem('dispatches');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    syncToCloud('dispatches', dispatches);
+  }, [dispatches]);
 
   // Global Notification System
   const [notification, setNotification] = useState({ message: '', type: 'info', id: 0 });

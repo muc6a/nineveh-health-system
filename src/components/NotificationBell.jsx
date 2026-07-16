@@ -63,7 +63,7 @@ export const NotificationBell = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-[340px] sm:w-[400px] max-h-96 overflow-y-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 p-2">
+        <div className="fixed top-[70px] left-4 right-4 md:absolute md:top-full md:left-0 md:right-auto md:w-[400px] mt-2 max-h-[80vh] overflow-y-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 p-2">
           <div className="flex items-center justify-between p-2 border-b border-slate-100 dark:border-slate-800 mb-2">
             <h3 className="text-sm font-black text-slate-800 dark:text-white">الإشعارات</h3>
             {unreadCount > 0 && (
