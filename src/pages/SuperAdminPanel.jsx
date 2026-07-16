@@ -1000,6 +1000,7 @@ export const SuperAdminPanel = () => {
                         <th className="p-4">البريد/المعرف</th>
                         <th className="p-4">رقم الهاتف</th>
                         <th className="p-4">القطاع (الفريق المرتبط)</th>
+                        <th className="p-4">حالة الحساب</th>
                         <th className="p-4 text-center">الإجراءات</th>
                       </tr>
                     </thead>
@@ -1009,6 +1010,9 @@ export const SuperAdminPanel = () => {
                           <td className="p-4 font-black text-slate-800 dark:text-white">{t.name}</td>
                           <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.email || t.username}</td>
                           <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.phone}</td>
+                          <td className="p-4 font-bold text-teal-600 dark:text-teal-400">
+                            {t.linkedTeamSector || t.sector || 'غير محدد'}
+                          </td>
                           <td className="p-4">
                             {t.active !== false ? (
                               <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط</span>

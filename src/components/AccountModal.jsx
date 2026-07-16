@@ -70,6 +70,10 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
              setEditOneTimeOnly(!!initialData.editSettings.oneTimeOnly);
           }
         }
+        
+        if (accountType === 'tracker') {
+          setLinkedTeamSector(initialData.linkedTeamSector || initialData.sector || '');
+        }
       } else {
         // Reset form
         setName(''); setEmail(''); setPhone(''); setUsername(''); setPassword('');
