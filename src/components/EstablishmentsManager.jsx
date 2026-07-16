@@ -5,8 +5,11 @@ import { Search, X } from 'lucide-react';
 export const EstablishmentsManager = () => {
   const { establishments, setEstablishments, teams, activeTab } = useContext(AppContext);
   const [estSearchTerm, setEstSearchTerm] = useState('');
+  const [sectorFilter, setSectorFilter] = useState('all');
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
   const [editingEst, setEditingEst] = useState(null);
+
+  const uniqueSectors = [...new Set(establishments.map(e => e.sector))].filter(Boolean);
 
   const handleEditEstSubmit = (e) => {
     e.preventDefault();
@@ -21,15 +24,28 @@ export const EstablishmentsManager = () => {
         <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR</p>
       </div>
 
-      <div className="relative max-w-md">
-        <input
-          type="text"
-          placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
-          value={estSearchTerm}
-          onChange={(e) => setEstSearchTerm(e.target.value)}
-          className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-        />
-        <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1 max-w-md">
+          <input
+            type="text"
+            placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
+            value={estSearchTerm}
+            onChange={(e) => setEstSearchTerm(e.target.value)}
+            className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all"
+          />
+          <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
+        </div>
+        
+        <select 
+          value={sectorFilter} 
+          onChange={(e) => setSectorFilter(e.target.value)}
+          className="w-full md:w-64 p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all shadow-sm"
+        >
+          <option value="all">الكل (جميع القطاعات والأقضية)</option>
+          {uniqueSectors.map(sector => (
+            <option key={sector} value={sector}>{sector}</option>
+          ))}
+        </select>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -48,6 +64,7 @@ export const EstablishmentsManager = () => {
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
               {establishments
+                .filter(e => sectorFilter === 'all' || e.sector === sectorFilter)
                 .filter(e => 
                   e.name.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
                   e.owner.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
