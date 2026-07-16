@@ -475,6 +475,9 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
       setupFirebaseSync('directives', setDirectives, directives);
       setupFirebaseSync('directors', setDirectors, directors);
+      setupFirebaseSync('deliveries', setDeliveries, deliveries);
+      setupFirebaseSync('penaltyRequests', setPenaltyRequests, penaltyRequests);
+      setupFirebaseSync('dispatches', setDispatches, dispatches);
     } catch (err) {
       console.error("Firebase load error", err);
     }
@@ -638,6 +641,9 @@ export const AppProvider = ({ children }) => {
   const isMountedNotif = React.useRef(false);
   const isMountedDir = React.useRef(false);
   const isMountedDirst = React.useRef(false);
+  const isMountedDeliv = React.useRef(false);
+  const isMountedPen = React.useRef(false);
+  const isMountedDisp = React.useRef(false);
 
   // Sync state to Firebase whenever local state changes (after initial load)
   useEffect(() => { if (isMountedEst.current) syncToCloud('establishments', establishments); else isMountedEst.current = true; }, [establishments]);
@@ -651,6 +657,9 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
   useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
   useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
+  useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
+  useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
+  useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
 
 
   // Public Search Page CMS
