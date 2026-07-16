@@ -789,7 +789,24 @@ export const AppProvider = ({ children }) => {
 
   const [directors, setDirectors] = useState(() => {
     const saved = localStorage.getItem('directors');
-    return saved ? JSON.parse(saved) : [
+    let parsed = saved ? JSON.parse(saved) : null;
+    
+    if (parsed) {
+      // Force migration for dir_acc_2 from Jassim to Dr. Ibtihal
+      const hasJassim = parsed.some(d => d.id === 'dir_acc_2' && d.name.includes('جاسم'));
+      if (hasJassim) {
+        parsed = parsed.map(d => {
+          if (d.id === 'dir_acc_2') {
+            return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } };
+          }
+          return d;
+        });
+        localStorage.setItem('directors', JSON.stringify(parsed));
+      }
+      return parsed;
+    }
+
+    return [
       { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } },
       { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } }
     ];
