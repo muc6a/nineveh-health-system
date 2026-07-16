@@ -13,7 +13,7 @@ import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera } from 'lucide-react';
 
 export const ExecutivePortal = () => {
-  const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [executiveTab, setExecutiveTab] = useState('dashboard');
@@ -159,6 +159,10 @@ export const ExecutivePortal = () => {
     })
     .filter(d => d.value > 0)
     .sort((a, b) => b.value - a.value);
+
+  // Calculate Closed and Fined from penaltyRequests
+  const closedRestaurants = (penaltyRequests || []).filter(p => p.type === 'closure' && p.status === 'approved');
+  const finedRestaurants = (penaltyRequests || []).filter(p => p.type === 'fine' && p.status === 'approved');
 
   // Calculate Public Complaints
   const publicComplaintsCount = (reports || []).filter(r => !r.isDelivery).length;
@@ -493,6 +497,55 @@ export const ExecutivePortal = () => {
                   data={chart1Data}
                   onRedClick={() => setShowUninspectedModal(true)}
                 />
+              </div>
+            </div>
+
+            {/* Penalties and Closures Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div className="glassmorphic-card p-5 border-t-4 border-red-500 min-h-[160px] flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5 text-red-500" /> المطاعم والمنشآت المغلقة 
+                    </h3>
+                    <span className="px-3 py-1 bg-red-500/10 text-red-600 dark:text-red-400 rounded-full text-xs font-bold">{closedRestaurants.length}</span>
+                  </div>
+                  {closedRestaurants.length === 0 ? (
+                    <p className="text-xs text-slate-500 text-center py-4 font-bold">لا توجد منشآت مغلقة حالياً.</p>
+                  ) : (
+                    <ul className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                      {closedRestaurants.map(r => (
+                        <li key={r.id} className="text-xs font-bold bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                          <span className="text-slate-800 dark:text-slate-200">{r.estName} <span className="text-[10px] text-slate-400 mr-1">({r.sector})</span></span>
+                          <span className="text-[10px] text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-md">{new Date(r.date).toLocaleDateString('ar-IQ')}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+
+              <div className="glassmorphic-card p-5 border-t-4 border-orange-500 min-h-[160px] flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-orange-500" /> الغرامات المالية المفروضة
+                    </h3>
+                    <span className="px-3 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-full text-xs font-bold">{finedRestaurants.length}</span>
+                  </div>
+                  {finedRestaurants.length === 0 ? (
+                    <p className="text-xs text-slate-500 text-center py-4 font-bold">لا توجد غرامات مسجلة حالياً.</p>
+                  ) : (
+                    <ul className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                      {finedRestaurants.map(r => (
+                        <li key={r.id} className="text-xs font-bold bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                          <span className="text-slate-800 dark:text-slate-200">{r.estName} <span className="text-[10px] text-slate-400 mr-1">({r.sector})</span></span>
+                          <span className="text-[10px] text-orange-500 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded-md">{new Date(r.date).toLocaleDateString('ar-IQ')}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             </div>
 

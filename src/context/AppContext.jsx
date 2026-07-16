@@ -791,7 +791,7 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('directors');
     return saved ? JSON.parse(saved) : [
       { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } },
-      { id: 'dir_acc_2', name: 'أ. جاسم محمد الجبوري', role: 'committee_director', title: 'مدير قسم الصحة العامة', email: 'jassim@ninveh.health.gov.iq', phone: '07711223344', username: 'jassim_ph', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } }
+      { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } }
     ];
   });
 

@@ -5,6 +5,7 @@ import { Bell, Check, Trash2 } from 'lucide-react';
 export const NotificationBell = () => {
   const { user, systemNotifications, setSystemNotifications } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -85,20 +86,7 @@ export const NotificationBell = () => {
                   onClick={() => {
                     markAsRead(notif.id);
                     setIsOpen(false);
-                    if (notif.title?.includes('إغلاق') || notif.title?.includes('عقوب')) {
-                      if (user.role === 'admin' || user.role === 'central_director') {
-                        // Navigate to director or admin panel
-                        if (user.role === 'central_director') window.location.hash = '/dashboard/director';
-                        else window.location.hash = '/admin/control';
-                        
-                        // Fire custom event to switch to penalties tab
-                        setTimeout(() => window.dispatchEvent(new CustomEvent('navToPenalties')), 100);
-                      }
-                    } else if (notif.title?.includes('تفتيش')) {
-                      if (user.role === 'team') {
-                        setTimeout(() => window.dispatchEvent(new CustomEvent('navToDirectives')), 100);
-                      }
-                    }
+                    setSelectedNotification(notif);
                   }}
                   className={`p-3 rounded-xl cursor-pointer transition-all border group ${notif.isRead ? 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'bg-teal-50/50 dark:bg-teal-900/10 border-teal-100 dark:border-teal-900/30'}`}
                 >
@@ -122,6 +110,57 @@ export const NotificationBell = () => {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Full-Screen Notification Modal overlay */}
+      {selectedNotification && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-[0_0_40px_rgba(13,148,136,0.15)] relative overflow-hidden transform scale-100 animate-in fade-in zoom-in duration-200">
+            <div className="p-6 text-right">
+              <div className="flex items-start justify-between mb-4 flex-row-reverse">
+                <button 
+                  onClick={() => setSelectedNotification(null)}
+                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+                <div className="w-12 h-12 rounded-full bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center border border-teal-100 dark:border-teal-900/30">
+                  <Bell className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+                </div>
+              </div>
+              <h2 className="text-lg font-black text-slate-800 dark:text-white mb-2 leading-tight drop-shadow-sm">
+                {selectedNotification.title}
+              </h2>
+              <p className="text-sm font-bold text-slate-600 dark:text-slate-300 leading-relaxed mb-8 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-white/5">
+                {selectedNotification.message}
+              </p>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    const notif = selectedNotification;
+                    setSelectedNotification(null);
+                    if (notif.title?.includes('إغلاق') || notif.title?.includes('عقوب') || notif.title?.includes('غرامة')) {
+                      if (user.role === 'admin' || user.role === 'central_director') {
+                        if (user.role === 'central_director') window.location.hash = '/dashboard/director';
+                        else window.location.hash = '/admin/control';
+                        setTimeout(() => window.dispatchEvent(new CustomEvent('navToPenalties')), 100);
+                      }
+                    } else if (notif.title?.includes('تفتيش')) {
+                      if (user.role === 'team') {
+                        setTimeout(() => window.dispatchEvent(new CustomEvent('navToDirectives')), 100);
+                      }
+                    }
+                  }}
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-l from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black text-sm transition-all shadow-lg flex justify-center items-center gap-2 cursor-pointer"
+                >
+                  <Check className="w-5 h-5" />
+                  الانتقال لتفاصيل الإجراء السريع
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
