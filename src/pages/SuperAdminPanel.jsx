@@ -2288,6 +2288,8 @@ export const SuperAdminPanel = () => {
                     setNewDirRole(e.target.value);
                     if (e.target.value === 'director') {
                       setNewDirTitle('مدير صحة نينوى');
+                    } else if (e.target.value === 'public_health') {
+                      setNewDirTitle('مدير قسم الصحة العامة');
                     } else if (e.target.value === 'central_director') {
                       setNewDirTitle('مدير الرقابة المركزية');
                     } else {
@@ -2297,6 +2299,7 @@ export const SuperAdminPanel = () => {
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-teal-500 font-bold"
                 >
                   <option value="director">مدير عام صحة نينوى (Director General)</option>
+                  <option value="public_health">مدير قسم الصحة العامة (Public Health Director)</option>
                   <option value="central_director">مدير الرقابة المركزية (Central Director)</option>
                   <option value="director_committee">مدير شعبة الرقابة الصحية (Sector Chief)</option>
                 </select>
@@ -2423,6 +2426,7 @@ export const SuperAdminPanel = () => {
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-teal-500 font-bold"
                 >
                   <option value="مدير عام صحة نينوى">مدير عام صحة نينوى (Director General)</option>
+                  <option value="مدير قسم الصحة العامة">مدير قسم الصحة العامة (Public Health Director)</option>
                   <option value="مدير الرقابة المركزية">مدير الرقابة المركزية (Central Director)</option>
                   <option value="مدير شعبة الرقابة الصحية">مدير شعبة الرقابة الصحية (Sector Chief)</option>
                   <option value="مدير ناحية">مدير ناحية</option>

@@ -1,6 +1,7 @@
 export const ROLES_DICTIONARY = [
   { id: 'director_general', label: 'مدير عام دائرة صحة نينوى', category: 'الإدارة العليا' },
   { id: 'deputy_director_general', label: 'معاون المدير العام للشؤون الفنية', category: 'الإدارة العليا' },
+  { id: 'public_health_director', label: 'مدير قسم الصحة العامة', category: 'الإدارة الوسطى' },
   { id: 'central_director', label: 'مدير الرقابة المركزية', category: 'الإدارة الوسطى' },
   { id: 'deputy_public_health_director', label: 'معاون مدير القسم', category: 'الإدارة الوسطى' },
   { id: 'central_health_sector_director', label: 'مدير شعبة الرقابة الصحية المركزية', category: 'الإدارة الوسطى' },
