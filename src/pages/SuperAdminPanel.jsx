@@ -112,6 +112,7 @@ export const SuperAdminPanel = () => {
   const [editingEst, setEditingEst] = useState(null);
   const [qrTabMode, setQrTabMode] = useState('dining');
   const [estSearchTerm, setEstSearchTerm] = useState('');
+  const [estStatusFilter, setEstStatusFilter] = useState('all');
 
   // Success messages alerts
   const [alertMsg, setAlertMsg] = useState('');
@@ -1470,15 +1471,27 @@ export const SuperAdminPanel = () => {
             </div>
 
             {/* Search Filter bar */}
-            <div className="relative max-w-md">
-              <input
-                type="text"
-                placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
-                value={estSearchTerm}
-                onChange={(e) => setEstSearchTerm(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center max-w-2xl">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
+                  value={estSearchTerm}
+                  onChange={(e) => setEstSearchTerm(e.target.value)}
+                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
+              </div>
+
+              <select
+                value={estStatusFilter}
+                onChange={(e) => setEstStatusFilter(e.target.value)}
+                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
+              >
+                <option value="all">كل المنشآت</option>
+                <option value="closed">المطاعم المغلقة 🔒</option>
+                <option value="fined">المطاعم المغرمة 💰</option>
+              </select>
             </div>
 
             {/* Directory Table */}
@@ -1498,16 +1511,36 @@ export const SuperAdminPanel = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                     {establishments
-                      .filter(e => 
-                        e.name.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
-                        e.owner.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
-                        e.type.toLowerCase().includes(estSearchTerm.toLowerCase())
-                      )
+                      .filter(e => {
+                        const matchesSearch = e.name.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
+                                              e.owner.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
+                                              e.type.toLowerCase().includes(estSearchTerm.toLowerCase());
+                        let matchesStatus = true;
+                        if (estStatusFilter === 'closed') {
+                          matchesStatus = e.status === 'closed';
+                        } else if (estStatusFilter === 'fined') {
+                          matchesStatus = (penaltyRequests || []).some(req => req.estId === e.id && req.type === 'fine' && req.status === 'approved');
+                        }
+                        return matchesSearch && matchesStatus;
+                      })
                       .map(est => (
                         <tr key={est.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
                           <td className="p-3.5">
-                            <div className="flex flex-col">
-                              <span className="font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">{est.name}</span>
+                            <div className="flex flex-col gap-1">
+                              <span className="font-black text-slate-800 dark:text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                {est.name}
+                                {est.status === 'closed' ? (
+                                  <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 text-[9px] font-black border border-red-500/20 flex items-center gap-1 w-fit">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                                    مغلق
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-black border border-emerald-500/20 flex items-center gap-1 w-fit">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                    مفتوح
+                                  </span>
+                                )}
+                              </span>
                               <span className="text-[10px] text-slate-400 font-medium">الرخصة: {est.licenseNumber}</span>
                             </div>
                           </td>

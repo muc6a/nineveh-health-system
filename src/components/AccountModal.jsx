@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Eye, EyeOff, Trash2, Plus, Users, MapPin, Briefcase, Mail, Phone, Lock, User, Edit3, CheckSquare, Square, Clock, PenLine } from 'lucide-react';
+import { X, Eye, EyeOff, Trash2, Plus, Users, MapPin, Briefcase, Mail, Phone, Lock, User, Edit3, CheckSquare, Square, Clock, PenLine, BarChart3 } from 'lucide-react';
 import { ROLES_DICTIONARY, NINEVEH_GEOGRAPHY } from '../utils/constants';
 
 export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add', accountType = 'team', teams = [] }) => {
@@ -34,6 +34,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
   // Team Smart Edit Settings
   const [editTimeWindow, setEditTimeWindow] = useState('open'); // 'open', '1h', '5h', '24h'
   const [editOneTimeOnly, setEditOneTimeOnly] = useState(false);
+  const [canViewMonthlyStats, setCanViewMonthlyStats] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -69,6 +70,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
              setEditTimeWindow(initialData.editSettings.window || 'open');
              setEditOneTimeOnly(!!initialData.editSettings.oneTimeOnly);
           }
+          if (initialData.canViewMonthlyStats !== undefined) {
+             setCanViewMonthlyStats(initialData.canViewMonthlyStats);
+          }
         }
         
         if (accountType === 'tracker') {
@@ -85,6 +89,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         setAssistants([{ name: '', title: 'ملاحظ فني / مدقق' }]);
         setEditTimeWindow('open');
         setEditOneTimeOnly(false);
+        setCanViewMonthlyStats(false);
         setLinkedTeamSector('');
       }
     }
@@ -127,22 +132,12 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
     if (accountType === 'director' && directorScopeMode === 'all') {
       calculatedSector = 'الكل'; // Full Province Access
     } else {
-      if (sectorType === 'mosul') {
-        const sideName = mosulSide === 'right' ? 'الجانب الأيمن' : 'الجانب الأيسر';
-        if (accountType === 'team' && selectionMode === 'custom' && selectedNeighborhoods.length > 0) {
-          calculatedSector = `${sideName} - ${selectedNeighborhoods.join('، ')}`;
-        } else {
-          calculatedSector = sideName; // All
-        }
-      } else {
-        const district = NINEVEH_GEOGRAPHY.districts.find(d => d.id === districtId);
-        if (accountType === 'team' && selectionMode === 'custom' && selectedNeighborhoods.length > 0) {
-          calculatedSector = `${district?.label || ''} - ${selectedNeighborhoods.join('، ')}`;
-        } else {
-          calculatedSector = district?.label || '';
-        }
-      }
+      calculatedSector = sectorType === 'mosul' 
+        ? (mosulSide === 'right' ? 'الجانب الأيمن' : 'الجانب الأيسر')
+        : (districtId ? NINEVEH_GEOGRAPHY.districts.find(d => d.id === districtId)?.label.replace('قضاء ', '') : '');
     }
+
+    const neighborhoods = (accountType === 'team' && selectionMode === 'custom') ? selectedNeighborhoods : [];
 
     const result = {
       ...initialData,
@@ -151,7 +146,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
       phone,
       username,
       active: true,
-      sector: calculatedSector
+      sector: calculatedSector,
+      assignedNeighborhoods: neighborhoods
     };
 
     if (password) result.password = password;
@@ -175,6 +171,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         window: editTimeWindow,
         oneTimeOnly: editOneTimeOnly
       };
+      result.canViewMonthlyStats = canViewMonthlyStats;
     } else if (accountType === 'tracker') {
       result.role = 'tracker';
       result.linkedTeamSector = linkedTeamSector;
@@ -375,6 +372,17 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                   <label className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 cursor-pointer hover:bg-slate-900/60 transition-colors">
                     <input type="checkbox" checked={editOneTimeOnly} onChange={(e) => setEditOneTimeOnly(e.target.checked)} className="w-4 h-4 accent-teal-500 rounded" />
                     <span className="text-sm font-semibold text-slate-300">السماح بتعديل النموذج لمرة واحدة فقط</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* 5. Statistics Settings */}
+              <div className="space-y-3 pt-6 border-t border-white/5">
+                <label className="text-teal-600 dark:text-teal-400 flex items-center gap-2"><BarChart3 className="w-4 h-4"/> 5. إحصائيات الفريق</label>
+                <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5">
+                  <label className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 cursor-pointer hover:bg-slate-900/60 transition-colors">
+                    <input type="checkbox" checked={canViewMonthlyStats} onChange={(e) => setCanViewMonthlyStats(e.target.checked)} className="w-4 h-4 accent-teal-500 rounded" />
+                    <span className="text-sm font-semibold text-slate-300">عرض الإحصائيات الشهرية (الإغلاقات والغرامات) في لوحة الفريق</span>
                   </label>
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { AppContext } from '../context/AppContext';
 import { AlertTriangle } from 'lucide-react';
 
 export const CriticalAlertModal = () => {
-  const { user, penaltyRequests, setPenaltyRequests, notify, addSystemNotification } = useContext(AppContext);
+  const { user, penaltyRequests, setPenaltyRequests, notify, addSystemNotification, setEstablishments } = useContext(AppContext);
 
   // This modal only shows for central_director
   if (user?.role !== 'central_director') return null;
@@ -16,8 +16,15 @@ export const CriticalAlertModal = () => {
   if (!pendingPenalty) return null;
 
   const handleApprove = () => {
-    // In a real app, update status to approved. Here we remove it from pending.
-    setPenaltyRequests(prev => prev.filter(r => r.id !== pendingPenalty.id));
+    // Keep it in history but mark as approved
+    setPenaltyRequests(prev => prev.map(r => r.id === pendingPenalty.id ? { ...r, status: 'approved' } : r));
+    
+    if (pendingPenalty.type === 'closure') {
+      setEstablishments(prev => prev.map(est => 
+        est.id === pendingPenalty.estId ? { ...est, status: 'closed' } : est
+      ));
+    }
+
     notify(`تم المصادقة على ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'} للمطعم ${pendingPenalty.estName} بنجاح.`, 'success', true);
     addSystemNotification(
       'تمت المصادقة على العقوبة',
@@ -27,7 +34,7 @@ export const CriticalAlertModal = () => {
   };
 
   const handleReject = () => {
-    setPenaltyRequests(prev => prev.filter(r => r.id !== pendingPenalty.id));
+    setPenaltyRequests(prev => prev.map(r => r.id === pendingPenalty.id ? { ...r, status: 'rejected' } : r));
     notify(`تم رفض طلب ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'}`, 'info', true);
     addSystemNotification(
       'رفض طلب العقوبة',

@@ -14,7 +14,8 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'LAMA-99',
     licenseNumber: 'LIC-2026-N90',
     propertyNumber: '2م/2167/44',
-    sector: 'الجانب الأيسر - المجموعة الثقافية',
+    sector: 'الجانب الأيسر',
+    neighborhood: 'المجموعة الثقافية',
     lastInspection: '2026-06-25',
     score: 98,
     status: 'compliant',
@@ -34,7 +35,8 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'SHAW-88',
     licenseNumber: 'LIC-2026-Z10',
     propertyNumber: '3أ/9082/11',
-    sector: 'الجانب الأيسر - حي الزهور',
+    sector: 'الجانب الأيسر',
+    neighborhood: 'حي الزهور',
     lastInspection: '2026-07-02',
     score: 0,
     status: 'closed',
@@ -54,7 +56,8 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'JAND-77',
     licenseNumber: 'LIC-2026-C44',
     propertyNumber: '12ب/4431/09',
-    sector: 'الجانب الأيسر - حي المهندسين',
+    sector: 'الجانب الأيسر',
+    neighborhood: 'حي المهندسين',
     lastInspection: '2026-06-28',
     score: 95,
     status: 'compliant',
@@ -74,7 +77,8 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'SAHR-66',
     licenseNumber: 'LIC-2026-B88',
     propertyNumber: '4ج/7721/01',
-    sector: 'الجانب الأيسر - حي النور',
+    sector: 'الجانب الأيسر',
+    neighborhood: 'حي النور',
     lastInspection: '2026-07-04',
     score: 82,
     status: 'monitoring',
@@ -94,7 +98,8 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'RAED-55',
     licenseNumber: 'LIC-2026-M11',
     propertyNumber: '11أ/1122/04',
-    sector: 'الجانب الأيمن - الموصل القديمة',
+    sector: 'الجانب الأيمن',
+    neighborhood: 'الموصل القديمة',
     lastInspection: '2026-07-01',
     score: 65,
     status: 'critical',
@@ -114,7 +119,8 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07709998877',
     licenseNumber: 'LIC-2026-H22',
     propertyNumber: '5م/8877/02',
-    sector: 'الجانب الأيسر - حي الجامعة',
+    sector: 'الجانب الأيسر',
+    neighborhood: 'حي الجامعة',
     lastInspection: '2026-07-05',
     score: 88,
     status: 'compliant',
@@ -133,7 +139,8 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07504443322',
     licenseNumber: 'LIC-2026-F14',
     propertyNumber: '29م/1100/10',
-    sector: 'الجانب الأيسر - الكرامة',
+    sector: 'الجانب الأيسر',
+    neighborhood: 'الكرامة',
     lastInspection: '2026-07-06',
     score: 95,
     status: 'compliant',
@@ -311,10 +318,23 @@ export const AppProvider = ({ children }) => {
       }
     });
 
-    return parsed.map(est => ({
-      ...est,
-      accessCode: est.accessCode || Math.random().toString(36).substring(2, 8).toUpperCase()
-    }));
+    return parsed.map(est => {
+      // Migrate sector strings to standardize them (e.g. "الجانب الأيسر - حي الزهور" -> "الجانب الأيسر")
+      let currentSector = est.sector || '';
+      let currentNeighborhood = est.neighborhood || '';
+      if (currentSector.includes(' - ')) {
+        const parts = currentSector.split(' - ');
+        currentSector = parts[0].trim();
+        if (!currentNeighborhood) currentNeighborhood = parts[1].trim();
+      }
+
+      return {
+        ...est,
+        sector: currentSector,
+        neighborhood: currentNeighborhood,
+        accessCode: est.accessCode || Math.random().toString(36).substring(2, 8).toUpperCase()
+      };
+    });
   });
 
   const [reports, setReports] = useState(() => {
@@ -324,31 +344,51 @@ export const AppProvider = ({ children }) => {
 
   const [teams, setTeams] = useState(() => {
     const saved = localStorage.getItem('teams_v2');
-    const parsed = saved ? JSON.parse(saved) : null;
-    return parsed && parsed.length > 0 ? parsed : INITIAL_TEAMS;
+    const parsed = saved ? JSON.parse(saved) : [];
+    
+    const existingIds = new Set(parsed.map(t => t.id));
+    INITIAL_TEAMS.forEach(initialTeam => {
+      if (!existingIds.has(initialTeam.id)) {
+        parsed.push(initialTeam);
+      }
+    });
+    
+    return parsed.map(team => {
+      let currentSector = team.sector || '';
+      let currentNeighborhoods = team.assignedNeighborhoods || [];
+      if (currentSector.includes(' - ')) {
+        const parts = currentSector.split(' - ');
+        currentSector = parts[0].trim();
+        if (currentNeighborhoods.length === 0) currentNeighborhoods = parts[1].split('،').map(s => s.trim());
+      }
+      return { ...team, sector: currentSector, assignedNeighborhoods: currentNeighborhoods };
+    });
   });
-
-  useEffect(() => {
-    syncToCloud('teams_v2', teams);
-  }, [teams]);
 
   const [trackers, setTrackers] = useState(() => {
     const saved = localStorage.getItem('trackers_v1');
-    return saved ? JSON.parse(saved) : [];
+    const parsed = saved ? JSON.parse(saved) : [];
+    
+    return parsed.map(tracker => {
+      let currentSector = tracker.linkedTeamSector || tracker.sector || '';
+      let currentNeighborhoods = tracker.assignedNeighborhoods || [];
+      if (currentSector.includes(' - ')) {
+        const parts = currentSector.split(' - ');
+        currentSector = parts[0].trim();
+        if (currentNeighborhoods.length === 0) currentNeighborhoods = parts[1].split('،').map(s => s.trim());
+      }
+      return { ...tracker, linkedTeamSector: currentSector, sector: currentSector, assignedNeighborhoods: currentNeighborhoods };
+    });
   });
 
-  useEffect(() => {
-    syncToCloud('trackers_v1', trackers);
-  }, [trackers]);
+
 
   const [closureVerifications, setClosureVerifications] = useState(() => {
     const saved = localStorage.getItem('closureVerifications_v1');
     return saved ? JSON.parse(saved) : [];
   });
 
-  useEffect(() => {
-    syncToCloud('closureVerifications_v1', closureVerifications);
-  }, [closureVerifications]);
+
 
   const [inspectionItems, setInspectionItems] = useState(() => {
     const saved = localStorage.getItem('inspectionItems');

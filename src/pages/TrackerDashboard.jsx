@@ -1,6 +1,7 @@
 import React, { useContext, useState, useRef } from 'react';
 import { AppContext } from '../context/AppContext';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { NotificationBell } from '../components/NotificationBell';
 import { LogOut, Camera, ShieldAlert, CheckCircle2, MapPin, X } from 'lucide-react';
 
 export const TrackerDashboard = () => {
@@ -18,10 +19,14 @@ export const TrackerDashboard = () => {
   // Fallback to team's sector or default
   const trackerSector = user?.linkedTeamSector || 'الجانب الأيسر';
 
-  // Find establishments closed by this team (score < 70)
-  const closedEstablishments = establishments.filter(e => 
-    e.sector === trackerSector && e.lastInspection !== 'لم يزر بعد' && e.score < 70
-  );
+  // Find establishments closed by this team (score < 70 or manually closed via penalty request)
+  const closedEstablishments = establishments.filter(e => {
+    const trackSectorStr = (user?.linkedTeamSector || user?.sector || 'الجانب الأيسر').trim().replace(/[أإآ]/g, 'ا');
+    const estSec = (e.sector || '').trim().replace(/[أإآ]/g, 'ا');
+    const matchesSector = estSec === trackSectorStr || estSec.includes(trackSectorStr) || trackSectorStr.includes(estSec) || estSec.includes('ايمن') && trackSectorStr.includes('ايمن') || estSec.includes('ايسر') && trackSectorStr.includes('ايسر');
+                          
+    return matchesSector && ((e.lastInspection !== 'لم يزر بعد' && e.score < 70) || e.status === 'closed');
+  });
 
   const startCamera = async () => {
     setIsCameraOpen(true);
@@ -122,11 +127,12 @@ export const TrackerDashboard = () => {
               <ShieldAlert className="w-5 h-5 text-rose-500" />
             </div>
             <div>
-              <h1 className="font-black text-sm text-slate-800 dark:text-white">فريق متابعة الإغلاق</h1>
+              <h1 className="font-black text-sm text-slate-800 dark:text-white">إدارة المنشآت (فريق المتابعة)</h1>
               <p className="text-[10px] text-slate-500 font-bold">{user.name} - {trackerSector}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <NotificationBell />
             <ThemeToggle />
             <button 
               onClick={() => navigate('/login')}
@@ -146,6 +152,24 @@ export const TrackerDashboard = () => {
             <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
               <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
               <h3 className="font-bold text-slate-700 dark:text-slate-300">لا توجد منشآت مغلقة حالياً في قطاعك</h3>
+              
+              {/* Debug Info to help identify the issue */}
+              <div className="mt-8 p-4 bg-slate-100 dark:bg-slate-800 rounded-xl text-right text-[10px] text-slate-500 font-mono">
+                <p className="font-bold mb-2">معلومات فحص النظام (للمطور):</p>
+                <p>قطاعك المسجل في حساب المتابعة: {user?.linkedTeamSector || user?.sector || 'غير محدد'}</p>
+                <p>إجمالي المنشآت في النظام: {establishments.length}</p>
+                <p>المنشآت التي تتطابق مع قطاعك: {establishments.filter(e => {
+                  const t = (user?.linkedTeamSector || user?.sector || '').trim().replace(/[أإآ]/g, 'ا');
+                  const s = (e.sector || '').trim().replace(/[أإآ]/g, 'ا');
+                  return s === t || s.includes(t) || t.includes(s) || (s.includes('ايمن') && t.includes('ايمن')) || (s.includes('ايسر') && t.includes('ايسر'));
+                }).length}</p>
+                <p>من بينها المغلقة: {establishments.filter(e => {
+                  const t = (user?.linkedTeamSector || user?.sector || '').trim().replace(/[أإآ]/g, 'ا');
+                  const s = (e.sector || '').trim().replace(/[أإآ]/g, 'ا');
+                  const m = s === t || s.includes(t) || t.includes(s) || (s.includes('ايمن') && t.includes('ايمن')) || (s.includes('ايسر') && t.includes('ايسر'));
+                  return m && ((e.lastInspection !== 'لم يزر بعد' && e.score < 70) || e.status === 'closed');
+                }).length}</p>
+              </div>
             </div>
           ) : (
             closedEstablishments.map(est => (
@@ -154,8 +178,13 @@ export const TrackerDashboard = () => {
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-black text-slate-800 dark:text-white">{est.name}</h3>
-                    <p className="text-xs text-slate-500 mt-1">{est.neighborhood}</p>
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">التقييم: {est.score}% - مُغلق</p>
+                    <p className="text-xs text-slate-500 mt-1 font-bold">المنطقة: {est.neighborhood || est.sector}</p>
+                    {est.manualAddress && (
+                      <p className="text-[10px] text-slate-400 mt-1.5 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg leading-relaxed">
+                        📍 العنوان الدقيق: {est.manualAddress}
+                      </p>
+                    )}
+                    <p className="text-[10px] text-rose-500 font-bold mt-1.5">التقييم: {est.score}% - مُغلق</p>
                   </div>
                   <button
                     onClick={() => {

@@ -3,12 +3,12 @@ import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { NotificationBell } from '../components/NotificationBell';
-import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare } from 'lucide-react';
+import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
 
 export const TeamDashboard = () => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, setPenaltyRequests, dispatches, setDispatches, addSystemNotification } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification } = useContext(AppContext);
   
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
@@ -44,6 +44,7 @@ export const TeamDashboard = () => {
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
   const [filterExpiredOnly, setFilterExpiredOnly] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'closed', 'fined'
   
   // Modal toggles
   const [establishmentModalState, setEstablishmentModalState] = useState({ isOpen: false, mode: 'add', data: null });
@@ -82,7 +83,15 @@ export const TeamDashboard = () => {
     const matchesSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           e.owner.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesExpired = filterExpiredOnly ? isLicenseExpired(e) : true;
-    return matchesSearch && matchesExpired;
+    
+    let matchesStatus = true;
+    if (statusFilter === 'closed') {
+      matchesStatus = e.status === 'closed';
+    } else if (statusFilter === 'fined') {
+      matchesStatus = (penaltyRequests || []).some(req => req.estId === e.id && req.type === 'fine' && req.status === 'approved');
+    }
+
+    return matchesSearch && matchesExpired && matchesStatus;
   });
 
   // Filter reports submitted to team's sector
@@ -144,6 +153,23 @@ export const TeamDashboard = () => {
     }
   }, [myDirectives, unreadDirective]);
 
+  // Monthly Stats Calculations
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  const monthlyClosures = (penaltyRequests || []).filter(req => 
+    req.type === 'closure' && req.status === 'approved' && req.sector === userSector && 
+    new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
+  );
+
+  const monthlyFines = (penaltyRequests || []).filter(req => 
+    req.type === 'fine' && req.status === 'approved' && req.sector === userSector && 
+    new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
+  );
+
+  const [showMonthlyStatsModal, setShowMonthlyStatsModal] = useState(false);
+  const [monthlyStatsModalType, setMonthlyStatsModalType] = useState('closures'); // 'closures' or 'fines'
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
       
@@ -202,6 +228,48 @@ export const TeamDashboard = () => {
         </div>
       )}
 
+      {/* Monthly Stats Modal */}
+      {showMonthlyStatsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
+          <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+              <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
+                {monthlyStatsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
+              </h3>
+              <button onClick={() => setShowMonthlyStatsModal(false)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {(monthlyStatsModalType === 'closures' ? monthlyClosures : monthlyFines).length === 0 ? (
+                <p className="text-center text-sm text-slate-500 py-8">لا توجد بيانات لهذا الشهر.</p>
+              ) : (
+                (monthlyStatsModalType === 'closures' ? monthlyClosures : monthlyFines).map(req => {
+                  // Find the neighborhood from establishments using estId
+                  const estData = establishments.find(e => e.id === req.estId);
+                  const neighborhood = estData ? estData.neighborhood : 'غير محدد';
+                  
+                  return (
+                    <div key={req.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
+                      <div>
+                        <h4 className="font-black text-sm">{req.estName}</h4>
+                        <p className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                          <MapPin className="w-3 h-3"/> {neighborhood}
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-400">
+                        {new Date(req.date).toLocaleDateString('ar-IQ')}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div 
@@ -245,7 +313,7 @@ export const TeamDashboard = () => {
                 }`}
               >
                 <Database className="w-4.5 h-4.5" />
-                <span>🍽️ دليل مطاعم ومنشآت المنطقة</span>
+                <span>🍽️ دليل المنشآت</span>
               </button>
             )}
 
@@ -442,6 +510,25 @@ export const TeamDashboard = () => {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div 
+                onClick={() => { setMonthlyStatsModalType('closures'); setShowMonthlyStatsModal(true); }}
+                className="glassmorphic-card p-5 border border-rose-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/5 transition-all duration-300 cursor-pointer select-none"
+              >
+                <span className="text-xs font-black text-slate-500 dark:text-slate-400">المطاعم المغلقة هذا الشهر 🔒</span>
+                <p className="text-4xl font-extrabold text-rose-500 mt-3">{monthlyClosures.length}</p>
+                <span className="text-[10px] text-rose-500 font-bold block mt-2">انقر لعرض المطاعم 👁️</span>
+              </div>
+              <div 
+                onClick={() => { setMonthlyStatsModalType('fines'); setShowMonthlyStatsModal(true); }}
+                className="glassmorphic-card p-5 border border-amber-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-300 cursor-pointer select-none"
+              >
+                <span className="text-xs font-black text-slate-500 dark:text-slate-400">الغرامات المالية هذا الشهر 💰</span>
+                <p className="text-4xl font-extrabold text-amber-500 mt-3">{monthlyFines.length}</p>
+                <span className="text-[10px] text-amber-500 font-bold block mt-2">انقر لعرض المطاعم 👁️</span>
+              </div>
+            </div>
+
             {/* Close-up Interactive Map of Sector */}
             <div className="glassmorphic-card p-5 mt-6">
               <NinevehMap
@@ -489,7 +576,7 @@ export const TeamDashboard = () => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">دليل مطاعم ومنشآت قطاع {userSector}</h2>
+                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">إدارة منشآت قطاع {userSector}</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">إضافة، تعديل، وتقييم منشآت الخدمات الغذائية والمقاهي بالمنطقة</p>
               </div>
 
@@ -526,9 +613,19 @@ export const TeamDashboard = () => {
                     : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
-                <span>⚠️ تصفية الإجازات المنتهية / القريبة</span>
+                <span>⚠️ الإجازات المنتهية</span>
                 {filterExpiredOnly && <span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
               </button>
+
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
+              >
+                <option value="all">كل المنشآت</option>
+                <option value="closed">المطاعم المغلقة 🔒</option>
+                <option value="fined">المطاعم المغرمة 💰</option>
+              </select>
 
               <button
                 type="button"
@@ -558,8 +655,21 @@ export const TeamDashboard = () => {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                     {filteredEstablishments.map((est) => (
                       <tr key={est.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-colors">
-                        <td className="p-4 font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">
-                          {est.name}
+                        <td className="p-4 font-black text-slate-800 dark:text-slate-200">
+                          <div className="flex items-center gap-2">
+                            <span>{est.name}</span>
+                            {est.status === 'closed' ? (
+                              <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 text-[9px] font-black border border-red-500/20 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                                مغلق
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-black border border-emerald-500/20 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                مفتوح
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="p-4 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
                         <td className="p-4">
