@@ -4,9 +4,14 @@ import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send
 import AccountModal from './AccountModal';
 
 export default function OperationsRoom() {
-  const { establishments, teams, setTeams, trackers, setTrackers, reports, setReports, triggerAlert, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification } = useContext(AppContext);
+  const { establishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, notify } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('trackers_management');
   
+  const triggerAlert = (msg) => {
+    if (notify) notify(msg, 'success', true);
+    else alert(msg);
+  };
+
   // States for Dispatch
   const [selectedEstId, setSelectedEstId] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
