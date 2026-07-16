@@ -9,8 +9,9 @@ export const CriticalAlertModal = () => {
   // This modal only shows for central_director
   if (user?.role !== 'central_director') return null;
 
-  // Find the first pending penalty request
-  const pendingPenalty = penaltyRequests.find(req => req.status === 'pending');
+  // Find all pending penalty requests
+  const pendingRequests = penaltyRequests.filter(req => req.status === 'pending');
+  const pendingPenalty = pendingRequests[0];
 
   if (!pendingPenalty) return null;
 
@@ -45,6 +46,11 @@ export const CriticalAlertModal = () => {
         <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">
           طلب {pendingPenalty.type === 'fine' ? 'غرامة مالية' : 'إغلاق وتشميع'} عاجل!
         </h2>
+        {pendingRequests.length > 1 && (
+          <div className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 text-sm font-bold px-3 py-1 rounded-full inline-block mb-2">
+            يوجد {pendingRequests.length} طلبات قيد الانتظار
+          </div>
+        )}
         
         <p className="text-slate-600 dark:text-slate-300 mb-6 font-bold leading-relaxed">
           قام الفريق الميداني <span className="text-red-500">({pendingPenalty.teamName})</span> للتو برفع طلب عاجل:
