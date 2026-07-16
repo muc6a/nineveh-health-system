@@ -42,6 +42,15 @@ export const ExecutivePortal = () => {
     }
   }, [user?.permissions]);
 
+  // Listen for navigation events from NotificationBell
+  React.useEffect(() => {
+    const handleNav = () => {
+      setActiveTab('operations_room');
+    };
+    window.addEventListener('navToPenalties', handleNav);
+    return () => window.removeEventListener('navToPenalties', handleNav);
+  }, []);
+
   // Send directives form states
   const [targetRecipient, setTargetRecipient] = useState('all');
   const [directiveText, setDirectiveText] = useState('');

@@ -137,10 +137,6 @@ export const LoginGate = () => {
       setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDeliveryPage: true } });
       notify('تم تسجيل الدخول كمدير عام لصحة نينوى', 'success', true);
       navigate('/dashboard/director');
-    } else if (input === 'public_health@ninveh.health.gov.iq' || input === 'public_health') {
-      setUser({ role: 'public_health', name: 'أ. د. كمال سالم الموصلي', email: 'public_health@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirectives: true } });
-      notify('تم تسجيل الدخول كمدير قسم الصحة العامة', 'success', true);
-      navigate('/dashboard/director');
     } else if (input === 'central_director@ninveh.health.gov.iq' || input === 'central_director' || input.includes('مركزية')) {
       setUser({ role: 'central_director', name: 'دكتورة ابتهال غازي', email: 'central_director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirectives: true, showDeliveryPage: true, manageEstablishments: true } });
       notify('تم تسجيل الدخول كمدير شعبة الرقابة المركزية', 'success', true);
@@ -158,9 +154,6 @@ export const LoginGate = () => {
     if (roleType === 'director') {
       setIdentity('director@ninveh.health.gov.iq');
       setPassword('password123');
-    } else if (roleType === 'public_health') {
-      setIdentity('public_health@ninveh.health.gov.iq');
-      setPassword('••••••••');
     } else if (roleType === 'central_director') {
       setIdentity('central_director@ninveh.health.gov.iq');
       setPassword('••••••••');
@@ -294,17 +287,28 @@ export const LoginGate = () => {
 
         {/* Demo Fast Login Toggles */}
         <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-slate-800/50 text-center">
+          
+          <div className="flex flex-col gap-3 mb-6">
+            <button
+              type="button"
+              onClick={() => navigate('/owner')}
+              className="py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-black transition-all shadow-md w-full cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>🔑 دخول أصحاب المطاعم والمنشآت</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/public-search')}
+              className="py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-black transition-all shadow-md w-full cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>🌍 دخول المواطنين للبحث والإبلاغ</span>
+            </button>
+          </div>
+
           <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-3">
             المحاكاة والدخول السريع (بيئة فحص الصلاحيات والواجهات)
           </span>
           <div className="flex flex-wrap gap-2 justify-center">
-            <button
-              type="button"
-              onClick={() => navigate('/owner')}
-              className="px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[10px] font-black border border-orange-500/20 hover:bg-orange-500/20 transition-all shadow-sm w-full mb-2 cursor-pointer"
-            >
-              🔑 الدخول الخاص بأصحاب المطاعم والمنشآت (Owner Portal)
-            </button>
             <button
               type="button"
               onClick={() => selectPreset('director')}
@@ -315,16 +319,9 @@ export const LoginGate = () => {
             <button
               type="button"
               onClick={() => selectPreset('central_director')}
-              className="px-3 py-1.5 text-xs font-bold rounded-xl bg-fuchsia-500/10 hover:bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 transition-colors cursor-pointer"
+              className="px-4 py-2 text-sm font-black rounded-xl bg-fuchsia-600 hover:bg-fuchsia-700 text-white shadow-lg shadow-fuchsia-600/20 transition-all cursor-pointer"
             >
               👑 مدير الرقابة المركزية
-            </button>
-            <button
-              type="button"
-              onClick={() => selectPreset('public_health')}
-              className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition-colors cursor-pointer"
-            >
-              🩺 مدير الصحة العامة
             </button>
             <button
               type="button"
@@ -332,13 +329,6 @@ export const LoginGate = () => {
               className="px-3 py-1.5 text-xs font-bold rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-colors cursor-pointer"
             >
               ⚙️ مدير الموقع (Super Admin)
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/public-search')}
-              className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 transition-colors cursor-pointer w-full mt-2"
-            >
-              🌍 الدخول كـ مواطن للبحث (Public Search Portal)
             </button>
           </div>
         </div>

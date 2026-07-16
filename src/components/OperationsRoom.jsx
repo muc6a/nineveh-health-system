@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send } from 'lucide-react';
 import AccountModal from './AccountModal';
@@ -13,6 +13,15 @@ export default function OperationsRoom() {
   
   // Teams Management States
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
+
+  // Listen for navigation events from NotificationBell
+  useEffect(() => {
+    const handleNav = () => {
+      setActiveTab('penalties');
+    };
+    window.addEventListener('navToPenalties', handleNav);
+    return () => window.removeEventListener('navToPenalties', handleNav);
+  }, []);
 
   // Handle Team Deletion
   const handleDeleteTeam = (id) => {
