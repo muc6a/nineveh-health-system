@@ -21,6 +21,8 @@ export const PublicQRScore = () => {
   const [feedbackPhoto, setFeedbackPhoto] = useState(null);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [citizenPoints, setCitizenPoints] = useState(0);
+  const [generatedCertUrl, setGeneratedCertUrl] = useState(null);
+  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
   const certificateRef = React.useRef(null);
 
   useEffect(() => {
@@ -66,19 +68,61 @@ export const PublicQRScore = () => {
     setFeedbackPhoto(null);
     setFeedbackSubmitted(true);
     setCitizenPoints(prev => prev + 50); // Award 50 points
+    
+    // Auto-generate certificate image after a short delay to allow DOM render and image loading
+    setTimeout(() => {
+      generateCertificateImage();
+    }, 800);
+  };
+
+  const generateCertificateImage = async () => {
+    if (!certificateRef.current) return;
+    setIsGeneratingCert(true);
+    try {
+      const canvas = await html2canvas(certificateRef.current, { 
+        scale: 2, 
+        backgroundColor: '#0f766e', // teal-700 to match gradient roughly
+        useCORS: true,
+        logging: false
+      });
+      const image = canvas.toDataURL("image/png", 1.0);
+      setGeneratedCertUrl(image);
+    } catch (error) {
+      console.error("Error generating certificate:", error);
+    } finally {
+      setIsGeneratingCert(false);
+    }
   };
 
   const downloadCertificate = async () => {
-    if (!certificateRef.current) return;
-    try {
-      const canvas = await html2canvas(certificateRef.current, { scale: 2, backgroundColor: null });
-      const image = canvas.toDataURL("image/png", 1.0);
+    if (!generatedCertUrl) {
+      await generateCertificateImage();
+    }
+    
+    // If Web Share API is available (iOS/Android mobile)
+    if (navigator.share && generatedCertUrl) {
+      try {
+        const response = await fetch(generatedCertUrl);
+        const blob = await response.blob();
+        const file = new File([blob], 'citizen-certificate.png', { type: 'image/png' });
+        
+        await navigator.share({
+          title: 'شهادة الرقيب المدني',
+          text: 'حصلت للتو على شهادة الرقيب المدني من منظومة الرقابة الصحية في نينوى.',
+          files: [file]
+        });
+        return;
+      } catch (error) {
+        console.error("Share failed or not supported for files, falling back to download", error);
+      }
+    }
+    
+    // Fallback: regular download link
+    if (generatedCertUrl) {
       const link = document.createElement("a");
       link.download = "شهادة-الرقيب-المدني-المتميز.png";
-      link.href = image;
+      link.href = generatedCertUrl;
       link.click();
-    } catch (error) {
-      console.error("Error generating certificate:", error);
     }
   };
 
@@ -351,31 +395,42 @@ export const PublicQRScore = () => {
                     <div className="w-full flex items-center justify-center gap-6 mt-4 relative z-10 border-t border-emerald-500/30 pt-4 pb-2">
                       <div className="flex flex-col items-center">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-1.5 shadow-[0_4px_0_rgba(6,78,59,0.5),0_10px_15px_rgba(0,0,0,0.3)] border-2 border-emerald-100 p-1.5 transform hover:scale-105 transition-all">
-                          <img src="/logo-ninveh.png" alt="محافظة نينوى" className="w-full h-full object-contain drop-shadow-sm" onError={(e) => e.target.style.display='none'} />
+                          <img src="/logo-ninveh.png" crossOrigin="anonymous" alt="محافظة نينوى" className="w-full h-full object-contain drop-shadow-sm" onError={(e) => e.target.style.display='none'} />
                         </div>
                         <span className="text-[9px] font-black text-white drop-shadow-md">محافظة نينوى</span>
                       </div>
                       <div className="flex flex-col items-center">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-1.5 shadow-[0_4px_0_rgba(6,78,59,0.5),0_10px_15px_rgba(0,0,0,0.3)] border-2 border-emerald-100 p-1.5 transform hover:scale-105 transition-all">
-                          <img src="/logo-health.png" alt="صحة نينوى" className="w-full h-full object-contain drop-shadow-sm" onError={(e) => e.target.style.display='none'} />
+                          <img src="/logo-health.png" crossOrigin="anonymous" alt="صحة نينوى" className="w-full h-full object-contain drop-shadow-sm" onError={(e) => e.target.style.display='none'} />
                         </div>
                         <span className="text-[9px] font-black text-white drop-shadow-md">صحة نينوى</span>
                       </div>
                       <div className="flex flex-col items-center">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-1.5 shadow-[0_4px_0_rgba(6,78,59,0.5),0_10px_15px_rgba(0,0,0,0.3)] border-2 border-emerald-100 p-1.5 transform hover:scale-105 transition-all">
-                          <img src="/logo-ministry.png" alt="وزارة الصحة" className="w-full h-full object-contain drop-shadow-sm" onError={(e) => e.target.style.display='none'} />
+                          <img src="/logo-ministry.png" crossOrigin="anonymous" alt="وزارة الصحة" className="w-full h-full object-contain drop-shadow-sm" onError={(e) => e.target.style.display='none'} />
                         </div>
                         <span className="text-[9px] font-black text-white drop-shadow-md">وزارة الصحة</span>
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Overlay Generated Image for easy saving on iOS */}
+                  {generatedCertUrl && (
+                    <div className="mt-2 text-center relative mx-auto w-[360px]">
+                      <p className="text-[10px] font-bold text-teal-600 dark:text-teal-400 mb-2">
+                        💡 تلميح: يمكنك الضغط مطولاً على الشهادة أعلاه لحفظها في الاستوديو مباشرة.
+                      </p>
+                      <img src={generatedCertUrl} alt="شهادة قابلة للحفظ" className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer" />
+                    </div>
+                  )}
 
                   <button
                     onClick={downloadCertificate}
-                    className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                    disabled={isGeneratingCert}
+                    className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
                   >
                     <Download className="w-4 h-4" />
-                    حفظ الشهادة ومشاركتها
+                    {isGeneratingCert ? 'جاري تجهيز الشهادة...' : 'مشاركة أو تنزيل الشهادة'}
                   </button>
                   <button
                     onClick={() => {
@@ -408,6 +463,9 @@ export const PublicQRScore = () => {
                         {citizenMode === 'dining' 
                           ? "📸 التقاط صورة أو فيديو حية للمخالفة داخل الصالة" 
                           : "📸 التقط صورة أو فيديو لعلبة الطعام أو حقيبة التوصيل المخالفة"}
+                      </span>
+                      <span className="text-red-500 font-black block mt-1 text-[11px] animate-pulse text-center">
+                        (مُوصى به جداً) يرجى إرفاق صورة للمخالفة لإثبات صحة البلاغ ومنع التبليغات الوهمية.
                       </span>
                       <span className="text-[8px] text-slate-400 font-bold text-center mt-1">يُسمح بملف واحد (صورة أو فيديو قصير)<br/>(يتم حذف المرفقات تلقائياً بعد فترة زمنية للحفاظ على سرعة النظام)</span>
                       <input
