@@ -1,15 +1,56 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
-import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send } from 'lucide-react';
+import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X } from 'lucide-react';
 import AccountModal from './AccountModal';
 
 export default function OperationsRoom() {
-  const { establishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, notify } = useContext(AppContext);
+  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('trackers_management');
+  const [closureModalData, setClosureModalData] = useState(null);
+  const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
   
   const triggerAlert = (msg) => {
     if (notify) notify(msg, 'success', true);
     else alert(msg);
+  };
+
+  const handleApproveClosure = (verification) => {
+    if (verification.type === 'reopening') {
+      setClosureVerifications(prev => prev.map(v => v.id === verification.id ? { ...v, status: 'approved' } : v));
+      setEstablishments(prev => prev.map(e => e.id === verification.estId ? { ...e, status: 'compliant', score: 75, closureDuration: null } : e));
+      triggerAlert('تمت المصادقة على إعادة الفتح. المطعم الآن عاد للعمل بتقييم 75%.');
+      addSystemNotification(
+        'موافقة الإدارة المركزية على إعادة فتح', 
+        `تمت المصادقة على طلب إعادة الفتح لمطعم (${verification.estName}). المطعم الآن مفتوح.`, 
+        'all'
+      );
+    } else {
+      // Instead of prompt, open custom modal
+      setClosureModalData(verification);
+    }
+  };
+
+  const confirmClosureWithDuration = () => {
+    if (!closureModalData) return;
+    
+    setClosureVerifications(prev => prev.map(v => v.id === closureModalData.id ? { ...v, status: 'approved' } : v));
+    setEstablishments(prev => prev.map(e => e.id === closureModalData.estId ? { ...e, status: 'closed', closureDuration: closureDuration, closureDate: new Date().toISOString() } : e));
+    
+    // Notify Tracker/Field Team
+    addSystemNotification(
+      'قرار إغلاق نهائي صادر من الإدارة المركزية 🚫', 
+      `المديرية تصادق على غلق مطعم (${closureModalData.estName}) لمدة (${closureDuration}). قرار نهائي واجب التنفيذ.`, 
+      'all'
+    );
+    
+    triggerAlert(`تمت المصادقة على الإغلاق لمدة (${closureDuration}) بنجاح.`);
+    setClosureModalData(null);
+    setClosureDuration('أسبوع واحد');
+  };
+
+  const handleRejectClosure = (verificationId) => {
+    setClosureVerifications(prev => prev.map(v => v.id === verificationId ? { ...v, status: 'rejected' } : v));
+    triggerAlert('تم رفض الدليل وإعادته للمتابعة.');
   };
 
   // States for Dispatch
@@ -166,6 +207,15 @@ export default function OperationsRoom() {
         >
           <Target className="w-4 h-4" />
           إحصائيات الإغلاق والغرامات
+        </button>
+        <button
+          onClick={() => setActiveTab('closure_verifications')}
+          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'closure_verifications' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Camera className="w-4 h-4" />
+          أدلة الإغلاق (الميدانية)
         </button>
       </div>
 
@@ -588,6 +638,118 @@ export default function OperationsRoom() {
                   </div>
                 );
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+      {activeTab === 'closure_verifications' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white">أدلة الإغلاق الميدانية الواردة من فرق المتابعة</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {closureVerifications && closureVerifications.length > 0 ? (
+              closureVerifications.map(ver => (
+                <div key={ver.id} className="glassmorphic-card p-4 border border-indigo-500/20 relative">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-bold text-sm text-indigo-700 dark:text-indigo-400">
+                        {ver.type === 'reopening' ? '🔓 طلب إعادة فتح:' : '🔒 توثيق إغلاق:'} {ver.estName}
+                      </h4>
+                      <p className="text-[10px] text-slate-500 font-bold mt-1">المرسل: {ver.trackerName}</p>
+                      <p className="text-[10px] text-slate-500">{new Date(ver.date).toLocaleString('ar-IQ')}</p>
+                    </div>
+                    {ver.status === 'pending' ? (
+                      <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-1 rounded-full font-bold">قيد المراجعة</span>
+                    ) : ver.status === 'approved' ? (
+                      <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-1 rounded-full font-bold">مصادق عليه</span>
+                    ) : (
+                      <span className="bg-rose-100 text-rose-700 text-[10px] px-2 py-1 rounded-full font-bold">مرفوض</span>
+                    )}
+                  </div>
+                  
+                  {ver.photo && (
+                    <div className="mt-2 mb-3 bg-slate-900 rounded-xl overflow-hidden flex justify-center items-center border border-slate-700 h-48 relative group">
+                      <img src={ver.photo} alt="دليل إغلاق" className="max-h-full max-w-full object-contain" />
+                    </div>
+                  )}
+
+                  {ver.notes && (
+                    <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700 mb-4">
+                      <p className="text-xs text-slate-700 dark:text-slate-300 font-bold">ملاحظات فريق المتابعة:</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{ver.notes}</p>
+                    </div>
+                  )}
+
+                  {ver.status === 'pending' && (
+                    <div className="flex gap-2 mt-4 border-t border-slate-200 dark:border-slate-700 pt-3">
+                      <button 
+                        onClick={() => handleApproveClosure(ver)}
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-xl text-xs font-bold transition-all flex justify-center items-center gap-1"
+                      >
+                        <CheckCircle className="w-4 h-4" /> {ver.type === 'reopening' ? 'مصادقة الفتح' : 'مصادقة الإغلاق'}
+                      </button>
+                      <button 
+                        onClick={() => handleRejectClosure(ver.id)}
+                        className="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 p-2 rounded-xl text-xs font-bold transition-all flex justify-center items-center gap-1"
+                      >
+                        <XCircle className="w-4 h-4" /> رفض
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="col-span-1 md:col-span-2 text-center p-8 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+                <Camera className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
+                <p className="text-slate-500 font-bold text-sm">لا توجد أدلة إغلاق واردة حالياً</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+
+      {/* Closure Duration Modal */}
+      {closureModalData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-rose-500/30 text-center animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <CheckCircle className="w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">مصادقة قرار الإغلاق</h3>
+            <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+              يرجى تحديد مدة الإغلاق الرسمية لمطعم ({closureModalData.estName}). سيتم إشعار الفرق الميدانية بهذا القرار فوراً.
+            </p>
+            
+            <div className="text-right mb-6">
+              <label className="text-[10px] font-bold text-slate-500 block mb-2">مدة الإغلاق المقررة:</label>
+              <select 
+                value={closureDuration}
+                onChange={(e) => setClosureDuration(e.target.value)}
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-white outline-none focus:border-rose-500"
+              >
+                <option value="3 أيام">3 أيام (إنذار غلق)</option>
+                <option value="أسبوع واحد">أسبوع واحد (7 أيام)</option>
+                <option value="أسبوعين">أسبوعين (14 يوم)</option>
+                <option value="شهر واحد">شهر واحد (30 يوم)</option>
+                <option value="مؤقت لحين التصحيح">إغلاق مؤقت (لحين تصحيح المخالفات)</option>
+              </select>
+            </div>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={confirmClosureWithDuration}
+                className="flex-[2] py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-lg shadow-rose-500/20 transition-all cursor-pointer"
+              >
+                تأكيد الإغلاق وإشعار الميدان
+              </button>
+              <button 
+                onClick={() => setClosureModalData(null)}
+                className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs transition-colors cursor-pointer"
+              >
+                إلغاء
+              </button>
             </div>
           </div>
         </div>

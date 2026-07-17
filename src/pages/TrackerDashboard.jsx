@@ -94,6 +94,7 @@ export const TrackerDashboard = () => {
     setTimeout(() => {
       const newVerification = {
         id: `ver_${Date.now()}`,
+        type: selectedEst?.status === 'closed' ? 'reopening' : 'closure',
         trackerId: user.id,
         trackerName: user.name,
         estId: selectedEst.id,
@@ -173,8 +174,8 @@ export const TrackerDashboard = () => {
             </div>
           ) : (
             closedEstablishments.map(est => (
-              <div key={est.id} className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-rose-200 dark:border-rose-900/30 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-1.5 h-full bg-rose-500"></div>
+              <div key={est.id} className={`bg-white dark:bg-slate-900 rounded-2xl p-4 border ${est.status === 'closed' ? 'border-amber-200 dark:border-amber-900/30' : 'border-rose-200 dark:border-rose-900/30'} shadow-sm relative overflow-hidden`}>
+                <div className={`absolute top-0 right-0 w-1.5 h-full ${est.status === 'closed' ? 'bg-amber-500' : 'bg-rose-500'}`}></div>
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-black text-slate-800 dark:text-white">{est.name}</h3>
@@ -184,17 +185,19 @@ export const TrackerDashboard = () => {
                         📍 العنوان الدقيق: {est.manualAddress}
                       </p>
                     )}
-                    <p className="text-[10px] text-rose-500 font-bold mt-1.5">التقييم: {est.score}% - مُغلق</p>
+                    <p className={`text-[10px] font-bold mt-1.5 ${est.status === 'closed' ? 'text-amber-500' : 'text-rose-500'}`}>
+                      {est.status === 'closed' ? 'حالة المطعم: مغلق (بانتظار طلب الفتح)' : `التقييم: ${est.score}% - حرج جداً`}
+                    </p>
                   </div>
                   <button
                     onClick={() => {
                       setSelectedEst(est);
                       startCamera();
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-500/20"
+                    className={`flex items-center gap-2 px-4 py-2 text-white rounded-xl text-xs font-bold transition-all shadow-md ${est.status === 'closed' ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20' : 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/20'}`}
                   >
                     <Camera className="w-4 h-4" />
-                    التحقق من الإغلاق
+                    {est.status === 'closed' ? 'طلب إعادة فتح' : 'التحقق من الإغلاق'}
                   </button>
                 </div>
               </div>
@@ -208,7 +211,9 @@ export const TrackerDashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
           <div className="w-full max-w-md bg-slate-900 border border-slate-700 p-4 rounded-3xl text-white shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-black text-amber-500">توثيق إغلاق: {selectedEst?.name}</h3>
+              <h3 className="text-sm font-black text-amber-500">
+                {selectedEst?.status === 'closed' ? 'توثيق طلب فتح:' : 'توثيق إغلاق:'} {selectedEst?.name}
+              </h3>
               <button onClick={() => { setCapturedPhoto(null); cancelCamera(); }} className="p-1.5 rounded-lg bg-slate-800 text-slate-400">
                 <X className="w-4 h-4" />
               </button>

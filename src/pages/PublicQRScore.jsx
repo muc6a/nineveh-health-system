@@ -51,6 +51,7 @@ export const PublicQRScore = () => {
   const isCompliant = score >= (config.passingScore || 90);
   const isMonitoring = score >= (config.warningScore || 70) && score < (config.passingScore || 90);
   const isNonCompliant = score < (config.warningScore || 70);
+  const isClosed = establishment.status === 'closed';
 
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
@@ -209,12 +210,18 @@ export const PublicQRScore = () => {
               <div className="absolute w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl animate-pulse"></div>
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">التقييم التفتيشي العام للمنشأة</span>
               
-              <span className={`text-5xl font-black tracking-tight drop-shadow-[0_0_15px_rgba(13,148,136,0.3)] ${
-                isCompliant ? 'text-emerald-500 dark:text-teal-400' :
-                isMonitoring ? 'text-amber-500' : 'text-red-500'
-              }`}>
-                {score}%
-              </span>
+              {isClosed ? (
+                <span className="text-4xl md:text-5xl font-black text-rose-500 drop-shadow-[0_0_15px_rgba(225,29,72,0.5)] my-2">
+                  مغلق 🚫
+                </span>
+              ) : (
+                <span className={`text-5xl font-black tracking-tight drop-shadow-[0_0_15px_rgba(13,148,136,0.3)] ${
+                  isCompliant ? 'text-emerald-500 dark:text-teal-400' :
+                  isMonitoring ? 'text-amber-500' : 'text-red-500'
+                }`}>
+                  {score}%
+                </span>
+              )}
 
               <div className="flex gap-1.5 mt-4">
                 {[1, 2, 3, 4, 5].map((starVal) => {
@@ -236,19 +243,22 @@ export const PublicQRScore = () => {
             {/* Status badges */}
             <div className="space-y-3 mb-6">
               <div className="w-full">
-                {isCompliant && (
+                {isClosed ? (
+                  <div className="p-4 rounded-2xl bg-rose-500 text-white text-sm font-black flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(225,29,72,0.3)] border border-rose-400 text-center leading-relaxed">
+                    <AlertOctagon className="w-6 h-6 shrink-0" />
+                    <span>تم إغلاق المنشأة {establishment.closureDuration ? `لمدة (${establishment.closureDuration})` : 'مؤقتاً'} بسبب المخالفات الصحية</span>
+                  </div>
+                ) : isCompliant ? (
                   <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-teal-400 text-xs font-black flex items-center justify-center gap-2">
                     <ShieldCheck className="w-5 h-5 shrink-0" />
                     <span>🟢 ملتزم بالاشتراطات الصحية والبيئية داخل الصالة</span>
                   </div>
-                )}
-                {isMonitoring && (
+                ) : isMonitoring ? (
                   <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs font-black flex items-center justify-center gap-2">
                     <Star className="w-5 h-5 shrink-0" />
                     <span>🟡 تحت المتابعة والتحسين المستمر</span>
                   </div>
-                )}
-                {isNonCompliant && (
+                ) : (
                   <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-black flex items-center justify-center gap-2">
                     <AlertOctagon className="w-5 h-5 shrink-0" />
                     <span>🔴 غير ملتزم - اتخاذ إجراءات وتنبيهات صحية</span>
