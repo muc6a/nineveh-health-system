@@ -689,22 +689,6 @@ export const AppProvider = ({ children }) => {
   const isMountedPen = React.useRef(false);
   const isMountedDisp = React.useRef(false);
 
-  // Sync state to Firebase whenever local state changes (after initial load)
-  useEffect(() => { if (isMountedEst.current) syncToCloud('establishments', establishments); else isMountedEst.current = true; }, [establishments]);
-  useEffect(() => { if (isMountedRep.current) syncToCloud('reports', reports); else isMountedRep.current = true; }, [reports]);
-  useEffect(() => { if (isMountedTeam.current) syncToCloud('teams_v2', teams); else isMountedTeam.current = true; }, [teams]);
-  useEffect(() => { if (isMountedTrack.current) syncToCloud('trackers_v1', trackers); else isMountedTrack.current = true; }, [trackers]);
-  useEffect(() => { if (isMountedClosure.current) syncToCloud('closureVerifications_v1', closureVerifications); else isMountedClosure.current = true; }, [closureVerifications]);
-  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionItems', inspectionItems); else isMountedInsp.current = true; }, [inspectionItems]);
-  useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
-  useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
-  useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
-  useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
-  useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
-  useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
-  useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
-  useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
-
 
   // Public Search Page CMS
   const [publicCMS, setPublicCMS] = useState(() => {
@@ -865,10 +849,6 @@ export const AppProvider = ({ children }) => {
     ];
   });
 
-  useEffect(() => {
-    syncToCloud('directives', directives);
-  }, [directives]);
-
   const [directors, setDirectors] = useState(() => {
     const saved = localStorage.getItem('directors');
     let parsed = saved ? JSON.parse(saved) : null;
@@ -894,10 +874,6 @@ export const AppProvider = ({ children }) => {
     ];
   });
 
-  useEffect(() => {
-    syncToCloud('directors', directors);
-  }, [directors]);
-
   const addDirective = (teamId, text, senderName = 'مدير الصحة') => {
     const newDir = {
       id: 'dir_' + Date.now(),
@@ -912,6 +888,22 @@ export const AppProvider = ({ children }) => {
   const markDirectiveRead = (dirId) => {
     setDirectives(prev => prev.map(d => d.id === dirId ? { ...d, isRead: true } : d));
   };
+
+  // Sync state to Firebase whenever local state changes (after initial load)
+  useEffect(() => { if (isMountedEst.current) syncToCloud('establishments', establishments); else isMountedEst.current = true; }, [establishments]);
+  useEffect(() => { if (isMountedRep.current) syncToCloud('reports', reports); else isMountedRep.current = true; }, [reports]);
+  useEffect(() => { if (isMountedTeam.current) syncToCloud('teams_v2', teams); else isMountedTeam.current = true; }, [teams]);
+  useEffect(() => { if (isMountedTrack.current) syncToCloud('trackers_v1', trackers); else isMountedTrack.current = true; }, [trackers]);
+  useEffect(() => { if (isMountedClosure.current) syncToCloud('closureVerifications_v1', closureVerifications); else isMountedClosure.current = true; }, [closureVerifications]);
+  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionItems', inspectionItems); else isMountedInsp.current = true; }, [inspectionItems]);
+  useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
+  useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
+  useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
+  useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
+  useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
+  useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
+  useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
+  useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
 
   return (
     <AppContext.Provider value={{
