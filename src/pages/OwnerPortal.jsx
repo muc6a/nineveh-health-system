@@ -409,9 +409,11 @@ export const OwnerPortal = () => {
                   <p className="text-lg font-black text-slate-800 whitespace-nowrap">{ownerEst.lastInspection}</p>
                 </div>
                 <div className="text-center w-1/3">
-                  <div className="w-28 h-28 border-4 border-amber-500/20 rounded-full flex items-center justify-center mx-auto opacity-40 mb-2 rotate-12">
-                    <span className="font-black text-amber-500 text-2xl -rotate-12">مُطابق</span>
-                  </div>
+                  <img 
+                    src="/stamp-transparent.png" 
+                    alt="ختم مطابقة المعايير" 
+                    className="w-32 h-32 object-contain mx-auto mb-2 drop-shadow-md"
+                  />
                 </div>
                 <div className="text-center w-1/3">
                   <p className="text-sm font-bold text-slate-500 mb-1">اللجنة المصدّقة</p>
