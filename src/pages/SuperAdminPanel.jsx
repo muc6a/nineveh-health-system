@@ -133,6 +133,12 @@ export const SuperAdminPanel = () => {
   const [editingDirector, setEditingDirector] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
+  const [draftUiPreferences, setDraftUiPreferences] = useState(null);
+
+  const openDisplayPrefsModal = () => {
+    setDraftUiPreferences(uiPreferences || { headingSize: '18px', bodySize: '12px', density: 'comfortable' });
+    setShowDisplayPrefsModal(true);
+  };
   
   // Establishments management states
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
@@ -660,7 +666,7 @@ export const SuperAdminPanel = () => {
           
           <ThemeToggle />
           <button
-            onClick={() => setShowDisplayPrefsModal(true)}
+            onClick={openDisplayPrefsModal}
             className="px-3 py-1.5 rounded-xl border border-teal-500/20 bg-teal-500/5 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer font-black"
           >
             🎨 تخصيص العرض
@@ -3444,28 +3450,28 @@ export const SuperAdminPanel = () => {
                   <div className="space-y-3">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">كثافة البيانات (Density Mode)</label>
                     <div className="flex gap-4">
-                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(uiPreferences?.density || "comfortable") === 'comfortable' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
+                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(draftUiPreferences?.density || "comfortable") === 'comfortable' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
                         <input
                           type="radio"
                           name="density"
                           value="comfortable"
                           className="hidden"
-                          checked={(uiPreferences?.density || "comfortable") === 'comfortable'}
-                          onChange={(e) => setUiPreferences({...uiPreferences, density: e.target.value})}
+                          checked={(draftUiPreferences?.density || "comfortable") === 'comfortable'}
+                          onChange={(e) => setDraftUiPreferences({...draftUiPreferences, density: e.target.value})}
                         />
                         <div className="text-center">
                           <div className="text-sm font-black text-slate-700 dark:text-slate-300">مريح (Comfortable)</div>
                           <p className="text-[10px] text-slate-500 mt-1">مسافات واسعة مناسبة للحواسيب</p>
                         </div>
                       </label>
-                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(uiPreferences?.density || "comfortable") === 'compact' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
+                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
                         <input
                           type="radio"
                           name="density"
                           value="compact"
                           className="hidden"
-                          checked={(uiPreferences?.density || "comfortable") === 'compact'}
-                          onChange={(e) => setUiPreferences({...uiPreferences, density: e.target.value})}
+                          checked={(draftUiPreferences?.density || "comfortable") === 'compact'}
+                          onChange={(e) => setDraftUiPreferences({...draftUiPreferences, density: e.target.value})}
                         />
                         <div className="text-center">
                           <div className="text-sm font-black text-slate-700 dark:text-slate-300">مضغوط (Compact)</div>
@@ -3482,14 +3488,14 @@ export const SuperAdminPanel = () => {
                     <div className="space-y-1.5">
                       <label className="text-[10px] text-slate-500 flex justify-between">
                         <span>حجم العناوين</span>
-                        <span className="font-bold dir-ltr">{(uiPreferences?.headingSize || "18px")}</span>
+                        <span className="font-bold dir-ltr">{(draftUiPreferences?.headingSize || "18px")}</span>
                       </label>
                       <input 
                         type="range" 
                         min="14" 
                         max="32" 
-                        value={parseInt((uiPreferences?.headingSize || "18px"))} 
-                        onChange={(e) => setUiPreferences({...uiPreferences, headingSize: e.target.value + 'px'})}
+                        value={parseInt((draftUiPreferences?.headingSize || "18px"))} 
+                        onChange={(e) => setDraftUiPreferences({...draftUiPreferences, headingSize: e.target.value + 'px'})}
                         className="w-full accent-teal-600"
                       />
                     </div>
@@ -3497,14 +3503,14 @@ export const SuperAdminPanel = () => {
                     <div className="space-y-1.5">
                       <label className="text-[10px] text-slate-500 flex justify-between">
                         <span>حجم النصوص</span>
-                        <span className="font-bold dir-ltr">{(uiPreferences?.bodySize || "12px")}</span>
+                        <span className="font-bold dir-ltr">{(draftUiPreferences?.bodySize || "12px")}</span>
                       </label>
                       <input 
                         type="range" 
                         min="10" 
                         max="20" 
-                        value={parseInt((uiPreferences?.bodySize || "12px"))} 
-                        onChange={(e) => setUiPreferences({...uiPreferences, bodySize: e.target.value + 'px'})}
+                        value={parseInt((draftUiPreferences?.bodySize || "12px"))} 
+                        onChange={(e) => setDraftUiPreferences({...draftUiPreferences, bodySize: e.target.value + 'px'})}
                         className="w-full accent-teal-600"
                       />
                     </div>
@@ -3514,25 +3520,46 @@ export const SuperAdminPanel = () => {
                 {/* Live Preview */}
                 <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 text-right">
                   <h3 className="text-sm font-bold text-slate-500 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">نافذة العرض المباشر (Live Preview)</h3>
-                  <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden ${(uiPreferences?.density || "comfortable") === 'compact' ? 'p-3 space-y-2' : 'p-6 space-y-4'}`}>
+                  <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'p-3 space-y-2' : 'p-6 space-y-4'}`}>
                     <h4 
-                      style={{ fontSize: (uiPreferences?.headingSize || "18px"), lineHeight: 1.2 }} 
+                      style={{ fontSize: (draftUiPreferences?.headingSize || "18px"), lineHeight: 1.2 }} 
                       className="font-black text-slate-800 dark:text-white"
                     >
                       مطعم وحلويات الأمين
                     </h4>
                     <p 
-                      style={{ fontSize: (uiPreferences?.bodySize || "12px"), lineHeight: 1.6 }} 
+                      style={{ fontSize: (draftUiPreferences?.bodySize || "12px"), lineHeight: 1.6 }} 
                       className="text-slate-600 dark:text-slate-400"
                     >
                       تم إجراء الكشف الميداني في حي النور ومطابقة الشروط الصحية. المنشأة مستوفية لجميع معايير الجودة والنظافة العامة.
                     </p>
-                    <div className={`flex gap-2 ${(uiPreferences?.density || "comfortable") === 'compact' ? 'mt-2' : 'mt-4'}`}>
-                      <span className={`bg-teal-50 text-teal-600 rounded-lg font-bold ${(uiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>مطابق للشروط</span>
-                      <span className={`bg-slate-100 text-slate-600 rounded-lg font-bold ${(uiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>تقييم 95%</span>
+                    <div className={`flex gap-2 ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'mt-2' : 'mt-4'}`}>
+                      <span className={`bg-teal-50 text-teal-600 rounded-lg font-bold ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>مطابق للشروط</span>
+                      <span className={`bg-slate-100 text-slate-600 rounded-lg font-bold ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>تقييم 95%</span>
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 pt-6">
+                <button 
+                  onClick={() => setShowDisplayPrefsModal(false)} 
+                  className="px-6 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-black text-xs transition-all"
+                >
+                  إلغاء
+                </button>
+                <button 
+                  onClick={() => setDraftUiPreferences({ headingSize: '18px', bodySize: '12px', density: 'comfortable' })} 
+                  className="px-6 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-black text-xs transition-all"
+                >
+                  إعادة الافتراضية
+                </button>
+                <button 
+                  onClick={() => { setUiPreferences(draftUiPreferences); setShowDisplayPrefsModal(false); notify('تم حفظ تفضيلات المظهر بنجاح', 'success'); }} 
+                  className="px-6 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-lg shadow-teal-500/20"
+                >
+                  تأكيد وحفظ
+                </button>
               </div>
             </div>
           </div>
