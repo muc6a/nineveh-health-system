@@ -674,7 +674,7 @@ export const TeamDashboard = () => {
                           {est.lastInspection === 'لم يزر بعد' ? (
                             <span className="text-red-500 font-black">معلق</span>
                           ) : (
-                            <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${
+                            <span className={`px-3 py-1.5 rounded-xl text-sm font-black ${
                               est.score >= (config.passingScore || 90) ? 'bg-emerald-500/10 text-emerald-600' :
                               est.score >= (config.warningScore || 70) ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'
                             }`}>
