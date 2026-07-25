@@ -6,6 +6,7 @@ import { NotificationBell } from '../components/NotificationBell';
 import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
+import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = () => {
   const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences } = useContext(AppContext);
@@ -61,6 +62,7 @@ export const TeamDashboard = () => {
   
   // Modal toggles
   const [establishmentModalState, setEstablishmentModalState] = useState({ isOpen: false, mode: 'add', data: null });
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const [showMetricModal, setShowMetricModal] = useState(false);
   const [metricModalType, setMetricModalType] = useState('all');
   
@@ -94,6 +96,15 @@ export const TeamDashboard = () => {
   };
 
   // Filter based on search term and expired license filter
+  const dailyTaskLimit = config?.dailyTaskLimit || 10;
+  
+  // Smart Tasks list (oldest visits first, up to dailyTaskLimit)
+  const smartTasks = [...teamEstablishments].sort((a, b) => {
+    if (a.lastInspection === 'لم يزر بعد') return -1;
+    if (b.lastInspection === 'لم يزر بعد') return 1;
+    return new Date(a.lastInspection) - new Date(b.lastInspection);
+  }).slice(0, dailyTaskLimit);
+
   const filteredEstablishments = teamEstablishments.filter(e => {
     const matchesSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           e.owner.toLowerCase().includes(searchTerm.toLowerCase());
@@ -157,6 +168,21 @@ export const TeamDashboard = () => {
 
   // Directives Popup Logic
   const [unreadDirective, setUnreadDirective] = useState(null);
+
+  const handleQRScanSuccess = (decodedText) => {
+    setShowQRScanner(false);
+    const est = establishments.find(e => e.accessCode === decodedText);
+    if (est) {
+      if (!est.sector.includes(userSector) && user?.role !== 'admin') {
+        notify('عفواً، هذه المنشأة لا تتبع لقاطع مسؤوليتك.', 'error');
+        return;
+      }
+      notify(`تم العثور على: ${est.name}`, 'success');
+      setSelectedEstDetails(est);
+    } else {
+      notify('الكود غير صالح أو المنشأة غير مسجلة في النظام.', 'error');
+    }
+  };
 
   React.useEffect(() => {
     // Find the first unread directive
@@ -594,9 +620,16 @@ export const TeamDashboard = () => {
                   placeholder="ابحث باسم المطعم أو اسم المالك..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  className="w-full pl-12 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
+                <button 
+                  onClick={() => setShowQRScanner(true)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-teal-50 hover:bg-teal-100 dark:bg-teal-900/30 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-xl transition-colors"
+                  title="مسح QR بالكاميرا"
+                >
+                  <QrCode className="w-4 h-4" />
+                </button>
               </div>
 
               <button
@@ -631,6 +664,40 @@ export const TeamDashboard = () => {
                 <span>إصدار تقرير PDF</span>
               </button>
             </div>
+
+            {/* Smart Tasks (Suggested Daily Visits) */}
+            {smartTasks.length > 0 && !searchTerm && statusFilter === 'all' && !filterExpiredOnly && (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3 px-1">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                    <CheckSquare className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-800 dark:text-white">مهام اليوم المقترحة (الزيارات الذكية)</h3>
+                    <p className="text-[10px] text-slate-500">تم اختيار هذه المنشآت بناءً على أقدمية التفتيش والأولوية القصوى.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {smartTasks.map(est => (
+                    <div key={`smart-${est.id}`} className="bg-white dark:bg-slate-800/80 p-4 rounded-2xl border border-blue-200/50 dark:border-blue-900/30 shadow-sm shadow-blue-500/5 flex items-center justify-between group">
+                      <div>
+                        <h4 className="font-bold text-slate-800 dark:text-white text-xs mb-1 group-hover:text-teal-600 transition-colors">{est.name}</h4>
+                        <div className="text-[10px] text-slate-500 flex items-center gap-1.5">
+                          <AlertCircle className="w-3 h-3 text-amber-500" />
+                          <span>آخر زيارة: <strong className="text-slate-700 dark:text-slate-300">{est.lastInspection}</strong></span>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => navigate(`/inspection/new?id=${est.id}`)}
+                        className="w-10 h-10 rounded-full bg-teal-50 hover:bg-teal-100 dark:bg-teal-900/20 dark:hover:bg-teal-900/40 text-teal-600 flex items-center justify-center transition-all shrink-0"
+                      >
+                        <FilePlus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Directory Grid */}
             <div className="glassmorphic-card overflow-hidden print-only-report">
@@ -1285,6 +1352,12 @@ export const TeamDashboard = () => {
           </div>
         </div>
       )}
+
+      <QRScannerModal 
+        isOpen={showQRScanner}
+        onClose={() => setShowQRScanner(false)}
+        onScanSuccess={handleQRScanSuccess}
+      />
 
     </div>
   );

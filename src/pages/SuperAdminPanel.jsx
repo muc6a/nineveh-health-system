@@ -1375,6 +1375,22 @@ export const SuperAdminPanel = () => {
                         />
                         <p className="text-[10px] text-slate-400 mt-2">ما دون هذه الدرجة سيُعتبر "مخالف" (أحمر).</p>
                       </div>
+
+                      {/* Daily Task Limit Slider */}
+                      <div className="bg-blue-500/5 border border-blue-500/10 p-4 rounded-xl">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs font-black text-blue-700 dark:text-blue-400">الحد الأقصى للمهام اليومية (لكل فريق)</span>
+                          <span className="text-sm font-black text-blue-600">{config.dailyTaskLimit || 10} مطاعم</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="1" max="50" step="1"
+                          value={config.dailyTaskLimit || 10} 
+                          onChange={(e) => setConfig({ ...config, dailyTaskLimit: parseInt(e.target.value) })}
+                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-500"
+                        />
+                        <p className="text-[10px] text-slate-400 mt-2">سيتم اقتراح هذا العدد من المطاعم كـ "مهام يومية" للفرق الميدانية بناءً على أقدمية الزيارة.</p>
+                      </div>
                     </div>
                   </div>
 
