@@ -1585,7 +1585,7 @@ export const SuperAdminPanel = () => {
                       <th className="p-3.5 font-bold">اسم المنشأة / الرخصة</th>
                       <th className="p-3.5 font-bold">نوع النشاط</th>
                       <th className="p-3.5 font-bold">المالك / الهاتف</th>
-                      <th className="p-3.5 font-bold text-center">كود البوابة</th>
+                      <th className="p-3.5 font-bold text-center">كود QR</th>
                       <th className="p-3.5 font-bold">القطاع</th>
                       
                       <th className="p-3.5 font-bold text-center">الإجراءات</th>
@@ -1634,9 +1634,15 @@ export const SuperAdminPanel = () => {
                             </div>
                           </td>
                           <td className="p-3.5 font-bold text-center">
-                            <span className="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 dir-ltr inline-block">
-                              {est.accessCode}
-                            </span>
+                            <button
+                              onClick={() => {
+                                setSelectedEstDetails(est);
+                                setQrTabMode('dining');
+                              }}
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold cursor-pointer transition-all mx-auto text-[10px]"
+                            >
+                              🔗 رمز الـ QR
+                            </button>
                           </td>
                           <td className="p-3.5">
                             <div className="flex flex-col">
@@ -1649,15 +1655,6 @@ export const SuperAdminPanel = () => {
                           
                           <td className="p-3.5">
                             <div className="flex justify-center gap-2">
-                              <button
-                                onClick={() => {
-                                  setSelectedEstDetails(est);
-                                  setQrTabMode('dining');
-                                }}
-                                className="px-2.5 py-1.5 rounded-xl bg-slate-550/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold cursor-pointer transition-all"
-                              >
-                                🔗 رمز الـ QR
-                              </button>
                               <button
                                 onClick={() => {
                                   setEditingEst(est);

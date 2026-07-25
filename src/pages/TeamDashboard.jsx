@@ -634,7 +634,7 @@ export const TeamDashboard = () => {
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                       <th className="p-4 font-bold w-[20%]">اسم المنشأة</th>
                       <th className="p-4 font-bold w-[15%]">نوع النشاط</th>
-                      <th className="p-4 font-bold text-center w-[10%]">كود البوابة</th>
+                      <th className="p-4 font-bold text-center w-[10%]">كود QR</th>
                       <th className="p-4 font-bold w-[10%]">تاريخ آخر زيارة</th>
                       <th className="p-4 font-bold text-center w-[10%]">التقييم الحالي</th>
                       <th className="p-4 font-bold text-center w-[35%]">الإجراءات والعمليات الميدانية</th>
@@ -661,9 +661,13 @@ export const TeamDashboard = () => {
                         </td>
                         <td className="p-4 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
                         <td className="p-4 font-bold text-center">
-                          <span className="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 dir-ltr inline-block">
-                            {est.accessCode}
-                          </span>
+                          <button
+                            onClick={() => setSelectedEstDetails(est)}
+                            className="px-3 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] mx-auto"
+                          >
+                            <QrCode className="w-4 h-4" />
+                            <span>عرض QR</span>
+                          </button>
                         </td>
                         <td className="p-4">{est.lastInspection}</td>
                         <td className="p-4 font-bold text-center">
@@ -799,14 +803,6 @@ export const TeamDashboard = () => {
                                 </button>
                               </>
                             )}
-                            
-                            <button
-                              onClick={() => setSelectedEstDetails(est)}
-                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
-                            >
-                              <QrCode className="w-3.5 h-3.5" />
-                              <span>كود QR</span>
-                            </button>
                           </div>
                         </td>
                       </tr>
