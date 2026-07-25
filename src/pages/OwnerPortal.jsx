@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 export const OwnerPortal = () => {
-  const { navigate, establishments, config } = useContext(AppContext);
+  const { navigate, establishments, config, ownerCMS } = useContext(AppContext);
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);
