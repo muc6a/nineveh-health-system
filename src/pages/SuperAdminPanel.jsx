@@ -55,7 +55,10 @@ export const SuperAdminPanel = () => {
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
   const [subSettingsTab, setSubSettingsTab] = useState('evaluations');
   const [newActivity, setNewActivity] = useState('');
+  const [editingActivityIndex, setEditingActivityIndex] = useState(null);
+  const [editingActivityText, setEditingActivityText] = useState('');
   const [cmsTab, setCmsTab] = useState('public'); // public, login, owner
+  const [selectedAuditLog, setSelectedAuditLog] = useState(null);
 
   // Audit sub-tab: 'trail', 'tickets'
   const [subAuditTab, setSubAuditTab] = useState('trail');
@@ -1523,18 +1526,71 @@ export const SuperAdminPanel = () => {
                   <div className="space-y-2 mt-4">
                     {activityTypes.map((activity, index) => (
                       <div key={index} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 p-3 rounded-xl">
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{activity}</span>
-                        <button
-                          onClick={() => {
-                            if (window.confirm('هل أنت متأكد من حذف هذا النشاط؟')) {
-                              setActivityTypes(activityTypes.filter(a => a !== activity));
-                              notify('تم حذف النشاط بنجاح', 'success');
-                            }
-                          }}
-                          className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-all cursor-pointer"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
+                        {editingActivityIndex === index ? (
+                          <div className="flex gap-2 flex-1 ml-4">
+                            <input
+                              type="text"
+                              value={editingActivityText}
+                              onChange={(e) => setEditingActivityText(e.target.value)}
+                              className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-teal-500 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+                            />
+                            <button
+                              onClick={() => {
+                                if (editingActivityText.trim()) {
+                                  const updated = [...activityTypes];
+                                  updated[index] = editingActivityText.trim();
+                                  setActivityTypes(updated);
+                                  setEditingActivityIndex(null);
+                                  notify('تم تعديل النشاط بنجاح', 'success');
+                                }
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs"
+                            >
+                              حفظ
+                            </button>
+                            <button
+                              onClick={() => setEditingActivityIndex(null)}
+                              className="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                            >
+                              إلغاء
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <span
+                              className="text-xs font-bold text-slate-700 dark:text-slate-300 flex-1 cursor-pointer hover:text-teal-600"
+                              onClick={() => {
+                                setEditingActivityIndex(index);
+                                setEditingActivityText(activity);
+                              }}
+                              title="انقر لتعديل الاسم"
+                            >
+                              {activity}
+                            </span>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditingActivityIndex(index);
+                                  setEditingActivityText(activity);
+                                }}
+                                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-500 flex items-center justify-center transition-all cursor-pointer"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (window.confirm('هل أنت متأكد من حذف هذا النشاط؟')) {
+                                    setActivityTypes(activityTypes.filter((_, i) => i !== index));
+                                    notify('تم حذف النشاط بنجاح', 'success');
+                                  }
+                                }}
+                                className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-all cursor-pointer"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     ))}
                     {activityTypes.length === 0 && (
@@ -1790,7 +1846,7 @@ export const SuperAdminPanel = () => {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                     {auditLogs && auditLogs.length > 0 ? (
                       auditLogs.map(log => (
-                        <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
+                        <tr key={log.id} onClick={() => setSelectedAuditLog(log)} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer">
                           <td className="p-3.5 font-bold text-slate-700 dark:text-slate-300 dir-ltr text-right">{new Date(log.date).toLocaleString('ar-IQ')}</td>
                           <td className="p-3.5">
                             <span className="font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">{log.user}</span>
@@ -1812,9 +1868,111 @@ export const SuperAdminPanel = () => {
                   </tbody>
                 </table>
               </div>
+              
+              {/* Audit Log Details Modal */}
+              {selectedAuditLog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all text-right">
+                  <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                      <h3 className="text-base font-black text-teal-600 flex items-center gap-2">
+                        🔍 تفاصيل حركة السجل
+                      </h3>
+                      <button onClick={() => setSelectedAuditLog(null)} className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">المستخدم المنفذ</p>
+                          <p className="text-sm font-black text-slate-800 dark:text-white">{selectedAuditLog.user}</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">{selectedAuditLog.role === 'team' ? 'فريق ميداني' : 'إدارة عليا'}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">تاريخ الحركة</p>
+                          <p className="text-sm font-black text-slate-800 dark:text-white dir-ltr">{new Date(selectedAuditLog.date).toLocaleString('ar-IQ')}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">نوع الإجراء</p>
+                          <p className="text-sm font-bold text-teal-600">{selectedAuditLog.action}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">سبب التعديل</p>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300 italic">"{selectedAuditLog.justification}"</p>
+                        </div>
+                      </div>
+
+                      {/* Differences Viewer */}
+                      {selectedAuditLog.oldData && selectedAuditLog.newData ? (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 mb-2">التغييرات التي طرأت:</h4>
+                          {(() => {
+                            const oldObj = selectedAuditLog.oldData;
+                            const newObj = selectedAuditLog.newData;
+                            const changes = [];
+                            
+                            const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
+                            allKeys.forEach(key => {
+                              if (key === 'history' || key === 'id') return; // Skip complex/internal fields
+                              if (JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key])) {
+                                changes.push({
+                                  key,
+                                  oldVal: oldObj[key],
+                                  newVal: newObj[key]
+                                });
+                              }
+                            });
+
+                            if (changes.length === 0) {
+                              return <p className="text-xs text-slate-500 text-center py-4">لم يتم العثور على تغييرات جوهرية في البيانات الأساسية.</p>;
+                            }
+
+                            const fieldNames = {
+                              name: 'اسم المنشأة',
+                              type: 'النشاط',
+                              owner: 'اسم المالك',
+                              phone: 'الهاتف',
+                              licenseNumber: 'رقم الترخيص',
+                              propertyNumber: 'رقم الملكية',
+                              sector: 'القطاع',
+                              neighborhood: 'الحي/المنطقة',
+                              status: 'حالة المنشأة',
+                              score: 'التقييم',
+                              lastInspection: 'تاريخ آخر زيارة',
+                              facebook: 'رابط الفيسبوك',
+                              latitude: 'خط العرض',
+                              longitude: 'خط الطول'
+                            };
+
+                            return changes.map((change, i) => (
+                              <div key={i} className="flex flex-col md:flex-row gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl items-center">
+                                <div className="w-full md:w-1/4 text-xs font-bold text-slate-500">{fieldNames[change.key] || change.key}</div>
+                                <div className="w-full md:w-3/4 flex items-center gap-2">
+                                  <div className="flex-1 p-2 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-xs text-red-600 dark:text-red-400 line-through">
+                                    {change.oldVal || 'فارغ'}
+                                  </div>
+                                  <span className="text-slate-400">➔</span>
+                                  <div className="flex-1 p-2 rounded-lg bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-xs font-bold text-teal-700 dark:text-teal-400">
+                                    {change.newVal || 'فارغ'}
+                                  </div>
+                                </div>
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                      ) : (
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700 text-center text-xs text-slate-500">
+                          لا توجد تفاصيل مقارنة (قبل/بعد) لهذا الإجراء.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-              </>
-            )}
+          </>
+        )}
 
             {subAuditTab === 'tickets' && (
               <>
