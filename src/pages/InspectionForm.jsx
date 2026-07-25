@@ -384,33 +384,74 @@ export const InspectionForm = () => {
               />
             </div>
 
-            {/* Photo Picker */}
-            {config.allowImageUpload && (
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-500 block">توثيق المخالفات أو الالتزام بالصور الحية</span>
-                <label className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors">
-                  <Camera className="w-8 h-8 text-teal-600" />
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">📸 التقاط أو إرفاق صورة ميدانية</span>
-                  <span className="text-[10px] text-slate-400">يقبل صيغ الصور JPG, PNG كدليل معتمد بالنظام</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handlePhotoUpload}
-                    className="hidden"
-                  />
-                </label>
-                {selectedPhoto && (
-                  <div className="mt-3 p-3 rounded-2xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-900/20 flex items-center gap-4">
-                    <img src={selectedPhoto} alt="مرفق" className="w-16 h-16 object-cover rounded-xl shadow-sm" />
-                    <div>
-                      <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold block mb-1">✓ تم التقاط الصورة وإرفاقها بنجاح</span>
-                      <button type="button" onClick={() => setSelectedPhoto(null)} className="text-[10px] text-red-500 hover:underline font-bold">
-                        إزالة الصورة
-                      </button>
+            {/* Evidences Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Photo Picker */}
+              {config.allowImageUpload && (
+                <div className="space-y-2">
+                  <span className="text-xs font-bold text-slate-500 block">توثيق المخالفات أو الالتزام</span>
+                  <label className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors h-32">
+                    <Camera className="w-6 h-6 text-teal-600" />
+                    <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">التقاط صورة ميدانية</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {selectedPhoto && (
+                    <div className="mt-2 p-2 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-900/20 flex items-center gap-3">
+                      <img src={selectedPhoto} alt="مرفق" className="w-10 h-10 object-cover rounded-lg shadow-sm" />
+                      <div>
+                        <span className="text-[10px] text-emerald-600 font-bold block">تم إرفاق الصورة</span>
+                        <button type="button" onClick={() => setSelectedPhoto(null)} className="text-[9px] text-red-500 hover:underline">إزالة</button>
+                      </div>
                     </div>
+                  )}
+                </div>
+              )}
+
+              {/* AI Inspector Button */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-slate-500 block">المفتش الذكي (تحليل بالذكاء الاصطناعي)</span>
+                <label className="w-full relative block cursor-pointer h-32">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    capture="environment"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        simulateAiScan();
+                      }
+                    }}
+                    disabled={isAiScanning}
+                    className="hidden" 
+                  />
+                  <div
+                    className={`w-full h-full rounded-2xl font-black text-[11px] flex flex-col items-center justify-center gap-2 transition-all shadow-md border-2 border-transparent ${
+                      isAiScanning 
+                      ? 'bg-purple-100 text-purple-400 animate-pulse border-purple-300'
+                      : 'bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 text-purple-700 dark:text-purple-300 hover:border-purple-300 dark:hover:border-purple-700 border-purple-100 dark:border-purple-900/50'
+                    }`}
+                  >
+                    <Cpu className="w-6 h-6" />
+                    <span className="text-center px-2">{isAiScanning ? 'جاري تحليل الصورة واستخراج المخالفات...' : 'التقط صورة ليقوم الذكاء الاصطناعي بتحليلها'}</span>
                   </div>
-                )}
+                </label>
+              </div>
+            </div>
+
+            {aiReport && (
+              <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 animate-fade-in">
+                <h4 className="font-black text-xs mb-2 flex items-center gap-1"><Cpu className="w-4 h-4"/> نتائج التحليل:</h4>
+                <p className="text-[10px] mb-2">{aiReport.message}</p>
+                <ul className="list-disc list-inside text-[10px] font-bold">
+                  {aiReport.items.map((item, idx) => (
+                    <li key={idx} className="text-red-500">{item} (تم الخصم تلقائياً)</li>
+                  ))}
+                </ul>
               </div>
             )}
 
@@ -484,66 +525,34 @@ export const InspectionForm = () => {
               )}
             </div>
 
-          {/* Live Score Sticky Bar */}
-          <div className="sticky bottom-4 w-full p-4 rounded-3xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 shadow-2xl flex flex-col gap-4 no-print z-50">
+          </div> {/* End of Remarks and Evidence Card */}
+
+          {/* Live Score Sticky Bar (Thin) */}
+          <div className="sticky bottom-4 w-full p-3 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 shadow-2xl flex items-center justify-between no-print z-50">
             
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold text-slate-400 block mb-1">النتيجة النهائية (تلقائي)</span>
-                <div className="flex items-end gap-2">
-                  <span className={`text-4xl font-black ${scorePercentage >= config.passingScore ? 'text-emerald-500' : scorePercentage >= config.warningScore ? 'text-amber-500' : 'text-red-500'}`}>
-                    {scorePercentage}%
-                  </span>
-                  <span className="text-xs font-bold text-slate-500 mb-1">
-                    {scorePercentage >= config.passingScore ? 'مطابق للشروط ✅' : scorePercentage >= config.warningScore ? 'إنذار وتعهد ⚠️' : 'إغلاق وتشميع ❌'}
-                  </span>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-black shadow-inner ${scorePercentage >= config.passingScore ? 'bg-emerald-50 text-emerald-500 dark:bg-emerald-900/20' : scorePercentage >= config.warningScore ? 'bg-amber-50 text-amber-500 dark:bg-amber-900/20' : 'bg-red-50 text-red-500 dark:bg-red-900/20'}`}>
+                {scorePercentage}%
               </div>
-              <div className="text-right">
-                <span className="text-[10px] font-bold text-slate-400 block mb-1">مجموع النقاط</span>
-                <span className="text-lg font-black text-slate-800 dark:text-white">{sumScores} <span className="text-xs text-slate-500">/ {maxPossible}</span></span>
+              <div className="hidden sm:block">
+                <span className="text-[10px] font-bold text-slate-400 block">مجموع النقاط: <strong className="text-slate-800 dark:text-white text-xs">{sumScores}</strong> / {maxPossible}</span>
+                <span className="text-[10px] font-bold text-slate-500">
+                  {scorePercentage >= config.passingScore ? 'مطابق للشروط ✅' : scorePercentage >= config.warningScore ? 'إنذار وتعهد ⚠️' : 'إغلاق وتشميع ❌'}
+                </span>
               </div>
             </div>
-          
-          <div className="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 no-print">
-            <button
-              type="button"
-              onClick={simulateAiScan}
-              disabled={isAiScanning}
-              className={`w-full p-4 rounded-xl font-black text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${
-                isAiScanning 
-                ? 'bg-purple-100 text-purple-400 animate-pulse'
-                : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white cursor-pointer'
-              }`}
-            >
-              <Camera className="w-5 h-5" />
-              {isAiScanning ? '🤖 جاري تحليل الصورة واستخراج المخالفات...' : '🤖 المفتش الذكي (تحليل صورة المطبخ عبر AI)'}
-            </button>
             
-            {aiReport && (
-              <div className="mt-4 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300">
-                <h4 className="font-black text-xs mb-2">⚡ نتائج التحليل بالذكاء الاصطناعي:</h4>
-                <p className="text-[10px] mb-2">{aiReport.message}</p>
-                <ul className="list-disc list-inside text-[10px] font-bold">
-                  {aiReport.items.map((item, idx) => (
-                    <li key={idx} className="text-red-500">{item} (تم خصم النقاط تلقائياً)</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Live Score Sticky Bar */}     <button
+            <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 rounded-2xl bg-gradient-to-l from-emerald-600 to-teal-600 text-white font-extrabold text-sm shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="px-6 py-3 rounded-xl bg-gradient-to-l from-emerald-600 to-teal-600 text-white font-black text-[11px] sm:text-xs shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
-                <span>جاري حفظ وإرسال البيانات...</span>
+                <span>جاري الحفظ...</span>
               ) : (
                 <>
-                  <span>📌 اعتماد التقييم الصحي وإرسال التقرير للمديرية 🚀</span>
+                  <ClipboardCheck className="w-4 h-4" />
+                  <span>اعتماد وإرسال للمديرية</span>
                 </>
               )}
             </button>
