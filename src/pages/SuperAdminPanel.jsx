@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -1720,7 +1720,6 @@ export const SuperAdminPanel = () => {
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                       <th className="p-3.5 font-bold">اسم المنشأة / الرخصة</th>
                       <th className="p-3.5 font-bold">نوع النشاط</th>
-                      <th className="p-3.5 font-bold">المالك / الهاتف</th>
                       <th className="p-3.5 font-bold text-center">كود QR</th>
                       <th className="p-3.5 font-bold">القطاع</th>
                       
@@ -1763,12 +1762,6 @@ export const SuperAdminPanel = () => {
                             </div>
                           </td>
                           <td className="p-3.5 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
-                          <td className="p-3.5">
-                            <div className="flex flex-col">
-                              <span className="font-bold text-slate-700 dark:text-slate-300">{est.owner}</span>
-                              <span className="text-[10px] text-slate-400">{est.phone}</span>
-                            </div>
-                          </td>
                           <td className="p-3.5 font-bold text-center">
                             <div
                               onClick={() => {
