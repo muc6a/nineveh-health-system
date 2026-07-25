@@ -69,8 +69,18 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
       };
       
       const base = baseCoords[est.sector] || baseCoords['الموصل'];
-      // Pseudo-random based on id to keep it stable
-      const seed = est.id || i;
+      
+      // Convert est.id to a valid number for seeding, or use index i as fallback
+      let seed = i + 1;
+      if (est.id) {
+        if (typeof est.id === 'number') {
+          seed = est.id;
+        } else if (typeof est.id === 'string') {
+          seed = est.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        }
+      }
+
+      // Pseudo-random based on seed to keep it stable
       const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
       const seededRandom2 = (seed * 1103515245 + 12345) % 2147483648 / 2147483648;
       
