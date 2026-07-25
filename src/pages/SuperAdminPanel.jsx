@@ -1102,7 +1102,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                📝 تعديل استمارة التفتيش
+                📝 بنود التقييم
               </button>
               <button
                 onClick={() => setSubSettingsTab('appearance')}
@@ -1132,36 +1132,13 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                💾 النسخ الاحتياطي للبيانات
-              </button>
-
-              <button
-                onClick={() => setSubSettingsTab('system_controls')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-1 ${
-                  subSettingsTab === 'system_controls'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                <ShieldAlert className="w-4 h-4" />
-                الصيانة ودرجات التقييم
-              </button>
-              <button
-                onClick={() => setSubSettingsTab('display_prefs')}
-                className={`pb-2 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
-                  subSettingsTab === 'display_prefs'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                <Eye className="w-4 h-4" />
-                حجم الخطوط ونمط العرض
+                💾 البيانات
               </button>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
 
-              {subSettingsTab === 'display_prefs' && (
+              {subSettingsTab === 'appearance' && (
                 <div className="glassmorphic-card p-6 space-y-6">
                   <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <Eye className="w-5 h-5 text-teal-600" />
@@ -1268,10 +1245,9 @@ export const SuperAdminPanel = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-              {subSettingsTab === 'appearance' && (
-            <div className="glassmorphic-card p-6 space-y-6">
+                  
+                  <div className="border-t border-slate-200 dark:border-slate-800 my-8"></div>
+                  
               {/* Branding and Storage Toggles */}
               <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <Settings className="w-5 h-5 text-teal-600" />
@@ -1319,20 +1295,6 @@ export const SuperAdminPanel = () => {
               </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 block">تحديد مهلة حذف الصور التلقائي</label>
-                  <select
-                    value={retentionDropdown}
-                    onChange={(e) => setRetentionDropdown(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-800 dark:text-slate-200\"
-                  >
-                    <option value="3 Months">حذف تلقائي بعد 3 أشهر</option>
-                    <option value="6 Months">حذف تلقائي بعد 6 أشهر</option>
-                    <option value="12 Months">حذف تلقائي بعد سنة كاملة</option>
-                    <option value="Disable Auto-Delete">تعطيل الحذف التلقائي للمستودع</option>
-                  </select>
-                </div>
-
                 <div className="flex gap-2 justify-between flex-wrap">
                   <button
                     onClick={handleGarbageCollection}
@@ -1535,11 +1497,31 @@ export const SuperAdminPanel = () => {
                     />
                   </label>
                 </div>
+
+                {/* Auto Delete Images */}
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10 text-right mt-4">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">مهلة حذف الصور التلقائي</span>
+                    <span className="text-[9px] text-slate-400 font-medium">للتحكم بمساحة التخزين وحذف الصور القديمة</span>
+                  </div>
+                  <div className="w-1/2 md:w-1/3">
+                    <select
+                      value={retentionDropdown}
+                      onChange={(e) => setRetentionDropdown(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+                    >
+                      <option value="3 Months">حذف تلقائي بعد 3 أشهر</option>
+                      <option value="6 Months">حذف تلقائي بعد 6 أشهر</option>
+                      <option value="12 Months">حذف تلقائي بعد سنة كاملة</option>
+                      <option value="Disable Auto-Delete">تعطيل الحذف التلقائي للمستودع</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
             )}
 
-              {subSettingsTab === 'system_controls' && (
+              {subSettingsTab === 'evaluations' && (
                 <div className="glassmorphic-card p-6 space-y-6 text-right">
                   <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <ShieldAlert className="w-5 h-5 text-red-500" />
@@ -1619,7 +1601,7 @@ export const SuperAdminPanel = () => {
               )}
 
               {subSettingsTab === 'evaluations' && (
-                <div className="glassmorphic-card p-6 flex flex-col justify-between">
+                <div className="glassmorphic-card p-6 flex flex-col justify-between mt-6">
                   {/* Compliance Text Checkpoint Editor */}
                   <div>
                 <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
