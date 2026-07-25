@@ -4,6 +4,16 @@ import { ref, onValue, set } from 'firebase/database';
 
 export const AppContext = createContext();
 
+const INITIAL_ACTIVITY_TYPES = [
+  '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+  '🪒 صالون حلاقة وتجميل نسائي',
+  '🪒 صالون حلاقة رجالي',
+  '🍞 مخابز وأفران',
+  '☕ بيع وطحن القهوة',
+  '💧 محطة تعبئة وتصفية المياه R.O',
+  '🛒 أسواق ومجمعات غذائية',
+  '🏭 معمل ومصنع غذائي'
+];
 const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_1',
@@ -424,6 +434,11 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [activityTypes, setActivityTypes] = useState(() => {
+    const saved = localStorage.getItem('activityTypes');
+    return saved ? JSON.parse(saved) : INITIAL_ACTIVITY_TYPES;
+  });
+
   useEffect(() => {
     syncToCloud('auditLogs', auditLogs);
   }, [auditLogs]);
@@ -451,6 +466,8 @@ export const AppProvider = ({ children }) => {
         setReports(JSON.parse(e.newValue));
       } else if (e.key === 'systemConfig' && e.newValue) {
         setConfig(JSON.parse(e.newValue));
+      } else if (e.key === 'activityTypes' && e.newValue) {
+        setActivityTypes(JSON.parse(e.newValue));
       } else if (e.key === 'teams' && e.newValue) {
         setTeams(JSON.parse(e.newValue));
       } else if (e.key === 'penaltyRequests' && e.newValue) {
@@ -521,6 +538,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('closureVerifications_v1', setClosureVerifications, closureVerifications);
       setupFirebaseSync('inspectionItems', setInspectionItems, inspectionItems);
       setupFirebaseSync('systemConfig', setConfig, config);
+      setupFirebaseSync('activityTypes', setActivityTypes, activityTypes);
       setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
       setupFirebaseSync('globalBroadcast', setGlobalBroadcast, globalBroadcast);
       setupFirebaseSync('systemTickets', setTickets, tickets);
@@ -720,6 +738,7 @@ export const AppProvider = ({ children }) => {
   const isMountedDeliv = React.useRef(false);
   const isMountedPen = React.useRef(false);
   const isMountedDisp = React.useRef(false);
+  const isMountedAct = React.useRef(false);
 
 
   // Public Search Page CMS
@@ -964,6 +983,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
   useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
   useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
+  useEffect(() => { if (isMountedAct.current) syncToCloud('activityTypes', activityTypes); else isMountedAct.current = true; }, [activityTypes]);
 
   return (
     <AppContext.Provider value={{
@@ -1018,7 +1038,11 @@ export const AppProvider = ({ children }) => {
       globalBroadcast,
       setGlobalBroadcast,
       notification,
-      notify
+      notify,
+      uiPreferences,
+      setUiPreferences,
+      activityTypes,
+      setActivityTypes
     }}>
       {children}
     </AppContext.Provider>

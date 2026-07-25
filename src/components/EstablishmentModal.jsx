@@ -4,7 +4,7 @@ import { NINEVEH_GEOGRAPHY } from '../utils/constants';
 import { AppContext } from '../context/AppContext';
 
 export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave }) => {
-  const { user } = useContext(AppContext);
+  const { user, activityTypes } = useContext(AppContext);
   const isTeamMode = user?.role === 'team' || user?.isTeam;
   const teamSector = user?.sector || '';
 
@@ -170,12 +170,9 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                   className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
                 >
-                  <option>🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات</option>
-                  <option>🪒 صالون حلاقة وتجميل</option>
-                  <option>🍞 مخابز وأفران</option>
-                  <option>☕ بيع وطحن القهوة</option>
-                  <option>💧 محطة تعبئة وتصفية المياه R.O</option>
-                  <option>🛒 أسواق ومجمعات غذائية</option>
+                  {activityTypes?.map(activity => (
+                    <option key={activity} value={activity}>{activity}</option>
+                  ))}
                 </select>
               </div>
             </div>

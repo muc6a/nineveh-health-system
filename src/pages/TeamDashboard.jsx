@@ -637,7 +637,7 @@ export const TeamDashboard = () => {
                       <th className="p-4 font-bold text-center w-[10%]">كود QR</th>
                       <th className="p-4 font-bold w-[10%]">تاريخ آخر زيارة</th>
                       <th className="p-4 font-bold text-center w-[10%]">التقييم الحالي</th>
-                      <th className="p-4 font-bold text-center w-[35%]">الإجراءات والعمليات الميدانية</th>
+                      <th className="p-4 font-bold text-center w-[35%] print:hidden">الإجراءات والعمليات الميدانية</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -661,13 +661,13 @@ export const TeamDashboard = () => {
                         </td>
                         <td className="p-4 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
                         <td className="p-4 font-bold text-center">
-                          <button
+                          <div
                             onClick={() => setSelectedEstDetails(est)}
-                            className="px-3 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] mx-auto"
+                            className="px-3 py-1.5 flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-700 dark:text-slate-300 transition-all active:scale-95 cursor-pointer font-bold text-[10px] mx-auto w-fit print:border print:border-slate-300 print:bg-transparent"
                           >
-                            <QrCode className="w-4 h-4" />
-                            <span>عرض QR</span>
-                          </button>
+                            <QrCode className="w-5 h-5 text-slate-500" />
+                            <span className="text-xs font-black dir-ltr tracking-wider">{est.accessCode}</span>
+                          </div>
                         </td>
                         <td className="p-4">{est.lastInspection}</td>
                         <td className="p-4 font-bold text-center">
@@ -682,7 +682,7 @@ export const TeamDashboard = () => {
                             </span>
                           )}
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 print:hidden">
                           <div className="flex justify-center items-center gap-1.5 flex-wrap w-full max-w-[320px] mx-auto">
                             {hasPerm('addEval') && (
                               <button

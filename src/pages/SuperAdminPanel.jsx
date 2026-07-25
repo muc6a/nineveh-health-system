@@ -9,7 +9,7 @@ import { AccountModal } from '../components/AccountModal';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setActivityTypes } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [activeTab, setActiveTab] = useState('roster');
@@ -54,6 +54,7 @@ export const SuperAdminPanel = () => {
 
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
   const [subSettingsTab, setSubSettingsTab] = useState('evaluations');
+  const [newActivity, setNewActivity] = useState('');
   const [cmsTab, setCmsTab] = useState('public'); // public, login, owner
 
   // Audit sub-tab: 'trail', 'tickets'
@@ -1132,6 +1133,16 @@ export const SuperAdminPanel = () => {
               >
                 💾 البيانات
               </button>
+              <button
+                onClick={() => setSubSettingsTab('activities')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subSettingsTab === 'activities'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                📋 إدارة أنواع النشاطات
+              </button>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
@@ -1484,6 +1495,55 @@ export const SuperAdminPanel = () => {
             </div>
             )}
 
+              {subSettingsTab === 'activities' && (
+                <div className="glassmorphic-card p-6 space-y-6">
+                  <h3 className="text-sm font-black text-slate-800 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2">📋 الأنشطة والأصناف التجارية</h3>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newActivity}
+                      onChange={(e) => setNewActivity(e.target.value)}
+                      placeholder="إضافة نشاط جديد (مثال: 🏨 فندق 5 نجوم)"
+                      className="flex-1 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all"
+                    />
+                    <button
+                      onClick={() => {
+                        if (newActivity.trim() && !activityTypes.includes(newActivity.trim())) {
+                          setActivityTypes([...activityTypes, newActivity.trim()]);
+                          setNewActivity('');
+                          notify('تمت إضافة النشاط بنجاح', 'success');
+                        }
+                      }}
+                      className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all cursor-pointer"
+                    >
+                      إضافة
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2 mt-4">
+                    {activityTypes.map((activity, index) => (
+                      <div key={index} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 p-3 rounded-xl">
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{activity}</span>
+                        <button
+                          onClick={() => {
+                            if (window.confirm('هل أنت متأكد من حذف هذا النشاط؟')) {
+                              setActivityTypes(activityTypes.filter(a => a !== activity));
+                              notify('تم حذف النشاط بنجاح', 'success');
+                            }
+                          }}
+                          className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-all cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    {activityTypes.length === 0 && (
+                      <p className="text-xs text-slate-500 text-center py-4">لا توجد أي أنشطة مضافة حالياً.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {subSettingsTab === 'evaluations' && (
                 <div className="glassmorphic-card p-6 flex flex-col justify-between mt-6">
                   {/* Compliance Text Checkpoint Editor */}
@@ -1588,7 +1648,7 @@ export const SuperAdminPanel = () => {
                       <th className="p-3.5 font-bold text-center">كود QR</th>
                       <th className="p-3.5 font-bold">القطاع</th>
                       
-                      <th className="p-3.5 font-bold text-center">الإجراءات</th>
+                      <th className="p-3.5 font-bold text-center print:hidden">الإجراءات</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
@@ -1634,15 +1694,16 @@ export const SuperAdminPanel = () => {
                             </div>
                           </td>
                           <td className="p-3.5 font-bold text-center">
-                            <button
+                            <div
                               onClick={() => {
                                 setSelectedEstDetails(est);
                                 setQrTabMode('dining');
                               }}
-                              className="px-2.5 py-1.5 flex items-center justify-center gap-1 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold cursor-pointer transition-all mx-auto text-[10px]"
+                              className="px-3 py-1.5 flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-700 dark:text-slate-300 transition-all active:scale-95 cursor-pointer font-bold text-[10px] mx-auto w-fit print:border print:border-slate-300 print:bg-transparent"
                             >
-                              🔗 رمز الـ QR
-                            </button>
+                              <span className="text-xs">🔗</span>
+                              <span className="text-xs font-black dir-ltr tracking-wider">{est.accessCode}</span>
+                            </div>
                           </td>
                           <td className="p-3.5">
                             <div className="flex flex-col">

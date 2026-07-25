@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { Search, X, ShieldAlert, Send } from 'lucide-react';
 
 export const EstablishmentsManager = () => {
-  const { establishments, setEstablishments, teams, user, addDirective, notify, penaltyRequests } = useContext(AppContext);
+  const { establishments, setEstablishments, teams, user, addDirective, notify, penaltyRequests, activityTypes } = useContext(AppContext);
   const [estSearchTerm, setEstSearchTerm] = useState('');
   const [sectorFilter, setSectorFilter] = useState('all');
   const [smartFilter, setSmartFilter] = useState('all');
@@ -204,7 +204,11 @@ export const EstablishmentsManager = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-slate-300 block mb-1">نوع النشاط</label>
-                  <input type="text" required value={editingEst.type} onChange={(e) => setEditingEst({...editingEst, type: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none" />
+                  <select required value={editingEst.type} onChange={(e) => setEditingEst({...editingEst, type: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none">
+                    {activityTypes?.map(activity => (
+                      <option key={activity} value={activity}>{activity}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="text-slate-300 block mb-1">رقم الترخيص</label>
