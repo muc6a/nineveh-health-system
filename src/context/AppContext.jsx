@@ -520,6 +520,8 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('systemTickets', setTickets, tickets);
       setupFirebaseSync('sysNotifs', setSystemNotifications, systemNotifications);
       setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
+      setupFirebaseSync('loginCMS', setLoginCMS, loginCMS);
+      setupFirebaseSync('ownerCMS', setOwnerCMS, ownerCMS);
       setupFirebaseSync('directives', setDirectives, directives);
       setupFirebaseSync('directors', setDirectors, directors);
       setupFirebaseSync('deliveries', setDeliveries, deliveries);
@@ -604,6 +606,30 @@ export const AppProvider = ({ children }) => {
 
   // Global Notification System
   const [notification, setNotification] = useState({ message: '', type: 'info', id: 0 });
+
+  // User UI Preferences (Density & Typography)
+  const [uiPreferences, setUiPreferences] = useState(() => {
+    const saved = localStorage.getItem('uiPreferences');
+    return saved ? JSON.parse(saved) : {
+      headingSize: '18px', // Default
+      bodySize: '12px',    // Default (text-xs)
+      density: 'comfortable', // comfortable | compact
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('uiPreferences', JSON.stringify(uiPreferences));
+    
+    // Apply preferences to document body/root for easy CSS variable usage
+    document.documentElement.style.setProperty('--heading-size', uiPreferences.headingSize);
+    document.documentElement.style.setProperty('--body-size', uiPreferences.bodySize);
+    
+    if (uiPreferences.density === 'compact') {
+      document.documentElement.classList.add('density-compact');
+    } else {
+      document.documentElement.classList.remove('density-compact');
+    }
+  }, [uiPreferences]);
 
   // Persistent System Notifications for the Bell Icon
   const [systemNotifications, setSystemNotifications] = useState(() => {
@@ -703,6 +729,34 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     syncToCloud('publicCMS', publicCMS);
   }, [publicCMS]);
+  const [loginCMS, setLoginCMS] = useState(() => {
+    const saved = localStorage.getItem('loginCMS');
+    return saved ? JSON.parse(saved) : {
+      heroTitle: 'بوابة تسجيل الدخول الإلكتروني',
+      heroSubtext: 'بوابة مخصصة للمفتشين واللجان الميدانية',
+      announcement: '',
+      customLink: ''
+    };
+  });
+
+  useEffect(() => {
+    syncToCloud('loginCMS', loginCMS);
+  }, [loginCMS]);
+
+  const [ownerCMS, setOwnerCMS] = useState(() => {
+    const saved = localStorage.getItem('ownerCMS');
+    return saved ? JSON.parse(saved) : {
+      heroTitle: 'بوابة أصحاب المنشآت',
+      heroSubtext: 'يرجى إدخال الكود السري (PIN) المُسلم لك من قبل فرق الرقابة الصحية للاطلاع على التقرير.',
+      announcement: '',
+      customLink: ''
+    };
+  });
+
+  useEffect(() => {
+    syncToCloud('ownerCMS', ownerCMS);
+  }, [ownerCMS]);
+
 
   // Handle HTML document class for theme
   useEffect(() => {
@@ -859,7 +913,7 @@ export const AppProvider = ({ children }) => {
       if (hasJassim) {
         parsed = parsed.map(d => {
           if (d.id === 'dir_acc_2') {
-            return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } };
+            return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, showDeliveryPage: true, manageEstablishments: true } };
           }
           return d;
         });
@@ -869,7 +923,7 @@ export const AppProvider = ({ children }) => {
     }
 
     return [
-      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } },
+      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDeliveryPage: true } },
       { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } }
     ];
   });
@@ -951,6 +1005,10 @@ export const AppProvider = ({ children }) => {
       logAudit,
       publicCMS,
       setPublicCMS,
+      loginCMS,
+      setLoginCMS,
+      ownerCMS,
+      setOwnerCMS,
       globalBroadcast,
       setGlobalBroadcast,
       notification,

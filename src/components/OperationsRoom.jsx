@@ -5,7 +5,7 @@ import AccountModal from './AccountModal';
 
 export default function OperationsRoom() {
   const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('trackers_management');
+  const [activeTab, setActiveTab] = useState('teams_management');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
   
@@ -155,22 +155,22 @@ export default function OperationsRoom() {
     <div className="space-y-6 text-right">
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
         <button
-          onClick={() => setActiveTab('trackers_management')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'trackers_management' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          إدارة المتابعين السريين
-        </button>
-        <button
           onClick={() => setActiveTab('teams_management')}
           className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === 'teams_management' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
-          إدارة اللجان الميدانية
+          إدارة اللجان ({teams?.length || 0})
+        </button>
+        <button
+          onClick={() => setActiveTab('trackers_management')}
+          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'trackers_management' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          إدارة المتابعين ({trackers?.length || 0})
         </button>
         <button
           onClick={() => setActiveTab('penalties')}
@@ -180,15 +180,6 @@ export default function OperationsRoom() {
         >
           <AlertCircle className="w-4 h-4" />
           المصادقة على العقوبات
-        </button>
-        <button
-          onClick={() => setActiveTab('complaints')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'complaints' ? 'border-b-2 border-amber-600 text-amber-600 dark:text-amber-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Mail className="w-4 h-4" />
-          البلاغات والشكاوى
         </button>
         <button
           onClick={() => setActiveTab('dispatch')}
@@ -353,32 +344,7 @@ export default function OperationsRoom() {
         </div>
       )}
 
-      {activeTab === 'complaints' && (
-        <div className="glassmorphic-card p-6 border border-amber-500/20">
-          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6">بلاغات المواطنين الواردة حديثاً</h3>
-          {reports.filter(r => !r.isDelivery).length === 0 ? (
-            <div className="text-center p-8 text-slate-400 text-xs">لا توجد بلاغات حالياً.</div>
-          ) : (
-            <div className="space-y-4">
-              {reports.filter(r => !r.isDelivery).map(r => (
-                <div key={r.id} className="p-4 border border-amber-500/20 bg-amber-500/5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <div>
-                    <h4 className="text-xs font-black text-slate-800 dark:text-white">{r.citizenName || 'مواطن (مجهول)'} يشتكي من {r.establishmentName}</h4>
-                    <p className="text-[10px] text-slate-500 mt-1">{r.notes}</p>
-                    <div className="flex gap-2 mt-2">
-                      <span className="text-[9px] bg-white dark:bg-slate-900 px-2 py-1 rounded text-slate-500">{new Date(r.timestamp).toLocaleString('ar-IQ')}</span>
-                      <span className="text-[9px] bg-red-500/10 text-red-500 px-2 py-1 rounded font-bold">شكوى تسمم/نظافة</span>
-                    </div>
-                  </div>
-                  <button className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold rounded-lg whitespace-nowrap">
-                    توجيه الشكوى للجنة القاطع ➡️
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+
 
       {activeTab === 'penalties' && (
         <div className="glassmorphic-card p-6 border border-red-500/20">
@@ -714,10 +680,15 @@ export default function OperationsRoom() {
       {closureModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
           <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-rose-500/30 text-center animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
-              <CheckCircle className="w-8 h-8" />
-            </div>
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">مصادقة قرار الإغلاق</h3>
+            
+            {closureModalData.photo && (
+              <div className="w-full h-40 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-4 overflow-hidden border border-slate-200 dark:border-slate-700 relative">
+                <img src={closureModalData.photo} alt="دليل" className="w-full h-full object-cover" />
+                <div className="absolute top-2 right-2 bg-rose-600 text-white text-[10px] px-2 py-1 rounded-full font-bold">صورة الشمع الأحمر</div>
+              </div>
+            )}
+            
             <p className="text-xs text-slate-500 mb-6 leading-relaxed">
               يرجى تحديد مدة الإغلاق الرسمية لمطعم ({closureModalData.estName}). سيتم إشعار الفرق الميدانية بهذا القرار فوراً.
             </p>

@@ -1,15 +1,38 @@
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
-import { Search, X } from 'lucide-react';
+import { Search, X, ShieldAlert, Send } from 'lucide-react';
 
 export const EstablishmentsManager = () => {
-  const { establishments, setEstablishments, teams, activeTab } = useContext(AppContext);
+  const { establishments, setEstablishments, teams, user, addDirective, notify, penaltyRequests } = useContext(AppContext);
   const [estSearchTerm, setEstSearchTerm] = useState('');
   const [sectorFilter, setSectorFilter] = useState('all');
+  const [smartFilter, setSmartFilter] = useState('all');
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
   const [editingEst, setEditingEst] = useState(null);
+  const [correctiveEst, setCorrectiveEst] = useState(null);
+  const [correctiveText, setCorrectiveText] = useState('');
 
   const uniqueSectors = [...new Set(establishments.map(e => e.sector))].filter(Boolean);
+
+  const handleSendCorrective = (e) => {
+    e.preventDefault();
+    if (!correctiveText || !correctiveEst) return;
+    
+    const senderName = `مدير الرقابة المركزية (${user?.name || ''})`;
+    const targetTeam = teams.find(t => t.sector === correctiveEst.sector);
+    const targetRecipient = targetTeam ? targetTeam.id : 'all';
+
+    addDirective(targetRecipient, `توجيه تصحيحي لمنشأة (${correctiveEst.name}): ${correctiveText}`, senderName);
+    
+    // Update status to Under Processing
+    setEstablishments(prev => prev.map(est => 
+      est.id === correctiveEst.id ? { ...est, lastInspection: 'تحت المعالجة ⏳' } : est
+    ));
+
+    notify('تم إرسال التوجيه التصحيحي وتحديث حالة المنشأة بنجاح', 'success');
+    setCorrectiveEst(null);
+    setCorrectiveText('');
+  };
 
   const handleEditEstSubmit = (e) => {
     e.preventDefault();
@@ -37,6 +60,17 @@ export const EstablishmentsManager = () => {
         </div>
         
         <select 
+          value={smartFilter} 
+          onChange={(e) => setSmartFilter(e.target.value)}
+          className="w-full md:w-64 p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-fuchsia-500 transition-all shadow-sm"
+        >
+          <option value="all">الكل (بدون فلترة ذكية)</option>
+          <option value="closed">🚫 مطاعم مغلقة بالشمع الأحمر</option>
+          <option value="low_score">⚠️ تقييم منخفض (أقل من 50%)</option>
+          <option value="fined">💰 منشآت عليها غرامات (أو مقترحة)</option>
+        </select>
+        
+        <select 
           value={sectorFilter} 
           onChange={(e) => setSectorFilter(e.target.value)}
           className="w-full md:w-64 p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all shadow-sm"
@@ -56,15 +90,22 @@ export const EstablishmentsManager = () => {
                 <th className="p-3.5 font-bold">اسم المنشأة / الرخصة</th>
                 <th className="p-3.5 font-bold">نوع النشاط</th>
                 <th className="p-3.5 font-bold">المالك / الهاتف</th>
-                <th className="p-3.5 font-bold text-center">كود البوابة</th>
                 <th className="p-3.5 font-bold">القطاع</th>
-                <th className="p-3.5 font-bold">التقييم</th>
+                {user?.role !== 'admin' && (
+                  <th className="p-3.5 font-bold text-center">التقييم والحالة</th>
+                )}
                 <th className="p-3.5 font-bold text-center">الإجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
               {establishments
                 .filter(e => sectorFilter === 'all' || e.sector === sectorFilter)
+                .filter(e => {
+                  if (smartFilter === 'closed') return e.status === 'closed';
+                  if (smartFilter === 'low_score') return e.score < 50 && e.status !== 'closed' && e.lastInspection !== 'لم يزر بعد';
+                  if (smartFilter === 'fined') return penaltyRequests && penaltyRequests.some(pr => pr.establishmentId === e.id);
+                  return true;
+                })
                 .filter(e => 
                   e.name.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
                   e.owner.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
@@ -87,11 +128,6 @@ export const EstablishmentsManager = () => {
                         <span className="text-[10px] text-slate-400">{est.phone}</span>
                       </div>
                     </td>
-                    <td className="p-3.5 font-bold text-center">
-                      <span className="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 dir-ltr inline-block">
-                        {est.accessCode}
-                      </span>
-                    </td>
                     <td className="p-3.5">
                       <div className="flex flex-col">
                         <span className="text-slate-500 font-bold">{est.sector}</span>
@@ -102,27 +138,37 @@ export const EstablishmentsManager = () => {
                         </span>
                       </div>
                     </td>
+                    {user?.role !== 'admin' && (
+                      <td className="p-3.5 text-center">
+                        {est.status === 'closed' ? (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-red-600 text-white animate-pulse">
+                            مغلق بالشمع الأحمر 🚫
+                          </span>
+                        ) : (
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-black inline-block min-w-[50px] text-center ${
+                            est.score >= 90 ? 'bg-emerald-500/10 text-emerald-600' :
+                            est.score >= 50 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
+                          }`}>
+                            {est.lastInspection === 'تحت المعالجة ⏳' ? 'تحت المعالجة ⏳' : est.lastInspection === 'لم يزر بعد' ? 'معلق ⏳' : `${est.score}%`}
+                          </span>
+                        )}
+                      </td>
+                    )}
                     <td className="p-3.5">
-                      {est.status === 'closed' ? (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-red-600 text-white animate-pulse">
-                          مغلق بالشمع الأحمر 🚫
-                        </span>
-                      ) : (
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
-                          est.score >= 90 ? 'bg-emerald-500/10 text-emerald-600' :
-                          est.score >= 70 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
-                        }`}>
-                          {est.lastInspection === 'لم يزر بعد' ? 'معلق ⏳' : `${est.score}%`}
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3.5">
-                      <div className="flex justify-center gap-2">
+                      <div className="flex justify-center flex-wrap gap-2">
+                        {user?.role === 'central_director' && est.score < 50 && est.status !== 'closed' && est.lastInspection !== 'تحت المعالجة ⏳' && (
+                          <button
+                            onClick={() => setCorrectiveEst(est)}
+                            className="px-2.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold cursor-pointer transition-all border border-amber-500/20"
+                          >
+                            ⚠️ توجيه تصحيحي
+                          </button>
+                        )}
                         <button
                           onClick={() => setSelectedEstDetails(est)}
                           className="px-2.5 py-1.5 rounded-xl bg-slate-550/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold cursor-pointer transition-all"
                         >
-                          🔗 رمز الـ QR
+                          🔗 تفاصيل
                         </button>
                         <button
                           onClick={() => setEditingEst(est)}
@@ -213,6 +259,54 @@ export const EstablishmentsManager = () => {
                 <button type="button" onClick={() => window.print()} className="py-2.5 rounded-xl bg-slate-800 text-center font-black">طباعة ملصق الباركود</button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Corrective Action Modal */}
+      {correctiveEst && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all">
+          <div className="w-full max-w-lg bg-slate-900 border border-slate-700 p-6 rounded-3xl text-white shadow-2xl relative text-right">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+              <h3 className="text-base font-black text-amber-500 flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5" />
+                توجيه إجراء تصحيحي مباشر
+              </h3>
+              <button onClick={() => setCorrectiveEst(null)} className="p-1 rounded bg-slate-800 text-slate-450 hover:text-white transition-all cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSendCorrective} className="space-y-4">
+              <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50">
+                <p className="text-xs text-slate-400 font-bold mb-1">المنشأة المستهدفة:</p>
+                <p className="text-sm font-black text-white">{correctiveEst.name}</p>
+                <div className="flex gap-4 mt-2 text-[10px]">
+                  <span className="text-slate-300">القطاع: <strong className="text-teal-400">{correctiveEst.sector}</strong></span>
+                  <span className="text-slate-300">التقييم الحالي: <strong className="text-red-400">{correctiveEst.score}%</strong></span>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-300">نص التوجيه والأوامر للفريق الرقابي المختص:</label>
+                <textarea
+                  rows="4"
+                  required
+                  placeholder="اكتب التوجيه الرقابي هنا (مثال: يرجى التوجه فوراً وإعادة الكشف على المنشأة والتأكد من معالجة السلبيات المرصودة...)"
+                  value={correctiveText}
+                  onChange={(e) => setCorrectiveText(e.target.value)}
+                  className="w-full p-3 rounded-2xl bg-slate-950 border border-slate-700 text-white outline-none focus:border-amber-500 font-medium text-xs transition-all resize-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 mt-2 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer shadow-lg shadow-amber-500/20"
+              >
+                <Send className="w-4 h-4" />
+                <span>إصدار التوجيه وتحويل الحالة إلى (تحت المعالجة)</span>
+              </button>
+            </form>
           </div>
         </div>
       )}

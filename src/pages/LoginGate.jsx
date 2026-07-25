@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { Eye, EyeOff, Lock, User, Phone, CheckSquare, Square, ShieldAlert } from 'lucide-react';
 
 export const LoginGate = () => {
-  const { navigate, setUser, config, teams, directors, trackers, notify } = useContext(AppContext);
+  const { navigate, setUser, config, teams, directors, trackers, notify, loginCMS } = useContext(AppContext);
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -191,13 +191,19 @@ export const LoginGate = () => {
 
         {/* Text Header */}
         <div className="text-center mb-6">
-          <h1 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2">
-            {config.headerText}
+          <h1 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2 leading-tight">
+            {loginCMS?.heroTitle || config.headerText}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            بوابة تسجيل الدخول الإلكتروني للمفتشين واللجان الميدانية
+            {loginCMS?.heroSubtext || 'بوابة تسجيل الدخول الإلكتروني للمفتشين واللجان الميدانية'}
           </p>
         </div>
+        
+        {loginCMS?.announcement && (
+          <div className="mb-6 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-xl text-center">
+            <span className="text-[11px] font-black text-amber-700 dark:text-amber-500">{loginCMS.announcement}</span>
+          </div>
+        )}
 
         {errorMessage && (
           <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center gap-2">

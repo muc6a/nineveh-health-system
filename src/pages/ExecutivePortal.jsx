@@ -10,7 +10,7 @@ import { NotificationBell } from '../components/NotificationBell';
 import { CriticalAlertModal } from '../components/CriticalAlertModal';
 import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
-import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera } from 'lucide-react';
+import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3 } from 'lucide-react';
 
 export const ExecutivePortal = () => {
   const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests } = useContext(AppContext);
@@ -20,6 +20,7 @@ export const ExecutivePortal = () => {
   const [showUninspectedModal, setShowUninspectedModal] = useState(false);
   const [showCategoryBreakdownModal, setShowCategoryBreakdownModal] = useState(false);
   const [showComplaintsModal, setShowComplaintsModal] = useState(false);
+  const [chartModalState, setChartModalState] = useState({ isOpen: false, title: '', data: [] });
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
     if (user?.role === 'admin') return true;
@@ -27,9 +28,12 @@ export const ExecutivePortal = () => {
   };
 
   const getInitialExecutiveTab = () => {
-    if (user?.role === 'central_director') return 'operations_room';
     if (hasPerm('showMainDashboard')) return 'strategic';
+    if (user?.role === 'central_director') return 'operations_room';
+    if (hasPerm('manageEstablishments')) return 'establishments';
     if (hasPerm('showReportsPage')) return 'geographic';
+    if (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) return 'unified_inbox';
+    if (hasPerm('showDeliveryPage')) return 'delivery';
     return null;
   };
 
@@ -262,17 +266,19 @@ export const ExecutivePortal = () => {
             ))}
 
             {/* Establishments Manager Tab */}
-            <button
-              onClick={() => { setExecutiveTab('establishments'); setSelectedTeamId(''); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                executiveTab === 'establishments'
-                  ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <Building className="w-4.5 h-4.5" />
-              <span>🏢 إدارة المنشآت</span>
-            </button>
+            {hasPerm('manageEstablishments') && (
+              <button
+                onClick={() => { setExecutiveTab('establishments'); setSelectedTeamId(''); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  executiveTab === 'establishments'
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Building className="w-4.5 h-4.5" />
+                <span>🏢 إدارة المنشآت</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -334,10 +340,10 @@ export const ExecutivePortal = () => {
             <span className="text-xl">💼</span>
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">
-                {executiveTab === 'establishments' ? 'إدارة المنشآت والـ QR' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`)}
+                {activeTab === 'establishments' ? 'إدارة المنشآت والـ QR' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`)}
               </h2>
               <p className="text-[10px] text-slate-400 mt-1">
-                {executiveTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة'}
+                {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة'}
               </p>
             </div>
           </div>
@@ -361,11 +367,6 @@ export const ExecutivePortal = () => {
           </div>
         </div>
 
-        {/* Tab Content Rendering */}
-        {executiveTab === 'establishments' ? (
-          <EstablishmentsManager />
-        ) : (
-          <>
         {/* Executive Sub-tabs / Page Splitting */}
         <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
           {hasPerm('showMainDashboard') && (
@@ -381,19 +382,6 @@ export const ExecutivePortal = () => {
             </button>
           )}
 
-          {hasPerm('showReportsPage') && (
-            <button
-              onClick={() => setActiveTab('geographic')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'geographic'
-                  ? 'bg-teal-600 text-white font-black'
-                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              🗺️ خارطة الكثافة والتوزيع الجغرافي
-            </button>
-          )}
-
           {user?.role === 'central_director' && (
             <button
               onClick={() => setActiveTab('operations_room')}
@@ -406,8 +394,48 @@ export const ExecutivePortal = () => {
               🚨 غرفة العمليات المركزية
             </button>
           )}
+
+          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && (
+            <button
+              onClick={() => setActiveTab('unified_inbox')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'unified_inbox' ? 'bg-amber-600 text-white font-black' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              📨 مركز البلاغات والشكاوى
+            </button>
+          )}
+
+          {hasPerm('showReportsPage') && !isDirectorGeneral && (
+            <button
+              onClick={() => setActiveTab('geographic')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'geographic'
+                  ? 'bg-teal-600 text-white font-black'
+                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              🗺️ خارطة الكثافة والتوزيع الجغرافي
+            </button>
+          )}
+
+          {hasPerm('showDeliveryPage') && (
+            <button
+              onClick={() => setActiveTab('delivery')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'delivery' ? 'bg-teal-600 text-white font-black' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              📦 خدمة التوصيل
+            </button>
+          )}
         </div>
 
+        {/* Tab Content Rendering */}
+        {activeTab === 'establishments' ? (
+          <EstablishmentsManager />
+        ) : (
+          <>
         {activeTab === 'operations_room' && <OperationsRoom />}
 
         {activeTab !== 'operations_room' && (
@@ -425,8 +453,10 @@ export const ExecutivePortal = () => {
           </div>
         )}
 
-        {/* Summary Minimalist 3D Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Dynamic Tab Switching Content */}
+        {activeTab === 'strategic' && hasPerm('showMainDashboard') ? (
+          <div className="space-y-6">\n{/* Summary Minimalist 3D Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Card 1: Total establishments */}
           <div 
             onClick={() => setShowCategoryBreakdownModal(true)}
@@ -440,7 +470,7 @@ export const ExecutivePortal = () => {
               <span className="text-xs text-slate-400">اضغط للمعاينة بالتصنيف 🔍</span>
             </div>
             <h3 className="text-xs text-slate-300 font-bold">إجمالي المنشآت الخاضعة للرقابة الصحية</h3>
-            <span className="text-5xl font-black text-white mt-1 block">{filteredEsts.length} <span className="text-sm text-slate-450 font-medium">منشأة مسجلة</span></span>
+            <span className="text-4xl lg:text-5xl font-black text-white mt-1 block">{filteredEsts.length} <span className="text-sm text-slate-450 font-medium">منشأة مسجلة</span></span>
           </div>
 
           {/* Card 2: Coverage Ratio */}
@@ -455,7 +485,7 @@ export const ExecutivePortal = () => {
               <span className="text-emerald-400 text-xs font-bold">مؤشر أداء متميز</span>
             </div>
             <h3 className="text-xs text-slate-300 font-bold">نسبة تغطية الرقابة الصحية المنجزة</h3>
-            <span className="text-5xl font-black text-emerald-400 mt-1 block">
+            <span className="text-4xl lg:text-5xl font-black text-emerald-400 mt-1 block">
               {filteredEsts.length > 0 ? Math.round((inspectedCount / filteredEsts.length) * 100) : 0}%
             </span>
           </div>
@@ -472,18 +502,37 @@ export const ExecutivePortal = () => {
               <span className="text-red-400 text-xs font-bold">تتطلب متابعة</span>
             </div>
             <h3 className="text-xs text-slate-300 font-bold">إجمالي المخالفات الحرجة غير الملتزمة</h3>
-            <span className="text-5xl font-black text-red-400 mt-1 block">
+            <span className="text-4xl lg:text-5xl font-black text-red-400 mt-1 block">
               {nonCompliantCount} <span className="text-sm text-red-500/70 font-medium">مخالفة</span>
+            </span>
+          </div>
+
+          {/* Card 4: Closed Establishments */}
+          <div 
+            className="p-5 rounded-2xl bg-gradient-to-br from-orange-900 to-slate-900 text-white shadow-xl border border-orange-800/40 text-right relative overflow-hidden"
+          >
+            <div className="absolute top-2 left-2 opacity-5">
+              <AlertTriangle className="w-32 h-32 text-orange-400" />
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-orange-450 text-[10px] font-black tracking-wider uppercase bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">إغلاق رسمي</span>
+              <span className="text-orange-400 text-xs font-bold">محاسبة قانونية</span>
+            </div>
+            <h3 className="text-xs text-slate-300 font-bold">إجمالي المطاعم والمنشآت المغلقة للآن</h3>
+            <span className="text-4xl lg:text-5xl font-black text-orange-400 mt-1 block">
+              {closedRestaurants.length} <span className="text-sm text-orange-500/70 font-medium">منشأة</span>
             </span>
           </div>
         </div>
 
-        {/* Dynamic Tab Switching Content */}
-        {activeTab === 'strategic' && hasPerm('showMainDashboard') ? (
-          <div className="space-y-6">
+        
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Compliance Bar Chart */}
-              <div className="glassmorphic-card p-5 flex flex-col min-h-[320px]">
+              <div 
+                className="glassmorphic-card p-5 flex flex-col min-h-[320px] cursor-pointer hover:shadow-2xl transition-all"
+                onClick={() => setChartModalState({ isOpen: true, title: 'تفاصيل مؤشر امتثال السلامة الصحية للمطاعم والمنشآت', data: chart3Data })}
+              >
+                <div className="absolute top-2 left-2 text-[10px] bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 px-2 py-1 rounded-lg">اضغط للتفاصيل</div>
                 <ThreeDBarChart
                   title="مؤشر امتثال السلامة الصحية للمطاعم والمنشآت"
                   data={chart3Data}
@@ -491,177 +540,27 @@ export const ExecutivePortal = () => {
               </div>
 
               {/* Inspection Pie Chart */}
-              <div className="glassmorphic-card p-5 flex flex-col min-h-[320px]">
+              <div 
+                className="glassmorphic-card p-5 flex flex-col min-h-[320px] cursor-pointer hover:shadow-2xl transition-all relative"
+                onClick={() => setChartModalState({ isOpen: true, title: 'تفاصيل نسبة تقييم وإصدار رموز QR هذا الشهر', data: chart1Data })}
+              >
+                <div className="absolute top-2 left-2 text-[10px] bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 px-2 py-1 rounded-lg z-10">اضغط للتفاصيل</div>
                 <ThreeDPieChart
                   title="نسبة تقييم وإصدار رموز QR هذا الشهر"
                   data={chart1Data}
-                  onRedClick={() => setShowUninspectedModal(true)}
+                  onRedClick={(e) => {
+                    e?.stopPropagation();
+                    setShowUninspectedModal(true);
+                  }}
                 />
               </div>
             </div>
 
-            {/* Penalties and Closures Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div className="glassmorphic-card p-5 border-t-4 border-red-500 min-h-[160px] flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
-                      <AlertTriangle className="w-5 h-5 text-red-500" /> المطاعم والمنشآت المغلقة 
-                    </h3>
-                    <span className="px-3 py-1 bg-red-500/10 text-red-600 dark:text-red-400 rounded-full text-xs font-bold">{closedRestaurants.length}</span>
-                  </div>
-                  {closedRestaurants.length === 0 ? (
-                    <p className="text-xs text-slate-500 text-center py-4 font-bold">لا توجد منشآت مغلقة حالياً.</p>
-                  ) : (
-                    <ul className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                      {closedRestaurants.map(r => (
-                        <li key={r.id} className="text-xs font-bold bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                          <span className="text-slate-800 dark:text-slate-200">{r.estName} <span className="text-[10px] text-slate-400 mr-1">({r.sector})</span></span>
-                          <span className="text-[10px] text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-md">{new Date(r.date).toLocaleDateString('ar-IQ')}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-
-              <div className="glassmorphic-card p-5 border-t-4 border-orange-500 min-h-[160px] flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-orange-500" /> الغرامات المالية المفروضة
-                    </h3>
-                    <span className="px-3 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-full text-xs font-bold">{finedRestaurants.length}</span>
-                  </div>
-                  {finedRestaurants.length === 0 ? (
-                    <p className="text-xs text-slate-500 text-center py-4 font-bold">لا توجد غرامات مسجلة حالياً.</p>
-                  ) : (
-                    <ul className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                      {finedRestaurants.map(r => (
-                        <li key={r.id} className="text-xs font-bold bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                          <span className="text-slate-800 dark:text-slate-200">{r.estName} <span className="text-[10px] text-slate-400 mr-1">({r.sector})</span></span>
-                          <span className="text-[10px] text-orange-500 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded-md">{new Date(r.date).toLocaleDateString('ar-IQ')}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Extra Executive Dashboard Widgets for Director General */}
-            {isDirectorGeneral && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Worst Sectors List */}
-                <div className="glassmorphic-card p-5 text-right">
-                  <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center justify-end gap-2">
-                    القطاعات الأكثر تسجيلًا للمخالفات <AlertTriangle className="w-4 h-4 text-red-500" />
-                  </h3>
-                  <div className="space-y-3">
-                    {worstSectors.length > 0 ? worstSectors.map((s, idx) => (
-                      <div key={idx} className="flex justify-between items-center bg-red-50 dark:bg-red-950/20 p-3 rounded-xl border border-red-100 dark:border-red-900/30">
-                        <span className="font-bold text-red-600 dark:text-red-400 text-xs">مخالفات: {s.nonCompliant}</span>
-                        <span className="font-black text-slate-800 dark:text-slate-200 text-sm">{s.name}</span>
-                      </div>
-                    )) : (
-                      <p className="text-slate-500 text-xs font-bold text-center p-4">لا توجد منشآت مخالفة حالياً</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Public Complaints KPI */}
-                <div 
-                  onClick={() => setShowComplaintsModal(true)}
-                  className="glassmorphic-card p-5 text-right bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-900/20 border-indigo-100 dark:border-indigo-900/30 flex flex-col justify-center items-center relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-all"
-                >
-                  <div className="absolute top-2 left-2 opacity-5">
-                    <Users className="w-40 h-40 text-indigo-500" />
-                  </div>
-                  <div className="absolute top-4 right-4 animate-bounce">
-                    <span className="flex h-3 w-3 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-black text-indigo-800 dark:text-indigo-300 mb-2 z-10 text-center">مؤشر شكاوى وبلاغات المواطنين</h3>
-                  <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold mb-4 z-10 text-center">انقر هنا لعرض كافة الشكاوى الواردة من المواطنين بشكل سري</p>
-                  <span className="text-6xl font-black text-indigo-600 dark:text-indigo-400 z-10 block text-center">
-                    {publicComplaintsCount}
-                  </span>
-                </div>
-              </div>
-            )}
 
 
-            {/* Direct Command Directive Form */}
-            {(!isDirectorGeneral && user?.permissions?.sendDirectives) && (
-              <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl">
-                <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
-                  <ShieldAlert className="w-5 h-5 text-amber-500" />
-                  <div>
-                    <h3 className="text-xs font-black text-slate-800 dark:text-white">📢 بوابة الأوامر والتعميمات الإدارية (مدير الصحة العامة)</h3>
-                    <p className="text-[10px] text-slate-500 mt-0.5">توجيه اللجان الميدانية أو شعب الرقابة بمختلف القطاعات</p>
-                  </div>
-                </div>
 
-                <form onSubmit={handleSendDirective} className="space-y-4 text-xs font-bold">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-slate-600 dark:text-slate-400">الجهة الإدارية المعنية بالأمر</label>
-                      <select
-                        value={targetRecipient}
-                        onChange={(e) => setTargetRecipient(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
-                      >
-                        <option value="all">📢 كافة شعب ولجان التفتيش بالمحافظة</option>
-                        <option value="public_health">🏢 مدير قسم الصحة العامة</option>
-                        <option value="left_bank">🗺️ شعبة الرقابة الصحية - الجانب الأيسر</option>
-                        <option value="right_bank">🗺️ شعبة الرقابة الصحية - الجانب الأيمن</option>
-                        {allowedTeams.map(t => (
-                          <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
-                        ))}
-                      </select>
-                    </div>
 
-                    <div className="space-y-1">
-                      <label className="text-slate-600 dark:text-slate-400">الأولوية ودرجة الإلحاح</label>
-                      <select
-                        className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"
-                      >
-                        <option value="high">🚨 عاجل وهام جداً - تنفيذ فوري</option>
-                        <option value="medium">⚠️ متابعة روتينية يومية</option>
-                      </select>
-                    </div>
-                  </div>
 
-                  <div className="space-y-1">
-                    <label className="text-slate-600 dark:text-slate-400">نص التوجيه / الأمر الرقابي والتعليمات الوزارية</label>
-                    <textarea
-                      rows="3"
-                      required
-                      placeholder="اكتب التوجيه هنا (مثال: يرجى إطلاق حملة تفتيشية مكثفة على المطاعم والعيادات في منطقة تلعفر للتأكد من رخص العمل الرسمية...)"
-                      value={directiveText}
-                      onChange={(e) => setDirectiveText(e.target.value)}
-                      className="w-full p-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-medium"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-amber-500/10 active:scale-95 transition-all"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>إرسال وتعميم الأمر الإداري فوراً 🚀</span>
-                  </button>
-                </form>
-
-                {directiveSuccessMsg && (
-                  <div className="mt-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-center font-bold text-[10px] animate-pulse">
-                    {directiveSuccessMsg}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         ) : activeTab === 'geographic' && hasPerm('showReportsPage') ? (
           <div className="space-y-6">
@@ -694,6 +593,126 @@ export const ExecutivePortal = () => {
                 data={chart4Data.length > 0 ? chart4Data : [{ label: 'لا توجد مخالفات', value: 0, color: '#94A3B8' }]}
               />
             </div>
+          </div>
+        ) : activeTab === 'unified_inbox' && (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            {/* Direct Command Directive Form */}
+            {hasPerm('showDirectivesPage') && (!isDirectorGeneral && user?.permissions?.sendDirectives) && (
+              <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl sticky top-6">
+                <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
+                  <ShieldAlert className="w-5 h-5 text-amber-500" />
+                  <div>
+                    <h3 className="text-xs font-black text-slate-800 dark:text-white">📢 بوابة الأوامر والتعميمات الإدارية</h3>
+                    <p className="text-[10px] text-slate-500 mt-0.5">توجيه اللجان الميدانية أو شعب الرقابة بمختلف القطاعات</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSendDirective} className="space-y-4 text-xs font-bold">
+                  <div className="space-y-1">
+                    <label className="text-slate-600 dark:text-slate-400">الجهة الإدارية المعنية بالأمر</label>
+                    <select
+                      value={targetRecipient}
+                      onChange={(e) => setTargetRecipient(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
+                    >
+                      <option value="all">📢 كافة شعب ولجان التفتيش بالمحافظة</option>
+                      <option value="public_health">🏢 مدير قسم الصحة العامة</option>
+                      <option value="left_bank">🗺️ شعبة الرقابة الصحية - الجانب الأيسر</option>
+                      <option value="right_bank">🗺️ شعبة الرقابة الصحية - الجانب الأيمن</option>
+                      {allowedTeams.map(t => (
+                        <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-600 dark:text-slate-400">الأولوية ودرجة الإلحاح</label>
+                    <select
+                      className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"
+                    >
+                      <option value="high">🚨 عاجل وهام جداً - تنفيذ فوري</option>
+                      <option value="medium">⚠️ متابعة روتينية يومية</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-600 dark:text-slate-400">نص التوجيه / الأمر الرقابي والتعليمات الوزارية</label>
+                    <textarea
+                      rows="4"
+                      required
+                      placeholder="اكتب التوجيه هنا..."
+                      value={directiveText}
+                      onChange={(e) => setDirectiveText(e.target.value)}
+                      className="w-full p-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-medium"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-amber-500/10 active:scale-95 transition-all"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>إرسال وتعميم الأمر الإداري فوراً 🚀</span>
+                  </button>
+                </form>
+
+                {directiveSuccessMsg && (
+                  <div className="mt-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-center font-bold text-[10px] animate-pulse">
+                    {directiveSuccessMsg}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Public Evals / Complaints List */}
+            {hasPerm('showPublicEvalsPage') && (
+              <div className="glassmorphic-card p-5 border border-slate-700/60 bg-slate-900 rounded-3xl">
+                <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
+                  <h3 className="text-sm font-black text-red-400 flex items-center gap-2">
+                    <ShieldAlert className="w-5 h-5" />
+                    سجل شكاوى المواطنين وبلاغاتهم
+                  </h3>
+                </div>
+
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1 text-right">
+                  {(reports || []).filter(r => !r.isDelivery).length > 0 ? (
+                    (reports || []).filter(r => !r.isDelivery).map((comp, idx) => (
+                      <div key={idx} className="bg-slate-800 p-4 rounded-2xl border border-red-500/20 shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="text-sm font-black text-white">{comp.establishmentName}</h4>
+                            <span className="text-[10px] text-slate-400">القطاع: {comp.sector}</span>
+                          </div>
+                          <span className="bg-red-500/10 text-red-400 text-[10px] font-bold px-2 py-1 rounded-full border border-red-500/20">
+                            {comp.date || 'تاريخ غير محدد'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-300 font-bold bg-slate-900 p-3 rounded-xl border border-slate-700 mt-2">
+                          {comp.details}
+                        </p>
+                        {comp.evidenceImage && (
+                          <div className="mt-3 flex items-center gap-2 text-[10px] text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg w-fit border border-emerald-500/20">
+                            <Camera className="w-3.5 h-3.5" />
+                            مرفق صورة إثبات المخالفة ({comp.evidenceImage})
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center p-8 text-slate-500 font-bold text-xs">لا توجد شكاوى مسجلة حالياً</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'delivery' && hasPerm('showDeliveryPage') ? (
+          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
+            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
+              <Package className="w-10 h-10 text-teal-500" />
+            </div>
+            <h2 className="text-lg font-black text-slate-800 dark:text-white">إدارة خدمة التوصيل</h2>
+            <p className="text-xs text-slate-500 max-w-sm">قريباً سيتم إدارة عمال التوصيل والمناديب المتعاقدين مع المنشآت وتدقيق هوياتهم الصحية من هنا.</p>
           </div>
         ) : null}
           </>
@@ -767,6 +786,51 @@ export const ExecutivePortal = () => {
               className="mt-6 w-full py-3 rounded-xl bg-gradient-to-l from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-600/20 text-xs font-black transition-all cursor-pointer"
             >
               إغلاق نافذة المعاينة
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Chart Details Modal */}
+      {chartModalState.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all">
+          <div className="w-full max-w-md bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right">
+            <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
+              <h3 className="text-sm font-black text-teal-400 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                {chartModalState.title}
+              </h3>
+              <button 
+                onClick={() => setChartModalState({ ...chartModalState, isOpen: false })}
+                className="p-1 rounded bg-slate-800 text-slate-450 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+              {chartModalState.data && chartModalState.data.length > 0 ? (
+                chartModalState.data.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 rounded-xl bg-slate-800/80 border border-slate-700/50">
+                    <span className="font-bold text-slate-200 text-xs flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
+                      {item.label}
+                    </span>
+                    <span className="px-3 py-1 rounded-lg bg-slate-900 text-white font-black text-xs border border-slate-700">
+                      {item.value}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-slate-500 text-xs py-4">لا توجد بيانات لعرضها</div>
+              )}
+            </div>
+
+            <button
+              onClick={() => setChartModalState({ ...chartModalState, isOpen: false })}
+              className="mt-6 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-white font-extrabold text-xs transition-all cursor-pointer"
+            >
+              إغلاق النافذة
             </button>
           </div>
         </div>
