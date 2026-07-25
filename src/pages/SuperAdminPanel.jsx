@@ -12,7 +12,7 @@ export const SuperAdminPanel = () => {
   const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setActivityTypes } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
-  const [activeTab, setActiveTab] = useState('roster');
+  const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
 
   // Modal views
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
@@ -50,18 +50,38 @@ export const SuperAdminPanel = () => {
   const [editTechnicians, setEditTechnicians] = useState(['']);
 
   // Roster sub-tab: 'committees' or 'directors'
-  const [subRosterTab, setSubRosterTab] = useState('committees');
+  const [subRosterTab, setSubRosterTab] = useState(() => sessionStorage.getItem('superAdminSubRosterTab') || 'committees');
 
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
-  const [subSettingsTab, setSubSettingsTab] = useState('evaluations');
+  const [subSettingsTab, setSubSettingsTab] = useState(() => sessionStorage.getItem('superAdminSubSettingsTab') || 'evaluations');
   const [newActivity, setNewActivity] = useState('');
   const [editingActivityIndex, setEditingActivityIndex] = useState(null);
   const [editingActivityText, setEditingActivityText] = useState('');
-  const [cmsTab, setCmsTab] = useState('public'); // public, login, owner
+  const [cmsTab, setCmsTab] = useState(() => sessionStorage.getItem('superAdminCmsTab') || 'public'); // public, login, owner
   const [selectedAuditLog, setSelectedAuditLog] = useState(null);
 
   // Audit sub-tab: 'trail', 'tickets'
-  const [subAuditTab, setSubAuditTab] = useState('trail');
+  const [subAuditTab, setSubAuditTab] = useState(() => sessionStorage.getItem('superAdminSubAuditTab') || 'trail');
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminActiveTab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminSubRosterTab', subRosterTab);
+  }, [subRosterTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminSubSettingsTab', subSettingsTab);
+  }, [subSettingsTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminCmsTab', cmsTab);
+  }, [cmsTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminSubAuditTab', subAuditTab);
+  }, [subAuditTab]);
 
   // Eye toggles for passwords
   const [showNewTeamPass, setShowNewTeamPass] = useState(false);
