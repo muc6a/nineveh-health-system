@@ -24,6 +24,7 @@ export const InspectionForm = () => {
   // Geolocation captures
   const [liveLocation, setLiveLocation] = useState(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const [locationVerified, setLocationVerified] = useState(false);
 
   // AI Inspector
   const [isAiScanning, setIsAiScanning] = useState(false);
@@ -162,6 +163,7 @@ export const InspectionForm = () => {
           setLiveLocation({ lat, lon });
           setLocationLog(`${lat}° N, ${lon}° E (إحداثيات حية ملتقطة مسبقاً 📍)`);
           setIsFetchingLocation(false);
+          setLocationVerified(true);
         },
         (error) => {
           console.error(error);
@@ -170,11 +172,50 @@ export const InspectionForm = () => {
           setLiveLocation({ lat: mockLat, lon: mockLon });
           setLocationLog(`${mockLat}° N, ${mockLon}° E (محاكاة إحداثيات موقع الموصل 📍)`);
           setIsFetchingLocation(false);
+          setLocationVerified(true);
         },
         { enableHighAccuracy: true, timeout: 6000 }
       );
     } else {
       setIsFetchingLocation(false);
+      setLocationVerified(true);
+    }
+  };
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+          setSelectedPhoto(dataUrl);
+        };
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -219,7 +260,7 @@ export const InspectionForm = () => {
         const originalData = establishment.history && establishment.history.length > 0 ? establishment.history[0] : null;
         logAudit('تعديل تقييم كشف صحي', establishment.id, originalData, { score: scorePercentage, ratings, remarks }, justification, user);
       }
-      addInspection(establishment.id, scorePercentage, remarks || 'تم إجراء التقييم الصحي الدوري.', ratings, user?.name || 'اللجنة الرقابية الأولى', liveLocation, isEdit, user?.id);
+      addInspection(establishment.id, scorePercentage, remarks || 'تم إجراء التقييم الصحي الدوري.', ratings, user?.name || 'اللجنة الرقابية الأولى', liveLocation, isEdit, user?.id, selectedPhoto);
       if (isOffline) {
         localStorage.setItem('has_offline_data', 'true');
         triggerAlert('تم الحفظ في وضع عدم الاتصال (أوفلاين). ستتم المزامنة التلقائية فور عودة الإنترنت.', 'warning', true);
@@ -266,7 +307,26 @@ export const InspectionForm = () => {
           </div>
         )}
 
-        <form onSubmit={handleFormSubmit} className="space-y-6 relative">
+        {!locationVerified ? (
+          <div className="glassmorphic-card p-12 flex flex-col items-center justify-center text-center space-y-6 animate-fade-in-up">
+            <div className="w-24 h-24 rounded-full bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center text-teal-600 mb-4 shadow-inner">
+              <MapPin className="w-12 h-12" />
+            </div>
+            <h2 className="text-2xl font-black text-slate-800 dark:text-white">التحقق المكاني مطلوب لبدء التقييم</h2>
+            <p className="text-sm text-slate-500 max-w-md mx-auto">
+              لضمان موثوقية الرقابة ونزاهة العملية التفتيشية، يرجى تفعيل الموقع (GPS) والضغط على الزر أدناه لتسجيل وتوثيق تواجدك الفعلي في مقر المنشأة: <span className="font-bold text-teal-600">({establishment.name})</span>
+            </p>
+            <button
+              onClick={requestLocation}
+              disabled={isFetchingLocation}
+              className="mt-6 px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-xl shadow-teal-500/30 flex items-center justify-center gap-3 font-black transition-all active:scale-95 disabled:opacity-50 text-lg"
+            >
+              <MapPin className="w-6 h-6" />
+              {isFetchingLocation ? 'جاري الاتصال بالأقمار الصناعية...' : 'تحقق من الموقع لبدء التقييم الآن'}
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleFormSubmit} className="space-y-6 relative animate-fade-in-up">
           {sections.map(section => (
             <div key={section.key} className="glassmorphic-card p-6">
               <h3 className="text-xs font-black text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4 text-teal-600">
@@ -335,16 +395,21 @@ export const InspectionForm = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setSelectedPhoto(e.target.files[0].name);
-                      }
-                    }}
+                    capture="environment"
+                    onChange={handlePhotoUpload}
                     className="hidden"
                   />
                 </label>
                 {selectedPhoto && (
-                  <span className="text-[10px] text-emerald-500 font-bold block">✓ تم تحميل الصورة بنجاح: {selectedPhoto}</span>
+                  <div className="mt-3 p-3 rounded-2xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-900/20 flex items-center gap-4">
+                    <img src={selectedPhoto} alt="مرفق" className="w-16 h-16 object-cover rounded-xl shadow-sm" />
+                    <div>
+                      <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold block mb-1">✓ تم التقاط الصورة وإرفاقها بنجاح</span>
+                      <button type="button" onClick={() => setSelectedPhoto(null)} className="text-[10px] text-red-500 hover:underline font-bold">
+                        إزالة الصورة
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
@@ -484,7 +549,8 @@ export const InspectionForm = () => {
             </button>
           </div>
 
-        </form>
+          </form>
+        )}
 
       </div>
 

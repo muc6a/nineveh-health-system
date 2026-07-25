@@ -2965,6 +2965,18 @@ export const SuperAdminPanel = () => {
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
+                  
+                  {selectedEstDetails.history && selectedEstDetails.history[0] && selectedEstDetails.history[0].photo && (
+                    <div className="mt-3 p-2 bg-slate-200/50 dark:bg-slate-900/50 rounded-xl">
+                      <span className="text-[10px] text-slate-500 block mb-2 font-bold">صورة توثيقية من آخر زيارة:</span>
+                      <img src={selectedEstDetails.history[0].photo} alt="توثيق الزيارة" className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity" onClick={() => window.open(selectedEstDetails.history[0].photo, '_blank')} />
+                    </div>
+                  )}
+                  {selectedEstDetails.latitude && selectedEstDetails.longitude && selectedEstDetails.latitude !== '36.3489' && (
+                    <p className="text-[10px] text-teal-600 dark:text-teal-400 mt-2 bg-teal-50 dark:bg-teal-900/20 p-2 rounded-lg flex items-center gap-1">
+                      📍 تم تأكيد التواجد الميداني: {selectedEstDetails.latitude}, {selectedEstDetails.longitude}
+                    </p>
+                  )}
                 </div>
                 <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl relative overflow-hidden">
                   <div className="absolute -left-4 -top-4 w-12 h-12 bg-teal-500/20 blur-xl rounded-full"></div>

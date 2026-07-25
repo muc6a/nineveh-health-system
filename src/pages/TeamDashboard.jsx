@@ -364,6 +364,20 @@ export const TeamDashboard = () => {
               </button>
             )}
 
+            {hasPerm('manageEstablishments') && (
+              <button
+                onClick={() => { setActiveTab('smart_tasks'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'smart_tasks'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <CheckSquare className="w-4.5 h-4.5" />
+                <span>📅 مهام اليوم</span>
+              </button>
+            )}
+
             {hasPerm('showReportsPage') && (
               <button
                 onClick={() => { setActiveTab('reports'); setIsSidebarOpen(false); }}
@@ -480,9 +494,18 @@ export const TeamDashboard = () => {
         {/* Tab A: Summary Dashboard */}
         {activeTab === 'summary' && hasPerm('showMainDashboard') && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
+              </div>
+              <button 
+                onClick={() => setShowQRScanner(true)}
+                className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
+              >
+                <QrCode className="w-5 h-5" />
+                <span>مسح كود QR لمنشأة 📸</span>
+              </button>
             </div>
 
             {myDirectives.length > 0 && (
@@ -592,7 +615,68 @@ export const TeamDashboard = () => {
           </div>
         )}
 
-        {/* Tab B: Directory */}
+        {/* Tab B: Smart Tasks (Today's Tasks) */}
+        {activeTab === 'smart_tasks' && hasPerm('manageEstablishments') && (
+          <div className="space-y-6 animate-fade-in-up">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                  <CheckSquare className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-slate-800 dark:text-white">مهام اليوم المقترحة</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    أمامك <span className="font-bold text-blue-600">{smartTasks.length}</span> منشآت تحتاج للزيارة القصوى اليوم.
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowQRScanner(true)}
+                className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
+              >
+                <QrCode className="w-5 h-5" />
+                <span>بدء التفتيش بمسح QR 📸</span>
+              </button>
+            </div>
+
+            {smartTasks.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {smartTasks.map(est => (
+                  <div key={`smart-${est.id}`} className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between group">
+                    <div>
+                      <h4 className="font-black text-slate-800 dark:text-white text-base mb-2 group-hover:text-blue-600 transition-colors">{est.name}</h4>
+                      <div className="space-y-2 mb-4">
+                        <div className="text-xs text-slate-500 flex items-center gap-2">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{est.address || 'العنوان غير محدد'}</span>
+                        </div>
+                        <div className="text-xs text-slate-500 flex items-center gap-2">
+                          <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                          <span>تاريخ آخر زيارة: <strong className="text-slate-700 dark:text-slate-300 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded">{est.lastInspection}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => navigate(`/inspection/new?id=${est.id}`)}
+                      className="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-600 text-blue-600 hover:text-white font-bold flex items-center justify-center gap-2 transition-all"
+                    >
+                      <FilePlus className="w-4 h-4" />
+                      <span>بدء التقييم اليدوي</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
+                <Check className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+                <h3 className="text-lg font-black text-slate-800 dark:text-white">لا توجد مهام مقترحة حالياً</h3>
+                <p className="text-xs text-slate-500 mt-2">جميع المنشآت مغطاة رقابياً ضمن الحدود المسموحة.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab C: Establishments Directory */}
         {activeTab === 'directory' && hasPerm('manageEstablishments') && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -620,16 +704,9 @@ export const TeamDashboard = () => {
                   placeholder="ابحث باسم المطعم أو اسم المالك..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
-                <button 
-                  onClick={() => setShowQRScanner(true)}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-teal-50 hover:bg-teal-100 dark:bg-teal-900/30 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-xl transition-colors"
-                  title="مسح QR بالكاميرا"
-                >
-                  <QrCode className="w-4 h-4" />
-                </button>
               </div>
 
               <button
@@ -664,40 +741,6 @@ export const TeamDashboard = () => {
                 <span>إصدار تقرير PDF</span>
               </button>
             </div>
-
-            {/* Smart Tasks (Suggested Daily Visits) */}
-            {smartTasks.length > 0 && !searchTerm && statusFilter === 'all' && !filterExpiredOnly && (
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-3 px-1">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
-                    <CheckSquare className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black text-slate-800 dark:text-white">مهام اليوم المقترحة (الزيارات الذكية)</h3>
-                    <p className="text-[10px] text-slate-500">تم اختيار هذه المنشآت بناءً على أقدمية التفتيش والأولوية القصوى.</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {smartTasks.map(est => (
-                    <div key={`smart-${est.id}`} className="bg-white dark:bg-slate-800/80 p-4 rounded-2xl border border-blue-200/50 dark:border-blue-900/30 shadow-sm shadow-blue-500/5 flex items-center justify-between group">
-                      <div>
-                        <h4 className="font-bold text-slate-800 dark:text-white text-xs mb-1 group-hover:text-teal-600 transition-colors">{est.name}</h4>
-                        <div className="text-[10px] text-slate-500 flex items-center gap-1.5">
-                          <AlertCircle className="w-3 h-3 text-amber-500" />
-                          <span>آخر زيارة: <strong className="text-slate-700 dark:text-slate-300">{est.lastInspection}</strong></span>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                        className="w-10 h-10 rounded-full bg-teal-50 hover:bg-teal-100 dark:bg-teal-900/20 dark:hover:bg-teal-900/40 text-teal-600 flex items-center justify-center transition-all shrink-0"
-                      >
-                        <FilePlus className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Directory Grid */}
             <div className="glassmorphic-card overflow-hidden print-only-report">
