@@ -621,14 +621,13 @@ export const TeamDashboard = () => {
             </div>
 
             {/* Directory Grid */}
-            <div className="glassmorphic-card overflow-hidden">
+            <div className="glassmorphic-card overflow-hidden print-only-report">
               <div className="overflow-x-auto">
                 <table className="w-full text-right border-collapse text-xs">
                   <thead>
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                      <th className="p-4 font-bold">اسم المطعم / المنشأة</th>
+                      <th className="p-4 font-bold">اسم المنشأة</th>
                       <th className="p-4 font-bold">نوع النشاط</th>
-                      <th className="p-4 font-bold">المالك / الهاتف</th>
                       <th className="p-4 font-bold text-center">كود البوابة</th>
                       <th className="p-4 font-bold">تاريخ آخر زيارة</th>
                       <th className="p-4 font-bold text-center">التقييم الحالي</th>
@@ -638,7 +637,7 @@ export const TeamDashboard = () => {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                     {filteredEstablishments.map((est) => (
                       <tr key={est.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-colors">
-                        <td className="p-4 font-black text-slate-800 dark:text-slate-200">
+                        <td className="p-4 font-black text-slate-800 dark:text-slate-200 cursor-pointer hover:text-teal-600 transition-colors" onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}>
                           <div className="flex items-center gap-2">
                             <span>{est.name}</span>
                             {est.status === 'closed' ? (
@@ -655,10 +654,6 @@ export const TeamDashboard = () => {
                           </div>
                         </td>
                         <td className="p-4 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
-                        <td className="p-4">
-                          <span className="block font-bold">{est.owner}</span>
-                          <span className="text-[10px] text-slate-500">{est.phone}</span>
-                        </td>
                         <td className="p-4 font-bold text-center">
                           <span className="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 dir-ltr inline-block">
                             {est.accessCode}
@@ -678,14 +673,14 @@ export const TeamDashboard = () => {
                           )}
                         </td>
                         <td className="p-4">
-                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-[140px] mx-auto">
+                          <div className="flex flex-col gap-1.5 w-[140px] mx-auto">
                             {hasPerm('addEval') && (
                               <button
                                 onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                                title="إضافة تقييم جديد"
+                                className="w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                               >
-                                <FilePlus className="w-4 h-4" />
+                                <FilePlus className="w-4 h-4 shrink-0" />
+                                <span>إضافة تقييم</span>
                               </button>
                             )}
                             {(() => {
@@ -698,20 +693,21 @@ export const TeamDashboard = () => {
                                 const nowTime = new Date().getTime();
                                 const diffHours = (nowTime - evalTime) / (1000 * 60 * 60);
                                 isEditLocked = diffHours > 48;
-                                lockReason = 'مغلق تلقائياً لمرور أكثر من 48 ساعة';
+                                lockReason = 'مغلق تلقائياً (مرور 48 ساعة)';
                               }
                               return hasHistory && (
                                 <button
                                   disabled={isEditLocked}
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
-                                  className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all active:scale-95 cursor-pointer no-print group relative ${
+                                  className={`w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] ${
                                     isEditLocked 
                                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
                                       : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                                   }`}
-                                  title={isEditLocked ? lockReason : 'تعديل التقييم الأخير'}
+                                  title={isEditLocked ? lockReason : ''}
                                 >
-                                  <CheckSquare className="w-4 h-4" />
+                                  <CheckSquare className="w-4 h-4 shrink-0" />
+                                  <span>تعديل التقييم الأخير</span>
                                 </button>
                               );
                             })()}
@@ -739,10 +735,10 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الغرامة بنجاح', 'success', true);
                                 }
                               }}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                              title="طلب غرامة مالية"
+                              className="w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
-                              <DollarSign className="w-4 h-4" />
+                              <DollarSign className="w-4 h-4 shrink-0" />
+                              <span>طلب غرامة</span>
                             </button>
                             
                             <button
@@ -768,10 +764,10 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
                                 }
                               }}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                              title="طلب إغلاق وتشميع"
+                              className="w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
-                              <Ban className="w-4 h-4" />
+                              <Ban className="w-4 h-4 shrink-0" />
+                              <span>طلب إغلاق</span>
                             </button>
 
                             {hasPerm('manageEstablishments') && (
@@ -937,7 +933,6 @@ export const TeamDashboard = () => {
                   <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold">
                     <th className="p-3">اسم المنشأة</th>
                     <th className="p-3">النوع</th>
-                    <th className="p-3">المالك</th>
                     <th className="p-3">تاريخ آخر زيارة</th>
                     <th className="p-3 text-center">الدرجة</th>
                   </tr>
@@ -945,9 +940,16 @@ export const TeamDashboard = () => {
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                   {modalEstList.map(e => (
                     <tr key={e.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/10">
-                      <td className="p-3 font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">{e.name}</td>
+                      <td 
+                        className="p-3 font-black text-slate-800 dark:text-slate-200 cursor-pointer hover:text-teal-600 transition-colors"
+                        onClick={() => {
+                          setShowMetricModal(false);
+                          setEstablishmentModalState({ isOpen: true, mode: 'edit', data: e });
+                        }}
+                      >
+                        {e.name}
+                      </td>
                       <td className="p-3 text-slate-500">{e.type}</td>
-                      <td className="p-3 text-slate-500">{e.owner}</td>
                       <td className="p-3 text-slate-550 dark:text-slate-400">{e.lastInspection}</td>
                       <td className="p-3 text-center">
                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${

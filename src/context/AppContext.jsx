@@ -318,7 +318,13 @@ export const AppProvider = ({ children }) => {
       }
     });
 
-    return parsed.map(est => {
+    // Deduplicate by name (in case old local storage has different IDs for the same initial data)
+    const uniqueMap = new Map();
+    parsed.forEach(est => {
+      uniqueMap.set(est.name.trim(), est);
+    });
+    
+    return Array.from(uniqueMap.values()).map(est => {
       // Migrate sector strings to standardize them (e.g. "الجانب الأيسر - حي الزهور" -> "الجانب الأيسر")
       let currentSector = est.sector || '';
       let currentNeighborhood = est.neighborhood || '';
