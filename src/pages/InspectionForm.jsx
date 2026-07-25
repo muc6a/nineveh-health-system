@@ -334,33 +334,41 @@ export const InspectionForm = () => {
               </h3>
               <div className="space-y-4">
                 {activeItems.filter(item => item.section === section.key).map(item => (
-                  <div key={item.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2 border-b border-slate-100/50 dark:border-slate-800/20 last:border-b-0">
+                  <div key={item.id} className="flex flex-col gap-3 py-4 border-b border-slate-100/50 dark:border-slate-800/20 last:border-b-0 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-800/20 rounded-xl px-2 -mx-2">
                     
                     {/* Item label */}
                     <div className="flex gap-3 min-w-0">
-                      <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400 shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xs font-black shrink-0">
                         {item.id}
                       </span>
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 leading-relaxed">
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300 leading-relaxed pt-0.5">
                         {item.text}
                       </span>
                     </div>
 
-                    {/* Score Touch Number Input */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] text-slate-400 font-bold">الدرجة المستحقة:</span>
-                      <input
-                        type="number"
-                        min="0"
-                        max="5"
-                        value={ratings[item.id] !== undefined ? ratings[item.id] : 5}
-                        onChange={(e) => {
-                          const val = Math.min(5, Math.max(0, Number(e.target.value)));
-                          handleRatingChange(item.id, val);
-                        }}
-                        className="p-2 w-16 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-black outline-none text-center text-teal-600 focus:border-teal-500"
-                      />
-                      <span className="text-[10px] text-slate-500 font-extrabold">من أصل 5</span>
+                    {/* Touch-Friendly Score Picker */}
+                    <div className="flex items-center justify-end gap-1.5 sm:gap-2 mt-1">
+                      {[0, 1, 2, 3, 4, 5].map(score => {
+                        const isSelected = (ratings[item.id] !== undefined ? ratings[item.id] : 5) === score;
+                        return (
+                          <button
+                            key={score}
+                            type="button"
+                            onClick={() => handleRatingChange(item.id, score)}
+                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl font-black text-sm sm:text-base flex items-center justify-center transition-all ${
+                              isSelected
+                              ? score === 0 
+                                ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 scale-105' 
+                                : score <= 2 
+                                  ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30 scale-105'
+                                  : 'bg-teal-500 text-white shadow-lg shadow-teal-500/30 scale-105'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
+                            }`}
+                          >
+                            {score}
+                          </button>
+                        );
+                      })}
                     </div>
 
                   </div>
