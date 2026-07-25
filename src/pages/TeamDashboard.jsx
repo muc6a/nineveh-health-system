@@ -632,12 +632,12 @@ export const TeamDashboard = () => {
                 <table className="w-full text-right border-collapse text-xs">
                   <thead>
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                      <th className="p-4 font-bold w-[25%]">اسم المنشأة</th>
-                      <th className="p-4 font-bold w-[20%]">نوع النشاط</th>
-                      <th className="p-4 font-bold text-center w-[12%]">كود البوابة</th>
-                      <th className="p-4 font-bold w-[13%]">تاريخ آخر زيارة</th>
+                      <th className="p-4 font-bold w-[20%]">اسم المنشأة</th>
+                      <th className="p-4 font-bold w-[15%]">نوع النشاط</th>
+                      <th className="p-4 font-bold text-center w-[10%]">كود البوابة</th>
+                      <th className="p-4 font-bold w-[10%]">تاريخ آخر زيارة</th>
                       <th className="p-4 font-bold text-center w-[10%]">التقييم الحالي</th>
-                      <th className="p-4 font-bold text-center w-[20%]">الإجراءات والعمليات الميدانية</th>
+                      <th className="p-4 font-bold text-center w-[35%]">الإجراءات والعمليات الميدانية</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -679,7 +679,7 @@ export const TeamDashboard = () => {
                           )}
                         </td>
                         <td className="p-4">
-                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-[220px] mx-auto">
+                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-full max-w-[320px] mx-auto">
                             {hasPerm('addEval') && (
                               <button
                                 onClick={() => navigate(`/inspection/new?id=${est.id}`)}
