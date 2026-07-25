@@ -679,14 +679,14 @@ export const TeamDashboard = () => {
                           )}
                         </td>
                         <td className="p-4">
-                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-[140px] mx-auto">
+                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-[220px] mx-auto">
                             {hasPerm('addEval') && (
                               <button
                                 onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                                title="إضافة تقييم جديد"
+                                className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                               >
-                                <FilePlus className="w-4 h-4" />
+                                <FilePlus className="w-3.5 h-3.5" />
+                                <span>إضافة تقييم</span>
                               </button>
                             )}
                             {(() => {
@@ -705,14 +705,15 @@ export const TeamDashboard = () => {
                                 <button
                                   disabled={isEditLocked}
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
-                                  className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all active:scale-95 cursor-pointer no-print group relative ${
+                                  className={`px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] ${
                                     isEditLocked 
                                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
                                       : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                                   }`}
-                                  title={isEditLocked ? lockReason : 'تعديل التقييم الأخير'}
+                                  title={isEditLocked ? lockReason : ''}
                                 >
-                                  <CheckSquare className="w-4 h-4" />
+                                  <CheckSquare className="w-3.5 h-3.5" />
+                                  <span>تعديل تقييم</span>
                                 </button>
                               );
                             })()}
@@ -740,10 +741,10 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الغرامة بنجاح', 'success', true);
                                 }
                               }}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                              title="طلب غرامة مالية"
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
-                              <DollarSign className="w-4 h-4" />
+                              <DollarSign className="w-3.5 h-3.5" />
+                              <span>طلب غرامة</span>
                             </button>
                             
                             <button
@@ -769,20 +770,20 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
                                 }
                               }}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                              title="طلب إغلاق وتشميع"
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
-                              <Ban className="w-4 h-4" />
+                              <Ban className="w-3.5 h-3.5" />
+                              <span>طلب إغلاق</span>
                             </button>
 
                             {hasPerm('manageEstablishments') && (
                               <>
                                 <button
                                   onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}
-                                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                                  title="تعديل المنشأة"
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                                 >
-                                  <Edit className="w-4 h-4" />
+                                  <Edit className="w-3.5 h-3.5" />
+                                  <span>تعديل منشأة</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -791,20 +792,20 @@ export const TeamDashboard = () => {
                                       deleteEstablishment(est.id);
                                     }
                                   }}
-                                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                                  title="حذف المنشأة"
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                                 >
-                                  <Trash className="w-4 h-4" />
+                                  <Trash className="w-3.5 h-3.5" />
+                                  <span>حذف</span>
                                 </button>
                               </>
                             )}
                             
                             <button
                               onClick={() => setSelectedEstDetails(est)}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 transition-all active:scale-95 cursor-pointer no-print group relative"
-                              title="كود QR والتفاصيل"
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
-                              <QrCode className="w-4 h-4" />
+                              <QrCode className="w-3.5 h-3.5" />
+                              <span>كود QR</span>
                             </button>
                           </div>
                         </td>
