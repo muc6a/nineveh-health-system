@@ -29,7 +29,13 @@ export const TeamDashboard = () => {
   };
 
   // Active Tab: 'summary', 'directory', 'reports', etc.
-  const [activeTab, setActiveTab] = useState(getInitialTab() || 'summary');
+  const [activeTab, setActiveTab] = useState(() => {
+    return sessionStorage.getItem('teamActiveTab') || getInitialTab() || 'summary';
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('teamActiveTab', activeTab);
+  }, [activeTab]);
 
   // Watch for permission changes to set initial tab if it was null
   React.useEffect(() => {
@@ -673,14 +679,14 @@ export const TeamDashboard = () => {
                           )}
                         </td>
                         <td className="p-4">
-                          <div className="flex flex-col gap-1.5 w-[140px] mx-auto">
+                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-[140px] mx-auto">
                             {hasPerm('addEval') && (
                               <button
                                 onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                                className="w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                                title="إضافة تقييم جديد"
                               >
-                                <FilePlus className="w-4 h-4 shrink-0" />
-                                <span>إضافة تقييم</span>
+                                <FilePlus className="w-4 h-4" />
                               </button>
                             )}
                             {(() => {
@@ -699,15 +705,14 @@ export const TeamDashboard = () => {
                                 <button
                                   disabled={isEditLocked}
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
-                                  className={`w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] ${
+                                  className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all active:scale-95 cursor-pointer no-print group relative ${
                                     isEditLocked 
                                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
                                       : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                                   }`}
-                                  title={isEditLocked ? lockReason : ''}
+                                  title={isEditLocked ? lockReason : 'تعديل التقييم الأخير'}
                                 >
-                                  <CheckSquare className="w-4 h-4 shrink-0" />
-                                  <span>تعديل التقييم الأخير</span>
+                                  <CheckSquare className="w-4 h-4" />
                                 </button>
                               );
                             })()}
@@ -735,10 +740,10 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الغرامة بنجاح', 'success', true);
                                 }
                               }}
-                              className="w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                              title="طلب غرامة مالية"
                             >
-                              <DollarSign className="w-4 h-4 shrink-0" />
-                              <span>طلب غرامة</span>
+                              <DollarSign className="w-4 h-4" />
                             </button>
                             
                             <button
@@ -764,10 +769,10 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
                                 }
                               }}
-                              className="w-full py-1.5 px-2 flex items-center justify-start gap-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                              title="طلب إغلاق وتشميع"
                             >
-                              <Ban className="w-4 h-4 shrink-0" />
-                              <span>طلب إغلاق</span>
+                              <Ban className="w-4 h-4" />
                             </button>
 
                             {hasPerm('manageEstablishments') && (
