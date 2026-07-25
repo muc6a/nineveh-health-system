@@ -33,7 +33,7 @@ export const TeamDashboard = () => {
     return sessionStorage.getItem('teamActiveTab') || getInitialTab() || 'summary';
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     sessionStorage.setItem('teamActiveTab', activeTab);
   }, [activeTab]);
 
