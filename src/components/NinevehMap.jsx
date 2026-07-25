@@ -51,33 +51,39 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
   // Mosul Center coordinates as default
   const defaultCenter = [36.34, 43.13];
   
-  // Assign random coordinates around Mosul if not present
-  const estWithCoords = establishments.map((est, i) => {
-    if (est.lat && est.lng) return est;
-    
-    // Base coordinates for different sectors
-    const baseCoords = {
-      'الموصل': [36.3400, 43.1300],
-      'الجانب الأيمن': [36.3400, 43.1100],
-      'الزهور': [36.3600, 43.1500],
-      'المصارف': [36.3800, 43.1400],
-      'تلعفر': [36.3758, 42.4542],
-      'سنجار': [36.3209, 41.8368],
-      'البعاج': [36.0469, 41.8081],
-      'الحضر': [35.5802, 42.7231]
-    };
-    
-    const base = baseCoords[est.sector] || baseCoords['الموصل'];
-    // Random jitter around base (approx 1-3km)
-    const jitterLat = (Math.random() - 0.5) * 0.04;
-    const jitterLng = (Math.random() - 0.5) * 0.04;
-    
-    return {
-      ...est,
-      lat: base[0] + jitterLat,
-      lng: base[1] + jitterLng
-    };
-  });
+  // Assign random coordinates around Mosul if not present, use useMemo to prevent jumping on every render
+  const estWithCoords = React.useMemo(() => {
+    return establishments.map((est, i) => {
+      if (est.lat && est.lng) return est;
+      
+      // Base coordinates for different sectors
+      const baseCoords = {
+        'الموصل': [36.3400, 43.1300],
+        'الجانب الأيمن': [36.3400, 43.1100],
+        'الزهور': [36.3600, 43.1500],
+        'المصارف': [36.3800, 43.1400],
+        'تلعفر': [36.3758, 42.4542],
+        'سنجار': [36.3209, 41.8368],
+        'البعاج': [36.0469, 41.8081],
+        'الحضر': [35.5802, 42.7231]
+      };
+      
+      const base = baseCoords[est.sector] || baseCoords['الموصل'];
+      // Pseudo-random based on id to keep it stable
+      const seed = est.id || i;
+      const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
+      const seededRandom2 = (seed * 1103515245 + 12345) % 2147483648 / 2147483648;
+      
+      const jitterLat = (seededRandom - 0.5) * 0.04;
+      const jitterLng = (seededRandom2 - 0.5) * 0.04;
+      
+      return {
+        ...est,
+        lat: base[0] + jitterLat,
+        lng: base[1] + jitterLng
+      };
+    });
+  }, [establishments]);
 
   const activeSectorKey = teamSector === 'الجانب الأيمن' || teamSector === 'الزهور' || teamSector === 'المصارف' || teamSector === 'الغزلاني' ? 'الموصل' : teamSector;
 
