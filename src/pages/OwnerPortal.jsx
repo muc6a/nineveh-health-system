@@ -394,29 +394,28 @@ export const OwnerPortal = () => {
                 <p className="text-lg text-slate-700 font-bold leading-relaxed">
                   تتقدم مديرية صحة نينوى / قسم الرقابة الصحية بالشكر والتقدير إلى:
                 </p>
-                <div className="py-4 px-8 inline-block bg-teal-50/50 rounded-2xl border border-teal-100">
+                <div className="py-2 inline-block">
                   <h3 className="text-4xl font-black text-teal-700">{ownerEst.name}</h3>
-                  <p className="text-sm font-bold text-slate-500 mt-2">إدارة: {ownerEst.owner}</p>
                 </div>
                 <p className="text-lg text-slate-700 font-bold leading-relaxed max-w-2xl mx-auto">
-                  وذلك لحصولهم على تقييم متميز بنسبة <strong className="text-amber-500 text-2xl mx-1">{score}%</strong> في الكشف الميداني الأخير، 
-                  والتزامهم العالي بتطبيق كافة المعايير والشروط الصحية، مما يعكس حرصهم على سلامة وصحة المواطنين.
+                  وذلك لحصولهم على تقييم متميز بنسبة <strong className="text-amber-500 text-2xl mx-1">{score}%</strong> في الكشف الميداني الأخير 
+                  والتزامهم العالي بتطبيق كافة المعايير والشروط الصحية مما يعكس حرصهم على سلامة وصحة المواطنين.
                 </p>
               </div>
 
-              <div className="mt-16 flex justify-between items-end px-12 pb-4">
-                <div className="text-center">
+              <div className="mt-12 flex justify-between items-end px-8 pb-4">
+                <div className="text-center w-1/3">
                   <p className="text-sm font-bold text-slate-500 mb-1">تاريخ التقييم</p>
-                  <p className="text-lg font-black text-slate-800">{ownerEst.lastInspection}</p>
+                  <p className="text-lg font-black text-slate-800 whitespace-nowrap">{ownerEst.lastInspection}</p>
                 </div>
-                <div className="text-center">
-                  <div className="w-32 h-32 border-4 border-amber-500/20 rounded-full flex items-center justify-center mx-auto opacity-40 mb-2 rotate-12">
-                    <span className="font-black text-amber-500 text-xl -rotate-12">مُطابق</span>
+                <div className="text-center w-1/3">
+                  <div className="w-28 h-28 border-4 border-amber-500/20 rounded-full flex items-center justify-center mx-auto opacity-40 mb-2 rotate-12">
+                    <span className="font-black text-amber-500 text-2xl -rotate-12">مُطابق</span>
                   </div>
                 </div>
-                <div className="text-center">
+                <div className="text-center w-1/3">
                   <p className="text-sm font-bold text-slate-500 mb-1">اللجنة المصدّقة</p>
-                  <p className="text-lg font-black text-slate-800">{ownerEst.inspectorName || ownerEst.sector}</p>
+                  <p className="text-sm font-black text-slate-800 leading-tight">{ownerEst.inspectorName || ownerEst.sector}</p>
                 </div>
               </div>
             </div>
