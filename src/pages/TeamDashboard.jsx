@@ -3,12 +3,13 @@ import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { NotificationBell } from '../components/NotificationBell';
-import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin } from 'lucide-react';
+import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
 
 export const TeamDashboard = () => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences } = useContext(AppContext);
+  const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
   
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
@@ -171,7 +172,13 @@ export const TeamDashboard = () => {
   const [monthlyStatsModalType, setMonthlyStatsModalType] = useState('closures'); // 'closures' or 'fines'
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
+    <div 
+      className={`min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 ${uiPreferences?.density === 'compact' ? 'ui-compact' : 'ui-comfortable'}`}
+      style={{
+        '--ui-heading-size': uiPreferences?.headingSize || '18px',
+        '--ui-body-size': uiPreferences?.bodySize || '12px',
+      }}
+    >
       
       {/* Urgent Dispatch Modal */}
       {myPendingDispatch && (
@@ -340,49 +347,6 @@ export const TeamDashboard = () => {
               </button>
             )}
 
-            {hasPerm('showDirectivesPage') && (
-              <button
-                onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'directives'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="w-4.5 h-4.5" />
-                  <span>📦 المراسلات الإدارية</span>
-                </div>
-              </button>
-            )}
-
-            {hasPerm('showDeliveryPage') && (
-              <button
-                onClick={() => { setActiveTab('delivery'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  activeTab === 'delivery'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <Package className="w-4.5 h-4.5" />
-                <span>🚚 خدمة التوصيل</span>
-              </button>
-            )}
-
-            {hasPerm('showPublicEvalsPage') && (
-              <button
-                onClick={() => { setActiveTab('public_evals'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  activeTab === 'public_evals'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <CheckSquare className="w-4.5 h-4.5" />
-                <span>⭐ التقييمات العامة</span>
-              </button>
-            )}
           </div>
         </div>
 
@@ -393,7 +357,17 @@ export const TeamDashboard = () => {
               <span className="text-xs font-black text-slate-700 dark:text-slate-300">{user?.name || 'مفتش الرقابة الميداني'}</span>
               <span className="text-[10px] text-teal-600 dark:text-teal-600 dark:text-teal-400 font-bold">قطاع: {userSector}</span>
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setShowDisplayPrefsModal(true)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group relative"
+                title="تخصيص العرض والمظهر"
+              >
+                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+                <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-slate-800 text-white text-[10px] py-1 px-2 rounded-lg whitespace-nowrap">تخصيص العرض</span>
+              </button>
+              <ThemeToggle />
+            </div>
           </div>
           <button
             onClick={handleLogout}
@@ -450,7 +424,14 @@ export const TeamDashboard = () => {
             <Menu className="w-5 h-5" />
           </button>
           <AnimatedLogo variant="sidebar" className="border-none p-0 scale-75 transform origin-center" />
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setShowDisplayPrefsModal(true)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
+                title="تخصيص العرض والمظهر"
+              >
+                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              </button>
               <NotificationBell />
               <ThemeToggle />
           </div>
@@ -695,13 +676,14 @@ export const TeamDashboard = () => {
                           )}
                         </td>
                         <td className="p-4">
-                          <div className="flex justify-center gap-2 flex-wrap">
+                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-[140px] mx-auto">
                             {hasPerm('addEval') && (
                               <button
                                 onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                                className="px-2.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-600 dark:text-teal-400 font-bold transition-all active:scale-95 cursor-pointer no-print"
+                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                                title="إضافة تقييم جديد"
                               >
-                                ➕ إضافة تقييم جديد
+                                <FilePlus className="w-4 h-4" />
                               </button>
                             )}
                             {(() => {
@@ -713,89 +695,91 @@ export const TeamDashboard = () => {
                                 const evalTime = new Date(lastEval.date).getTime();
                                 const nowTime = new Date().getTime();
                                 const diffHours = (nowTime - evalTime) / (1000 * 60 * 60);
-                                isEditLocked = diffHours > 48; // 48-hour limit
-                                lockReason = 'مغلق تلقائياً لمرور أكثر من 48 ساعة على التقييم';
+                                isEditLocked = diffHours > 48;
+                                lockReason = 'مغلق تلقائياً لمرور أكثر من 48 ساعة';
                               }
                               return hasHistory && (
                                 <button
                                   disabled={isEditLocked}
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
-                                  className={`px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print ${
+                                  className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all active:scale-95 cursor-pointer no-print group relative ${
                                     isEditLocked 
                                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
                                       : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                                   }`}
                                   title={isEditLocked ? lockReason : 'تعديل التقييم الأخير'}
                                 >
-                                  ✏️ تعديل التقييم
+                                  <CheckSquare className="w-4 h-4" />
                                 </button>
                               );
                             })()}
-                            <div className="flex gap-2 w-full mt-2 justify-center">
-                              <button
-                                onClick={() => {
-                                  const reason = window.prompt(`أدخل سبب طلب غرامة مالية لمنشأة (${est.name}):`);
-                                  if (reason) {
-                                    setPenaltyRequests(prev => [...prev, {
-                                      id: 'pen_' + Date.now(),
-                                      type: 'fine',
-                                      estId: est.id,
-                                      estName: est.name,
-                                      sector: est.sector,
-                                      teamName: user?.name,
-                                      reason,
-                                      status: 'pending',
-                                      date: new Date().toISOString()
-                                    }]);
-                                    addSystemNotification(
-                                      'طلب غرامة مالية جديد',
-                                      `قام الفريق (${user?.name}) برفع طلب غرامة لمنشأة ${est.name} للسبب: ${reason}`,
-                                      'central_director'
-                                    );
-                                    notify('تم رفع طلب الغرامة للغرفة المركزية بانتظار المصادقة', 'success', true);
-                                  }
-                                }}
-                                className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400"
-                                title="رفع طلب غرامة مالية للمصادقة المركزية"
-                              >
-                                💰 طلب غرامة
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const reason = window.prompt(`أدخل سبب طلب إغلاق منشأة (${est.name}):`);
-                                  if (reason) {
-                                    setPenaltyRequests(prev => [...prev, {
-                                      id: 'pen_' + Date.now(),
-                                      type: 'closure',
-                                      estId: est.id,
-                                      estName: est.name,
-                                      sector: est.sector,
-                                      teamName: user?.name,
-                                      reason,
-                                      status: 'pending',
-                                      date: new Date().toISOString()
-                                    }]);
-                                    addSystemNotification(
-                                      'طلب إغلاق وتشميع جديد',
-                                      `قام الفريق (${user?.name}) برفع طلب إغلاق لمنشأة ${est.name} للسبب: ${reason}`,
-                                      'central_director'
-                                    );
-                                    notify('تم رفع طلب الإغلاق للغرفة المركزية بانتظار المصادقة', 'success', true);
-                                  }
-                                }}
-                                className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400"
-                                title="رفع طلب تشميع أو غلق للمصادقة المركزية"
-                              >
-                                🔒 طلب إغلاق
-                              </button>
-                              </div>
+                            
+                            <button
+                              onClick={() => {
+                                const reason = window.prompt(`أدخل سبب طلب غرامة مالية لمنشأة (${est.name}):`);
+                                if (reason) {
+                                  setPenaltyRequests(prev => [...prev, {
+                                    id: 'pen_' + Date.now(),
+                                    type: 'fine',
+                                    estId: est.id,
+                                    estName: est.name,
+                                    sector: est.sector,
+                                    teamName: user?.name,
+                                    reason,
+                                    status: 'pending',
+                                    date: new Date().toISOString()
+                                  }]);
+                                  addSystemNotification(
+                                    'طلب غرامة مالية جديد',
+                                    `قام الفريق (${user?.name}) برفع طلب غرامة لمنشأة ${est.name} للسبب: ${reason}`,
+                                    'central_director'
+                                  );
+                                  notify('تم رفع طلب الغرامة بنجاح', 'success', true);
+                                }
+                              }}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                              title="طلب غرامة مالية"
+                            >
+                              <DollarSign className="w-4 h-4" />
+                            </button>
+                            
+                            <button
+                              onClick={() => {
+                                const reason = window.prompt(`أدخل سبب طلب إغلاق منشأة (${est.name}):`);
+                                if (reason) {
+                                  setPenaltyRequests(prev => [...prev, {
+                                    id: 'pen_' + Date.now(),
+                                    type: 'closure',
+                                    estId: est.id,
+                                    estName: est.name,
+                                    sector: est.sector,
+                                    teamName: user?.name,
+                                    reason,
+                                    status: 'pending',
+                                    date: new Date().toISOString()
+                                  }]);
+                                  addSystemNotification(
+                                    'طلب إغلاق وتشميع جديد',
+                                    `قام الفريق (${user?.name}) برفع طلب إغلاق لمنشأة ${est.name} للسبب: ${reason}`,
+                                    'central_director'
+                                  );
+                                  notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
+                                }
+                              }}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                              title="طلب إغلاق وتشميع"
+                            >
+                              <Ban className="w-4 h-4" />
+                            </button>
+
                             {hasPerm('manageEstablishments') && (
                               <>
                                 <button
                                   onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}
-                                  className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                                  title="تعديل المنشأة"
                                 >
-                                  📝 تعديل
+                                  <Edit className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => {
@@ -804,19 +788,20 @@ export const TeamDashboard = () => {
                                       deleteEstablishment(est.id);
                                     }
                                   }}
-                                  className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400"
+                                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                                  title="حذف المنشأة"
                                 >
-                                  🗑️ حذف
+                                  <Trash className="w-4 h-4" />
                                 </button>
                               </>
                             )}
+                            
                             <button
-                              onClick={() => {
-                                setSelectedEstDetails(est);
-                              }}
-                              className="px-2.5 py-1.5 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold transition-all active:scale-95 cursor-pointer no-print"
+                              onClick={() => setSelectedEstDetails(est)}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 transition-all active:scale-95 cursor-pointer no-print group relative"
+                              title="كود QR والتفاصيل"
                             >
-                              🔗 كود QR
+                              <QrCode className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
@@ -914,44 +899,7 @@ export const TeamDashboard = () => {
             </div>
           </div>
         )}
-        {/* Placeholder: Directives / Communications Tab */}
-        {activeTab === 'directives' && hasPerm('showDirectivesPage') && (
-          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="w-10 h-10 text-teal-500" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">صندوق المراسلات والبلاغات</h2>
-            <p className="text-xs text-slate-500 max-w-sm">
-              هذه الصفحة قيد التطوير وسيتم تفعيلها قريباً لاستقبال أوامر وتوجيهات الإدارة العليا والتبليغات.
-            </p>
-          </div>
-        )}
 
-        {/* Placeholder: Delivery Service Tab */}
-        {activeTab === 'delivery' && hasPerm('showDeliveryPage') && (
-          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-              <Package className="w-10 h-10 text-teal-500" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">إدارة خدمة التوصيل</h2>
-            <p className="text-xs text-slate-500 max-w-sm">
-              قريباً سيتم إدارة عمال التوصيل والمناديب المتعاقدين مع المنشآت وتدقيق هوياتهم الصحية من هنا.
-            </p>
-          </div>
-        )}
-
-        {/* Placeholder: Public Evaluations Tab */}
-        {activeTab === 'public_evals' && hasPerm('showPublicEvalsPage') && (
-          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-              <Check className="w-10 h-10 text-teal-500" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">التقييمات العامة (المواطنين)</h2>
-            <p className="text-xs text-slate-500 max-w-sm">
-              سيتم عرض تقييمات وبلاغات المواطنين الواردة عبر مسح الـ QR الخاص بالمنشآت لمتابعتها.
-            </p>
-          </div>
-        )}
 
       </main>
 
@@ -1177,6 +1125,130 @@ export const TeamDashboard = () => {
                 تأكيد وحفظ التعديلات
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Display Preferences Modal */}
+      {showDisplayPrefsModal && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in" dir="rtl">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800">
+            <div className="sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 z-10">
+              <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
+                <Eye className="w-5 h-5 text-teal-600" />
+                <span>تخصيص العرض والمظهر الشخصي</span>
+              </h2>
+              <button
+                onClick={() => setShowDisplayPrefsModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                تحكم بمقاسات الخطوط وكثافة عرض البيانات لراحتك. يتم حفظ هذه التفضيلات في حسابك الخاص ولا تؤثر على المستخدمين الآخرين.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Controls */}
+                <div className="space-y-6 text-right">
+                  {/* Density Control */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">كثافة البيانات (Density Mode)</label>
+                    <div className="flex gap-4">
+                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(uiPreferences?.density || "comfortable") === 'comfortable' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
+                        <input
+                          type="radio"
+                          name="density"
+                          value="comfortable"
+                          className="hidden"
+                          checked={(uiPreferences?.density || "comfortable") === 'comfortable'}
+                          onChange={(e) => setUiPreferences({...uiPreferences, density: e.target.value})}
+                        />
+                        <div className="text-center">
+                          <div className="text-sm font-black text-slate-700 dark:text-slate-300">مريح (Comfortable)</div>
+                          <p className="text-[10px] text-slate-500 mt-1">مسافات واسعة مناسبة للحواسيب</p>
+                        </div>
+                      </label>
+                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(uiPreferences?.density || "comfortable") === 'compact' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
+                        <input
+                          type="radio"
+                          name="density"
+                          value="compact"
+                          className="hidden"
+                          checked={(uiPreferences?.density || "comfortable") === 'compact'}
+                          onChange={(e) => setUiPreferences({...uiPreferences, density: e.target.value})}
+                        />
+                        <div className="text-center">
+                          <div className="text-sm font-black text-slate-700 dark:text-slate-300">مضغوط (Compact)</div>
+                          <p className="text-[10px] text-slate-500 mt-1">مسافات أقل مناسبة للأجهزة المحمولة</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Typography Controls */}
+                  <div className="space-y-4">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">حجم الخطوط (Typography)</label>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-slate-500 flex justify-between">
+                        <span>حجم العناوين</span>
+                        <span className="font-bold dir-ltr">{(uiPreferences?.headingSize || "18px")}</span>
+                      </label>
+                      <input 
+                        type="range" 
+                        min="14" 
+                        max="32" 
+                        value={parseInt((uiPreferences?.headingSize || "18px"))} 
+                        onChange={(e) => setUiPreferences({...uiPreferences, headingSize: e.target.value + 'px'})}
+                        className="w-full accent-teal-600"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-slate-500 flex justify-between">
+                        <span>حجم النصوص</span>
+                        <span className="font-bold dir-ltr">{(uiPreferences?.bodySize || "12px")}</span>
+                      </label>
+                      <input 
+                        type="range" 
+                        min="10" 
+                        max="20" 
+                        value={parseInt((uiPreferences?.bodySize || "12px"))} 
+                        onChange={(e) => setUiPreferences({...uiPreferences, bodySize: e.target.value + 'px'})}
+                        className="w-full accent-teal-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live Preview */}
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 text-right">
+                  <h3 className="text-sm font-bold text-slate-500 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">نافذة العرض المباشر (Live Preview)</h3>
+                  <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden ${(uiPreferences?.density || "comfortable") === 'compact' ? 'p-3 space-y-2' : 'p-6 space-y-4'}`}>
+                    <h4 
+                      style={{ fontSize: (uiPreferences?.headingSize || "18px"), lineHeight: 1.2 }} 
+                      className="font-black text-slate-800 dark:text-white"
+                    >
+                      مطعم وحلويات الأمين
+                    </h4>
+                    <p 
+                      style={{ fontSize: (uiPreferences?.bodySize || "12px"), lineHeight: 1.6 }} 
+                      className="text-slate-600 dark:text-slate-400"
+                    >
+                      تم إجراء الكشف الميداني في حي النور ومطابقة الشروط الصحية. المنشأة مستوفية لجميع معايير الجودة والنظافة العامة.
+                    </p>
+                    <div className={`flex gap-2 ${(uiPreferences?.density || "comfortable") === 'compact' ? 'mt-2' : 'mt-4'}`}>
+                      <span className={`bg-teal-50 text-teal-600 rounded-lg font-bold ${(uiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>مطابق للشروط</span>
+                      <span className={`bg-slate-100 text-slate-600 rounded-lg font-bold ${(uiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>تقييم 95%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
