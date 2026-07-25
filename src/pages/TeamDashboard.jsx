@@ -360,7 +360,7 @@ export const TeamDashboard = () => {
                 }`}
               >
                 <Database className="w-4.5 h-4.5" />
-                <span>🍽️ دليل المنشآت</span>
+                <span>🍽️ إدارة المنشآت</span>
               </button>
             )}
 

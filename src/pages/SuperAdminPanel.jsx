@@ -1706,7 +1706,7 @@ export const SuperAdminPanel = () => {
         {activeTab === 'establishments' && (
           <section className="glassmorphic-card p-6 text-right space-y-6">
             <div>
-              <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ دليل المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
+              <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ إدارة المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
               <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR المخصصة للصالة وخدمات الديليفري</p>
             </div>
 
