@@ -11,6 +11,8 @@ export const OwnerPortal = () => {
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);
+  const certificateRef = useRef(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -129,9 +131,6 @@ export const OwnerPortal = () => {
     return ['تحذير حرج: يجب تنظيف المطبخ بالكامل بمواد معقمة فوراً.', 'أرسل جميع العمال للفحص الطبي لتجديد بطاقاتهم.', 'راجع صلاحية المواد الغذائية في المخزن وتخلص من التالف.', 'صيانة الأرضيات والجدران التالفة لمنع تجمع الحشرات.'];
   };
   const aiSuggestions = getAiSuggestions();
-
-  const certificateRef = useRef(null);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownloadCertificate = async (format) => {
     if (!certificateRef.current) return;
