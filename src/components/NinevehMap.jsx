@@ -95,11 +95,13 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
     });
   }, [establishments]);
 
-  const activeSectorKey = teamSector === 'الجانب الأيمن' || teamSector === 'الزهور' || teamSector === 'المصارف' || teamSector === 'الغزلاني' ? 'الموصل' : teamSector;
+  // Compute active sector key, resolving aliases if needed
+  const activeSectorKey = teamSector;
 
+  // Strict filtering based on sector
   const filteredEsts = selectedSector && selectedSector !== 'all' 
-    ? estWithCoords.filter(e => e.sector === selectedSector || (selectedSector === 'الموصل' && ['الزهور','المصارف','الجانب الأيمن'].includes(e.sector)))
-    : (isTeamView && activeSectorKey ? estWithCoords.filter(e => e.sector === activeSectorKey || ['الزهور','المصارف','الجانب الأيمن'].includes(e.sector)) : estWithCoords);
+    ? estWithCoords.filter(e => e.sector === selectedSector || (selectedSector === 'الموصل' && ['الزهور','المصارف','الجانب الأيمن', 'الجانب الأيسر'].includes(e.sector)))
+    : (isTeamView && activeSectorKey && activeSectorKey !== 'الكل' ? estWithCoords.filter(e => e.sector === activeSectorKey) : estWithCoords);
 
   // Calculate live team locations based on their most recent inspection or report
   const computedLiveTeams = (teams || []).map(team => {

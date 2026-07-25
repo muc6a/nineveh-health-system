@@ -61,8 +61,10 @@ export const TeamDashboard = () => {
   const [pendingEditData, setPendingEditData] = useState(null);
   const [selectedViolationImg, setSelectedViolationImg] = useState(null);
 
+  // Get the most up-to-date user from the teams array, falling back to local user object
+  const activeTeam = (teams || []).find(t => t.id === user?.id) || user;
   // User's assigned sector (default to 'الجانب الأيمن' if user isn't logged in correctly)
-  const userSector = user?.sector || 'الجانب الأيمن';
+  const userSector = activeTeam?.sector || (activeTeam?.name?.includes('الأيسر') ? 'الجانب الأيسر' : 'الجانب الأيمن');
 
   // Filter establishments based on team's sector
   const teamEstablishments = (establishments || []).filter(e => e.sector.includes(userSector));
