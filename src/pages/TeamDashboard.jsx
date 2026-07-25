@@ -510,15 +510,6 @@ export const TeamDashboard = () => {
               </div>
             </div>
 
-            {/* Close-up Interactive Map of Sector */}
-            <div className="glassmorphic-card p-5 mt-6">
-              <NinevehMap
-                establishments={establishments}
-                isTeamView={true}
-                teamSector={userSector}
-              />
-            </div>
-
             {/* Target States */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div className="glassmorphic-card p-5">
@@ -548,6 +539,15 @@ export const TeamDashboard = () => {
                   )) : <p className="text-xs text-slate-400">كافة المنشآت مغطاة بنجاح 100%.</p>}
                 </div>
               </div>
+            </div>
+
+            {/* Close-up Interactive Map of Sector */}
+            <div className="glassmorphic-card p-5 mt-6">
+              <NinevehMap
+                establishments={establishments}
+                isTeamView={true}
+                teamSector={userSector}
+              />
             </div>
           </div>
         )}
