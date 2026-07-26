@@ -45,7 +45,7 @@ function MapBounds({ establishments }) {
   return null;
 }
 
-export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isTeamView = false, teamSector = '', liveTeams = [] }) => {
+export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isTeamView = false, teamSector = '', liveTeams = [], fullHeight = false }) => {
   const { config, teams, reports } = useContext(AppContext);
   const [showHeatmap, setShowHeatmap] = useState(false);
   // Mosul Center coordinates as default
@@ -159,7 +159,7 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
         </div>
       </div>
 
-      <div className="w-full h-96 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-10" style={{ isolation: 'isolate' }}>
+      <div className={`w-full ${fullHeight ? 'flex-1 min-h-[400px]' : 'h-96'} rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-10`} style={{ isolation: 'isolate' }}>
         <MapContainer center={defaultCenter} zoom={10} style={{ width: '100%', height: '100%', zIndex: 1 }} zoomAnimation={false} markerZoomAnimation={false} fadeAnimation={false}>
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"

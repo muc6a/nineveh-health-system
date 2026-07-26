@@ -214,7 +214,10 @@ const DEFAULT_PERMISSIONS = {
   showDeliveryPage: false,
   showPublicEvalsPage: true,
   sendDirective: false,
-  replyDirective: true
+  replyDirective: true,
+  canSendSOS: true,
+  showSectorMap: true,
+  showSmartTasks: true
 };
 
 const INITIAL_TEAMS = [

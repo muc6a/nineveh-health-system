@@ -302,14 +302,16 @@ export const InspectionForm = () => {
           <ArrowRight className="w-4 h-4" /> رجوع إلى اللوحة الرقابية
         </button>
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => triggerAlert('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true)}
-            className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 border border-red-200 dark:border-red-900/50 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shadow-sm"
-          >
-            <Siren className="w-4 h-4 animate-pulse" />
-            <span className="text-xs font-black">طلب إسناد (SOS)</span>
-          </button>
+          {user?.permissions?.canSendSOS && (
+            <button
+              type="button"
+              onClick={() => triggerAlert('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true)}
+              className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 border border-red-200 dark:border-red-900/50 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shadow-sm"
+            >
+              <Siren className="w-4 h-4 animate-pulse" />
+              <span className="text-xs font-black">طلب إسناد (SOS)</span>
+            </button>
+          )}
           <ThemeToggle />
           <div className="w-10 h-10 bg-teal-500/10 rounded-2xl flex items-center justify-center border border-teal-500/20 shadow-inner">
             <ShieldCheck className="w-5 h-5 text-teal-600" />

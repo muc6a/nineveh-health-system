@@ -372,7 +372,7 @@ export const TeamDashboard = () => {
               </button>
             )}
 
-            {hasPerm('manageEstablishments') && (
+            {hasPerm('showSectorMap') && (
               <button
                 onClick={() => { setActiveTab('map'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
@@ -386,7 +386,7 @@ export const TeamDashboard = () => {
               </button>
             )}
 
-            {hasPerm('manageEstablishments') && (
+            {hasPerm('showSmartTasks') && (
               <button
                 onClick={() => { setActiveTab('smart_tasks'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
@@ -429,13 +429,15 @@ export const TeamDashboard = () => {
         {/* User context footer */}
         <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
           <div className="flex flex-col gap-2 mb-4">
-             <button 
-                onClick={() => notify('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true)}
-                className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-             >
-              <Siren className="w-4 h-4 animate-pulse" />
-              <span>إرسال استغاثة (SOS)</span>
-             </button>
+             {hasPerm('canSendSOS') && (
+               <button 
+                  onClick={() => notify('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true)}
+                  className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+               >
+                <Siren className="w-4 h-4 animate-pulse" />
+                <span>إرسال استغاثة (SOS)</span>
+               </button>
+             )}
           </div>
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col text-right">
@@ -628,24 +630,25 @@ export const TeamDashboard = () => {
         )}
 
         {/* Tab E: Map View */}
-        {activeTab === 'map' && hasPerm('manageEstablishments') && (
+        {activeTab === 'map' && hasPerm('showSectorMap') && (
           <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
             <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
               <Map className="text-teal-600" />
               خريطة قطاع ({userSector})
             </h2>
-            <div className="flex-1 w-full rounded-2xl overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white">
+            <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white" style={{ borderRadius: '0' }}>
               <NinevehMap 
                 establishments={establishments} 
                 isTeamView={true} 
                 teamSector={userSector} 
+                fullHeight={true}
               />
             </div>
           </div>
         )}
 
         {/* Tab B: Smart Tasks (Today's Tasks) */}
-        {activeTab === 'smart_tasks' && hasPerm('manageEstablishments') && (
+        {activeTab === 'smart_tasks' && hasPerm('showSmartTasks') && (
           <div className="space-y-6 animate-fade-in-up">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30">
               <div className="flex items-center gap-3">
