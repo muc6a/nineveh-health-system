@@ -620,14 +620,7 @@ export const TeamDashboard = () => {
               </div>
             </div>
 
-            {/* Close-up Interactive Map of Sector */}
-            <div className="glassmorphic-card p-5 mt-6">
-              <NinevehMap
-                establishments={establishments}
-                isTeamView={true}
-                teamSector={userSector}
-              />
-            </div>
+
           </div>
         )}
 
