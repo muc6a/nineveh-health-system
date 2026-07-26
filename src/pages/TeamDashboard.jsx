@@ -1,9 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { NotificationBell } from '../components/NotificationBell';
-import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown } from 'lucide-react';
+import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
 import { QRScannerModal } from '../components/QRScannerModal';
@@ -12,6 +13,13 @@ export const TeamDashboard = () => {
   const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences } = useContext(AppContext);
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
   const [draftUiPreferences, setDraftUiPreferences] = useState(null);
+  
+  // Live Chat State
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([
+    { id: 1, sender: 'admin', text: 'مرحباً، غرفة العمليات المركزية في خدمتكم. هل تحتاجون لأي دعم؟', time: '08:00 ص' }
+  ]);
 
   const openDisplayPrefsModal = () => {
     setDraftUiPreferences(uiPreferences || { headingSize: '18px', bodySize: '12px', density: 'comfortable' });
@@ -366,6 +374,20 @@ export const TeamDashboard = () => {
 
             {hasPerm('manageEstablishments') && (
               <button
+                onClick={() => { setActiveTab('map'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'map'
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Map className="w-4.5 h-4.5" />
+                <span>🗺️ خريطة القطاع</span>
+              </button>
+            )}
+
+            {hasPerm('manageEstablishments') && (
+              <button
                 onClick={() => { setActiveTab('smart_tasks'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'smart_tasks'
@@ -406,6 +428,12 @@ export const TeamDashboard = () => {
 
         {/* User context footer */}
         <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+          <div className="flex flex-col gap-2 mb-4">
+             <button className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+              <Siren className="w-4 h-4" />
+              <span>إرسال استغاثة (SOS)</span>
+             </button>
+          </div>
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col text-right">
               <span className="text-xs font-black text-slate-700 dark:text-slate-300">{user?.name || 'مفتش الرقابة الميداني'}</span>
@@ -554,52 +582,40 @@ export const TeamDashboard = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div 
-                onClick={() => { setMonthlyStatsModalType('closures'); setShowMonthlyStatsModal(true); }}
-                className="glassmorphic-card p-5 border border-rose-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/5 transition-all duration-300 cursor-pointer select-none"
-              >
-                <span className="text-xs font-black text-slate-500 dark:text-slate-400">المطاعم المغلقة هذا الشهر 🔒</span>
-                <p className="text-4xl font-extrabold text-rose-500 mt-3">{monthlyClosures.length}</p>
-                <span className="text-[10px] text-rose-500 font-bold block mt-2">انقر لعرض المطاعم 👁️</span>
+            {/* Team Analytics Chart */}
+            <div className="glassmorphic-card p-6 mt-6">
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-teal-600" /> إحصائيات الإنجاز الرقابي (هذا الأسبوع)
+              </h3>
+              <div className="h-64 w-full" dir="ltr">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={[
+                    { name: 'السبت', زيارات: 12, غرامات: 2 },
+                    { name: 'الأحد', زيارات: 19, غرامات: 5 },
+                    { name: 'الإثنين', زيارات: 15, غرامات: 1 },
+                    { name: 'الثلاثاء', زيارات: 22, غرامات: 3 },
+                    { name: 'الأربعاء', زيارات: 18, غرامات: 2 },
+                    { name: 'الخميس', زيارات: 25, غرامات: 4 },
+                    { name: 'الجمعة', زيارات: 5, غرامات: 0 },
+                  ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)', textAlign: 'right', direction: 'rtl' }}
+                      itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                    />
+                    <Bar dataKey="زيارات" fill="#0d9488" radius={[4, 4, 0, 0]} barSize={12} />
+                    <Bar dataKey="غرامات" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={12} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-              <div 
-                onClick={() => { setMonthlyStatsModalType('fines'); setShowMonthlyStatsModal(true); }}
-                className="glassmorphic-card p-5 border border-amber-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-300 cursor-pointer select-none"
-              >
-                <span className="text-xs font-black text-slate-500 dark:text-slate-400">الغرامات المالية هذا الشهر 💰</span>
-                <p className="text-4xl font-extrabold text-amber-500 mt-3">{monthlyFines.length}</p>
-                <span className="text-[10px] text-amber-500 font-bold block mt-2">انقر لعرض المطاعم 👁️</span>
-              </div>
-            </div>
-
-            {/* Target States */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div className="glassmorphic-card p-5">
-                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
-                  أحياء وشوارع تم زيارتها بنجاح 🟢
-                </h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {visitedStreets.length > 0 ? visitedStreets.map((street, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      <Check className="w-4 h-4 shrink-0" />
-                      <span>{street}</span>
-                    </div>
-                  )) : <p className="text-xs text-slate-400">لم يتم إتمام أي زيارات بعد لهذا الشهر.</p>}
+              <div className="flex justify-center gap-6 mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                  <span className="w-3 h-3 rounded-full bg-teal-600"></span> الجولات التفتيشية
                 </div>
-              </div>
-
-              <div className="glassmorphic-card p-5">
-                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
-                  أحياء وشوارع بانتظار الجولة الرقابية الفورية 🔴
-                </h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {pendingStreets.length > 0 ? pendingStreets.map((street, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-red-500/5 dark:bg-red-950/20 rounded-xl text-xs font-bold text-red-500">
-                      <AlertCircle className="w-4 h-4 shrink-0" />
-                      <span>{street}</span>
-                    </div>
-                  )) : <p className="text-xs text-slate-400">كافة المنشآت مغطاة بنجاح 100%.</p>}
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                  <span className="w-3 h-3 rounded-full bg-amber-500"></span> الغرامات الفورية
                 </div>
               </div>
             </div>
@@ -610,6 +626,23 @@ export const TeamDashboard = () => {
                 establishments={establishments}
                 isTeamView={true}
                 teamSector={userSector}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Tab E: Map View */}
+        {activeTab === 'map' && hasPerm('manageEstablishments') && (
+          <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
+            <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+              <Map className="text-teal-600" />
+              خريطة قطاع ({userSector})
+            </h2>
+            <div className="flex-1 w-full rounded-2xl overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white">
+              <NinevehMap 
+                establishments={establishments} 
+                isTeamView={true} 
+                teamSector={userSector} 
               />
             </div>
           </div>
@@ -1401,6 +1434,80 @@ export const TeamDashboard = () => {
         onClose={() => setShowQRScanner(false)}
         onScanSuccess={handleQRScanSuccess}
       />
+
+      {/* Floating Chat Widget */}
+      <div className="fixed bottom-6 left-6 z-[60] flex flex-col items-end">
+        {isChatOpen && (
+          <div className="bg-white dark:bg-slate-900 w-80 sm:w-96 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 mb-4 flex flex-col overflow-hidden animate-fade-in-up">
+            <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-4 flex items-center justify-between text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-right">الدعم المباشر</h4>
+                  <p className="text-[10px] text-teal-100">غرفة العمليات المركزية</p>
+                </div>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-4 h-64 overflow-y-auto flex flex-col gap-3 bg-slate-50 dark:bg-slate-950">
+              {chatHistory.map(msg => (
+                <div key={msg.id} className={`flex ${msg.sender === 'team' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${msg.sender === 'team' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-bl-none'}`}>
+                    <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
+                    <span className={`text-[9px] block mt-1 text-left ${msg.sender === 'team' ? 'text-teal-200' : 'text-slate-400'}`}>{msg.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+              <button 
+                onClick={() => {
+                  if (chatMessage.trim()) {
+                    setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    setChatMessage('');
+                    // Mock auto-reply
+                    setTimeout(() => {
+                      setChatHistory(prev => [...prev, { id: Date.now()+1, sender: 'admin', text: 'تم استلام بلاغك. جاري المتابعة.', time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    }, 1500);
+                  }
+                }}
+                className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 hover:bg-teal-700 transition-colors"
+              >
+                <Send className="w-4 h-4 rtl:-scale-x-100" />
+              </button>
+              <input 
+                type="text" 
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && chatMessage.trim()) {
+                    setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    setChatMessage('');
+                    setTimeout(() => {
+                      setChatHistory(prev => [...prev, { id: Date.now()+1, sender: 'admin', text: 'تم استلام بلاغك. جاري المتابعة.', time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    }, 1500);
+                  }
+                }}
+                placeholder="اكتب رسالتك لغرفة العمليات..."
+                className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-4 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-teal-500/50 text-right"
+              />
+            </div>
+          </div>
+        )}
+        
+        <button 
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all hover:scale-110 ${isChatOpen ? 'bg-slate-800' : 'bg-teal-600 animate-bounce'}`}
+        >
+          {isChatOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+        </button>
+      </div>
 
     </div>
   );

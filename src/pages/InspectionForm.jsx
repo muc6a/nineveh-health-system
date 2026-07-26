@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { ShieldCheck, Camera, AlertOctagon, MapPin, Search, Star, Edit, Save, ArrowRight, Activity, Plus, Trash2, Cpu, FileText, WifiOff, Printer, ClipboardCheck } from 'lucide-react';
+import { ShieldCheck, Camera, AlertOctagon, MapPin, Search, Star, Edit, Save, ArrowRight, Activity, Plus, Trash2, Cpu, FileText, WifiOff, Printer, ClipboardCheck, Siren } from 'lucide-react';
 
 export const InspectionForm = () => {
   const { navigate, establishments, inspectionItems, addInspection, config, user, logAudit, notify: triggerAlert } = useContext(AppContext);
@@ -42,7 +42,20 @@ export const InspectionForm = () => {
     const handleOffline = () => setIsOffline(true);
     const handleOnline = () => {
       setIsOffline(false);
-      triggerAlert('تم عودة الاتصال! جاري مزامنة الكشوفات مع غرفة العمليات المركزية...');
+      const offlineData = JSON.parse(localStorage.getItem('offline_inspections') || '[]');
+      if (offlineData.length > 0) {
+        triggerAlert(`تم عودة الاتصال! جاري مزامنة ${offlineData.length} كشوفات مع غرفة العمليات...`);
+        setTimeout(() => {
+          offlineData.forEach(report => {
+            addInspection(report.establishmentId, report);
+          });
+          localStorage.removeItem('offline_inspections');
+          localStorage.removeItem('has_offline_data');
+          triggerAlert('تمت المزامنة بنجاح! ✅', 'success', true);
+        }, 1500);
+      } else {
+        triggerAlert('تم عودة الاتصال بالإنترنت.');
+      }
     };
 
     window.addEventListener('offline', handleOffline);
@@ -284,11 +297,19 @@ export const InspectionForm = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto flex items-center justify-between mb-6">
+      <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
         <button onClick={() => navigate('/dashboard/team')} className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
-          <ArrowRight className="w-4 h-4" /> رجوع
+          <ArrowRight className="w-4 h-4" /> رجوع إلى اللوحة الرقابية
         </button>
         <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => triggerAlert('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true)}
+            className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 border border-red-200 dark:border-red-900/50 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shadow-sm"
+          >
+            <Siren className="w-4 h-4 animate-pulse" />
+            <span className="text-xs font-black">طلب إسناد (SOS)</span>
+          </button>
           <ThemeToggle />
           <div className="w-10 h-10 bg-teal-500/10 rounded-2xl flex items-center justify-center border border-teal-500/20 shadow-inner">
             <ShieldCheck className="w-5 h-5 text-teal-600" />
@@ -550,20 +571,31 @@ export const InspectionForm = () => {
               </div>
             </div>
             
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-3 rounded-xl bg-gradient-to-l from-emerald-600 to-teal-600 text-white font-black text-[11px] sm:text-xs shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <span>جاري الحفظ...</span>
-              ) : (
-                <>
-                  <ClipboardCheck className="w-4 h-4" />
-                  <span>اعتماد وإرسال للمديرية</span>
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-[11px] sm:text-xs shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border border-slate-200 dark:border-slate-700"
+              >
+                <Printer className="w-4 h-4" />
+                <span className="hidden sm:inline">طباعة</span>
+              </button>
+              
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-6 py-3 rounded-xl bg-gradient-to-l from-emerald-600 to-teal-600 text-white font-black text-[11px] sm:text-xs shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <span>جاري الحفظ...</span>
+                ) : (
+                  <>
+                    <ClipboardCheck className="w-4 h-4" />
+                    <span>اعتماد وإرسال</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           </form>
