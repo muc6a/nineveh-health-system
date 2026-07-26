@@ -4,7 +4,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { ShieldCheck, Camera, AlertOctagon, MapPin, Search, Star, Edit, Save, ArrowRight, Activity, Plus, Trash2, Cpu, FileText, WifiOff, Printer, ClipboardCheck, Siren } from 'lucide-react';
 
 export const InspectionForm = () => {
-  const { navigate, establishments, inspectionItems, addInspection, config, user, logAudit, notify: triggerAlert } = useContext(AppContext);
+  const { navigate, establishments, inspectionItems, addInspection, config, user, logAudit, notify: triggerAlert, triggerSOSAlert } = useContext(AppContext);
 
   // Parse establishment ID from query string
   const [establishment, setEstablishment] = useState(null);
@@ -305,7 +305,10 @@ export const InspectionForm = () => {
           {user?.permissions?.canSendSOS && (
             <button
               type="button"
-              onClick={() => triggerAlert('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true)}
+              onClick={() => {
+                if (triggerSOSAlert) triggerSOSAlert(user, locationLog || 'الموقع الحالي أثناء التفتيش غير متوفر');
+                triggerAlert('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true);
+              }}
               className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 border border-red-200 dark:border-red-900/50 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shadow-sm"
             >
               <Siren className="w-4 h-4 animate-pulse" />

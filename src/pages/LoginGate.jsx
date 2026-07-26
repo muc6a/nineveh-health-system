@@ -138,7 +138,7 @@ export const LoginGate = () => {
       notify('تم تسجيل الدخول كمدير عام لصحة نينوى', 'success', true);
       navigate('/dashboard/director');
     } else if (input === 'central_director@ninveh.health.gov.iq' || input === 'central_director' || input.includes('مركزية')) {
-      setUser({ role: 'central_director', name: 'دكتورة ابتهال غازي', email: 'central_director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirectives: true, showDeliveryPage: true, manageEstablishments: true } });
+      setUser({ role: 'central_director', name: 'دكتورة ابتهال غازي', email: 'central_director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirectives: true, showDeliveryPage: true, manageEstablishments: true, showPublicEvalsPage: true } });
       notify('تم تسجيل الدخول كمدير شعبة الرقابة المركزية', 'success', true);
       navigate('/dashboard/director');
     } else if (input.includes('team') || input === 'team' || input.includes('فريق') || input.includes('لجنة')) {

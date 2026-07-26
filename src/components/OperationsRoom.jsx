@@ -4,8 +4,8 @@ import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send
 import AccountModal from './AccountModal';
 
 export default function OperationsRoom() {
-  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('teams_management');
+  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts } = useContext(AppContext);
+  const [activeTab, setActiveTab] = useState('sos_alerts');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
   
@@ -208,7 +208,133 @@ export default function OperationsRoom() {
           <Camera className="w-4 h-4" />
           أدلة الإغلاق (الميدانية)
         </button>
+        <button
+          onClick={() => setActiveTab('sos_alerts')}
+          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'sos_alerts' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <AlertCircle className="w-4 h-4" />
+          سجل الطوارئ (SOS)
+        </button>
+        <button
+          onClick={() => setActiveTab('live_tracking')}
+          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'live_tracking' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Target className="w-4 h-4" />
+          التتبع الحي للفرق
+        </button>
       </div>
+
+      {activeTab === 'sos_alerts' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white">سجل استغاثات الطوارئ (SOS) من الفرق الميدانية</h3>
+          </div>
+          {sosAlerts && sosAlerts.length > 0 ? (
+            sosAlerts.map(alert => (
+              <div key={alert.id} className="glassmorphic-card p-4 border border-red-500/30 bg-red-50 dark:bg-red-900/10 relative">
+                <div className="absolute top-0 right-0 w-2 h-full bg-red-600 rounded-r-2xl"></div>
+                <div className="flex justify-between items-start mb-2 mr-2">
+                  <div>
+                    <h4 className="font-black text-sm text-red-700 dark:text-red-400">
+                      🚨 استغاثة من: {alert.teamName}
+                    </h4>
+                    <p className="text-xs text-slate-600 mt-1">القطاع: {alert.sector}</p>
+                    <p className="text-[10px] text-slate-500 font-bold mt-1">التاريخ: {new Date(alert.date).toLocaleString('ar-IQ')}</p>
+                  </div>
+                  {alert.status === 'active' ? (
+                    <span className="bg-red-600 text-white text-[10px] px-2 py-1 rounded-full font-bold animate-pulse">مفتوح وعاجل</span>
+                  ) : (
+                    <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-1 rounded-full font-bold">تمت الاستجابة</span>
+                  )}
+                </div>
+                <div className="mr-2 mt-3 p-3 bg-white dark:bg-slate-900 rounded-xl border border-red-200 dark:border-red-900/50">
+                  <p className="text-xs text-slate-700 dark:text-slate-300 font-bold">📍 الموقع وقت الاستغاثة:</p>
+                  <p className="text-xs text-red-600 mt-1 font-mono">{alert.location}</p>
+                </div>
+                {alert.status === 'active' && (
+                  <div className="mr-2 mt-4 flex gap-2">
+                    <button 
+                      onClick={() => {
+                        setSosAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, status: 'resolved' } : a));
+                        triggerAlert('تم تسجيل الاستجابة لنداء الاستغاثة.');
+                      }}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md"
+                    >
+                      ✅ تأكيد الاستجابة وإغلاق النداء
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="text-center p-8 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+              <AlertCircle className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
+              <p className="text-slate-500 font-bold text-sm">لا توجد نداءات استغاثة مسجلة</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'live_tracking' && (
+        <div className="glassmorphic-card p-6 border border-blue-500/20">
+          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">التتبع الحي للفرق الميدانية (Live Tracking)</h3>
+          <p className="text-[10px] text-slate-500 mb-6">يتم تحديد موقع الفرق بناءً على آخر تقييم أو استغاثة صدرت منهم.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse text-xs font-bold">
+              <thead>
+                <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                  <th className="p-3">اسم الفريق</th>
+                  <th className="p-3">القطاع</th>
+                  <th className="p-3">آخر نشاط مسجل</th>
+                  <th className="p-3">الموقع التقريبي (بناءً على آخر منشأة)</th>
+                  <th className="p-3 text-center">إجراء</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+                {teams.map(t => {
+                  // Find last inspection for this team
+                  const teamInspections = establishments
+                    .filter(e => e.lastInspection !== 'لم يزر بعد' && e.lastInspectorId === t.id)
+                    .sort((a, b) => new Date(b.lastInspectionDate || 0) - new Date(a.lastInspectionDate || 0));
+                  
+                  const lastEst = teamInspections[0];
+                  
+                  return (
+                    <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
+                      <td className="p-3 text-slate-800 dark:text-slate-200">{t.name}</td>
+                      <td className="p-3 text-teal-600 dark:text-teal-400">{t.sector}</td>
+                      <td className="p-3 text-slate-500">
+                        {lastEst ? new Date(lastEst.lastInspectionDate).toLocaleString('ar-IQ') : 'لا يوجد نشاط مسجل'}
+                      </td>
+                      <td className="p-3 text-slate-600 dark:text-slate-400">
+                        {lastEst ? `${lastEst.name} (${lastEst.neighborhood || 'حي غير محدد'})` : 'غير متوفر'}
+                      </td>
+                      <td className="p-3">
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => {
+                              setSelectedEstId(lastEst ? lastEst.id : '');
+                              setSelectedTeamId(t.id);
+                              setActiveTab('dispatch');
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-fuchsia-500/10 hover:bg-fuchsia-500/20 text-fuchsia-600 transition-all cursor-pointer text-[10px]"
+                          >
+                            توجيه نداء عاجل
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {activeTab === 'monthly_stats' && (
         <div className="space-y-6">

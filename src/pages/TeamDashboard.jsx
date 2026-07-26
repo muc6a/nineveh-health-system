@@ -10,7 +10,7 @@ import { EstablishmentModal } from '../components/EstablishmentModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = () => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences, triggerSOSAlert } = useContext(AppContext);
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
   const [draftUiPreferences, setDraftUiPreferences] = useState(null);
   
@@ -431,7 +431,12 @@ export const TeamDashboard = () => {
           <div className="flex flex-col gap-2 mb-4">
              {hasPerm('canSendSOS') && (
                <button 
-                  onClick={() => notify('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true)}
+                  onClick={() => {
+                    if (triggerSOSAlert) {
+                      triggerSOSAlert(user, 'الموقع الحالي للفريق غير مسجل بعد');
+                    }
+                    notify('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true);
+                  }}
                   className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                >
                 <Siren className="w-4 h-4 animate-pulse" />

@@ -676,6 +676,31 @@ export const AppProvider = ({ children }) => {
     setSystemNotifications(prev => [newNotif, ...prev]);
   };
 
+  const [sosAlerts, setSosAlerts] = useState(() => {
+    const saved = localStorage.getItem('sosAlerts');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const triggerSOSAlert = (teamInfo, locationInfo) => {
+    const newAlert = {
+      id: 'sos_' + Date.now(),
+      teamName: teamInfo?.name || 'فريق غير معروف',
+      teamId: teamInfo?.id || 'unknown',
+      sector: teamInfo?.sector || 'غير محدد',
+      location: locationInfo || 'موقع غير متوفر',
+      date: new Date().toISOString(),
+      status: 'active'
+    };
+    setSosAlerts(prev => [newAlert, ...prev]);
+    
+    // Also notify central ops
+    addSystemNotification(
+      '🚨 نداء استغاثة (SOS) عاجل!',
+      `الفريق: ${newAlert.teamName} في قطاع ${newAlert.sector} يطلب الإسناد الفوري.`,
+      'central_director'
+    );
+  };
+
   const playBeep = (type) => {
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -736,6 +761,7 @@ export const AppProvider = ({ children }) => {
   const isMountedConf = React.useRef(false);
   const isMountedTick = React.useRef(false);
   const isMountedNotif = React.useRef(false);
+  const isMountedSos = React.useRef(false);
   const isMountedDir = React.useRef(false);
   const isMountedDirst = React.useRef(false);
   const isMountedDeliv = React.useRef(false);
@@ -981,6 +1007,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
   useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
   useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
+  useEffect(() => { if (isMountedSos.current) syncToCloud('sosAlerts', sosAlerts); else isMountedSos.current = true; }, [sosAlerts]);
   useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
   useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
   useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
@@ -1021,6 +1048,8 @@ export const AppProvider = ({ children }) => {
       dispatches, setDispatches,
       systemNotifications, setSystemNotifications,
       addSystemNotification,
+      sosAlerts, setSosAlerts,
+      triggerSOSAlert,
       directives,
       setDirectives,
       addDirective,
