@@ -432,7 +432,7 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Tab Content Rendering */}
-        {activeTab === 'establishments' ? (
+        {executiveTab === 'establishments' ? (
           <EstablishmentsManager />
         ) : (
           <>
