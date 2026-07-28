@@ -5,7 +5,7 @@ import { NotificationBell } from '../components/NotificationBell';
 import { LogOut, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Map, Target, Building, Save, ScanLine, Radar } from 'lucide-react';
 
 export const TrackerDashboard = () => {
-  const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify } = useContext(AppContext);
+  const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify, addSystemNotification } = useContext(AppContext);
   
   // UI States
   const [activeTab, setActiveTab] = useState('verifications'); // 'verifications', 'update_location', 'add_new'
@@ -126,7 +126,7 @@ export const TrackerDashboard = () => {
     setTimeout(() => {
       const newVerification = {
         id: `ver_${Date.now()}`,
-        type: selectedEst?.status === 'closed' ? 'reopening' : 'closure',
+        type: 'compliance_check',
         trackerId: user.id,
         trackerName: user.name,
         estId: selectedEst.id,
@@ -165,6 +165,14 @@ export const TrackerDashboard = () => {
       });
       setDailyStats(prev => ({ ...prev, added: prev.added + 1 }));
       notify('تم رصد المنشأة الجديدة وإضافتها لقاعدة البيانات بنجاح!', 'success', true);
+      
+      if (addSystemNotification) {
+        addSystemNotification(
+          '🚨 رصد منشأة جديدة غير مسجلة',
+          `تم رصد مطعم جديد باسم "${newEstName}" في قطاع ${trackerSector} من قبل المتابع ${user.name}. يرجى توجيه لجنة لتفتيشه.`,
+          'central_director'
+        );
+      }
       
       setIsSubmitting(false);
       setNewEstName('');
@@ -239,7 +247,7 @@ export const TrackerDashboard = () => {
               activeTab === 'verifications' ? 'bg-white dark:bg-slate-700 shadow-md text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            توثيق العقوبات
+            التحقق من الإغلاقات
           </button>
           <button
             onClick={() => setActiveTab('add_new')}
@@ -266,9 +274,16 @@ export const TrackerDashboard = () => {
         {activeTab === 'verifications' && (
           <div className="space-y-4">
             <h2 className="text-sm font-black text-slate-800 dark:text-white flex justify-between items-center mb-4">
-              <span>المنشآت التي تتطلب التحقق</span>
+              <span>مطاعم مغلقة تتطلب التأكد من الالتزام</span>
               <span className="bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400 px-2 py-1 rounded-lg text-[10px]">{closedEstablishments.length}</span>
             </h2>
+            
+            <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/50 p-4 rounded-2xl flex gap-3 mb-4">
+              <ShieldAlert className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <p className="text-xs text-blue-800 dark:text-blue-400 font-bold leading-relaxed">
+                مهمتك هنا هي الذهاب لهذه المطاعم والتقاط صورة للواجهة للتأكد من أن صاحب المطعم لم يكسر الشمع الأحمر وأنه ملتزم بقرار الإغلاق. أنت لست مسؤولاً عن الفتح أو الإغلاق.
+              </p>
+            </div>
             
             {closedEstablishments.length === 0 ? (
               <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -284,17 +299,17 @@ export const TrackerDashboard = () => {
                     <div>
                       <h3 className="font-black text-slate-800 dark:text-white text-base">{est.name}</h3>
                       <p className="text-xs text-slate-500 mt-1 font-bold">القطاع/الحي: {est.neighborhood || est.sector}</p>
-                      <p className={`text-[11px] font-bold mt-2 inline-block px-2 py-1 rounded-lg ${est.status === 'closed' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400'}`}>
-                        {est.status === 'closed' ? 'حالة المطعم: مغلق (بانتظار طلب الفتح)' : `التقييم: ${est.score}% - حرج جداً (يتطلب إغلاق)`}
+                      <p className={`text-[11px] font-bold mt-2 inline-block px-2 py-1 rounded-lg ${est.status === 'closed' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'}`}>
+                        {est.status === 'closed' ? 'حالة المطعم: مغلق بالشمع الأحمر' : `التقييم: ${est.score}% - حرج (تأكد من إغلاقه)`}
                       </p>
                     </div>
                     
                     <button
                       onClick={() => startCamera('verification', est)}
-                      className={`flex items-center justify-center gap-2 w-full py-3 text-white rounded-xl text-xs font-black transition-all shadow-md active:scale-95 ${est.status === 'closed' ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20' : 'bg-rose-600 hover:bg-rose-700 shadow-rose-500/20'}`}
+                      className="flex items-center justify-center gap-2 w-full py-3 text-white rounded-xl text-xs font-black transition-all shadow-md active:scale-95 bg-rose-600 hover:bg-rose-700 shadow-rose-500/20"
                     >
                       <Camera className="w-4 h-4" />
-                      {est.status === 'closed' ? 'توثيق رفع الشمع الأحمر (إعادة فتح)' : 'توثيق الشمع الأحمر (إغلاق)'}
+                      التقاط صورة للتحقق من الالتزام بالإغلاق
                     </button>
                   </div>
                 </div>
@@ -319,13 +334,23 @@ export const TrackerDashboard = () => {
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2 mr-1">الاسم التجاري للمنشأة</label>
-                <input 
-                  type="text" 
-                  value={newEstName}
-                  onChange={e => setNewEstName(e.target.value)}
-                  placeholder="مثال: مطعم أو كافيه كذا..." 
-                  className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-bold focus:border-emerald-500 outline-none transition-colors"
-                />
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    value={newEstName}
+                    onChange={e => setNewEstName(e.target.value)}
+                    placeholder="ابحث عن الاسم للتأكد أنه غير مسجل..." 
+                    className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm font-bold focus:border-emerald-500 outline-none transition-colors"
+                  />
+                  {newEstName.length > 2 && establishments.some(e => e.name.includes(newEstName)) && (
+                    <div className="absolute top-full mt-2 w-full bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-900 rounded-xl p-3 shadow-lg z-10">
+                      <p className="text-xs font-bold text-rose-600 mb-2">⚠️ انتبه، توجد مطاعم مشابهة في النظام:</p>
+                      {establishments.filter(e => e.name.includes(newEstName)).slice(0, 3).map(e => (
+                        <div key={e.id} className="text-[10px] text-slate-600 p-1 border-b border-slate-100 last:border-0">{e.name} ({e.sector})</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               
               <div>
@@ -401,7 +426,7 @@ export const TrackerDashboard = () => {
                 {cameraMode === 'verification' ? (
                   <>
                     <ShieldAlert className="w-4 h-4 text-rose-500" />
-                    توثيق: {selectedEst?.name}
+                    التحقق من التزام: {selectedEst?.name}
                   </>
                 ) : (
                   <>
@@ -464,7 +489,7 @@ export const TrackerDashboard = () => {
                     ) : (
                       <>
                         <Save className="w-4 h-4" />
-                        {cameraMode === 'verification' ? 'تأكيد الرفع لغرفة العمليات' : 'حفظ وإضافة المنشأة'}
+                        {cameraMode === 'verification' ? 'إرسال تقرير التحقق للعمليات' : 'حفظ وإضافة المنشأة'}
                       </>
                     )}
                   </button>
