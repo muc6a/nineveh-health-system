@@ -356,6 +356,19 @@ export const AppProvider = ({ children }) => {
     });
   });
 
+  // --- NEW: Smart Tasks for Trackers ---
+  const [tasks, setTasks] = useState([
+    {
+      id: 'task_1',
+      title: 'شكوى تسمم - مطعم كرز',
+      description: 'يرجى التوجه فوراً للتأكد من نظافة المطعم بناءً على شكوى وردت لغرفة العمليات.',
+      targetEstId: 'est_2', // Assuming est_2 is a restaurant
+      assignedTo: 'tracker_1', // Specifically assigned to a tracker
+      status: 'pending', // pending, completed
+      createdAt: new Date(Date.now() - 3600000).toISOString()
+    }
+  ]);
+
   const [reports, setReports] = useState(() => {
     const saved = localStorage.getItem('reports');
     return saved ? JSON.parse(saved) : INITIAL_REPORTS;
@@ -643,6 +656,8 @@ export const AppProvider = ({ children }) => {
       density: 'comfortable', // comfortable | compact
     };
   });
+
+  const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('uiPreferences', JSON.stringify(uiPreferences));
@@ -977,7 +992,7 @@ export const AppProvider = ({ children }) => {
     }
 
     return [
-      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDeliveryPage: true } },
+      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showPublicEvalsPage: true, showDeliveryPage: true } },
       { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } }
     ];
   });
@@ -1071,8 +1086,16 @@ export const AppProvider = ({ children }) => {
       setGlobalBroadcast,
       notification,
       notify,
+      // --- NEW: Smart Tasks ---
+      tasks,
+      setTasks,
+      
+      // Settings
       uiPreferences,
       setUiPreferences,
+      showDisplayPrefsModal,
+      setShowDisplayPrefsModal,
+      hasPerm,
       activityTypes,
       setActivityTypes
     }}>

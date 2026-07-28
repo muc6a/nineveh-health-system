@@ -1,13 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { AppProvider, AppContext } from './context/AppContext';
 import { Router } from './components/Router';
 import { NotificationToast } from './components/NotificationToast';
 import { BroadcastModal } from './components/BroadcastModal';
 import { Hammer } from 'lucide-react';
+import DisplayPreferencesModal from './components/DisplayPreferencesModal';
 
 // Sizing wrapper that reads the configuration globally
 const AppContent = () => {
-  const { config, notification, notify, user } = useContext(AppContext);
+  const { config, notification, notify, user, darkMode, showDisplayPrefsModal, setShowDisplayPrefsModal } = useContext(AppContext);
 
   const getScaleClass = () => {
     if (config.uiScale === 'small') return 'scale-95 origin-top';
@@ -18,7 +19,7 @@ const AppContent = () => {
   const isMaintenance = config.maintenanceMode && user?.role !== 'admin';
 
   return (
-    <div className={`min-h-screen transition-all duration-300 ${getScaleClass()}`}>
+    <div className={`min-h-screen transition-all duration-300 ${getScaleClass()} ${darkMode ? 'dark' : ''}`}>
       {isMaintenance ? (
         <div className="min-h-screen flex items-center justify-center bg-slate-900 p-6 text-center dir-rtl">
           <div className="bg-slate-800 p-10 rounded-3xl border border-slate-700 shadow-2xl max-w-lg w-full flex flex-col items-center">
@@ -35,7 +36,10 @@ const AppContent = () => {
           </div>
         </div>
       ) : (
-        <Router />
+        <>
+          <Router />
+          <DisplayPreferencesModal isOpen={showDisplayPrefsModal} onClose={() => setShowDisplayPrefsModal(false)} />
+        </>
       )}
       <NotificationToast 
         key={notification.id} 

@@ -3,13 +3,13 @@ import { AppContext } from '../context/AppContext';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { NotificationBell } from '../components/NotificationBell';
 import { usePersistentTab } from '../hooks/usePersistentTab';
-import { LogOut, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Target, Building, Save, ScanLine, Radar, RefreshCw, Search } from 'lucide-react';
+import { LogOut, Settings, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Target, Building, Save, ScanLine, Radar, RefreshCw, Search, ClipboardList, Clock } from 'lucide-react';
 
 export const TrackerDashboard = () => {
-  const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify, addSystemNotification } = useContext(AppContext);
+  const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify, addSystemNotification, setShowDisplayPrefsModal, tasks, setTasks } = useContext(AppContext);
   
   // UI States
-  const [activeTab, setActiveTab] = usePersistentTab('trackerActiveTab', 'verifications');
+  const [activeTab, setActiveTab] = usePersistentTab('trackerActiveTab', 'daily_tasks');
   
   // Camera & Verification States
   const [selectedEst, setSelectedEst] = useState(null);
@@ -64,6 +64,9 @@ export const TrackerDashboard = () => {
   const verifiedToday = closedEstablishments.filter(e => verifiedEstIds.includes(e.id));
 
   // Request Location
+  const myTasks = (tasks || []).filter(t => t.assignedTo === user.id || t.assignedTo === 'all');
+  const pendingTasks = myTasks.filter(t => t.status === 'pending');
+  const completedTasks = myTasks.filter(t => t.status === 'completed');
   const requestLocation = (onSuccess) => {
     setIsFetchingLocation(true);
     if (navigator.geolocation) {
@@ -236,25 +239,34 @@ export const TrackerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-cairo dir-rtl pb-20">
-      {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      {/* Top Navigation */}
+      <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
               <ScanLine className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="font-black text-sm text-slate-800 dark:text-white">المتابع الميداني</h1>
-              <p className="text-[10px] text-slate-500 font-bold">{user.name} - {trackerSector}</p>
+              <h1 className="text-sm sm:text-base font-black text-slate-800 dark:text-white">المتابع الميداني</h1>
+              <p className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">حساب المتابعة والرصد المستمر</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 mr-2">
-              <span>{new Date().toLocaleDateString('ar-IQ', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+          
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400">
+              <span>{new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span className="text-slate-300 dark:text-slate-600">|</span>
               <span>☀️ 38°</span>
             </div>
             <NotificationBell />
             <ThemeToggle />
+            <button 
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"
+            >
+              <Settings className="w-5 h-5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline text-xs font-bold">تخصيص العرض</span>
+            </button>
             <button 
               onClick={() => navigate('/login')}
               className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-600 dark:text-slate-400 hover:text-rose-600 transition-colors"
@@ -286,18 +298,34 @@ export const TrackerDashboard = () => {
 
       {/* Tabs */}
       <div className="container mx-auto px-4 max-w-2xl mt-6">
-        <div className="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-2xl mb-6">
+        <div className="flex flex-wrap p-1 bg-slate-200 dark:bg-slate-800 rounded-2xl mb-6 gap-1">
+          <button
+            onClick={() => setActiveTab('daily_tasks')}
+            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all relative ${
+              activeTab === 'daily_tasks' ? 'bg-white dark:bg-slate-700 shadow-md text-purple-600 dark:text-purple-400' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-center gap-1.5">
+              <ClipboardList className="w-3.5 h-3.5" />
+              مهام موجهة
+              {pendingTasks.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] flex items-center justify-center shadow-md animate-pulse">
+                  {pendingTasks.length}
+                </span>
+              )}
+            </div>
+          </button>
           <button
             onClick={() => setActiveTab('verifications')}
-            className={`flex-1 py-2.5 text-xs font-black rounded-xl transition-all ${
+            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all ${
               activeTab === 'verifications' ? 'bg-white dark:bg-slate-700 shadow-md text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            التحقق من الإغلاقات
+            التحقق للإغلاقات
           </button>
           <button
             onClick={() => { setActiveTab('add_new'); setIsAddingNew(false); setNewEstName(''); }}
-            className={`flex-1 py-2.5 text-xs font-black rounded-xl transition-all ${
+            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all ${
               activeTab === 'add_new' ? 'bg-white dark:bg-slate-700 shadow-md text-emerald-600 dark:text-emerald-400' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -305,7 +333,7 @@ export const TrackerDashboard = () => {
           </button>
           <button
             onClick={() => setActiveTab('update_location')}
-            className={`flex-1 py-2.5 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1 ${
+            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1 ${
               activeTab === 'update_location' ? 'bg-white dark:bg-slate-700 shadow-md text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -313,6 +341,100 @@ export const TrackerDashboard = () => {
             تحديث مواقع
           </button>
         </div>
+        
+        {/* Tab 0: Daily Tasks */}
+        {activeTab === 'daily_tasks' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            {pendingTasks.length === 0 ? (
+              <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[40vh]">
+                <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mb-4">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+                </div>
+                <h3 className="font-black text-slate-800 dark:text-white text-lg">لا توجد مهام حالية</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-xs mt-2 font-bold max-w-xs leading-relaxed">أنتظر توجيهات جديدة من غرفة العمليات أو يمكنك البدء بالرصد الميداني الروتيني.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    مهام موجهة عاجلة
+                  </h2>
+                  <span className="text-[10px] font-bold text-slate-500">{pendingTasks.length} مهام متبقية</span>
+                </div>
+                
+                {pendingTasks.map(task => {
+                  const targetEst = establishments.find(e => e.id === task.targetEstId);
+                  return (
+                    <div key={task.id} className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-purple-200 dark:border-purple-900/30 shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+                      <div className="absolute top-0 right-0 w-1.5 h-full bg-gradient-to-b from-purple-500 to-indigo-500"></div>
+                      
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-black text-slate-800 dark:text-white text-sm pl-2 leading-relaxed">{task.title}</h3>
+                        <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                          <Clock className="w-3 h-3" />
+                          {new Date(task.createdAt).toLocaleTimeString('ar-IQ', {hour: '2-digit', minute:'2-digit'})}
+                        </div>
+                      </div>
+                      
+                      <p className="text-xs text-slate-600 dark:text-slate-300 font-bold leading-relaxed mb-4 bg-purple-50 dark:bg-purple-900/10 p-3 rounded-xl border border-purple-100 dark:border-purple-900/20">
+                        {task.description}
+                      </p>
+
+                      {targetEst && (
+                        <div className="mb-4 flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                          <MapPin className="w-4 h-4 text-slate-400" />
+                          <div className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                            الهدف: <span className="text-slate-900 dark:text-white">{targetEst.name}</span> ({targetEst.sector})
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            if (targetEst) {
+                              startCamera('verification', targetEst);
+                            } else {
+                              startCamera('add_new');
+                            }
+                          }}
+                          className="flex-1 py-3 text-white rounded-xl text-xs font-black transition-all shadow-md active:scale-95 bg-purple-600 hover:bg-purple-700 shadow-purple-500/20 flex items-center justify-center gap-2"
+                        >
+                          <Camera className="w-4 h-4" />
+                          توثيق وإنجاز
+                        </button>
+                        <button
+                          onClick={() => {
+                            setTasks(tasks.map(t => t.id === task.id ? {...t, status: 'completed'} : t));
+                            notify('تم إغلاق المهمة!', 'success');
+                          }}
+                          className="px-4 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-xl text-[10px] font-bold transition-colors"
+                        >
+                          إنهاء بدون توثيق
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            
+            {completedTasks.length > 0 && (
+              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
+                <h3 className="text-xs font-black text-slate-400 mb-3">مهام أُنجزت مؤخراً ({completedTasks.length})</h3>
+                <div className="space-y-2">
+                  {completedTasks.slice(0, 3).map(task => (
+                    <div key={task.id} className="flex items-center gap-3 p-3 bg-slate-100 dark:bg-slate-800/50 rounded-xl">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 line-through decoration-emerald-500/30">{task.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         
         {/* Tab 1: Verifications */}
         {activeTab === 'verifications' && (

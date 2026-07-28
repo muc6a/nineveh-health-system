@@ -9,7 +9,7 @@ import { AccountModal } from '../components/AccountModal';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setActivityTypes } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setActivityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
@@ -132,13 +132,6 @@ export const SuperAdminPanel = () => {
   const [newDirSide, setNewDirSide] = useState('left'); // left, right
   const [editingDirector, setEditingDirector] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
-  const [draftUiPreferences, setDraftUiPreferences] = useState(null);
-
-  const openDisplayPrefsModal = () => {
-    setDraftUiPreferences(uiPreferences || { headingSize: '18px', bodySize: '12px', density: 'comfortable' });
-    setShowDisplayPrefsModal(true);
-  };
   
   // Establishments management states
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
@@ -666,7 +659,7 @@ export const SuperAdminPanel = () => {
           
           <ThemeToggle />
           <button
-            onClick={openDisplayPrefsModal}
+            onClick={() => setShowDisplayPrefsModal(true)}
             className="px-3 py-1.5 rounded-xl border border-teal-500/20 bg-teal-500/5 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer font-black"
           >
             🎨 تخصيص العرض
@@ -3453,150 +3446,6 @@ export const SuperAdminPanel = () => {
           </>
         )}
 
-      {/* Display Preferences Modal */}
-      {showDisplayPrefsModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" dir="rtl">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800">
-            <div className="sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 z-10">
-              <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
-                <Eye className="w-5 h-5 text-teal-600" />
-                <span>تخصيص العرض والمظهر الشخصي</span>
-              </h2>
-              <button
-                onClick={() => setShowDisplayPrefsModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <div className="p-6">
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                تحكم بمقاسات الخطوط وكثافة عرض البيانات لراحتك. يتم حفظ هذه التفضيلات في حسابك الخاص ولا تؤثر على المستخدمين الآخرين.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Controls */}
-                <div className="space-y-6 text-right">
-                  {/* Density Control */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">كثافة البيانات (Density Mode)</label>
-                    <div className="flex gap-4">
-                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(draftUiPreferences?.density || "comfortable") === 'comfortable' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
-                        <input
-                          type="radio"
-                          name="density"
-                          value="comfortable"
-                          className="hidden"
-                          checked={(draftUiPreferences?.density || "comfortable") === 'comfortable'}
-                          onChange={(e) => setDraftUiPreferences({...draftUiPreferences, density: e.target.value})}
-                        />
-                        <div className="text-center">
-                          <div className="text-sm font-black text-slate-700 dark:text-slate-300">مريح (Comfortable)</div>
-                          <p className="text-[10px] text-slate-500 mt-1">مسافات واسعة مناسبة للحواسيب</p>
-                        </div>
-                      </label>
-                      <label className={`flex-1 cursor-pointer p-4 rounded-xl border-2 transition-all ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'}`}>
-                        <input
-                          type="radio"
-                          name="density"
-                          value="compact"
-                          className="hidden"
-                          checked={(draftUiPreferences?.density || "comfortable") === 'compact'}
-                          onChange={(e) => setDraftUiPreferences({...draftUiPreferences, density: e.target.value})}
-                        />
-                        <div className="text-center">
-                          <div className="text-sm font-black text-slate-700 dark:text-slate-300">مضغوط (Compact)</div>
-                          <p className="text-[10px] text-slate-500 mt-1">مسافات أقل مناسبة للأجهزة المحمولة</p>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Typography Controls */}
-                  <div className="space-y-4">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">حجم الخطوط (Typography)</label>
-                    
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] text-slate-500 flex justify-between">
-                        <span>حجم العناوين</span>
-                        <span className="font-bold dir-ltr">{(draftUiPreferences?.headingSize || "18px")}</span>
-                      </label>
-                      <input 
-                        type="range" 
-                        min="14" 
-                        max="32" 
-                        value={parseInt((draftUiPreferences?.headingSize || "18px"))} 
-                        onChange={(e) => setDraftUiPreferences({...draftUiPreferences, headingSize: e.target.value + 'px'})}
-                        className="w-full accent-teal-600"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] text-slate-500 flex justify-between">
-                        <span>حجم النصوص</span>
-                        <span className="font-bold dir-ltr">{(draftUiPreferences?.bodySize || "12px")}</span>
-                      </label>
-                      <input 
-                        type="range" 
-                        min="10" 
-                        max="20" 
-                        value={parseInt((draftUiPreferences?.bodySize || "12px"))} 
-                        onChange={(e) => setDraftUiPreferences({...draftUiPreferences, bodySize: e.target.value + 'px'})}
-                        className="w-full accent-teal-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Live Preview */}
-                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 text-right">
-                  <h3 className="text-sm font-bold text-slate-500 mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">نافذة العرض المباشر (Live Preview)</h3>
-                  <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'p-3 space-y-2' : 'p-6 space-y-4'}`}>
-                    <h4 
-                      style={{ fontSize: (draftUiPreferences?.headingSize || "18px"), lineHeight: 1.2 }} 
-                      className="font-black text-slate-800 dark:text-white"
-                    >
-                      مطعم وحلويات الأمين
-                    </h4>
-                    <p 
-                      style={{ fontSize: (draftUiPreferences?.bodySize || "12px"), lineHeight: 1.6 }} 
-                      className="text-slate-600 dark:text-slate-400"
-                    >
-                      تم إجراء الكشف الميداني في حي النور ومطابقة الشروط الصحية. المنشأة مستوفية لجميع معايير الجودة والنظافة العامة.
-                    </p>
-                    <div className={`flex gap-2 ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'mt-2' : 'mt-4'}`}>
-                      <span className={`bg-teal-50 text-teal-600 rounded-lg font-bold ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>مطابق للشروط</span>
-                      <span className={`bg-slate-100 text-slate-600 rounded-lg font-bold ${(draftUiPreferences?.density || "comfortable") === 'compact' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'}`}>تقييم 95%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 pt-6">
-                <button 
-                  onClick={() => setShowDisplayPrefsModal(false)} 
-                  className="px-6 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-black text-xs transition-all"
-                >
-                  إلغاء
-                </button>
-                <button 
-                  onClick={() => setDraftUiPreferences({ headingSize: '18px', bodySize: '12px', density: 'comfortable' })} 
-                  className="px-6 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-black text-xs transition-all"
-                >
-                  إعادة الافتراضية
-                </button>
-                <button 
-                  onClick={() => { setUiPreferences(draftUiPreferences); setShowDisplayPrefsModal(false); notify('تم حفظ تفضيلات المظهر بنجاح', 'success'); }} 
-                  className="px-6 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all shadow-lg shadow-teal-500/20"
-                >
-                  تأكيد وحفظ
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

@@ -14,7 +14,7 @@ import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3 } from 'lucide-react';
 
 export const ExecutivePortal = () => {
-  const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
@@ -284,7 +284,14 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Logout at bottom - Sticky */}
-        <div className="pt-4 mt-auto border-t border-slate-200/50 dark:border-slate-800/50 sticky bottom-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pb-6 -mb-6">
+        <div className="pt-4 mt-auto border-t border-slate-200/50 dark:border-slate-800/50 sticky bottom-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pb-6 -mb-6 space-y-2">
+          <button 
+            onClick={() => setShowDisplayPrefsModal(true)}
+            className="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+          >
+            <Settings className="w-4 h-4" />
+            <span>تخصيص العرض</span>
+          </button>
           <button
             onClick={handleLogout}
             className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
@@ -302,6 +309,12 @@ export const ExecutivePortal = () => {
           <AnimatedLogo variant="sidebar" className="border-none p-0" />
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            <button
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
             <button
               onClick={handleLogout}
               className="p-2 text-red-500 hover:bg-red-500/10 rounded-xl transition-all"

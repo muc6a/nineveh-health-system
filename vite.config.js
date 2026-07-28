@@ -20,6 +20,37 @@ export default defineConfig({
     react(),
     legacy({
       targets: ['ie >= 11']
+    }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: { enabled: true },
+      manifest: {
+        name: 'منظومة الرقابة الصحية',
+        short_name: 'الرقابة الصحية',
+        theme_color: '#0f172a',
+        icons: [
+          {
+            src: 'https://cdn-icons-png.flaticon.com/512/3209/3209265.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB to fix build error
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/cdn-icons-png\.flaticon\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'flaticon-icons',
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 }
+            }
+          }
+        ]
+      }
     })
   ]
 })
