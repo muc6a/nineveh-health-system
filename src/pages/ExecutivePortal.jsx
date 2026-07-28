@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { WeatherWidget } from '../components/WeatherWidget';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { ThreeDPieChart } from '../components/ThreeDPieChart';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
@@ -225,7 +226,6 @@ export const ExecutivePortal = () => {
               <span className="text-[8px] text-slate-400 font-normal dir-ltr">{user?.email}</span>
             </div>
             <div className="flex items-center gap-2">
-              <NotificationBell />
               <ThemeToggle />
             </div>
           </div>
@@ -362,13 +362,14 @@ export const ExecutivePortal = () => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+            <NotificationBell />
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300">|</span>
               <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-              <span> Mosul الموصل: 38°C مشمس ☀️</span>
+              <WeatherWidget variant="full" />
             </div>
             {isDirectorGeneral && (
               <button 
@@ -469,7 +470,8 @@ export const ExecutivePortal = () => {
 
         {/* Dynamic Tab Switching Content */}
         {activeTab === 'strategic' && hasPerm('showMainDashboard') ? (
-          <div className="space-y-6">\n{/* Summary Minimalist 3D Cards */}
+          <div className="space-y-6">
+            {/* Summary Minimalist 3D Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Card 1: Total establishments */}
           <div 

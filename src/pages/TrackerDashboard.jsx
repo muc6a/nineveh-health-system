@@ -2,6 +2,7 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { NotificationBell } from '../components/NotificationBell';
+import { WeatherWidget } from '../components/WeatherWidget';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { LogOut, Settings, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Target, Building, Save, ScanLine, Radar, RefreshCw, Search, ClipboardList, Clock } from 'lucide-react';
 
@@ -256,7 +257,7 @@ export const TrackerDashboard = () => {
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400">
               <span>{new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300 dark:text-slate-600">|</span>
-              <span>☀️ 38°</span>
+              <WeatherWidget variant="minimal" />
             </div>
             <NotificationBell />
             <ThemeToggle />
