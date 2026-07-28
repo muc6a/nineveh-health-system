@@ -1,11 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { usePersistentTab } from '../hooks/usePersistentTab';
 import { AppContext } from '../context/AppContext';
 import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X } from 'lucide-react';
 import AccountModal from './AccountModal';
 
 export default function OperationsRoom() {
   const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('sos_alerts');
+  const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'sos_alerts');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
   

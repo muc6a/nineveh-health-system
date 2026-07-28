@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { usePersistentTab } from '../hooks/usePersistentTab';
 import { NotificationBell } from '../components/NotificationBell';
 import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
@@ -44,13 +45,7 @@ export const TeamDashboard = () => {
   };
 
   // Active Tab: 'summary', 'directory', 'reports', etc.
-  const [activeTab, setActiveTab] = useState(() => {
-    return sessionStorage.getItem('teamActiveTab') || getInitialTab() || 'summary';
-  });
-
-  React.useEffect(() => {
-    sessionStorage.setItem('teamActiveTab', activeTab);
-  }, [activeTab]);
+  const [activeTab, setActiveTab] = usePersistentTab('teamActiveTab', getInitialTab() || 'summary');
 
   // Watch for permission changes to set initial tab if it was null
   React.useEffect(() => {

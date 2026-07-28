@@ -1,7 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { usePersistentTab } from '../hooks/usePersistentTab';
 import { ThreeDPieChart } from '../components/ThreeDPieChart';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
 import { NinevehMap } from '../components/NinevehMap';
@@ -16,7 +17,7 @@ export const ExecutivePortal = () => {
   const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
-  const [executiveTab, setExecutiveTab] = useState('dashboard');
+  const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
   const [showUninspectedModal, setShowUninspectedModal] = useState(false);
   const [showCategoryBreakdownModal, setShowCategoryBreakdownModal] = useState(false);
   const [showComplaintsModal, setShowComplaintsModal] = useState(false);
@@ -37,7 +38,7 @@ export const ExecutivePortal = () => {
     return null;
   };
 
-  const [activeTab, setActiveTab] = useState(getInitialExecutiveTab() || 'strategic');
+  const [activeTab, setActiveTab] = usePersistentTab('execActiveTab', getInitialExecutiveTab() || 'strategic');
 
   React.useEffect(() => {
     if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) {

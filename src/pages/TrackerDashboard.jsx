@@ -2,13 +2,14 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { NotificationBell } from '../components/NotificationBell';
+import { usePersistentTab } from '../hooks/usePersistentTab';
 import { LogOut, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Target, Building, Save, ScanLine, Radar, RefreshCw, Search } from 'lucide-react';
 
 export const TrackerDashboard = () => {
   const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify, addSystemNotification } = useContext(AppContext);
   
   // UI States
-  const [activeTab, setActiveTab] = useState('verifications');
+  const [activeTab, setActiveTab] = usePersistentTab('trackerActiveTab', 'verifications');
   
   // Camera & Verification States
   const [selectedEst, setSelectedEst] = useState(null);
@@ -256,9 +257,10 @@ export const TrackerDashboard = () => {
             <ThemeToggle />
             <button 
               onClick={() => navigate('/login')}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-600 dark:text-slate-400 hover:text-rose-600 transition-colors"
+              className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-600 dark:text-slate-400 hover:text-rose-600 transition-colors"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-5 h-5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline text-xs font-bold">تسجيل خروج</span>
             </button>
           </div>
         </div>
