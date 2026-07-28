@@ -12,9 +12,7 @@ import { EstablishmentModal } from '../components/EstablishmentModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = () => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences, triggerSOSAlert } = useContext(AppContext);
-  const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
-  const [draftUiPreferences, setDraftUiPreferences] = useState(null);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -22,11 +20,6 @@ export const TeamDashboard = () => {
   const [chatHistory, setChatHistory] = useState([
     { id: 1, sender: 'admin', text: 'مرحباً، غرفة العمليات المركزية في خدمتكم. هل تحتاجون لأي دعم؟', time: '08:00 ص' }
   ]);
-
-  const openDisplayPrefsModal = () => {
-    setDraftUiPreferences(uiPreferences || { headingSize: '18px', bodySize: '12px', density: 'comfortable' });
-    setShowDisplayPrefsModal(true);
-  };
   
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
@@ -447,7 +440,7 @@ export const TeamDashboard = () => {
             </div>
             <div className="flex items-center gap-2">
               <button 
-                onClick={openDisplayPrefsModal}
+                onClick={() => setShowDisplayPrefsModal(true)}
                 className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group relative"
                 title="تخصيص العرض والمظهر"
               >
@@ -515,7 +508,7 @@ export const TeamDashboard = () => {
           <AnimatedLogo variant="sidebar" className="border-none p-0 scale-75 transform origin-center" />
             <div className="flex items-center gap-2">
               <button 
-                onClick={openDisplayPrefsModal}
+                onClick={() => setShowDisplayPrefsModal(true)}
                 className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
                 title="تخصيص العرض والمظهر"
               >
