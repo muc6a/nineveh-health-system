@@ -27,6 +27,20 @@ export const OwnerPortal = () => {
   // Tabs State
   const [activeTab, setActiveTab] = useState('dashboard');
 
+  // Auto-login from localStorage
+  useEffect(() => {
+    const savedCode = localStorage.getItem('ownerAuthToken');
+    if (savedCode && establishments.length > 0 && !ownerEst) {
+      const est = establishments.find(e => e.accessCode === savedCode);
+      if (est) {
+        setOwnerEst(est);
+        setAccessCode(savedCode);
+      } else {
+        localStorage.removeItem('ownerAuthToken');
+      }
+    }
+  }, [establishments, ownerEst]);
+
   // Check if there is already a pending directive for this establishment
   useEffect(() => {
     if (ownerEst && directives) {
@@ -46,6 +60,7 @@ export const OwnerPortal = () => {
     if (est) {
       setOwnerEst(est);
       setError('');
+      localStorage.setItem('ownerAuthToken', est.accessCode);
     } else {
       setError('الكود السري غير صحيح أو غير مسجل في النظام.');
     }
@@ -54,6 +69,7 @@ export const OwnerPortal = () => {
   const handleLogout = () => {
     setOwnerEst(null);
     setAccessCode('');
+    localStorage.removeItem('ownerAuthToken');
   };
 
   const requestReinspection = () => {
