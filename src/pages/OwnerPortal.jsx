@@ -225,7 +225,7 @@ export const OwnerPortal = () => {
       <aside className="w-full md:w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-l border-slate-200 dark:border-slate-800/50 flex flex-col no-print shrink-0 md:sticky md:top-0 md:h-screen z-40">
         <div className="p-6 border-b border-slate-200 dark:border-slate-800">
            <AnimatedLogo variant="sidebar" className="scale-90 origin-right mb-4" />
-           <h2 className="text-sm font-black text-slate-800 dark:text-white">بوابة المالك الرسمية</h2>
+           <h2 className="text-sm font-black text-slate-800 dark:text-white">بوابة أصحاب المنشآت</h2>
            <p className="text-[10px] font-bold text-slate-500 truncate">{ownerEst.name}</p>
         </div>
         
@@ -272,10 +272,11 @@ export const OwnerPortal = () => {
           <ThemeToggle />
           <button 
             onClick={() => setShowDisplayPrefsModal && setShowDisplayPrefsModal(true)}
-            className="p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-sm"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-sm"
             title="تخصيص العرض"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4" />
+            <span className="text-xs font-bold hidden sm:block">تخصيص العرض</span>
           </button>
         </div>
 
@@ -328,6 +329,9 @@ export const OwnerPortal = () => {
                       </div>
                       
                       <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">التقييم الصحي العام للمنشأة</h3>
+                      <p className="text-xs font-bold text-slate-400 dark:text-slate-500 mb-4 bg-slate-50 dark:bg-slate-800/50 inline-block px-3 py-1 rounded-lg">
+                        مبني على نتيجة آخر كشف ميداني بتاريخ: {ownerEst.lastInspection}
+                      </p>
                       <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed">
                         {isCompliant ? 'تهانينا! منشأتك تعتبر من أفضل المنشآت الملتزمة صحياً في القطاع.' :
                          isMonitoring ? 'تقييمك جيد ولكن تحتاج إلى تحسين بعض الجوانب لتجنب الدخول في المنطقة الحمراء.' :
@@ -591,7 +595,7 @@ export const OwnerPortal = () => {
         </div>
 
         {/* Hidden QR Poster for PDF Export */}
-        <div className="hidden print:block">
+        <div className="fixed -left-[9999px] top-0 print:block print:static print:left-auto">
            <div ref={qrPosterRef} className="print-only-qr relative w-[800px] h-[1130px] bg-white text-slate-900 flex flex-col items-center p-16 font-sans">
              <div className="absolute inset-0 border-[20px] border-teal-600 m-8 rounded-3xl pointer-events-none"></div>
              

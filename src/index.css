@@ -74,25 +74,21 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-}
-
-@media print {
-  body * {
+  
+  /* Print Specific Modes */
+  body.print-certificate-only * {
     visibility: hidden;
   }
-  .print-only-report, .print-only-report * {
+  body.print-certificate-only .print-only-report, body.print-certificate-only .print-only-report * {
     visibility: visible !important;
   }
-  .print-only-report {
+  body.print-certificate-only .print-only-report {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     margin: 0;
     padding: 0;
-  }
-  .no-print {
-    display: none !important;
   }
   body.print-certificate-only .print-only-report > *:not(.certificate-wrapper) {
     display: none !important;
@@ -109,9 +105,14 @@
     justify-content: center;
   }
   
+  body.print-qr-only * {
+    visibility: hidden;
+  }
+  body.print-qr-only .print-only-qr, body.print-qr-only .print-only-qr * {
+    visibility: visible !important;
+  }
   body.print-qr-only .print-only-qr {
     display: flex !important;
-    visibility: visible !important;
     position: absolute;
     top: 0;
     left: 0;
@@ -120,3 +121,4 @@
     padding: 0;
   }
 }
+
