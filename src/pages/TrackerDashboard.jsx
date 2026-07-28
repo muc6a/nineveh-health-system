@@ -243,11 +243,15 @@ export const TrackerDashboard = () => {
               <ScanLine className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="font-black text-sm text-slate-800 dark:text-white">المسح الميداني</h1>
+              <h1 className="font-black text-sm text-slate-800 dark:text-white">المتابع الميداني</h1>
               <p className="text-[10px] text-slate-500 font-bold">{user.name} - {trackerSector}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 mr-2">
+              <span>{new Date().toLocaleDateString('ar-IQ', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+              <span>☀️ 38°</span>
+            </div>
             <NotificationBell />
             <ThemeToggle />
             <button 
