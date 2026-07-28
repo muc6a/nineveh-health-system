@@ -1095,7 +1095,6 @@ export const AppProvider = ({ children }) => {
       setUiPreferences,
       showDisplayPrefsModal,
       setShowDisplayPrefsModal,
-      hasPerm,
       activityTypes,
       setActivityTypes
     }}>
