@@ -371,7 +371,7 @@ export const OwnerPortal = () => {
                   
                   <div className="relative z-10 flex flex-col md:flex-row print:flex-row items-center gap-8">
                     {/* Score Circle */}
-                    <div className="shrink-0 relative mx-auto print:mx-0">
+                    <div className="shrink-0 relative w-40 h-40 mx-auto print:mx-0 print:mx-auto">
                       <svg className="w-40 h-40 transform -rotate-90">
                         <circle cx="80" cy="80" r="70" className="stroke-slate-100 dark:stroke-slate-800" strokeWidth="12" fill="none" />
                         <circle 
