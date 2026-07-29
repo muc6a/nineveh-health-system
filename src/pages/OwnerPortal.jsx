@@ -350,7 +350,7 @@ export const OwnerPortal = () => {
           </button>
         </div>
 
-        <div className="h-full overflow-y-auto p-4 md:p-8 pb-32">
+        <div className="h-full overflow-y-auto p-4 md:p-8 pb-32 main-tab-content">
           
           <div className="max-w-5xl mx-auto">
             {/* Page Title */}
