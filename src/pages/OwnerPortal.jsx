@@ -9,7 +9,7 @@ import {
   Settings, User, MapPin, Receipt, Activity, ShieldAlert, History
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { QRCodeSVG } from 'qrcode.react';
 
 export const OwnerPortal = () => {
@@ -29,6 +29,9 @@ export const OwnerPortal = () => {
   // Action Plan State
   const [resolvedTasks, setResolvedTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
+  
+  // Dashboard Chart State
+  const [chartView, setChartView] = useState('total'); // 'total' | 'current'
 
   // Auto-login from localStorage
   useEffect(() => {
@@ -175,14 +178,27 @@ export const OwnerPortal = () => {
   
   const lastHistory = ownerEst.history && ownerEst.history.length > 0 ? ownerEst.history[0] : null;
 
+  // History Chart Data (Total)
   const historyData = ownerEst.history ? [...ownerEst.history].reverse().map(h => ({
-    name: h.date.split(',')[0] || h.date,
-    score: h.score
+    name: h.date, score: h.score
   })) : [];
-  
   if (historyData.length === 0 || historyData[historyData.length - 1].score !== score) {
      historyData.push({ name: 'الحالي', score: score });
   }
+
+  // Current Ratings Data (Detailed)
+  const criteriaNames = {
+    '1': 'النظافة العامة والمظهر',
+    '2': 'حفظ المواد الغذائية',
+    '3': 'نظافة المرافق',
+    '4': 'بطاقات الفحص الطبي',
+    '5': 'التهوية والإضاءة'
+  };
+  const currentRatingsData = ownerEst.history?.[0]?.ratings ? Object.entries(ownerEst.history[0].ratings).map(([id, val]) => ({
+    name: criteriaNames[id] || `معيار ${id}`,
+    score: val * 20, // Convert out of 5 to percentage out of 100
+    rawScore: val
+  })) : [];
 
   const handleDownloadImage = async (ref, filename) => {
     if (!ref.current) return;
@@ -216,13 +232,13 @@ export const OwnerPortal = () => {
 
   const getTaskDetails = (id) => {
     const details = {
-      '1': { reason: 'عدم ارتداء العاملين للملابس الصحية المناسبة (كفوف، قبعات رأس).', solution: 'تجهيز جميع العاملين بالملابس الموحدة وإلزامهم بارتدائها أثناء العمل بشكل دائم.' },
-      '2': { reason: 'رصد مواد منتهية الصلاحية أو غير مخزنة بشكل سليم.', solution: 'إتلاف المواد التالفة فوراً وإعادة ترتيب المخزن حسب درجات الحرارة المطلوبة.' },
-      '3': { reason: 'تدني مستوى النظافة العامة للأرضيات والجدران.', solution: 'إجراء حملة تنظيف شاملة باستخدام المعقمات القياسية.' },
-      '4': { reason: 'عدم وجود بطاقات فحص طبي سارية المفعول للعمال.', solution: 'توجيه العمال لمراجعة المركز الصحي لتجديد بطاقات الفحص الطبي.' },
-      '5': { reason: 'سوء التهوية وتراكم الأدخنة في المطبخ.', solution: 'صيانة ساحبات الهواء أو تركيب نظام تهوية جديد لتجديد الهواء.' }
+      '1': { criteria: 'النظافة الشخصية والمظهر العام للموظفين', reason: 'عدم ارتداء العاملين للملابس الصحية المناسبة (كفوف، قبعات رأس).', solution: 'تجهيز جميع العاملين بالملابس الموحدة وإلزامهم بارتدائها أثناء العمل بشكل دائم.' },
+      '2': { criteria: 'طريقة حفظ وتخزين المواد الغذائية', reason: 'رصد مواد منتهية الصلاحية أو غير مخزنة بشكل سليم.', solution: 'إتلاف المواد التالفة فوراً وإعادة ترتيب المخزن حسب درجات الحرارة المطلوبة.' },
+      '3': { criteria: 'نظافة المنشأة والمرافق الصحية', reason: 'تدني مستوى النظافة العامة للأرضيات والجدران.', solution: 'إجراء حملة تنظيف شاملة باستخدام المعقمات القياسية.' },
+      '4': { criteria: 'بطاقات الفحص الطبي للعمال', reason: 'عدم وجود بطاقات فحص طبي سارية المفعول للعمال.', solution: 'توجيه العمال لمراجعة المركز الصحي لتجديد بطاقات الفحص الطبي.' },
+      '5': { criteria: 'التهوية والإضاءة وتصريف المياه', reason: 'سوء التهوية وتراكم الأدخنة في المطبخ.', solution: 'صيانة ساحبات الهواء أو تركيب نظام تهوية جديد لتجديد الهواء.' }
     };
-    return details[id] || { reason: 'تم رصد تقصير واضح في هذا المعيار أثناء الزيارة الميدانية الأخيرة.', solution: 'يرجى مراجعة الضوابط الصحية وتصحيح الخلل فوراً لضمان سلامة الغذاء.' };
+    return details[id] || { criteria: `معيار رقابي رقم ${id}`, reason: 'تم رصد تقصير واضح في هذا المعيار أثناء الزيارة الميدانية الأخيرة.', solution: 'يرجى مراجعة الضوابط الصحية وتصحيح الخلل فوراً لضمان سلامة الغذاء.' };
   };
 
   const generateTodos = () => {
@@ -405,24 +421,60 @@ export const OwnerPortal = () => {
 
                 {/* History Chart (Col-span 12) */}
                 <div className="md:col-span-12 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50">
-                  <h3 className="text-base font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-teal-600" /> مسار التقييمات التاريخي
-                  </h3>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                    <h3 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-teal-600" /> مسار التقييمات
+                    </h3>
+                    <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
+                      <button 
+                        onClick={() => setChartView('total')}
+                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${chartView === 'total' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                      >
+                        الكلي (تاريخي)
+                      </button>
+                      <button 
+                        onClick={() => setChartView('current')}
+                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${chartView === 'current' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                      >
+                        الحالي (تفصيلي)
+                      </button>
+                    </div>
+                  </div>
+                  
                   <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={historyData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#0d9488" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#0d9488" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.1} vertical={false} />
-                        <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} />
-                        <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} axisLine={false} tickLine={false} />
-                        <RechartsTooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '16px', color: '#fff', fontSize: '12px', fontWeight: 'bold' }} itemStyle={{ color: '#2dd4bf' }} cursor={{ stroke: '#0d9488', strokeWidth: 1, strokeDasharray: '4 4' }} />
-                        <Area type="monotone" dataKey="score" name="التقييم (%)" stroke="#0d9488" strokeWidth={4} fillOpacity={1} fill="url(#colorScore)" activeDot={{ r: 8, strokeWidth: 0, fill: '#0f766e' }} />
-                      </AreaChart>
+                      {chartView === 'total' ? (
+                        <AreaChart data={historyData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#0d9488" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#0d9488" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.1} vertical={false} />
+                          <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} />
+                          <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} axisLine={false} tickLine={false} />
+                          <RechartsTooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '16px', color: '#fff', fontSize: '12px', fontWeight: 'bold' }} itemStyle={{ color: '#2dd4bf' }} cursor={{ stroke: '#0d9488', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                          <Area type="monotone" dataKey="score" name="التقييم (%)" stroke="#0d9488" strokeWidth={4} fillOpacity={1} fill="url(#colorScore)" activeDot={{ r: 8, strokeWidth: 0, fill: '#0f766e' }} />
+                        </AreaChart>
+                      ) : (
+                        <BarChart data={currentRatingsData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }} barSize={30}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.1} vertical={false} />
+                          <XAxis dataKey="name" stroke="#94a3b8" fontSize={9} tickMargin={10} axisLine={false} tickLine={false} interval={0} />
+                          <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} axisLine={false} tickLine={false} />
+                          <RechartsTooltip 
+                            contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '16px', color: '#fff', fontSize: '12px', fontWeight: 'bold' }} 
+                            itemStyle={{ color: '#2dd4bf' }} 
+                            cursor={{ fill: '#334155', opacity: 0.1 }}
+                            formatter={(value, name, props) => [`${props.payload.rawScore} / 5 (${value}%)`, 'الدرجة']}
+                          />
+                          <Bar dataKey="score" radius={[8, 8, 0, 0]}>
+                            {currentRatingsData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.score === 100 ? '#10b981' : entry.score >= 60 ? '#f59e0b' : '#ef4444'} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      )}
                     </ResponsiveContainer>
                   </div>
                 </div>
@@ -713,6 +765,14 @@ export const OwnerPortal = () => {
               </div>
               
               <div className="p-6 space-y-6">
+                <div>
+                  <h4 className="text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest flex items-center gap-2">
+                     اسم التقييم (المعيار الرقابي)
+                  </h4>
+                  <p className="text-sm font-black text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    {selectedTask.criteria || selectedTask.text}
+                  </p>
+                </div>
                 <div>
                   <h4 className="text-xs font-black text-red-600 dark:text-red-400 mb-2 uppercase tracking-widest flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4" /> سبب المخالفة (الخلل)
