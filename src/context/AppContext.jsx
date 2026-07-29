@@ -272,31 +272,31 @@ const INITIAL_TEAMS = [
 ];
 
 const DEFAULT_INSPECTION_ITEMS = [
-  // Section A (20 points total)
-  { id: 1, section: 'A', text: 'حمل العمال لبطاقات الفحص الطبي والشهادات الصحية السارية.', points: 5 },
-  { id: 2, section: 'A', text: 'ارتداء غطاء الرأس والكمامات والمآزر والنظافة الشخصية الكاملة للعمال.', points: 5 },
-  { id: 3, section: 'A', text: 'منع التدخين كلياً داخل صالات التحضير والطهي وتوفير لافتات إرشادية.', points: 5 },
-  { id: 4, section: 'A', text: 'خلو أيدي العاملين من الجروح المفتوحة وارتداء القفازات الصحية المناسبة.', points: 5 },
-  // Section B (20 points total)
-  { id: 5, section: 'B', text: 'سلامة ونظافة الأرضيات والجدران والأسقف وخلوها من التشققات.', points: 5 },
-  { id: 6, section: 'B', text: 'تثبيت مصافي شبكية سلكية ضيقة على النوافذ لمنع الحشرات وسلامة التهوية.', points: 5 },
-  { id: 7, section: 'B', text: 'توفير سلات مهملات محكمة الإغلاق وتفتح بالقدم ومزودة بأكياس بلاستيكية.', points: 5 },
-  { id: 8, section: 'B', text: 'تفعيل مصائد الحشرات الكهربائية وجهاز مكافحة القوارض بشكل مستمر.', points: 5 },
-  // Section C (25 points total)
-  { id: 9, section: 'C', text: 'مراقبة تاريخ الصلاحية للمواد الغذائية الخام والتخزين الآمن.', points: 5 },
-  { id: 10, section: 'C', text: 'حفظ المواد الجافة على رفوف خشبية أو معدنية مرتفعة عن الأرض.', points: 5 },
-  { id: 11, section: 'C', text: 'الفصل التام بين الأطعمة النيئة والمطبوخة داخل الثلاجات والمجمدات.', points: 5 },
-  { id: 12, section: 'C', text: 'استخدام مصادر مياه صالحة ومعقمة للشرب وغسل المواد الغذائية وصناعة الثلج.', points: 5 },
-  { id: 13, section: 'C', text: 'سلامة ونظافة أحواض غسيل اللحوم والخضار وتوفر المعقمات.', points: 5 },
-  // Section D (20 points total)
-  { id: 14, section: 'D', text: 'تنظيف وتعقيم الأواني والمعدات المصنوعة من الستانلس ستيل المقاوم للصدأ.', points: 5 },
-  { id: 15, section: 'D', text: 'الفصل التام بين لوحات وسكاكين تقطيع اللحوم الحمراء عن الخضار والدواجن.', points: 5 },
-  { id: 16, section: 'D', text: 'كفاية الإنارة داخل المطبخ وصالة تقديم الطعام والتهوية الصحية.', points: 5 },
-  { id: 17, section: 'D', text: 'توفير مطافئ حريق صالحة للاستخدام وصندوق إسعافات أولية مجهز.', points: 5 },
-  // Section E (15 points total)
-  { id: 18, section: 'E', text: 'وجود إجازة صحية رسمية نافذة وإشعار مالك المحل قبل شهر من الانتهاء.', points: 5 },
-  { id: 19, section: 'E', text: 'تنفيذ الملاحظات والمخالفات المسجلة في زيارة لجنة الرقابة السابقة.', points: 5 },
-  { id: 20, section: 'E', text: 'وجود السجل الصحي المعتمد لتوثيق الزيارات وتوقيع المفتشين ورئيس اللجنة.', points: 5 }
+  // Section A: النظافة العامة (20 points total)
+  { id: 1, section: 'A', text: 'نظافة الأرضيات والجدران والأسقف', points: 5 },
+  { id: 2, section: 'A', text: 'نظافة الطاولات وأماكن تقديم الطعام', points: 5 },
+  { id: 3, section: 'A', text: 'التخلص من النفايات بطريقة صحية', points: 5 },
+  { id: 4, section: 'A', text: 'مكافحة الحشرات والقوارض', points: 5 },
+  // Section B: سلامة الأغذية (25 points total)
+  { id: 5, section: 'B', text: 'صلاحية المواد الغذائية', points: 5 },
+  { id: 6, section: 'B', text: 'وجود بطاقة بيان للمواد', points: 5 },
+  { id: 7, section: 'B', text: 'طرق الخزن والتبريد والتجميد', points: 5 },
+  { id: 8, section: 'B', text: 'فصل المواد النيئة عن المطبوخة', points: 5 },
+  { id: 9, section: 'B', text: 'سلامة مصادر المياه والثلج', points: 5 },
+  // Section C: العاملون (20 points total)
+  { id: 10, section: 'C', text: 'وجود بطاقة صحية للعاملين', points: 5 },
+  { id: 11, section: 'C', text: 'الالتزام بالملابس الواقية', points: 5 },
+  { id: 12, section: 'C', text: 'النظافة الشخصية', points: 5 },
+  { id: 13, section: 'C', text: 'التدريب على الممارسات الصحية', points: 5 },
+  // Section D: المطبخ والتحضير (20 points total)
+  { id: 14, section: 'D', text: 'نظافة المعدات والأدوات', points: 5 },
+  { id: 15, section: 'D', text: 'درجات حرارة الحفظ والطهي', points: 5 },
+  { id: 16, section: 'D', text: 'طريقة إعداد وتجهيز الطعام', points: 5 },
+  { id: 17, section: 'D', text: 'منع التلوث المتبادل', points: 5 },
+  // Section E: الوثائق والالتزام (15 points total)
+  { id: 18, section: 'E', text: 'الإجازة الصحية سارية', points: 5 },
+  { id: 19, section: 'E', text: 'الالتزام بملاحظات الرقابة السابقة', points: 5 },
+  { id: 20, section: 'E', text: 'وجود سجلات المتابعة', points: 5 }
 ];
 
 const INITIAL_DELIVERIES = [];

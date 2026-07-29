@@ -287,11 +287,11 @@ export const InspectionForm = () => {
 
   const uniqueSections = Array.from(new Set(activeItems.map(item => item.section || 'A'))).sort();
   const sectionLabels = {
-    'A': 'مراقبة العمال والجهوزية الطبية (المحور أ)',
-    'B': 'النظافة العامة والبيئة المكانية (المحور ب)',
-    'C': 'سلامة الأغذية وحفظها وسلسلة التبريد (المحور ج)',
-    'D': 'المعدات والتحضير الفني داخل المطبخ (المحور د)',
-    'E': 'الوثائق والالتزام الرقابي التراكمي (المحور هـ)'
+    'A': 'النظافة العامة (20 درجة)',
+    'B': 'سلامة الأغذية (25 درجة)',
+    'C': 'العاملون (20 درجة)',
+    'D': 'المطبخ والتحضير (20 درجة)',
+    'E': 'الوثائق والالتزام (15 درجة)'
   };
   const sections = uniqueSections.map(secKey => ({ key: secKey, title: sectionLabels[secKey] || `المحور الرقابي (${secKey})` }));
 

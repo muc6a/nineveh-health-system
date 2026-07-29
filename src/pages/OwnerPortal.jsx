@@ -13,7 +13,7 @@ import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { QRCodeSVG } from 'qrcode.react';
 
 export const OwnerPortal = () => {
-  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionItems } = useContext(AppContext);
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);
@@ -231,14 +231,26 @@ export const OwnerPortal = () => {
   };
 
   const getTaskDetails = (id) => {
+    // Specific hardcoded details for certain criteria
     const details = {
-      '1': { criteria: 'النظافة الشخصية والمظهر العام للموظفين', reason: 'عدم ارتداء العاملين للملابس الصحية المناسبة (كفوف، قبعات رأس).', solution: 'تجهيز جميع العاملين بالملابس الموحدة وإلزامهم بارتدائها أثناء العمل بشكل دائم.' },
-      '2': { criteria: 'طريقة حفظ وتخزين المواد الغذائية', reason: 'رصد مواد منتهية الصلاحية أو غير مخزنة بشكل سليم.', solution: 'إتلاف المواد التالفة فوراً وإعادة ترتيب المخزن حسب درجات الحرارة المطلوبة.' },
-      '3': { criteria: 'نظافة المنشأة والمرافق الصحية', reason: 'تدني مستوى النظافة العامة للأرضيات والجدران.', solution: 'إجراء حملة تنظيف شاملة باستخدام المعقمات القياسية.' },
-      '4': { criteria: 'بطاقات الفحص الطبي للعمال', reason: 'عدم وجود بطاقات فحص طبي سارية المفعول للعمال.', solution: 'توجيه العمال لمراجعة المركز الصحي لتجديد بطاقات الفحص الطبي.' },
-      '5': { criteria: 'التهوية والإضاءة وتصريف المياه', reason: 'سوء التهوية وتراكم الأدخنة في المطبخ.', solution: 'صيانة ساحبات الهواء أو تركيب نظام تهوية جديد لتجديد الهواء.' }
+      '1': { reason: 'تم رصد تدني في مستوى النظافة وتراكم الأوساخ.', solution: 'إجراء حملة تنظيف شاملة باستخدام المعقمات القياسية.' },
+      '5': { reason: 'رصد مواد منتهية الصلاحية أو غير صالحة للاستهلاك.', solution: 'إتلاف المواد التالفة فوراً وتوثيق عملية الإتلاف.' },
+      '10': { reason: 'عدم وجود بطاقات فحص طبي سارية المفعول للعمال.', solution: 'توجيه العمال لمراجعة المركز الصحي لتجديد بطاقات الفحص الطبي فوراً.' },
+      '18': { reason: 'الإجازة الصحية منتهية الصلاحية أو غير متوفرة.', solution: 'الإسراع في تجديد الإجازة الصحية من الدائرة المعنية لتجنب الإغلاق.' }
     };
-    return details[id] || { criteria: `معيار رقابي رقم ${id}`, reason: 'تم رصد تقصير واضح في هذا المعيار أثناء الزيارة الميدانية الأخيرة.', solution: 'يرجى مراجعة الضوابط الصحية وتصحيح الخلل فوراً لضمان سلامة الغذاء.' };
+    
+    const item = inspectionItems?.find(i => String(i.id) === String(id));
+    const criteriaName = item ? item.text : `معيار رقابي رقم ${id}`;
+    
+    if (details[id]) {
+      return { ...details[id], criteria: criteriaName };
+    }
+    
+    return { 
+      criteria: criteriaName, 
+      reason: `(تحليل ذكي): تم رصد تقصير وضعف يخص تطبيق معيار [${criteriaName}] أثناء التفتيش الميداني.`, 
+      solution: `(توجيه ذكي): يرجى مراجعة الاشتراطات الصحية الخاصة بـ [${criteriaName}] وتصحيح الخلل فوراً لتجنب العقوبات الرقابية.` 
+    };
   };
 
   const generateTodos = () => {
