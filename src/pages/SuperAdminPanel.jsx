@@ -56,6 +56,7 @@ export const SuperAdminPanel = () => {
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
   const [subSettingsTab, setSubSettingsTab] = useState(() => sessionStorage.getItem('superAdminSubSettingsTab') || 'evaluations');
   const [activeEvalSection, setActiveEvalSection] = useState('A');
+  const [newEvalSection, setNewEvalSection] = useState('');
   const [newActivity, setNewActivity] = useState('');
   const [editingActivityIndex, setEditingActivityIndex] = useState(null);
   const [editingActivityText, setEditingActivityText] = useState('');
@@ -1643,15 +1644,19 @@ export const SuperAdminPanel = () => {
                   <div>
                 <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
                   <Shield className="w-5 h-5 text-teal-600" />
-                  <span>ثانياً: محرر بنود التقييم الميداني (حسب الأقسام)</span>
+                  <span>أقسام البنود</span>
                 </h2>
 
                 <p className="text-[10px] text-slate-400 mb-4 leading-relaxed">
                   تعديل الصياغة اللغوية لأي بند من بنود التقييم أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان:
                 </p>
 
-                <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-4">
-                  {['A', 'B', 'C', 'D', 'E'].map(sectionKey => {
+                <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-4 items-center">
+                  {(() => {
+                    const uniqueSections = Array.from(new Set((inspectionItems || []).map(item => item.section)));
+                    const baseSections = ['A', 'B', 'C', 'D', 'E'];
+                    const allSections = Array.from(new Set([...baseSections, ...uniqueSections]));
+                    
                     const sectionLabels = {
                       'A': 'النظافة العامة',
                       'B': 'سلامة الأغذية',
@@ -1659,17 +1664,42 @@ export const SuperAdminPanel = () => {
                       'D': 'المطبخ والتحضير',
                       'E': 'الوثائق والالتزام'
                     };
-                    const isActive = activeEvalSection === sectionKey;
-                    return (
-                      <button
-                        key={sectionKey}
-                        onClick={() => setActiveEvalSection(sectionKey)}
-                        className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${isActive ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20' : 'bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                      >
-                        {sectionLabels[sectionKey]}
-                      </button>
-                    );
-                  })}
+
+                    return allSections.map(sectionKey => {
+                      const isActive = activeEvalSection === sectionKey;
+                      const displayLabel = sectionLabels[sectionKey] || sectionKey;
+                      return (
+                        <button
+                          key={sectionKey}
+                          onClick={() => setActiveEvalSection(sectionKey)}
+                          className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${isActive ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20' : 'bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                        >
+                          {displayLabel}
+                        </button>
+                      );
+                    });
+                  })()}
+                  
+                  <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-1 py-1 mr-auto shrink-0">
+                    <input 
+                      type="text" 
+                      placeholder="اسم قسم جديد..." 
+                      value={newEvalSection}
+                      onChange={(e) => setNewEvalSection(e.target.value)}
+                      className="bg-transparent border-none outline-none text-xs font-bold px-2 w-28 text-slate-700 dark:text-slate-300"
+                    />
+                    <button
+                      onClick={() => {
+                        if (newEvalSection.trim()) {
+                          setActiveEvalSection(newEvalSection.trim());
+                          setNewEvalSection('');
+                        }
+                      }}
+                      className="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 text-teal-600 flex items-center justify-center transition-all cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-6 max-h-[420px] overflow-y-auto pr-2">
@@ -1682,12 +1712,13 @@ export const SuperAdminPanel = () => {
                       'D': 'المطبخ والتحضير',
                       'E': 'الوثائق والالتزام'
                     };
+                    const displayLabel = sectionLabels[sectionKey] || sectionKey;
                     const sectionItems = (inspectionItems || []).filter(item => item.section === sectionKey);
                     
                     return (
                       <div key={sectionKey} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/20 animate-fade-in">
                         <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-3">
-                          <h3 className="text-sm font-black text-teal-600">{sectionLabels[sectionKey]} ({sectionItems.reduce((acc, item) => acc + (parseInt(item.points)||0), 0)} درجة)</h3>
+                          <h3 className="text-sm font-black text-teal-600">{displayLabel} ({sectionItems.reduce((acc, item) => acc + (parseInt(item.points)||0), 0)} درجة)</h3>
                           <button
                             onClick={() => handleAddChecklistItem(sectionKey)}
                             className="px-4 py-2 rounded-xl bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-600 dark:text-teal-400 font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5"

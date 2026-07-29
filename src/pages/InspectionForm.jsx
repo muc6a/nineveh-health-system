@@ -293,7 +293,7 @@ export const InspectionForm = () => {
     'D': 'المطبخ والتحضير (20 درجة)',
     'E': 'الوثائق والالتزام (15 درجة)'
   };
-  const sections = uniqueSections.map(secKey => ({ key: secKey, title: sectionLabels[secKey] || `المحور الرقابي (${secKey})` }));
+  const sections = uniqueSections.map(secKey => ({ key: secKey, title: sectionLabels[secKey] || secKey }));
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 transition-colors duration-300">
