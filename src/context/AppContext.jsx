@@ -423,7 +423,7 @@ export const AppProvider = ({ children }) => {
 
 
   const [inspectionItems, setInspectionItems] = useState(() => {
-    const saved = localStorage.getItem('inspectionItems');
+    const saved = localStorage.getItem('inspectionItems_v2');
     return saved ? JSON.parse(saved) : DEFAULT_INSPECTION_ITEMS;
   });
 
@@ -552,7 +552,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('teams_v2', setTeams, teams);
       setupFirebaseSync('trackers_v1', setTrackers, trackers);
       setupFirebaseSync('closureVerifications_v1', setClosureVerifications, closureVerifications);
-      setupFirebaseSync('inspectionItems', setInspectionItems, inspectionItems);
+      setupFirebaseSync('inspectionItems_v2', setInspectionItems, inspectionItems);
       setupFirebaseSync('systemConfig', setConfig, config);
       setupFirebaseSync('activityTypes', setActivityTypes, activityTypes);
       setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
@@ -1018,7 +1018,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedTeam.current) syncToCloud('teams_v2', teams); else isMountedTeam.current = true; }, [teams]);
   useEffect(() => { if (isMountedTrack.current) syncToCloud('trackers_v1', trackers); else isMountedTrack.current = true; }, [trackers]);
   useEffect(() => { if (isMountedClosure.current) syncToCloud('closureVerifications_v1', closureVerifications); else isMountedClosure.current = true; }, [closureVerifications]);
-  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionItems', inspectionItems); else isMountedInsp.current = true; }, [inspectionItems]);
+  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionItems_v2', inspectionItems); else isMountedInsp.current = true; }, [inspectionItems]);
   useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
   useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
   useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
