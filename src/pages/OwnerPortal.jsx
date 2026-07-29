@@ -24,8 +24,11 @@ export const OwnerPortal = () => {
   const [isRequestingInspection, setIsRequestingInspection] = useState(false);
   const [inspectionRequested, setInspectionRequested] = useState(false);
   
-  // Tabs State
   const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // Action Plan State
+  const [resolvedTasks, setResolvedTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   // Auto-login from localStorage
   useEffect(() => {
@@ -211,15 +214,39 @@ export const OwnerPortal = () => {
     setTimeout(() => document.body.classList.remove('print-qr-only'), 1000);
   };
 
+  const getTaskDetails = (id) => {
+    const details = {
+      '1': { reason: 'عدم ارتداء العاملين للملابس الصحية المناسبة (كفوف، قبعات رأس).', solution: 'تجهيز جميع العاملين بالملابس الموحدة وإلزامهم بارتدائها أثناء العمل بشكل دائم.' },
+      '2': { reason: 'رصد مواد منتهية الصلاحية أو غير مخزنة بشكل سليم.', solution: 'إتلاف المواد التالفة فوراً وإعادة ترتيب المخزن حسب درجات الحرارة المطلوبة.' },
+      '3': { reason: 'تدني مستوى النظافة العامة للأرضيات والجدران.', solution: 'إجراء حملة تنظيف شاملة باستخدام المعقمات القياسية.' },
+      '4': { reason: 'عدم وجود بطاقات فحص طبي سارية المفعول للعمال.', solution: 'توجيه العمال لمراجعة المركز الصحي لتجديد بطاقات الفحص الطبي.' },
+      '5': { reason: 'سوء التهوية وتراكم الأدخنة في المطبخ.', solution: 'صيانة ساحبات الهواء أو تركيب نظام تهوية جديد لتجديد الهواء.' }
+    };
+    return details[id] || { reason: 'تم رصد تقصير واضح في هذا المعيار أثناء الزيارة الميدانية الأخيرة.', solution: 'يرجى مراجعة الضوابط الصحية وتصحيح الخلل فوراً لضمان سلامة الغذاء.' };
+  };
+
   const generateTodos = () => {
     let todos = [];
     if (lastHistory?.ratings) {
       Object.entries(lastHistory.ratings).forEach(([id, val]) => {
-        if (val < 5) todos.push({ id, text: `تصحيح الخلل في المعيار ${id}`, points: 5 - val });
+        if (val < 5) {
+          todos.push({ 
+            id, 
+            text: `تصحيح الخلل في المعيار ${id}`, 
+            points: 5 - val,
+            ...getTaskDetails(id)
+          });
+        }
       });
     }
     if (todos.length === 0 && !isCompliant) {
-        todos.push({ id: '1', text: 'تنظيف شامل وصيانة عامة حسب ملاحظات المفتش', points: 10 });
+        todos.push({ 
+          id: 'general', 
+          text: 'تنظيف شامل وصيانة عامة حسب ملاحظات المفتش', 
+          points: 10,
+          reason: 'وجود ملاحظات عامة حول بيئة العمل لم ترتقِ للمستوى المطلوب.',
+          solution: 'القيام بحملة صيانة وتنظيف شاملة لكل مرافق المنشأة.'
+        });
     }
     return todos;
   };
@@ -444,21 +471,50 @@ export const OwnerPortal = () => {
                 <div className="flex items-center justify-between mb-8">
                   <p className="text-sm font-bold text-slate-500">قم بمعالجة هذه المخالفات لإستعادة تقييمك المثالي.</p>
                   {!isCompliant && (
-                    <span className="text-[10px] font-black px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg animate-pulse">يوجد مهام معلقة</span>
+                    <span className="text-[10px] font-black px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg animate-pulse">
+                      {todos.length - resolvedTasks.length} مهام متبقية
+                    </span>
                   )}
                 </div>
 
                 {todos.length > 0 ? (
                   <div className="space-y-4 mb-8">
-                    {todos.map(todo => (
-                      <label key={todo.id} className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group">
-                        <input type="checkbox" className="mt-1 w-5 h-5 text-teal-600 rounded-md border-slate-300 focus:ring-teal-500" />
-                        <div className="flex-1">
-                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">{todo.text}</p>
-                          <p className="text-[11px] text-red-500 mt-1 font-bold">سببت خصم {todo.points} نقاط</p>
+                    {todos.map(todo => {
+                      const isResolved = resolvedTasks.includes(todo.id);
+                      return (
+                        <div 
+                          key={todo.id} 
+                          onClick={() => !isResolved && setSelectedTask(todo)}
+                          className={`flex items-start gap-4 p-4 rounded-2xl border transition-all ${
+                            isResolved 
+                            ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-800 opacity-60' 
+                            : 'bg-slate-50 dark:bg-slate-800/30 border-slate-200 dark:border-slate-700/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm'
+                          } group`}
+                        >
+                          <div className={`mt-1 w-6 h-6 rounded-full flex items-center justify-center shrink-0 border-2 ${
+                            isResolved 
+                            ? 'bg-emerald-500 border-emerald-500 text-white' 
+                            : 'border-slate-300 text-transparent group-hover:border-teal-500'
+                          }`}>
+                            <CheckCircle2 className="w-4 h-4" />
+                          </div>
+                          
+                          <div className="flex-1">
+                            <p className={`text-sm font-bold ${isResolved ? 'text-emerald-700 dark:text-emerald-400 line-through' : 'text-slate-800 dark:text-slate-200 group-hover:text-teal-700 dark:group-hover:text-teal-400'}`}>
+                              {todo.text}
+                            </p>
+                            {!isResolved && (
+                              <div className="flex items-center gap-3 mt-2">
+                                <span className="text-[10px] text-red-500 font-bold px-2 py-0.5 bg-red-50 dark:bg-red-500/10 rounded-md">
+                                  خصم {todo.points} نقاط
+                                </span>
+                                <span className="text-[10px] text-teal-600 font-bold">اضغط لمعرفة التفاصيل والحل &larr;</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </label>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-16 opacity-70">
@@ -471,16 +527,18 @@ export const OwnerPortal = () => {
                 {!isCompliant && (
                   <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 mt-8 text-center">
                     <h4 className="text-sm font-black text-slate-800 dark:text-white mb-2">أتممت الإصلاحات؟</h4>
-                    <p className="text-xs font-bold text-slate-500 mb-6">بإمكانك طلب كشف جديد من الفرقة الميدانية لإعادة رفع تقييمك.</p>
+                    <p className="text-xs font-bold text-slate-500 mb-6">يجب تحديد جميع المهام كـ "تم الحل" لتتمكن من طلب الكشف.</p>
                     <button 
                       onClick={requestReinspection}
-                      disabled={isRequestingInspection || inspectionRequested}
+                      disabled={isRequestingInspection || inspectionRequested || resolvedTasks.length !== todos.length}
                       className="w-full md:w-auto px-8 py-4 rounded-xl bg-slate-900 hover:bg-black dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-black text-sm transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed mx-auto shadow-xl"
                     >
                       {isRequestingInspection ? (
                         <RefreshCw className="w-5 h-5 animate-spin" />
                       ) : inspectionRequested ? (
                         <><CheckCircle2 className="w-5 h-5 text-emerald-400" /> تم إرسال الطلب لغرفة العمليات</>
+                      ) : resolvedTasks.length !== todos.length ? (
+                        <><ShieldAlert className="w-5 h-5" /> يرجى إتمام جميع المهام أولاً</>
                       ) : (
                         <><Send className="w-5 h-5" /> إشعار بإتمام التعديلات وطلب كشف جديد</>
                       )}
@@ -642,6 +700,52 @@ export const OwnerPortal = () => {
              </div>
            </div>
         </div>
+
+        {/* Task Details Modal */}
+        {selectedTask && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-slate-900 rounded-[2rem] w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col scale-100 animate-in zoom-in-95 duration-200">
+              <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+                <h3 className="font-black text-lg text-slate-800 dark:text-white">تفاصيل المخالفة والإجراء المطلوب</h3>
+                <button onClick={() => setSelectedTask(null)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500">
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div>
+                  <h4 className="text-xs font-black text-red-600 dark:text-red-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4" /> سبب المخالفة (الخلل)
+                  </h4>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 font-bold leading-relaxed bg-red-50 dark:bg-red-500/10 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
+                    {selectedTask.reason}
+                  </p>
+                </div>
+                
+                <div>
+                  <h4 className="text-xs font-black text-emerald-600 dark:text-emerald-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+                    <Brain className="w-4 h-4" /> الحل المقترح (الإجراء التصحيحي)
+                  </h4>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 font-bold leading-relaxed bg-emerald-50 dark:bg-emerald-500/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                    {selectedTask.solution}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex gap-4">
+                <button 
+                  onClick={() => {
+                    setResolvedTasks(prev => [...prev, selectedTask.id]);
+                    setSelectedTask(null);
+                  }}
+                  className="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-black text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-teal-600/20"
+                >
+                  <CheckCircle2 className="w-5 h-5" /> أنا متأكد، تم حل المشكلة
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </main>
     </div>
