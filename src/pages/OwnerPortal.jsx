@@ -336,7 +336,7 @@ export const OwnerPortal = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 relative max-w-full overflow-hidden">
+      <main className="flex-1 relative max-w-full overflow-hidden print:overflow-visible">
         {/* Top Header Actions */}
         <div className="absolute top-4 left-4 z-50 flex items-center gap-2 no-print">
           <ThemeToggle />
@@ -350,7 +350,7 @@ export const OwnerPortal = () => {
           </button>
         </div>
 
-        <div className="h-full overflow-y-auto p-4 md:p-8 pb-32 main-tab-content">
+        <div className="h-full overflow-y-auto p-4 md:p-8 pb-32 main-tab-content print:overflow-visible print:h-auto print:pb-0">
           
           <div className="max-w-5xl mx-auto">
             {/* Page Title */}
@@ -461,40 +461,40 @@ export const OwnerPortal = () => {
 
             {/* TAB: INFO */}
             {activeTab === 'info' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4 print:p-0 print:border-none print:shadow-none">
+                <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-8 print:gap-4">
                    <div className="space-y-6">
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">الاسم الرسمي</span>
                        <p className="text-lg font-black text-slate-900 dark:text-white">{ownerEst.name}</p>
                      </div>
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">المالك المسؤول</span>
                        <p className="text-base font-black text-slate-900 dark:text-white">{ownerEst.owner}</p>
                      </div>
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">رقم الهاتف (المالك)</span>
                        <p className="text-base font-black text-slate-900 dark:text-white truncate" dir="ltr">{ownerEst.ownerPhone || '0770 000 0000'}</p>
                      </div>
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">رقم الهاتف (المنشأة)</span>
                        <p className="text-base font-black text-slate-900 dark:text-white truncate" dir="ltr">{ownerEst.phone || '0770 000 0000'}</p>
                      </div>
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">رقم الإجازة الصحية</span>
                        <p className="text-base font-black text-slate-900 dark:text-white uppercase tracking-widest">{ownerEst.licenseNumber}</p>
                      </div>
                    </div>
                    <div className="space-y-6">
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">التصنيف (الصنف)</span>
                        <p className="text-base font-black text-slate-900 dark:text-white">{ownerEst.type}</p>
                      </div>
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">القاطع (القطاع)</span>
                        <p className="text-base font-black text-slate-900 dark:text-white">{ownerEst.sector}</p>
                      </div>
-                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">لجنة التفتيش (آخر زيارة)</span>
                        <p className="text-base font-black text-slate-900 dark:text-white">{ownerEst.inspectorName || 'غير مسجل'}</p>
                      </div>
