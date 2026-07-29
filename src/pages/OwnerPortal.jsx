@@ -709,35 +709,49 @@ export const OwnerPortal = () => {
         {/* Hidden QR Poster for PDF Export */}
         <div className="hidden qr-poster-wrapper">
            <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 flex flex-col items-center p-16 font-sans mx-auto print:scale-100 origin-top">
-             <div className="absolute inset-0 border-[20px] border-teal-600 m-8 rounded-3xl pointer-events-none"></div>
+             <div className="absolute inset-0 border-[24px] border-[#108c7f] rounded-3xl pointer-events-none"></div>
              
-             <div className="flex items-center justify-center gap-12 mb-6 mt-4 w-full px-8">
-               <img src="/logos/iraq_moh_logo.png" alt="وزارة الصحة" className="h-28 object-contain" />
-               <img src="/logos/nineveh_gov_logo.png" alt="محافظة نينوى" className="h-28 object-contain" />
-               <img src="/logos/nineveh_health_logo.png" alt="دائرة صحة نينوى" className="h-28 object-contain" />
-               <img src="/logos/public_health_logo.png" alt="دائرة الصحة العامة" className="h-28 object-contain" />
-             </div>
-             
-             <div className="text-center mb-10 w-full">
-               <h2 className="text-3xl font-black text-slate-800 mb-2">دائرة صحة نينوى</h2>
-               <h3 className="text-2xl font-bold text-slate-600 mb-6">دائرة الصحة العامة</h3>
-               <h1 className="text-5xl font-black text-teal-800 tracking-tight">النظام الرقمي للرقابة الصحية</h1>
-             </div>
-             
-             <div className="bg-teal-50/50 w-full rounded-[3rem] p-12 flex flex-col items-center flex-1">
-               <h3 className="text-5xl font-black text-slate-900 mb-12 text-center leading-tight max-w-[90%]">{ownerEst.name}</h3>
-               
-               <div className="bg-white p-6 rounded-[3rem] shadow-xl mb-12 border-[12px] border-teal-600">
-                 <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={420} bgColor="#ffffff" fgColor="#0f172a" />
+             {/* Logos */}
+             <div className="flex items-center justify-between w-full px-12 mt-4 mb-8">
+               <div className="flex flex-col items-center">
+                 <img src="/logos/public_health_logo.png" alt="دائرة الصحة العامة" className="h-20 object-contain mb-2" />
+                 <span className="text-[#108c7f] font-bold text-sm">دائرة الصحة العامة</span>
                </div>
-               
-               <div className="text-center text-teal-900 px-4 mt-auto">
-                 <p className="text-3xl font-black leading-snug">امسح رمز الباركود للاطلاع على مستوى النظافة والتقييم للمنشأة</p>
+               <div className="flex flex-col items-center">
+                 <img src="/logos/nineveh_health_logo.png" alt="دائرة صحة نينوى" className="h-20 object-contain mb-2" />
+                 <span className="text-[#108c7f] font-bold text-sm">دائرة صحة نينوى</span>
+               </div>
+               <div className="flex flex-col items-center">
+                 <img src="/logos/nineveh_gov_logo.png" alt="محافظة نينوى" className="h-20 object-contain mb-2" />
+                 <span className="text-[#108c7f] font-bold text-sm">محافظة نينوى</span>
+               </div>
+               <div className="flex flex-col items-center">
+                 <img src="/logos/iraq_moh_logo.png" alt="وزارة الصحة العراقية" className="h-20 object-contain mb-2" />
+                 <span className="text-[#108c7f] font-bold text-sm">وزارة الصحة العراقية</span>
                </div>
              </div>
              
-             <div className="mt-8 flex flex-col items-center">
-               <p className="text-2xl font-black text-slate-600">هذه المنشأة خاضعة للرقابة الصحية المستمرة</p>
+             {/* Title */}
+             <div className="text-center w-full mb-8">
+               <h1 className="text-4xl font-black text-[#108c7f] leading-tight mb-2">النظام الرقمي للرقابة الصحية</h1>
+               <h1 className="text-4xl font-black text-[#108c7f] leading-tight">في محافظة نينوى</h1>
+             </div>
+             
+             {/* Subtitle / Restaurant Name */}
+             <div className="text-center w-full mb-10">
+               <h2 className="text-5xl font-black text-[#108c7f] mb-6">{ownerEst.name}</h2>
+               <p className="text-2xl font-bold text-[#108c7f]">"هذه المنشأة خاضعة للرقابة الصحية المستمرة"</p>
+             </div>
+             
+             {/* QR Code Container */}
+             <div className="bg-white p-6 rounded-[3rem] shadow-2xl mb-12 border-[12px] border-[#108c7f] z-10 flex-1 flex items-center justify-center">
+               <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={420} bgColor="#ffffff" fgColor="#0f172a" />
+             </div>
+             
+             {/* Footer Text */}
+             <div className="text-center text-[#108c7f] mt-auto pb-4">
+               <p className="text-3xl font-black leading-snug mb-1">امسح الرمز الباركود</p>
+               <p className="text-3xl font-black leading-snug">للاطلاع على مستوى النظافة والتقييم المنشأة</p>
              </div>
            </div>
         </div>
