@@ -31,7 +31,6 @@ export const OwnerPortal = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   
   // Dashboard Chart State
-  const [chartView, setChartView] = useState('total'); // 'total' | 'current'
 
   // Auto-login from localStorage
   useEffect(() => {
@@ -362,17 +361,17 @@ export const OwnerPortal = () => {
 
             {/* TAB: DASHBOARD */}
             {activeTab === 'dashboard' && (
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 animate-in fade-in slide-in-from-bottom-4">
+              <div className="grid grid-cols-1 md:grid-cols-12 print:grid-cols-12 gap-6 animate-in fade-in slide-in-from-bottom-4">
                 
                 {/* Main Score Card (Col-span 8) */}
-                <div className="md:col-span-8 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 relative overflow-hidden group">
+                <div className="md:col-span-8 print:col-span-8 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 relative overflow-hidden group">
                   <div className={`absolute top-0 right-0 w-64 h-64 blur-[80px] rounded-full opacity-20 transition-colors duration-700 pointer-events-none ${
                     isCompliant ? 'bg-emerald-500' : isMonitoring ? 'bg-amber-500' : 'bg-red-500'
                   }`}></div>
                   
-                  <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                  <div className="relative z-10 flex flex-col md:flex-row print:flex-row items-center gap-8">
                     {/* Score Circle */}
-                    <div className="shrink-0 relative">
+                    <div className="shrink-0 relative mx-auto print:mx-0">
                       <svg className="w-40 h-40 transform -rotate-90">
                         <circle cx="80" cy="80" r="70" className="stroke-slate-100 dark:stroke-slate-800" strokeWidth="12" fill="none" />
                         <circle 
@@ -388,7 +387,7 @@ export const OwnerPortal = () => {
                       </div>
                     </div>
 
-                    <div className="flex-1 text-center md:text-right">
+                    <div className="flex-1 text-center md:text-right print:text-right">
                       <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-4 text-sm font-black shadow-sm ${
                         isCompliant ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200' :
                         isMonitoring ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200' :
@@ -413,7 +412,7 @@ export const OwnerPortal = () => {
                 </div>
 
                 {/* QR Code Quick Card (Col-span 4) */}
-                <div className="md:col-span-4 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex flex-col items-center justify-center text-center">
+                <div className="md:col-span-4 print:col-span-4 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex flex-col items-center justify-center text-center">
                   <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">هوية المنشأة للزبائن</h3>
                   <p className="text-[10px] text-slate-500 font-bold mb-6">واجهة الجمهور (QR Code)</p>
                   
@@ -432,30 +431,15 @@ export const OwnerPortal = () => {
                 </div>
 
                 {/* History Chart (Col-span 12) */}
-                <div className="md:col-span-12 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <div className="md:col-span-12 print:col-span-12 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50">
+                  <div className="flex flex-col sm:flex-row print:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                     <h3 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
                       <TrendingUp className="w-5 h-5 text-teal-600" /> مسار التقييمات
                     </h3>
-                    <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl">
-                      <button 
-                        onClick={() => setChartView('total')}
-                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${chartView === 'total' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-                      >
-                        الكلي (تاريخي)
-                      </button>
-                      <button 
-                        onClick={() => setChartView('current')}
-                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${chartView === 'current' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
-                      >
-                        الحالي (تفصيلي)
-                      </button>
-                    </div>
                   </div>
                   
                   <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      {chartView === 'total' ? (
                         <AreaChart data={historyData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                           <defs>
                             <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
@@ -469,24 +453,6 @@ export const OwnerPortal = () => {
                           <RechartsTooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '16px', color: '#fff', fontSize: '12px', fontWeight: 'bold' }} itemStyle={{ color: '#2dd4bf' }} cursor={{ stroke: '#0d9488', strokeWidth: 1, strokeDasharray: '4 4' }} />
                           <Area type="monotone" dataKey="score" name="التقييم (%)" stroke="#0d9488" strokeWidth={4} fillOpacity={1} fill="url(#colorScore)" activeDot={{ r: 8, strokeWidth: 0, fill: '#0f766e' }} />
                         </AreaChart>
-                      ) : (
-                        <BarChart data={currentRatingsData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }} barSize={30}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.1} vertical={false} />
-                          <XAxis dataKey="name" stroke="#94a3b8" fontSize={9} tickMargin={10} axisLine={false} tickLine={false} interval={0} />
-                          <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 100]} axisLine={false} tickLine={false} />
-                          <RechartsTooltip 
-                            contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '16px', color: '#fff', fontSize: '12px', fontWeight: 'bold' }} 
-                            itemStyle={{ color: '#2dd4bf' }} 
-                            cursor={{ fill: '#334155', opacity: 0.1 }}
-                            formatter={(value, name, props) => [`${props.payload.rawScore} / 5 (${value}%)`, 'الدرجة']}
-                          />
-                          <Bar dataKey="score" radius={[8, 8, 0, 0]}>
-                            {currentRatingsData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.score === 100 ? '#10b981' : entry.score >= 60 ? '#f59e0b' : '#ef4444'} />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                      )}
                     </ResponsiveContainer>
                   </div>
                 </div>
@@ -505,6 +471,14 @@ export const OwnerPortal = () => {
                      <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">المالك المسؤول</span>
                        <p className="text-base font-black text-slate-900 dark:text-white">{ownerEst.owner}</p>
+                     </div>
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">رقم الهاتف (المالك)</span>
+                       <p className="text-base font-black text-slate-900 dark:text-white truncate" dir="ltr">{ownerEst.ownerPhone || '0770 000 0000'}</p>
+                     </div>
+                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">رقم الهاتف (المنشأة)</span>
+                       <p className="text-base font-black text-slate-900 dark:text-white truncate" dir="ltr">{ownerEst.phone || '0770 000 0000'}</p>
                      </div>
                      <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50">
                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">رقم الإجازة الصحية</span>
@@ -733,7 +707,7 @@ export const OwnerPortal = () => {
         </div>
 
         {/* Hidden QR Poster for PDF Export */}
-        <div className="fixed -left-[9999px] top-0 print:block print:static print:left-auto">
+        <div className="hidden qr-poster-wrapper">
            <div ref={qrPosterRef} className="print-only-qr relative w-[800px] h-[1130px] bg-white text-slate-900 flex flex-col items-center p-16 font-sans">
              <div className="absolute inset-0 border-[20px] border-teal-600 m-8 rounded-3xl pointer-events-none"></div>
              
