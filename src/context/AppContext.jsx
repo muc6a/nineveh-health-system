@@ -351,7 +351,7 @@ export const AppProvider = ({ children }) => {
         ...est,
         sector: currentSector,
         neighborhood: currentNeighborhood,
-        accessCode: est.accessCode || Math.random().toString(36).substring(2, 8).toUpperCase()
+        accessCode: est.accessCode || est.id.replace(/[^a-zA-Z0-9]/g, '-').toUpperCase()
       };
     });
   });
