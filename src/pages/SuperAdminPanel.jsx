@@ -55,6 +55,7 @@ export const SuperAdminPanel = () => {
 
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
   const [subSettingsTab, setSubSettingsTab] = useState(() => sessionStorage.getItem('superAdminSubSettingsTab') || 'evaluations');
+  const [activeEvalSection, setActiveEvalSection] = useState('A');
   const [newActivity, setNewActivity] = useState('');
   const [editingActivityIndex, setEditingActivityIndex] = useState(null);
   const [editingActivityText, setEditingActivityText] = useState('');
@@ -1649,8 +1650,31 @@ export const SuperAdminPanel = () => {
                   تعديل الصياغة اللغوية لأي بند من بنود التقييم أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان:
                 </p>
 
-                <div className="space-y-6 max-h-[420px] overflow-y-auto pr-2">
+                <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-4">
                   {['A', 'B', 'C', 'D', 'E'].map(sectionKey => {
+                    const sectionLabels = {
+                      'A': 'النظافة العامة',
+                      'B': 'سلامة الأغذية',
+                      'C': 'العاملون',
+                      'D': 'المطبخ والتحضير',
+                      'E': 'الوثائق والالتزام'
+                    };
+                    const isActive = activeEvalSection === sectionKey;
+                    return (
+                      <button
+                        key={sectionKey}
+                        onClick={() => setActiveEvalSection(sectionKey)}
+                        className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${isActive ? 'bg-teal-600 text-white shadow-md shadow-teal-500/20' : 'bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                      >
+                        {sectionLabels[sectionKey]}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-6 max-h-[420px] overflow-y-auto pr-2">
+                  {(() => {
+                    const sectionKey = activeEvalSection;
                     const sectionLabels = {
                       'A': 'النظافة العامة',
                       'B': 'سلامة الأغذية',
@@ -1661,29 +1685,29 @@ export const SuperAdminPanel = () => {
                     const sectionItems = (inspectionItems || []).filter(item => item.section === sectionKey);
                     
                     return (
-                      <div key={sectionKey} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/20">
-                        <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">
+                      <div key={sectionKey} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/20 animate-fade-in">
+                        <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-3">
                           <h3 className="text-sm font-black text-teal-600">{sectionLabels[sectionKey]} ({sectionItems.reduce((acc, item) => acc + (parseInt(item.points)||0), 0)} درجة)</h3>
                           <button
                             onClick={() => handleAddChecklistItem(sectionKey)}
-                            className="px-3 py-1.5 rounded-lg bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-600 dark:text-teal-400 font-bold text-[10px] transition-all cursor-pointer flex items-center gap-1"
+                            className="px-4 py-2 rounded-xl bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-600 dark:text-teal-400 font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5"
                           >
-                            <Plus className="w-3 h-3" />
-                            إضافة بند هنا
+                            <Plus className="w-3.5 h-3.5" />
+                            إضافة بند جديد
                           </button>
                         </div>
                         
                         <div className="space-y-3">
                           {sectionItems.map((item, idx) => (
                             <div key={item.id} className="flex gap-2 items-start py-1.5 border-b border-slate-100 dark:border-slate-800/40 last:border-0">
-                              <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-500 shrink-0 mt-2">
+                              <span className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-500 shrink-0 mt-2">
                                 {idx + 1}
                               </span>
                               <textarea
                                 rows="2"
                                 value={item.text}
                                 onChange={(e) => handleItemTextChange(item.id, e.target.value)}
-                                className="flex-1 p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-[11px] font-bold outline-none focus:border-teal-500 text-slate-700 dark:text-slate-300"
+                                className="flex-1 p-3 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-[11px] font-bold outline-none focus:border-teal-500 text-slate-700 dark:text-slate-300 transition-all"
                               />
                               <div className="flex flex-col gap-1 shrink-0">
                                 <span className="text-[8px] text-slate-400 font-bold block text-center">الدرجة</span>
@@ -1691,24 +1715,26 @@ export const SuperAdminPanel = () => {
                                   type="number"
                                   value={item.points || 5}
                                   onChange={(e) => handleItemPointsChange(item.id, e.target.value)}
-                                  className="w-12 p-1 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-[11px] font-black text-center text-teal-600 dark:text-teal-400 outline-none focus:border-teal-500"
+                                  className="w-14 p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-[11px] font-black text-center text-teal-600 dark:text-teal-400 outline-none focus:border-teal-500 transition-all"
                                 />
                               </div>
                               <button
                                 onClick={() => handleDeleteChecklistItem(item.id)}
-                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 mt-3 cursor-pointer shrink-0"
+                                className="p-2 rounded-xl text-red-500 hover:bg-red-500/10 mt-3 cursor-pointer shrink-0 transition-all"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
                           ))}
                           {sectionItems.length === 0 && (
-                            <p className="text-[10px] text-slate-400 text-center py-2">لا توجد بنود في هذا القسم.</p>
+                            <p className="text-[11px] text-slate-400 text-center py-6 font-bold bg-slate-100/50 dark:bg-slate-800/30 rounded-xl">
+                              لا توجد بنود في هذا القسم، انقر على زر "إضافة بند جديد".
+                            </p>
                           )}
                         </div>
                       </div>
                     );
-                  })}
+                  })()}
                 </div>
               </div>
             </div>
