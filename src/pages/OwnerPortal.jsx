@@ -711,30 +711,33 @@ export const OwnerPortal = () => {
            <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 flex flex-col items-center p-16 font-sans mx-auto print:scale-100 origin-top">
              <div className="absolute inset-0 border-[20px] border-teal-600 m-8 rounded-3xl pointer-events-none"></div>
              
-             <div className="flex items-center gap-6 mb-16 mt-8">
-                <AnimatedLogo variant="sidebar" className="scale-150 origin-center" />
+             <div className="flex items-center justify-center gap-12 mb-6 mt-4 w-full px-8">
+               <img src="/logos/iraq_moh_logo.png" alt="وزارة الصحة" className="h-28 object-contain" />
+               <img src="/logos/nineveh_gov_logo.png" alt="محافظة نينوى" className="h-28 object-contain" />
+               <img src="/logos/nineveh_health_logo.png" alt="دائرة صحة نينوى" className="h-28 object-contain" />
+               <img src="/logos/public_health_logo.png" alt="دائرة الصحة العامة" className="h-28 object-contain" />
              </div>
              
-             <h1 className="text-5xl font-black text-teal-800 mb-4 text-center">النظام الرقمي للرقابة الصحية</h1>
-             <h2 className="text-2xl font-bold text-slate-500 mb-16 text-center">دائرة صحة نينوى</h2>
+             <div className="text-center mb-10 w-full">
+               <h2 className="text-3xl font-black text-slate-800 mb-2">دائرة صحة نينوى</h2>
+               <h3 className="text-2xl font-bold text-slate-600 mb-6">دائرة الصحة العامة</h3>
+               <h1 className="text-5xl font-black text-teal-800 tracking-tight">النظام الرقمي للرقابة الصحية</h1>
+             </div>
              
-             <div className="bg-teal-50 w-full rounded-[3rem] p-12 flex flex-col items-center shadow-inner border border-teal-100">
-               <h3 className="text-4xl font-black text-slate-800 mb-4 text-center">{ownerEst.name}</h3>
-               <p className="text-xl font-bold text-slate-500 mb-12">صنف المنشأة: {ownerEst.type}</p>
+             <div className="bg-teal-50/50 w-full rounded-[3rem] p-12 flex flex-col items-center flex-1">
+               <h3 className="text-5xl font-black text-slate-900 mb-12 text-center leading-tight max-w-[90%]">{ownerEst.name}</h3>
                
-               <div className="bg-white p-8 rounded-3xl shadow-2xl mb-12 border-4 border-teal-600">
-                 <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={350} bgColor="#ffffff" fgColor="#0f172a" />
+               <div className="bg-white p-6 rounded-[3rem] shadow-xl mb-12 border-[12px] border-teal-600">
+                 <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={420} bgColor="#ffffff" fgColor="#0f172a" />
                </div>
                
-               <div className="flex items-center gap-4 text-teal-700">
-                 <QrCode className="w-10 h-10" />
-                 <p className="text-3xl font-black">امسح الرمز للاطلاع على مستوى النظافة والتقييم!</p>
+               <div className="text-center text-teal-900 px-4 mt-auto">
+                 <p className="text-3xl font-black leading-snug">امسح رمز الباركود للاطلاع على مستوى النظافة والتقييم للمنشأة</p>
                </div>
              </div>
              
-             <div className="mt-auto flex flex-col items-center">
-               <p className="text-lg font-bold text-slate-400 mb-2">هذه المنشأة خاضعة للرقابة الصحية المستمرة</p>
-               <img src="/stamp-transparent.png" alt="ختم دائرة الصحة" className="w-48 h-48 opacity-80 mix-blend-multiply" />
+             <div className="mt-8 flex flex-col items-center">
+               <p className="text-2xl font-black text-slate-600">هذه المنشأة خاضعة للرقابة الصحية المستمرة</p>
              </div>
            </div>
         </div>
