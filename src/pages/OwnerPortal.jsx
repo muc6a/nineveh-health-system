@@ -708,7 +708,7 @@ export const OwnerPortal = () => {
 
         {/* Hidden QR Poster for PDF Export */}
         <div className="hidden qr-poster-wrapper">
-           <div ref={qrPosterRef} className="print-only-qr relative w-[800px] h-[1130px] bg-white text-slate-900 flex flex-col items-center p-16 font-sans">
+           <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 flex flex-col items-center p-16 font-sans mx-auto print:scale-100 origin-top">
              <div className="absolute inset-0 border-[20px] border-teal-600 m-8 rounded-3xl pointer-events-none"></div>
              
              <div className="flex items-center gap-6 mb-16 mt-8">

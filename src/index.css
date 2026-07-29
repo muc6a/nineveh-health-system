@@ -54,6 +54,9 @@
 }
 
 @media print {
+  @page {
+    margin: 0;
+  }
   .no-print, nav, button:not(.print-btn), aside {
     display: none !important;
   }
