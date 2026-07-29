@@ -553,11 +553,11 @@ export const SuperAdminPanel = () => {
     setInspectionItems(prev => prev.map(item => item.id === id ? { ...item, points: parseInt(newPoints) || 0 } : item));
   };
 
-  const handleAddChecklistItem = () => {
+  const handleAddChecklistItem = (sectionKey = 'A') => {
     const newId = inspectionItems.length > 0 ? Math.max(...inspectionItems.map(i => i.id)) + 1 : 1;
     const newItem = {
       id: newId,
-      section: 'A',
+      section: typeof sectionKey === 'string' ? sectionKey : 'A',
       text: 'بند فحص رقابي مضاف حديثاً - يرجى كتابة الاشتراط الصحي هنا.',
       points: 5
     };
@@ -1642,53 +1642,76 @@ export const SuperAdminPanel = () => {
                   <div>
                 <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
                   <Shield className="w-5 h-5 text-teal-600" />
-                  <span>ثانياً: محرر نصوص بنود التقييم العشرون</span>
+                  <span>ثانياً: محرر بنود التقييم الميداني (حسب الأقسام)</span>
                 </h2>
 
                 <p className="text-[10px] text-slate-400 mb-4 leading-relaxed">
-                  تعديل الصياغة اللغوية لأي بند من بنود التقييم العشرين أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان:
+                  تعديل الصياغة اللغوية لأي بند من بنود التقييم أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان:
                 </p>
 
-                <div className="space-y-3.5 max-h-[360px] overflow-y-auto pr-1">
-                  {inspectionItems.map((item, idx) => (
-                    <div key={item.id} className="flex gap-2 items-start py-1.5 border-b border-slate-100 dark:border-slate-800/40">
-                      <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400 shrink-0 mt-2">
-                        {idx + 1}
-                      </span>
-                      <textarea
-                        rows="2"
-                        value={item.text}
-                        onChange={(e) => handleItemTextChange(item.id, e.target.value)}
-                        className="flex-1 p-2 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-[11px] font-bold outline-none focus:border-teal-500 text-slate-700 dark:text-slate-300"
-                      />
-                      <div className="flex flex-col gap-1 shrink-0">
-                        <span className="text-[8px] text-slate-450 font-bold block text-center">الدرجة</span>
-                        <input
-                          type="number"
-                          value={item.points || 5}
-                          onChange={(e) => handleItemPointsChange(item.id, e.target.value)}
-                          className="w-12 p-1 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-[11px] font-black text-center text-teal-600 dark:text-teal-600 dark:text-teal-400 outline-none focus:border-teal-500"
-                        />
+                <div className="space-y-6 max-h-[420px] overflow-y-auto pr-2">
+                  {['A', 'B', 'C', 'D', 'E'].map(sectionKey => {
+                    const sectionLabels = {
+                      'A': 'النظافة العامة',
+                      'B': 'سلامة الأغذية',
+                      'C': 'العاملون',
+                      'D': 'المطبخ والتحضير',
+                      'E': 'الوثائق والالتزام'
+                    };
+                    const sectionItems = (inspectionItems || []).filter(item => item.section === sectionKey);
+                    
+                    return (
+                      <div key={sectionKey} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/20">
+                        <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-2">
+                          <h3 className="text-sm font-black text-teal-600">{sectionLabels[sectionKey]} ({sectionItems.reduce((acc, item) => acc + (parseInt(item.points)||0), 0)} درجة)</h3>
+                          <button
+                            onClick={() => handleAddChecklistItem(sectionKey)}
+                            className="px-3 py-1.5 rounded-lg bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-600 dark:text-teal-400 font-bold text-[10px] transition-all cursor-pointer flex items-center gap-1"
+                          >
+                            <Plus className="w-3 h-3" />
+                            إضافة بند هنا
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {sectionItems.map((item, idx) => (
+                            <div key={item.id} className="flex gap-2 items-start py-1.5 border-b border-slate-100 dark:border-slate-800/40 last:border-0">
+                              <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-500 shrink-0 mt-2">
+                                {idx + 1}
+                              </span>
+                              <textarea
+                                rows="2"
+                                value={item.text}
+                                onChange={(e) => handleItemTextChange(item.id, e.target.value)}
+                                className="flex-1 p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-[11px] font-bold outline-none focus:border-teal-500 text-slate-700 dark:text-slate-300"
+                              />
+                              <div className="flex flex-col gap-1 shrink-0">
+                                <span className="text-[8px] text-slate-400 font-bold block text-center">الدرجة</span>
+                                <input
+                                  type="number"
+                                  value={item.points || 5}
+                                  onChange={(e) => handleItemPointsChange(item.id, e.target.value)}
+                                  className="w-12 p-1 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-[11px] font-black text-center text-teal-600 dark:text-teal-400 outline-none focus:border-teal-500"
+                                />
+                              </div>
+                              <button
+                                onClick={() => handleDeleteChecklistItem(item.id)}
+                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 mt-3 cursor-pointer shrink-0"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                          {sectionItems.length === 0 && (
+                            <p className="text-[10px] text-slate-400 text-center py-2">لا توجد بنود في هذا القسم.</p>
+                          )}
+                        </div>
                       </div>
-                      <button
-                        onClick={() => handleDeleteChecklistItem(item.id)}
-                        className="p-1 rounded-lg text-red-500 hover:bg-red-500/10 mt-3 cursor-pointer shrink-0"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
-
-              <button
-                onClick={handleAddChecklistItem}
-                className="mt-4 w-full py-3 rounded-xl border border-dashed border-teal-500/30 hover:border-teal-500/60 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Plus className="w-4.5 h-4.5" />
-                <span>➕ إضافة بند رقابي جديد لقائمة التقييم</span>
-                  </button>
-                </div>
+            </div>
               )}
             </div>
           </section>
