@@ -569,13 +569,6 @@ export default function OperationsRoom() {
         />
       )}
 
-      
-{ver.notes && (
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700 mb-4">
-                      <p className="text-xs text-slate-700 dark:text-slate-300 font-bold">ملاحظات فريق المتابعة:</p>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{ver.notes}</p>
-                    </div>
-                  )}
 
       {/* Closure Duration Modal */}
       {closureModalData && (
