@@ -185,20 +185,20 @@ export const PublicQRScore = () => {
           </p>
         </div>
 
-        {/* Mode Switcher Tabs for Citizen */}
-        <div className="flex gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <button
-            onClick={() => setCitizenMode('dining')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
-              citizenMode === 'dining'
-                ? 'bg-teal-600 text-white font-extrabold shadow-md'
-                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-            }`}
-          >
-            🍽️ كشف وتراخيص الصالة
-          </button>
-          
-          {establishment.hasDelivery && (
+        {/* Mode Switcher Tabs for Citizen (Only show if Delivery is an option) */}
+        {establishment.hasDelivery && (
+          <div className="flex gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <button
+              onClick={() => setCitizenMode('dining')}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
+                citizenMode === 'dining'
+                  ? 'bg-teal-600 text-white font-extrabold shadow-md'
+                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              🍽️ التقييم الصحي الميداني
+            </button>
+            
             <button
               onClick={() => setCitizenMode('delivery')}
               className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
@@ -209,8 +209,8 @@ export const PublicQRScore = () => {
             >
               🛵 كشف وتراخيص التوصيل
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {citizenMode === 'dining' ? (
           <>
