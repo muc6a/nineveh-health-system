@@ -220,13 +220,17 @@ export const OwnerPortal = () => {
   const handlePrintCertificate = () => {
     document.body.classList.add('print-certificate-only');
     window.print();
-    setTimeout(() => document.body.classList.remove('print-certificate-only'), 1000);
+    const cleanup = () => document.body.classList.remove('print-certificate-only');
+    window.addEventListener('afterprint', cleanup, { once: true });
+    setTimeout(cleanup, 10000);
   };
 
   const handlePrintQR = () => {
     document.body.classList.add('print-qr-only');
     window.print();
-    setTimeout(() => document.body.classList.remove('print-qr-only'), 1000);
+    const cleanup = () => document.body.classList.remove('print-qr-only');
+    window.addEventListener('afterprint', cleanup, { once: true });
+    setTimeout(cleanup, 10000);
   };
 
   const getTaskDetails = (id) => {
@@ -320,12 +324,7 @@ export const OwnerPortal = () => {
         </div>
 
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
-           <button 
-             onClick={() => window.print()}
-             className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-slate-700"
-           >
-             <Printer className="w-4 h-4" /> طباعة الصفحة الحالية
-           </button>
+           {/* Removed Print Page Button as requested */}
            <button 
              onClick={handleLogout}
              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 text-xs font-bold transition-all"
