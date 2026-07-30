@@ -713,12 +713,12 @@ export const OwnerPortal = () => {
              <img src="/poster_bg.jpg" alt="Poster Background" className="absolute inset-0 w-[794px] h-[1122px] object-contain z-0" />
              
              {/* Dynamic Content: Restaurant Name */}
-             <div className="absolute top-[260px] left-0 right-0 flex justify-center px-12 z-10">
+             <div className="absolute top-[310px] left-0 right-0 flex justify-center px-12 z-10">
                <h2 className="text-[3.5rem] font-black text-[#108c7f] text-center leading-tight drop-shadow-sm">{ownerEst.name}</h2>
              </div>
              
              {/* Dynamic Content: QR Code */}
-             <div className="absolute top-[380px] left-0 right-0 flex justify-center z-10 mt-8">
+             <div className="absolute top-[450px] left-0 right-0 flex justify-center z-10 mt-8">
                <div className="bg-white p-6 rounded-[3rem] shadow-xl border-[12px] border-[#108c7f]">
                  <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={420} bgColor="#ffffff" fgColor="#0f172a" />
                </div>
