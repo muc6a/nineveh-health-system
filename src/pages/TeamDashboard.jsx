@@ -149,7 +149,7 @@ export const TeamDashboard = () => {
 
   const handleLogout = () => {
     setUser(null);
-    navigate('/login');
+    navigate('/');
   };
 
   // Tab A helper calculations

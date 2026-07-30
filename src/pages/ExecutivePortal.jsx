@@ -203,7 +203,7 @@ export const ExecutivePortal = () => {
 
   const handleLogout = () => {
     setUser(null);
-    navigate('/login');
+    navigate('/');
   };
 
   const handleMapSectorSelect = (sector) => {

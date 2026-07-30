@@ -651,7 +651,7 @@ export const SuperAdminPanel = () => {
 
   const handleLogout = () => {
     setUser(null);
-    navigate('/login');
+    navigate('/');
   };
 
   return (

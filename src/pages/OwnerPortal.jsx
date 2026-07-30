@@ -78,6 +78,7 @@ export const OwnerPortal = () => {
     setOwnerEst(null);
     setAccessCode('');
     localStorage.removeItem('ownerAuthToken');
+    navigate('/');
   };
 
   const requestReinspection = () => {
