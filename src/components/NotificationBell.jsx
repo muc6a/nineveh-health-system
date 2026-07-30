@@ -49,7 +49,7 @@ export const NotificationBell = () => {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-[60]" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-xl bg-slate-100/50 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer"
@@ -63,7 +63,7 @@ export const NotificationBell = () => {
       </button>
 
       {isOpen && (
-        <div className="fixed top-[70px] left-4 right-4 md:absolute md:top-full md:left-0 md:right-auto md:w-[400px] mt-2 max-h-[80vh] overflow-y-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 p-2">
+        <div className="fixed top-[70px] left-4 right-4 md:absolute md:top-full md:right-0 md:left-auto md:w-[400px] mt-2 max-h-[80vh] overflow-y-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 p-2">
           <div className="flex items-center justify-between p-2 border-b border-slate-100 dark:border-slate-800 mb-2">
             <h3 className="text-sm font-black text-slate-800 dark:text-white">الإشعارات</h3>
             {unreadCount > 0 && (

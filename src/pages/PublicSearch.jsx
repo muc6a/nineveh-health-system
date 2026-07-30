@@ -93,17 +93,17 @@ export const PublicSearch = () => {
       <div className="bg-gradient-to-b from-teal-600/10 to-transparent py-12 px-4 text-center">
         <div className="max-w-2xl mx-auto space-y-6">
           <h2 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white">
-            {publicCMS?.heroTitle || 'البحث والتقصي عن المنشآت الصحية والتجارية في نينوى'}
+            {publicCMS?.heroTitle || 'البحث والتقصي عن المنشآت الخاضعة للرقابة الصحية في نينوى'}
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            {publicCMS?.heroSubtext || 'استعلم عن التقييم الصحي ومدى التزام المنشآت الغذائية بالشروط الصحية قبل الشراء، أو قدم شكوى مباشرة لفرق التفتيش.'}
+            {publicCMS?.heroSubtext || 'استعلم عن التقييم الصحي ومدى التزام المنشأة بالشروط الصحية، أو قدم شكوى مباشرة لفرق التفتيش.'}
           </p>
 
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 pt-4">
             <div className="relative flex-1">
               <input
                 type="search"
-                placeholder="ابحث باسم المنشأة (مطعم، صالون، معمل، قاعة...)"
+                placeholder="ابحث عن المنشأة..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-4 pr-12 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm font-bold shadow-lg shadow-slate-200/50 dark:shadow-none outline-none focus:border-teal-500 text-right text-slate-800 dark:text-white transition-all"

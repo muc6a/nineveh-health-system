@@ -1,18 +1,20 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
-import { Plus, Trash2, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing } from 'lucide-react';
+import { Plus, Trash2, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity } from 'lucide-react';
 import { AccountModal } from '../components/AccountModal';
+import { EvaluationManager } from '../components/EvaluationManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
-  const [activeTab, setActiveTab] = useState('roster');
+  const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
 
   // Modal views
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
@@ -50,13 +52,42 @@ export const SuperAdminPanel = () => {
   const [editTechnicians, setEditTechnicians] = useState(['']);
 
   // Roster sub-tab: 'committees' or 'directors'
-  const [subRosterTab, setSubRosterTab] = useState('committees');
+  const [subRosterTab, setSubRosterTab] = useState(() => sessionStorage.getItem('superAdminSubRosterTab') || 'committees');
 
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
-  const [subSettingsTab, setSubSettingsTab] = useState('evaluations');
+  const [subSettingsTab, setSubSettingsTab] = useState(() => sessionStorage.getItem('superAdminSubSettingsTab') || 'evaluations');
+  const defaultTemplateKey = Object.keys(inspectionTemplates)[0] || 'المطاعم، الكافيهات، والمقاهي';
+  const [activeTemplateKey, setActiveTemplateKey] = useState(defaultTemplateKey);
+  const [activeEvalSection, setActiveEvalSection] = useState('A');
+  const [newEvalSection, setNewEvalSection] = useState('');
+  const [newActivity, setNewActivity] = useState('');
+  const [editingActivityIndex, setEditingActivityIndex] = useState(null);
+  const [editingActivityText, setEditingActivityText] = useState('');
+  const [cmsTab, setCmsTab] = useState(() => sessionStorage.getItem('superAdminCmsTab') || 'public'); // public, login, owner
+  const [selectedAuditLog, setSelectedAuditLog] = useState(null);
 
   // Audit sub-tab: 'trail', 'tickets'
-  const [subAuditTab, setSubAuditTab] = useState('trail');
+  const [subAuditTab, setSubAuditTab] = useState(() => sessionStorage.getItem('superAdminSubAuditTab') || 'trail');
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminActiveTab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminSubRosterTab', subRosterTab);
+  }, [subRosterTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminSubSettingsTab', subSettingsTab);
+  }, [subSettingsTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminCmsTab', cmsTab);
+  }, [cmsTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminSubAuditTab', subAuditTab);
+  }, [subAuditTab]);
 
   // Eye toggles for passwords
   const [showNewTeamPass, setShowNewTeamPass] = useState(false);
@@ -106,6 +137,7 @@ export const SuperAdminPanel = () => {
   const [newDirScope, setNewDirScope] = useState('centre'); // centre, districts
   const [newDirSide, setNewDirSide] = useState('left'); // left, right
   const [editingDirector, setEditingDirector] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
   
   // Establishments management states
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
@@ -125,9 +157,9 @@ export const SuperAdminPanel = () => {
   const [scaleSelector, setScaleSelector] = useState(config.uiScale);
 
   // Public CMS States
-  const [cmsHeroTitle, setCmsHeroTitle] = useState(publicCMS.heroTitle);
-  const [cmsHeroSubtext, setCmsHeroSubtext] = useState(publicCMS.heroSubtext);
-  const [cmsAnnouncement, setCmsAnnouncement] = useState(publicCMS.announcement || '');
+  const [cmsHeroTitle, setCmsHeroTitle] = useState(publicCMS?.heroTitle || "");
+  const [cmsHeroSubtext, setCmsHeroSubtext] = useState(publicCMS?.heroSubtext || "");
+  const [cmsAnnouncement, setCmsAnnouncement] = useState(publicCMS?.announcement || "");
 
   const triggerAlert = (msg) => {
     notify(msg, 'success');
@@ -519,27 +551,42 @@ export const SuperAdminPanel = () => {
 
   // Checklist text editing
   const handleItemTextChange = (id, newText) => {
-    setInspectionItems(prev => prev.map(item => item.id === id ? { ...item, text: newText } : item));
+    setInspectionTemplates(prev => {
+      const updatedTemplate = prev[activeTemplateKey].map(item => item.id === id ? { ...item, text: newText } : item);
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
   };
 
   const handleItemPointsChange = (id, newPoints) => {
-    setInspectionItems(prev => prev.map(item => item.id === id ? { ...item, points: parseInt(newPoints) || 0 } : item));
+    setInspectionTemplates(prev => {
+      const updatedTemplate = prev[activeTemplateKey].map(item => item.id === id ? { ...item, points: parseInt(newPoints) || 0 } : item);
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
   };
 
-  const handleAddChecklistItem = () => {
-    const newId = inspectionItems.length > 0 ? Math.max(...inspectionItems.map(i => i.id)) + 1 : 1;
+  const handleAddChecklistItem = (sectionKey = 'A') => {
+    const currentTemplate = inspectionTemplates[activeTemplateKey] || [];
+    const newId = currentTemplate.length > 0 ? Math.max(...currentTemplate.map(i => i.id)) + 1 : 1;
     const newItem = {
       id: newId,
-      section: 'A',
+      section: typeof sectionKey === 'string' ? sectionKey : 'A',
+      sectionName: typeof sectionKey === 'string' ? sectionKey : 'A', // Add sectionName for dynamic handling
       text: 'بند فحص رقابي مضاف حديثاً - يرجى كتابة الاشتراط الصحي هنا.',
       points: 5
     };
-    setInspectionItems(prev => [...prev, newItem]);
+    
+    setInspectionTemplates(prev => {
+      const updatedTemplate = [...(prev[activeTemplateKey] || []), newItem];
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
     triggerAlert('تم إضافة بند رقابي جديد لقائمة التقييم بقيمة 5 درجات.');
   };
 
   const handleDeleteChecklistItem = (id) => {
-    setInspectionItems(prev => prev.filter(item => item.id !== id));
+    setInspectionTemplates(prev => {
+      const updatedTemplate = prev[activeTemplateKey].filter(item => item.id !== id);
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
     triggerAlert('تم حذف البند الرقابي بنجاح.');
   };
 
@@ -630,8 +677,14 @@ export const SuperAdminPanel = () => {
           <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
             <span> Mosul الطقس في الموصل: 38°C مشمس ☀️</span>
           </div>
-          <NotificationBell />
+          
           <ThemeToggle />
+          <button
+            onClick={() => setShowDisplayPrefsModal(true)}
+            className="px-3 py-1.5 rounded-xl border border-teal-500/20 bg-teal-500/5 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer font-black"
+          >
+            🎨 تخصيص العرض
+          </button>
           <button
             onClick={handleLogout}
             className="px-3 py-1.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer font-black"
@@ -653,7 +706,7 @@ export const SuperAdminPanel = () => {
             }`}
           >
             <Users className="w-4.5 h-4.5" />
-            <span>👥 إدارة حسابات اللجان الميدانية</span>
+            <span>إدارة الحسابات والصلاحيات</span>
           </button>
         )}
 
@@ -667,7 +720,7 @@ export const SuperAdminPanel = () => {
             }`}
           >
             <Settings className="w-4.5 h-4.5" />
-            <span>⚙️ الصفحات</span>
+            <span>الضبط والإعدادات العامة</span>
           </button>
         )}
 
@@ -680,7 +733,7 @@ export const SuperAdminPanel = () => {
           }`}
         >
           <Building className="w-4.5 h-4.5" />
-          <span>🍽️ إدارة المنشأة</span>
+          <span>قاعدة بيانات المنشآت</span>
         </button>
 
         {(user?.role === 'admin' || user?.role === 'central_director') && (
@@ -694,7 +747,7 @@ export const SuperAdminPanel = () => {
               }`}
             >
               <ShieldAlert className="w-4.5 h-4.5" />
-              <span>🛡️ تعديلات</span>
+              <span>سجل المراقبة والتدقيق</span>
             </button>
 
             <button
@@ -706,20 +759,10 @@ export const SuperAdminPanel = () => {
               }`}
             >
               <AlertTriangle className="w-4.5 h-4.5" />
-              <span>📢 البث العاجل</span>
+              <span>نظام التعميم والبث العاجل</span>
             </button>
 
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
-                activeTab === 'analytics'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <BarChart3 className="w-4.5 h-4.5" />
-              <span>📊 كفاءة الفرق</span>
-            </button>
+
           </>
         )}
       </div>
@@ -745,7 +788,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                👥 إدارة حسابات اللجان الميدانية ({teams.length})
+                👥 إدارة اللجان الميدانية
               </button>
               <button
                 onClick={() => setSubRosterTab('directors')}
@@ -755,7 +798,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                💼 إدارة حسابات المدراء ({directors?.length || 0})
+                👑 إدارة المدراء والقيادات
               </button>
               <button
                 onClick={() => setSubRosterTab('trackers')}
@@ -902,6 +945,22 @@ export const SuperAdminPanel = () => {
                   </button>
                 </div>
 
+                {/* Directors Stats */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
+                    <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{directors?.length || 0}</span>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">إجمالي المدراء</p>
+                  </div>
+                  <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/30 text-center">
+                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{directors?.filter(d => d.status !== 'frozen').length || 0}</span>
+                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mt-1">المدراء النشطين</p>
+                  </div>
+                  <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border border-slate-300 dark:border-slate-700 text-center">
+                    <span className="text-2xl font-black text-slate-500 dark:text-slate-400">{directors?.filter(d => d.status === 'frozen').length || 0}</span>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">المدراء المجمدين</p>
+                  </div>
+                </div>
+
                 {/* Director roster table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-right border-collapse text-xs font-bold">
@@ -992,6 +1051,22 @@ export const SuperAdminPanel = () => {
                   </button>
                 </div>
 
+                {/* Trackers Stats */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
+                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{trackers?.length || 0}</span>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">إجمالي المتابعين</p>
+                  </div>
+                  <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/30 text-center">
+                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{trackers?.filter(t => t.status !== 'frozen').length || 0}</span>
+                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mt-1">المتابعين النشطين</p>
+                  </div>
+                  <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border border-slate-300 dark:border-slate-700 text-center">
+                    <span className="text-2xl font-black text-slate-500 dark:text-slate-400">{trackers?.filter(t => t.status === 'frozen').length || 0}</span>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">المتابعين المجمدين</p>
+                  </div>
+                </div>
+
                 {/* Trackers roster table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-right border-collapse text-xs font-bold">
@@ -1070,7 +1145,7 @@ export const SuperAdminPanel = () => {
         {activeTab === 'settings' && (
           <section className="glassmorphic-card p-6">
             {/* Sub Settings Tabs Selection Bar */}
-            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto hide-scrollbar whitespace-nowrap">
+            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 flex-wrap">
               <button
                 onClick={() => setSubSettingsTab('evaluations')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
@@ -1079,17 +1154,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                📝 محرر بنود التقييم
-              </button>
-              <button
-                onClick={() => setSubSettingsTab('appearance')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'appearance'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                🎨 تخصيص مظهر النظام
+                📝 إدارة النشاطات وبنود التقييم
               </button>
               <button
                 onClick={() => setSubSettingsTab('public_cms')}
@@ -1099,7 +1164,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                🌐 واجهة المواطن (CMS)
+                📢 إدارة البوابات
               </button>
               <button
                 onClick={() => setSubSettingsTab('database')}
@@ -1109,174 +1174,154 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                💾 النسخ الاحتياطي
-              </button>
-
-              <button
-                onClick={() => setSubSettingsTab('system_controls')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-1 ${
-                  subSettingsTab === 'system_controls'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                <ShieldAlert className="w-4 h-4" />
-                تحكم النظام ومعايير القياس
+                💾 البيانات
               </button>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-              {subSettingsTab === 'appearance' && (
-            <div className="glassmorphic-card p-6 space-y-6">
-              {/* Branding and Storage Toggles */}
-              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Settings className="w-5 h-5 text-teal-600" />
-                <span>أولاً: محرك التهيئة البصرية والتحكم بمستودعات الصور</span>
-              </h2>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
-                <input
-                  type="text"
-                  value={headerInput}
-                  onChange={(e) => setHeaderInput(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 block">مقياس حجم الخط بالخطوط الرئيسية</label>
-                <select
-                  value={scaleSelector}
-                  onChange={(e) => setScaleSelector(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-800 dark:text-slate-200\"
-                >
-                  <option value="small">صغير (مضغوط لشاشات الجوال القديمة)</option>
-                  <option value="normal">عادي ومتوسط (افتراضي للمنظومة)</option>
-                  <option value="large">ضخم (لكبار السن وضعاف البصر)</option>
-                </select>
-              </div>
-
-              <div className="space-y-4 pt-2">
-                <label className="flex items-center justify-between cursor-pointer select-none">
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل ميزة رفع الصور بالاستمارة</span>
-                    <span className="text-[10px] text-slate-400">إلغاء التفعيل يحول المنظومة كلياً لقاعدة بيانات نصية</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={allowUploadToggle}
-                    onChange={() => setAllowUploadToggle(!allowUploadToggle)}
-                    className="w-10 h-5 accent-teal-600 cursor-pointer"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between cursor-pointer select-none">
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل رابط البلاغات الخارجية والتوصيل المنزلي</span>
-                    <span className="text-[10px] text-slate-400">إغلاق الخدمة يوجه الزائرين لصفحة إغلاق الصيانة</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={allowExternalToggle}
-                    onChange={() => setAllowExternalToggle(!allowExternalToggle)}
-                    className="w-10 h-5 accent-teal-600 cursor-pointer"
-                  />
-                </label>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 block">تحديد مهلة حذف الصور التلقائي</label>
-                  <select
-                    value={retentionDropdown}
-                    onChange={(e) => setRetentionDropdown(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-800 dark:text-slate-200\"
-                  >
-                    <option value="3 Months">حذف تلقائي بعد 3 أشهر</option>
-                    <option value="6 Months">حذف تلقائي بعد 6 أشهر</option>
-                    <option value="12 Months">حذف تلقائي بعد سنة كاملة</option>
-                    <option value="Disable Auto-Delete">تعطيل الحذف التلقائي للمستودع</option>
-                  </select>
-                </div>
-
-                <div className="flex gap-2 justify-between flex-wrap">
-                  <button
-                    onClick={handleGarbageCollection}
-                    className="px-4 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/25 text-amber-600 font-extrabold text-[11px] transition-all flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Database className="w-4 h-4" />
-                    <span>🗑️ تفريغ مساحة السيرفر يدويًا</span>
-                  </button>
-
-                  <button
-                    onClick={saveZeroCodeConfig}
-                    className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer"
-                  >
-                    حفظ وتطبيق التهيئة
-                  </button>
-                </div>
-              </div>
-            </div>
-            )}
 
               {subSettingsTab === 'public_cms' && (
                 <div className="glassmorphic-card p-6 space-y-6">
-                  {/* Public Page CMS Editor */}
-              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Settings className="w-5 h-5 text-teal-600" />
-                <span>إدارة محتوى صفحة المواطن (Public Search CMS)</span>
-              </h2>
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <Globe className="w-5 h-5 text-teal-600" />
+                    <span>إدارة البوابات (Portals CMS)</span>
+                  </h2>
 
-              <p className="text-[10px] text-slate-400 leading-relaxed text-right">
-                من هنا يمكنك التحكم في النصوص والصور الترحيبية المعروضة للمواطنين في شاشة البحث العام (بوابة المواطن).
-              </p>
+                  <p className="text-[10px] text-slate-400 leading-relaxed text-right">
+                    نظام مركزي للتحكم بجميع بوابات المنظومة (تسجيل الدخول، بوابة المواطن، وبوابة أصحاب المنشآت).
+                  </p>
 
-              <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 text-right">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 block">العنوان الترحيبي الرئيسي</label>
-                  <input
-                    type="text"
-                    value={cmsHeroTitle}
-                    onChange={(e) => setCmsHeroTitle(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                  />
+                  {/* CMS Tabs */}
+                  <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mt-4">
+                    <button
+                      onClick={() => setCmsTab('login')}
+                      className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                        cmsTab === 'login'
+                          ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
+                          : 'text-slate-400 hover:text-slate-600'
+                      }`}
+                    >
+                      تسجيل الدخول للموقع
+                    </button>
+                    <button
+                      onClick={() => setCmsTab('public')}
+                      className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                        cmsTab === 'public'
+                          ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
+                          : 'text-slate-400 hover:text-slate-600'
+                      }`}
+                    >
+                      بوابة المواطن (الاستعلام)
+                    </button>
+                    <button
+                      onClick={() => setCmsTab('owner')}
+                      className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                        cmsTab === 'owner'
+                          ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
+                          : 'text-slate-400 hover:text-slate-600'
+                      }`}
+                    >
+                      بوابة أصحاب المنشآت
+                    </button>
+                  </div>
+
+                  {/* CMS Content */}
+                  <div className="space-y-4 pt-4 text-right">
+                    
+                    {cmsTab === 'login' && (
+                      <div className="space-y-4 animate-fade-in">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">الرابط المباشر للبوابة</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              value={loginCMS?.customLink ?? (window.location.origin + '/login')} 
+                              onChange={(e) => setLoginCMS({...loginCMS, customLink: e.target.value})} 
+                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-left dir-ltr focus:outline-none focus:border-teal-500 transition-all text-indigo-600 dark:text-indigo-400 font-bold" 
+                            />
+                            <button onClick={() => { navigator.clipboard.writeText(loginCMS?.customLink || window.location.origin + '/login'); triggerAlert('تم النسخ!'); }} className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-bold transition-colors">نسخ</button>
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">العنوان الرئيسي للواجهة</label>
+                          <input type="text" value={loginCMS?.heroTitle || ''} onChange={(e) => setLoginCMS({...loginCMS, heroTitle: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all font-bold" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">النص الوصفي الفرعي</label>
+                          <textarea value={loginCMS?.heroSubtext || ''} onChange={(e) => setLoginCMS({...loginCMS, heroSubtext: e.target.value})} rows={2} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all resize-none"></textarea>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">رسالة تعميم للموظفين (تظهر أعلى الدخول)</label>
+                          <input type="text" value={loginCMS?.announcement || ''} onChange={(e) => setLoginCMS({...loginCMS, announcement: e.target.value})} placeholder="مثال: يرجى تحديث التطبيق إلى آخر إصدار..." className="w-full bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-amber-500 transition-all text-amber-700 dark:text-amber-500" />
+                        </div>
+                      </div>
+                    )}
+
+                    {cmsTab === 'public' && (
+                      <div className="space-y-4 animate-fade-in">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">الرابط المباشر للبوابة</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              value={publicCMS?.customLink ?? (window.location.origin + '/public-search')} 
+                              onChange={(e) => setPublicCMS({...publicCMS, customLink: e.target.value})} 
+                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-left dir-ltr focus:outline-none focus:border-teal-500 transition-all text-indigo-600 dark:text-indigo-400 font-bold" 
+                            />
+                            <button onClick={() => { navigator.clipboard.writeText(publicCMS?.customLink || window.location.origin + '/public-search'); triggerAlert('تم النسخ!'); }} className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-bold transition-colors">نسخ</button>
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">العنوان الترحيبي الرئيسي</label>
+                          <input type="text" value={publicCMS?.heroTitle || ''} onChange={(e) => setPublicCMS({...publicCMS, heroTitle: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all font-bold" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">النص الترحيبي الفرعي (الوصف)</label>
+                          <textarea value={publicCMS?.heroSubtext || ''} onChange={(e) => setPublicCMS({...publicCMS, heroSubtext: e.target.value})} rows={3} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all resize-none"></textarea>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">إعلان عاجل في بوابة المواطنين</label>
+                          <input type="text" value={publicCMS?.announcement || ''} onChange={(e) => setPublicCMS({...publicCMS, announcement: e.target.value})} placeholder="مثال: يرجى الانتباه للتحذيرات الصحية الأخيرة..." className="w-full bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-amber-500 transition-all text-amber-700 dark:text-amber-500" />
+                        </div>
+                      </div>
+                    )}
+
+                    {cmsTab === 'owner' && (
+                      <div className="space-y-4 animate-fade-in">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">الرابط المباشر للبوابة</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              value={ownerCMS?.customLink ?? (window.location.origin + '/owner')} 
+                              onChange={(e) => setOwnerCMS({...ownerCMS, customLink: e.target.value})} 
+                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-left dir-ltr focus:outline-none focus:border-teal-500 transition-all text-indigo-600 dark:text-indigo-400 font-bold" 
+                            />
+                            <button onClick={() => { navigator.clipboard.writeText(ownerCMS?.customLink || window.location.origin + '/owner'); triggerAlert('تم النسخ!'); }} className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-bold transition-colors">نسخ</button>
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">العنوان الترحيبي الرئيسي</label>
+                          <input type="text" value={ownerCMS?.heroTitle || ''} onChange={(e) => setOwnerCMS({...ownerCMS, heroTitle: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all font-bold" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">النص الوصفي الفرعي</label>
+                          <textarea value={ownerCMS?.heroSubtext || ''} onChange={(e) => setOwnerCMS({...ownerCMS, heroSubtext: e.target.value})} rows={3} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all resize-none"></textarea>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-500 block">تنبيه عاجل لأصحاب المنشآت</label>
+                          <input type="text" value={ownerCMS?.announcement || ''} onChange={(e) => setOwnerCMS({...ownerCMS, announcement: e.target.value})} placeholder="مثال: يرجى تجديد الشهادات الصحية قبل نهاية الشهر..." className="w-full bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-red-500 transition-all text-red-700 dark:text-red-500" />
+                        </div>
+                      </div>
+                    )}
+                    
+                  </div>
+
+
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 block">الوصف أو الإرشادات للمواطنين</label>
-                  <textarea
-                    rows="3"
-                    value={cmsHeroSubtext}
-                    onChange={(e) => setCmsHeroSubtext(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 block">شريط الإعلانات العاجلة للمواطنين (اختياري)</label>
-                  <input
-                    type="text"
-                    placeholder="اكتب إعلاناً مهماً أو اتركه فارغاً"
-                    value={cmsAnnouncement}
-                    onChange={(e) => setCmsAnnouncement(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                  />
-                </div>
-
-                <div className="flex gap-2 justify-end mt-4">
-                  <button
-                    onClick={saveZeroCodeConfig}
-                    className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer"
-                  >
-                    حفظ ونشر التعديلات على صفحة المواطن
-                  </button>
-                </div>
-              </div>
-            </div>
-            )}
-
-              {subSettingsTab === 'database' && (
+              )}
+              
+{subSettingsTab === 'database' && (
                 <div className="glassmorphic-card p-6 space-y-6">
                   {/* Backup and Restore Database Panel */}
               <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -1319,142 +1364,97 @@ export const SuperAdminPanel = () => {
                     />
                   </label>
                 </div>
+
+                {/* Auto Delete Images */}
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10 text-right mt-4">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">مهلة حذف الصور التلقائي</span>
+                    <span className="text-[9px] text-slate-400 font-medium">للتحكم بمساحة التخزين وحذف الصور القديمة</span>
+                  </div>
+                  <div className="w-1/2 md:w-1/3">
+                    <select
+                      value={retentionDropdown}
+                      onChange={(e) => setRetentionDropdown(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+                    >
+                      <option value="3 Months">حذف تلقائي بعد 3 أشهر</option>
+                      <option value="6 Months">حذف تلقائي بعد 6 أشهر</option>
+                      <option value="12 Months">حذف تلقائي بعد سنة كاملة</option>
+                      <option value="Disable Auto-Delete">تعطيل الحذف التلقائي للمستودع</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 dark:border-slate-800 my-8"></div>
+                  
+              {/* Branding and Storage Toggles */}
+              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <Settings className="w-5 h-5 text-teal-600" />
+                <span>أولاً: محرك التهيئة البصرية والتحكم بمستودعات الصور</span>
+              </h2>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
+                <input
+                  type="text"
+                  value={headerInput}
+                  onChange={(e) => setHeaderInput(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                />
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <label className="flex items-center justify-between cursor-pointer select-none">
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل ميزة رفع الصور بالاستمارة</span>
+                    <span className="text-[10px] text-slate-400">إلغاء التفعيل يحول المنظومة كلياً لقاعدة بيانات نصية</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={allowUploadToggle}
+                    onChange={() => setAllowUploadToggle(!allowUploadToggle)}
+                    className="w-10 h-5 accent-teal-600 cursor-pointer"
+                  />
+                </label>
+
+                <label className="flex items-center justify-between cursor-pointer select-none">
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل رابط البلاغات الخارجية والتوصيل المنزلي</span>
+                    <span className="text-[10px] text-slate-400">إغلاق الخدمة يوجه الزائرين لصفحة إغلاق الصيانة</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={allowExternalToggle}
+                    onChange={() => setAllowExternalToggle(!allowExternalToggle)}
+                    className="w-10 h-5 accent-teal-600 cursor-pointer"
+                  />
+                </label>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+                <div className="flex gap-2 justify-between flex-wrap">
+                  <button
+                    onClick={handleGarbageCollection}
+                    className="px-4 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/25 text-amber-600 font-extrabold text-[11px] transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Database className="w-4 h-4" />
+                    <span>🗑️ تفريغ مساحة السيرفر يدويًا</span>
+                  </button>
+
+                  <button
+                    onClick={saveZeroCodeConfig}
+                    className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer"
+                  >
+                    حفظ وتطبيق التهيئة
+                  </button>
+                </div>
               </div>
             </div>
             )}
 
-              {subSettingsTab === 'system_controls' && (
-                <div className="glassmorphic-card p-6 space-y-6 text-right">
-                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <ShieldAlert className="w-5 h-5 text-red-500" />
-                    <span>ضوابط ومعايير النظام السيادية</span>
-                  </h2>
-
-                  {/* Maintenance Mode Toggle */}
-                  <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h3 className="text-sm font-black text-red-600 dark:text-red-400 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="sr-only peer" 
-                        checked={config.maintenanceMode || false}
-                        onChange={(e) => setConfig({ ...config, maintenanceMode: e.target.checked })}
-                      />
-                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-red-600"></div>
-                    </label>
-                  </div>
-
-                  {/* Dynamic Grading Thresholds */}
-                  <div className="space-y-6 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
-                    <div>
-                      <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 mb-1">التحكم الديناميكي بمعايير التقييم</h3>
-                      <p className="text-xs text-slate-500 font-bold">حدد درجات النجاح والرسوب، والتي سينعكس تأثيرها فوراً على ألوان ونتائج جميع المطاعم في المحافظة.</p>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* Passing Score Slider */}
-                      <div className="bg-teal-500/5 border border-teal-500/10 p-4 rounded-xl">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-black text-teal-700 dark:text-teal-600 dark:text-teal-400">الحد الأدنى للمنشأة "الملتزمة" (أخضر)</span>
-                          <span className="text-sm font-black text-teal-600">{config.passingScore || 90}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="50" max="100" 
-                          value={config.passingScore || 90} 
-                          onChange={(e) => setConfig({ ...config, passingScore: parseInt(e.target.value) })}
-                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-teal-600"
-                        />
-                      </div>
-
-                      {/* Warning Score Slider */}
-                      <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-xl">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-black text-amber-700 dark:text-amber-400">الحد الأدنى للمنشأة "تحت المراقبة" (أصفر)</span>
-                          <span className="text-sm font-black text-amber-600">{config.warningScore || 70}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="1" max="100" 
-                          value={config.warningScore || 70} 
-                          onChange={(e) => setConfig({ ...config, warningScore: parseInt(e.target.value) })}
-                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-amber-500"
-                        />
-                        <p className="text-[10px] text-slate-400 mt-2">ما دون هذه الدرجة سيُعتبر "مخالف" (أحمر).</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end pt-4">
-                    <button
-                      onClick={() => {
-                        localStorage.setItem('systemConfig', JSON.stringify(config));
-                        notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
-                      }}
-                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
-                    >
-                      حفظ التغييرات
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {subSettingsTab === 'evaluations' && (
-                <div className="glassmorphic-card p-6 flex flex-col justify-between">
-                  {/* Compliance Text Checkpoint Editor */}
-                  <div>
-                <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
-                  <Shield className="w-5 h-5 text-teal-600" />
-                  <span>ثانياً: محرر نصوص بنود التقييم العشرون</span>
-                </h2>
-
-                <p className="text-[10px] text-slate-400 mb-4 leading-relaxed">
-                  تعديل الصياغة اللغوية لأي بند من بنود التقييم العشرين أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان:
-                </p>
-
-                <div className="space-y-3.5 max-h-[360px] overflow-y-auto pr-1">
-                  {inspectionItems.map((item, idx) => (
-                    <div key={item.id} className="flex gap-2 items-start py-1.5 border-b border-slate-100 dark:border-slate-800/40">
-                      <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400 shrink-0 mt-2">
-                        {idx + 1}
-                      </span>
-                      <textarea
-                        rows="2"
-                        value={item.text}
-                        onChange={(e) => handleItemTextChange(item.id, e.target.value)}
-                        className="flex-1 p-2 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-[11px] font-bold outline-none focus:border-teal-500 text-slate-700 dark:text-slate-300"
-                      />
-                      <div className="flex flex-col gap-1 shrink-0">
-                        <span className="text-[8px] text-slate-450 font-bold block text-center">الدرجة</span>
-                        <input
-                          type="number"
-                          value={item.points || 5}
-                          onChange={(e) => handleItemPointsChange(item.id, e.target.value)}
-                          className="w-12 p-1 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-[11px] font-black text-center text-teal-600 dark:text-teal-600 dark:text-teal-400 outline-none focus:border-teal-500"
-                        />
-                      </div>
-                      <button
-                        onClick={() => handleDeleteChecklistItem(item.id)}
-                        className="p-1 rounded-lg text-red-500 hover:bg-red-500/10 mt-3 cursor-pointer shrink-0"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={handleAddChecklistItem}
-                className="mt-4 w-full py-3 rounded-xl border border-dashed border-teal-500/30 hover:border-teal-500/60 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Plus className="w-4.5 h-4.5" />
-                <span>➕ إضافة بند رقابي جديد لقائمة التقييم</span>
-                  </button>
-                </div>
+              {subSettingsTab === "evaluations" && (
+                <EvaluationManager />
               )}
             </div>
           </section>
@@ -1466,7 +1466,7 @@ export const SuperAdminPanel = () => {
         {activeTab === 'establishments' && (
           <section className="glassmorphic-card p-6 text-right space-y-6">
             <div>
-              <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ دليل المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
+              <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ إدارة المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
               <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR المخصصة للصالة وخدمات الديليفري</p>
             </div>
 
@@ -1502,11 +1502,10 @@ export const SuperAdminPanel = () => {
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                       <th className="p-3.5 font-bold">اسم المنشأة / الرخصة</th>
                       <th className="p-3.5 font-bold">نوع النشاط</th>
-                      <th className="p-3.5 font-bold">المالك / الهاتف</th>
-                      <th className="p-3.5 font-bold text-center">كود البوابة</th>
+                      <th className="p-3.5 font-bold text-center">كود QR</th>
                       <th className="p-3.5 font-bold">القطاع</th>
-                      <th className="p-3.5 font-bold">التقييم</th>
-                      <th className="p-3.5 font-bold text-center">الإجراءات</th>
+                      
+                      <th className="p-3.5 font-bold text-center print:hidden">الإجراءات</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
@@ -1545,46 +1544,29 @@ export const SuperAdminPanel = () => {
                             </div>
                           </td>
                           <td className="p-3.5 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
-                          <td className="p-3.5">
-                            <div className="flex flex-col">
-                              <span className="font-bold text-slate-700 dark:text-slate-300">{est.owner}</span>
-                              <span className="text-[10px] text-slate-400">{est.phone}</span>
-                            </div>
-                          </td>
                           <td className="p-3.5 font-bold text-center">
-                            <span className="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 dir-ltr inline-block">
-                              {est.accessCode}
-                            </span>
+                            <div
+                              onClick={() => {
+                                setSelectedEstDetails(est);
+                                setQrTabMode('dining');
+                              }}
+                              className="px-3 py-1.5 flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-700 dark:text-slate-300 transition-all active:scale-95 cursor-pointer font-bold text-[10px] mx-auto w-fit print:border print:border-slate-300 print:bg-transparent"
+                            >
+                              <span className="text-xs">🔗</span>
+                              <span className="text-xs font-black dir-ltr tracking-wider">{est.accessCode}</span>
+                            </div>
                           </td>
                           <td className="p-3.5">
                             <div className="flex flex-col">
                               <span className="text-slate-500 font-bold">{est.sector}</span>
                               <span className="text-[9px] text-teal-600 dark:text-teal-600 dark:text-teal-400 mt-1 font-black">
-                                {teams.find(t => t.sector === est.sector) 
-                                  ? `مسؤولية: ${teams.find(t => t.sector === est.sector).name}`
-                                  : '⚠️ غير مخصص لفريق'}
+                                القاطع: {est.district || est.sector}
                               </span>
                             </div>
                           </td>
-                          <td className="p-3.5">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
-                              est.score >= 90 ? 'bg-emerald-500/10 text-emerald-600' :
-                              est.score >= 70 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
-                            }`}>
-                              {est.lastInspection === 'لم يزر بعد' ? 'معلق ⏳' : `${est.score}%`}
-                            </span>
-                          </td>
+                          
                           <td className="p-3.5">
                             <div className="flex justify-center gap-2">
-                              <button
-                                onClick={() => {
-                                  setSelectedEstDetails(est);
-                                  setQrTabMode('dining');
-                                }}
-                                className="px-2.5 py-1.5 rounded-xl bg-slate-550/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold cursor-pointer transition-all"
-                              >
-                                🔗 رمز الـ QR
-                              </button>
                               <button
                                 onClick={() => {
                                   setEditingEst(est);
@@ -1659,7 +1641,7 @@ export const SuperAdminPanel = () => {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                     {auditLogs && auditLogs.length > 0 ? (
                       auditLogs.map(log => (
-                        <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
+                        <tr key={log.id} onClick={() => setSelectedAuditLog(log)} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer">
                           <td className="p-3.5 font-bold text-slate-700 dark:text-slate-300 dir-ltr text-right">{new Date(log.date).toLocaleString('ar-IQ')}</td>
                           <td className="p-3.5">
                             <span className="font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">{log.user}</span>
@@ -1681,9 +1663,111 @@ export const SuperAdminPanel = () => {
                   </tbody>
                 </table>
               </div>
+              
+              {/* Audit Log Details Modal */}
+              {selectedAuditLog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all text-right">
+                  <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                      <h3 className="text-base font-black text-teal-600 flex items-center gap-2">
+                        🔍 تفاصيل حركة السجل
+                      </h3>
+                      <button onClick={() => setSelectedAuditLog(null)} className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">المستخدم المنفذ</p>
+                          <p className="text-sm font-black text-slate-800 dark:text-white">{selectedAuditLog.user}</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">{selectedAuditLog.role === 'team' ? 'فريق ميداني' : 'إدارة عليا'}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">تاريخ الحركة</p>
+                          <p className="text-sm font-black text-slate-800 dark:text-white dir-ltr">{new Date(selectedAuditLog.date).toLocaleString('ar-IQ')}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">نوع الإجراء</p>
+                          <p className="text-sm font-bold text-teal-600">{selectedAuditLog.action}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-slate-400 font-bold mb-1">سبب التعديل</p>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300 italic">"{selectedAuditLog.justification}"</p>
+                        </div>
+                      </div>
+
+                      {/* Differences Viewer */}
+                      {selectedAuditLog.oldData && selectedAuditLog.newData ? (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 mb-2">التغييرات التي طرأت:</h4>
+                          {(() => {
+                            const oldObj = selectedAuditLog.oldData;
+                            const newObj = selectedAuditLog.newData;
+                            const changes = [];
+                            
+                            const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
+                            allKeys.forEach(key => {
+                              if (key === 'history' || key === 'id') return; // Skip complex/internal fields
+                              if (JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key])) {
+                                changes.push({
+                                  key,
+                                  oldVal: oldObj[key],
+                                  newVal: newObj[key]
+                                });
+                              }
+                            });
+
+                            if (changes.length === 0) {
+                              return <p className="text-xs text-slate-500 text-center py-4">لم يتم العثور على تغييرات جوهرية في البيانات الأساسية.</p>;
+                            }
+
+                            const fieldNames = {
+                              name: 'اسم المنشأة',
+                              type: 'النشاط',
+                              owner: 'اسم المالك',
+                              phone: 'الهاتف',
+                              licenseNumber: 'رقم الترخيص',
+                              propertyNumber: 'رقم الملكية',
+                              sector: 'القطاع',
+                              neighborhood: 'الحي/المنطقة',
+                              status: 'حالة المنشأة',
+                              score: 'التقييم',
+                              lastInspection: 'تاريخ آخر زيارة',
+                              facebook: 'رابط الفيسبوك',
+                              latitude: 'خط العرض',
+                              longitude: 'خط الطول'
+                            };
+
+                            return changes.map((change, i) => (
+                              <div key={i} className="flex flex-col md:flex-row gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl items-center">
+                                <div className="w-full md:w-1/4 text-xs font-bold text-slate-500">{fieldNames[change.key] || change.key}</div>
+                                <div className="w-full md:w-3/4 flex items-center gap-2">
+                                  <div className="flex-1 p-2 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-xs text-red-600 dark:text-red-400 line-through">
+                                    {change.oldVal || 'فارغ'}
+                                  </div>
+                                  <span className="text-slate-400">➔</span>
+                                  <div className="flex-1 p-2 rounded-lg bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-xs font-bold text-teal-700 dark:text-teal-400">
+                                    {change.newVal || 'فارغ'}
+                                  </div>
+                                </div>
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                      ) : (
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700 text-center text-xs text-slate-500">
+                          لا توجد تفاصيل مقارنة (قبل/بعد) لهذا الإجراء.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-              </>
-            )}
+          </>
+        )}
 
             {subAuditTab === 'tickets' && (
               <>
@@ -2633,7 +2717,7 @@ export const SuperAdminPanel = () => {
             <div className="space-y-5 text-xs">
               <div className="p-5 rounded-2xl bg-slate-100/40 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
                 <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
-                <h4 className="text-base font-black text-white">{selectedEstDetails.name}</h4>
+                <h4 className="text-base font-black text-slate-800 dark:text-white">{selectedEstDetails.name}</h4>
                 <div className="grid grid-cols-1 gap-2 pt-1">
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">النشاط: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.type}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">المالك: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.owner}</strong></p>
@@ -2641,6 +2725,18 @@ export const SuperAdminPanel = () => {
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
+                  
+                  {selectedEstDetails.history && selectedEstDetails.history[0] && selectedEstDetails.history[0].photo && (
+                    <div className="mt-3 p-2 bg-slate-200/50 dark:bg-slate-900/50 rounded-xl">
+                      <span className="text-[10px] text-slate-500 block mb-2 font-bold">صورة توثيقية من آخر زيارة:</span>
+                      <img src={selectedEstDetails.history[0].photo} alt="توثيق الزيارة" className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity" onClick={() => window.open(selectedEstDetails.history[0].photo, '_blank')} />
+                    </div>
+                  )}
+                  {selectedEstDetails.latitude && selectedEstDetails.longitude && selectedEstDetails.latitude !== '36.3489' && (
+                    <p className="text-[10px] text-teal-600 dark:text-teal-400 mt-2 bg-teal-50 dark:bg-teal-900/20 p-2 rounded-lg flex items-center gap-1">
+                      📍 تم تأكيد التواجد الميداني: {selectedEstDetails.latitude}, {selectedEstDetails.longitude}
+                    </p>
+                  )}
                 </div>
                 <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl relative overflow-hidden">
                   <div className="absolute -left-4 -top-4 w-12 h-12 bg-teal-500/20 blur-xl rounded-full"></div>
@@ -2673,7 +2769,7 @@ export const SuperAdminPanel = () => {
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-center font-black block transition-all shadow-inner"
+                  className="py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-center font-black block transition-all shadow-inner"
                 >
                   🖨️ طباعة ملصق
                 </button>
@@ -2696,6 +2792,7 @@ export const SuperAdminPanel = () => {
         const PERMISSIONS_TABS = [
           { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
           { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDirectivesPage', 'showDeliveryPage', 'showPublicEvalsPage'] },
+          { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['showSectorMap', 'showSmartTasks', 'canSendSOS'] },
           { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
           { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
@@ -2714,6 +2811,9 @@ export const SuperAdminPanel = () => {
           showPublicEvalsPage: { title: 'التقييمات العامة (الشكاوى)', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
           sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
           replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
+          canSendSOS: { title: 'إرسال نداء استغاثة (SOS)', desc: 'يسمح للفريق بإرسال إشعار طارئ لغرفة العمليات لطلب الإسناد.' },
+          showSectorMap: { title: 'خريطة القطاع', desc: 'يسمح للفريق برؤية خريطة المنشآت الخاصة بقطاعهم الميداني.' },
+          showSmartTasks: { title: 'مهام اليوم (المهام الذكية)', desc: 'يسمح للفريق بالوصول لجدول المهام اليومية المخصصة لهم.' },
           issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
           closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
           reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
@@ -2878,7 +2978,8 @@ export const SuperAdminPanel = () => {
         />
       )}
         {activeTab === 'broadcast' && (
-          <div className="glassmorphic-card p-6 border border-red-500/20">
+          <>
+            <div className="glassmorphic-card p-6 border border-red-500/20">
             <h2 className="text-xl font-black text-red-600 dark:text-red-500 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 animate-pulse" />
               <span>نظام البث العاجل (إنذار الطوارئ وإقفال الشاشات)</span>
@@ -2939,6 +3040,43 @@ export const SuperAdminPanel = () => {
               )}
             </div>
           </div>
+          
+          <div className="glassmorphic-card p-6 mt-6">
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <ShieldAlert className="w-5 h-5 text-red-500" />
+                    <span>ضوابط ومعايير النظام السيادية</span>
+                  </h2>
+
+                  {/* Maintenance Mode Toggle */}
+                  <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4 text-right mt-4">
+                    <div>
+                      <h3 className="text-sm font-black text-red-600 dark:text-red-400 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer" 
+                        checked={config.maintenanceMode || false}
+                        onChange={(e) => setConfig({ ...config, maintenanceMode: e.target.checked })}
+                      />
+                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-red-600"></div>
+                    </label>
+                  </div>
+                  
+                  <div className="flex justify-end pt-4">
+                    <button
+                      onClick={() => {
+                        localStorage.setItem('systemConfig', JSON.stringify(config));
+                        notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
+                      }}
+                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
+                    >
+                      حفظ التغييرات
+                    </button>
+                  </div>
+          </div>
+        </>
         )}
 
         {activeTab === 'analytics' && (
@@ -3112,6 +3250,8 @@ export const SuperAdminPanel = () => {
             </div>
           </>
         )}
+
+
     </div>
   );
 };

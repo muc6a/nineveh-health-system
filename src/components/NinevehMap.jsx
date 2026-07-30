@@ -45,45 +45,63 @@ function MapBounds({ establishments }) {
   return null;
 }
 
-export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isTeamView = false, teamSector = '', liveTeams = [] }) => {
+export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isTeamView = false, teamSector = '', liveTeams = [], fullHeight = false }) => {
   const { config, teams, reports } = useContext(AppContext);
   const [showHeatmap, setShowHeatmap] = useState(false);
   // Mosul Center coordinates as default
   const defaultCenter = [36.34, 43.13];
   
-  // Assign random coordinates around Mosul if not present
-  const estWithCoords = establishments.map((est, i) => {
-    if (est.lat && est.lng) return est;
-    
-    // Base coordinates for different sectors
-    const baseCoords = {
-      'الموصل': [36.3400, 43.1300],
-      'الجانب الأيمن': [36.3400, 43.1100],
-      'الزهور': [36.3600, 43.1500],
-      'المصارف': [36.3800, 43.1400],
-      'تلعفر': [36.3758, 42.4542],
-      'سنجار': [36.3209, 41.8368],
-      'البعاج': [36.0469, 41.8081],
-      'الحضر': [35.5802, 42.7231]
-    };
-    
-    const base = baseCoords[est.sector] || baseCoords['الموصل'];
-    // Random jitter around base (approx 1-3km)
-    const jitterLat = (Math.random() - 0.5) * 0.04;
-    const jitterLng = (Math.random() - 0.5) * 0.04;
-    
-    return {
-      ...est,
-      lat: base[0] + jitterLat,
-      lng: base[1] + jitterLng
-    };
-  });
+  // Assign random coordinates around Mosul if not present, use useMemo to prevent jumping on every render
+  const estWithCoords = React.useMemo(() => {
+    return establishments.map((est, i) => {
+      if (est.lat && est.lng) return est;
+      
+      // Base coordinates for different sectors
+      const baseCoords = {
+        'الموصل': [36.3400, 43.1300],
+        'الجانب الأيمن': [36.3400, 43.1100],
+        'الزهور': [36.3600, 43.1500],
+        'المصارف': [36.3800, 43.1400],
+        'تلعفر': [36.3758, 42.4542],
+        'سنجار': [36.3209, 41.8368],
+        'البعاج': [36.0469, 41.8081],
+        'الحضر': [35.5802, 42.7231]
+      };
+      
+      const base = baseCoords[est.sector] || baseCoords['الموصل'];
+      
+      // Convert est.id to a valid number for seeding, or use index i as fallback
+      let seed = i + 1;
+      if (est.id) {
+        if (typeof est.id === 'number') {
+          seed = est.id;
+        } else if (typeof est.id === 'string') {
+          seed = est.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        }
+      }
 
-  const activeSectorKey = teamSector === 'الجانب الأيمن' || teamSector === 'الزهور' || teamSector === 'المصارف' || teamSector === 'الغزلاني' ? 'الموصل' : teamSector;
+      // Pseudo-random based on seed to keep it stable
+      const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
+      const seededRandom2 = (seed * 1103515245 + 12345) % 2147483648 / 2147483648;
+      
+      const jitterLat = (seededRandom - 0.5) * 0.04;
+      const jitterLng = (seededRandom2 - 0.5) * 0.04;
+      
+      return {
+        ...est,
+        lat: base[0] + jitterLat,
+        lng: base[1] + jitterLng
+      };
+    });
+  }, [establishments]);
 
+  // Compute active sector key, resolving aliases if needed
+  const activeSectorKey = teamSector;
+
+  // Strict filtering based on sector
   const filteredEsts = selectedSector && selectedSector !== 'all' 
-    ? estWithCoords.filter(e => e.sector === selectedSector || (selectedSector === 'الموصل' && ['الزهور','المصارف','الجانب الأيمن'].includes(e.sector)))
-    : (isTeamView && activeSectorKey ? estWithCoords.filter(e => e.sector === activeSectorKey || ['الزهور','المصارف','الجانب الأيمن'].includes(e.sector)) : estWithCoords);
+    ? estWithCoords.filter(e => e.sector === selectedSector || (selectedSector === 'الموصل' && ['الزهور','المصارف','الجانب الأيمن', 'الجانب الأيسر'].includes(e.sector)))
+    : (isTeamView && activeSectorKey && activeSectorKey !== 'الكل' ? estWithCoords.filter(e => e.sector === activeSectorKey) : estWithCoords);
 
   // Calculate live team locations based on their most recent inspection or report
   const computedLiveTeams = (teams || []).map(team => {
@@ -141,8 +159,8 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
         </div>
       </div>
 
-      <div className="w-full h-96 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-10" style={{ isolation: 'isolate' }}>
-        <MapContainer center={defaultCenter} zoom={10} style={{ width: '100%', height: '100%', zIndex: 1 }}>
+      <div className={`w-full ${fullHeight ? 'flex-1 min-h-[400px]' : 'h-96'} rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-10`} style={{ isolation: 'isolate' }}>
+        <MapContainer center={defaultCenter} zoom={10} style={{ width: '100%', height: '100%', zIndex: 1 }} zoomAnimation={false} markerZoomAnimation={false} fadeAnimation={false}>
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors'

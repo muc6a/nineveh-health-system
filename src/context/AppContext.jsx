@@ -4,6 +4,16 @@ import { ref, onValue, set } from 'firebase/database';
 
 export const AppContext = createContext();
 
+const INITIAL_ACTIVITY_TYPES = [
+  '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+  '🪒 صالون حلاقة وتجميل نسائي',
+  '🪒 صالون حلاقة رجالي',
+  '🍞 مخابز وأفران',
+  '☕ بيع وطحن القهوة',
+  '💧 محطة تعبئة وتصفية المياه R.O',
+  '🛒 أسواق ومجمعات غذائية',
+  '🏭 معمل ومصنع غذائي'
+];
 const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_1',
@@ -45,7 +55,8 @@ const INITIAL_ESTABLISHMENTS = [
     longitude: '43.1610',
     history: [
       { date: '2026-07-02', score: 91, notes: 'المطبخ والتهوية جيدة، والشهادات الصحية للعاملين سارية المفعول.' }
-    ]
+    ],
+    hasDelivery: true
   },
   {
     id: 'est_new_3',
@@ -204,7 +215,10 @@ const DEFAULT_PERMISSIONS = {
   showDeliveryPage: false,
   showPublicEvalsPage: true,
   sendDirective: false,
-  replyDirective: true
+  replyDirective: true,
+  canSendSOS: true,
+  showSectorMap: true,
+  showSmartTasks: true
 };
 
 const INITIAL_TEAMS = [
@@ -258,33 +272,98 @@ const INITIAL_TEAMS = [
   }
 ];
 
-const DEFAULT_INSPECTION_ITEMS = [
-  // Section A (20 points total)
-  { id: 1, section: 'A', text: 'حمل العمال لبطاقات الفحص الطبي والشهادات الصحية السارية.', points: 5 },
-  { id: 2, section: 'A', text: 'ارتداء غطاء الرأس والكمامات والمآزر والنظافة الشخصية الكاملة للعمال.', points: 5 },
-  { id: 3, section: 'A', text: 'منع التدخين كلياً داخل صالات التحضير والطهي وتوفير لافتات إرشادية.', points: 5 },
-  { id: 4, section: 'A', text: 'خلو أيدي العاملين من الجروح المفتوحة وارتداء القفازات الصحية المناسبة.', points: 5 },
-  // Section B (20 points total)
-  { id: 5, section: 'B', text: 'سلامة ونظافة الأرضيات والجدران والأسقف وخلوها من التشققات.', points: 5 },
-  { id: 6, section: 'B', text: 'تثبيت مصافي شبكية سلكية ضيقة على النوافذ لمنع الحشرات وسلامة التهوية.', points: 5 },
-  { id: 7, section: 'B', text: 'توفير سلات مهملات محكمة الإغلاق وتفتح بالقدم ومزودة بأكياس بلاستيكية.', points: 5 },
-  { id: 8, section: 'B', text: 'تفعيل مصائد الحشرات الكهربائية وجهاز مكافحة القوارض بشكل مستمر.', points: 5 },
-  // Section C (25 points total)
-  { id: 9, section: 'C', text: 'مراقبة تاريخ الصلاحية للمواد الغذائية الخام والتخزين الآمن.', points: 5 },
-  { id: 10, section: 'C', text: 'حفظ المواد الجافة على رفوف خشبية أو معدنية مرتفعة عن الأرض.', points: 5 },
-  { id: 11, section: 'C', text: 'الفصل التام بين الأطعمة النيئة والمطبوخة داخل الثلاجات والمجمدات.', points: 5 },
-  { id: 12, section: 'C', text: 'استخدام مصادر مياه صالحة ومعقمة للشرب وغسل المواد الغذائية وصناعة الثلج.', points: 5 },
-  { id: 13, section: 'C', text: 'سلامة ونظافة أحواض غسيل اللحوم والخضار وتوفر المعقمات.', points: 5 },
-  // Section D (20 points total)
-  { id: 14, section: 'D', text: 'تنظيف وتعقيم الأواني والمعدات المصنوعة من الستانلس ستيل المقاوم للصدأ.', points: 5 },
-  { id: 15, section: 'D', text: 'الفصل التام بين لوحات وسكاكين تقطيع اللحوم الحمراء عن الخضار والدواجن.', points: 5 },
-  { id: 16, section: 'D', text: 'كفاية الإنارة داخل المطبخ وصالة تقديم الطعام والتهوية الصحية.', points: 5 },
-  { id: 17, section: 'D', text: 'توفير مطافئ حريق صالحة للاستخدام وصندوق إسعافات أولية مجهز.', points: 5 },
-  // Section E (15 points total)
-  { id: 18, section: 'E', text: 'وجود إجازة صحية رسمية نافذة وإشعار مالك المحل قبل شهر من الانتهاء.', points: 5 },
-  { id: 19, section: 'E', text: 'تنفيذ الملاحظات والمخالفات المسجلة في زيارة لجنة الرقابة السابقة.', points: 5 },
-  { id: 20, section: 'E', text: 'وجود السجل الصحي المعتمد لتوثيق الزيارات وتوقيع المفتشين ورئيس اللجنة.', points: 5 }
-];
+const DEFAULT_INSPECTION_TEMPLATES = {
+  'المطاعم، الكافيهات، والمقاهي': [
+    { id: 1, section: 'A', sectionName: 'النظافة العامة', text: 'نظافة الأرضيات والجدران والأسقف', points: 5 },
+    { id: 2, section: 'A', sectionName: 'النظافة العامة', text: 'نظافة الطاولات وأماكن تقديم الطعام', points: 5 },
+    { id: 3, section: 'A', sectionName: 'النظافة العامة', text: 'التخلص من النفايات بطريقة صحية', points: 5 },
+    { id: 4, section: 'A', sectionName: 'النظافة العامة', text: 'مكافحة الحشرات والقوارض', points: 5 },
+    { id: 5, section: 'B', sectionName: 'سلامة الأغذية', text: 'صلاحية المواد الغذائية', points: 5 },
+    { id: 6, section: 'B', sectionName: 'سلامة الأغذية', text: 'وجود بطاقة بيان للمواد', points: 5 },
+    { id: 7, section: 'B', sectionName: 'سلامة الأغذية', text: 'طرق الخزن والتبريد والتجميد', points: 5 },
+    { id: 8, section: 'B', sectionName: 'سلامة الأغذية', text: 'فصل المواد النيئة عن المطبوخة', points: 5 },
+    { id: 9, section: 'B', sectionName: 'سلامة الأغذية', text: 'سلامة مصادر المياه والثلج', points: 5 },
+    { id: 10, section: 'C', sectionName: 'العاملون', text: 'وجود بطاقة صحية للعاملين', points: 5 },
+    { id: 11, section: 'C', sectionName: 'العاملون', text: 'الالتزام بالملابس الواقية', points: 5 },
+    { id: 12, section: 'C', sectionName: 'العاملون', text: 'النظافة الشخصية', points: 5 },
+    { id: 13, section: 'C', sectionName: 'العاملون', text: 'التدريب على الممارسات الصحية', points: 5 },
+    { id: 14, section: 'D', sectionName: 'المطبخ والتحضير', text: 'نظافة المعدات والأدوات', points: 5 },
+    { id: 15, section: 'D', sectionName: 'المطبخ والتحضير', text: 'درجات حرارة الحفظ والطهي', points: 5 },
+    { id: 16, section: 'D', sectionName: 'المطبخ والتحضير', text: 'طريقة إعداد وتجهيز الطعام', points: 5 },
+    { id: 17, section: 'D', sectionName: 'المطبخ والتحضير', text: 'منع التلوث المتبادل', points: 5 },
+    { id: 18, section: 'E', sectionName: 'الوثائق والالتزام', text: 'الإجازة الصحية سارية', points: 5 },
+    { id: 19, section: 'E', sectionName: 'الوثائق والالتزام', text: 'الالتزام بملاحظات الرقابة السابقة', points: 5 },
+    { id: 20, section: 'E', sectionName: 'الوثائق والالتزام', text: 'وجود سجلات المتابعة', points: 5 }
+  ],
+  'المخابز، الأفران، ومعجنات الحلويات': [
+    { id: 1, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'نظافة منطقة العجن والخبز', points: 10 },
+    { id: 2, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'نظافة الأسطح وطاولات العمل', points: 5 },
+    { id: 3, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'خلو المكان من الحشرات والقوارض', points: 5 },
+    { id: 4, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'تهوية مناسبة للتخلص من الحرارة والأبخرة', points: 5 },
+    { id: 5, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'صلاحية الطحين والمحسنات', points: 10 },
+    { id: 6, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'طرق خزن المواد الجافة', points: 5 },
+    { id: 7, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'سلامة مصادر المياه المستخدمة', points: 5 },
+    { id: 8, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'حفظ الأجبان والألبان (للمعجنات) في مبردات', points: 5 },
+    { id: 9, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'نظافة ونوعية الأحواض والقطاعات', points: 10 },
+    { id: 10, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'نظافة صواني الخبز والرفوف', points: 10 },
+    { id: 11, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'الوقود المستخدم في الفرن آمن', points: 5 },
+    { id: 12, section: 'D', sectionName: 'العاملون والوثائق', text: 'النظافة الشخصية والملابس', points: 10 },
+    { id: 13, section: 'D', sectionName: 'العاملون والوثائق', text: 'وجود بطاقات صحية سارية المفعول', points: 10 },
+    { id: 14, section: 'D', sectionName: 'العاملون والوثائق', text: 'الإجازة الصحية للمخبز', points: 5 }
+  ],
+  'الأسواق، السوبرماركت، ومخازن المواد الغذائية': [
+    { id: 1, section: 'A', sectionName: 'صلاحية المواد المعروضة', text: 'خلو الأرفف من المواد منتهية الصلاحية', points: 20 },
+    { id: 2, section: 'A', sectionName: 'صلاحية المواد المعروضة', text: 'سلامة أغلفة المواد وعدم وجود تلف', points: 10 },
+    { id: 3, section: 'A', sectionName: 'صلاحية المواد المعروضة', text: 'ظهور تواريخ الإنتاج والانتهاء بوضوح', points: 10 },
+    { id: 4, section: 'B', sectionName: 'أجهزة التبريد والتجميد', text: 'مطابقة درجات حرارة المجمدات للشروط', points: 15 },
+    { id: 5, section: 'B', sectionName: 'أجهزة التبريد والتجميد', text: 'مطابقة درجات حرارة البرادات للشروط', points: 10 },
+    { id: 6, section: 'B', sectionName: 'أجهزة التبريد والتجميد', text: 'عدم تكدس المواد فوق الحد المسموح به', points: 5 },
+    { id: 7, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'ترتيب المواد على رفوف بعيداً عن الأرضية', points: 10 },
+    { id: 8, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'نظافة المخازن الرئيسية', points: 5 },
+    { id: 9, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'نظافة الأرضيات العامة للسوق', points: 5 },
+    { id: 10, section: 'D', sectionName: 'الوثائق والشهادات', text: 'الإجازة الصحية للسوق', points: 5 },
+    { id: 11, section: 'D', sectionName: 'الوثائق والشهادات', text: 'شهادات صحية للعاملين', points: 5 }
+  ],
+  'صالونات الحلاقة ومراكز التجميل': [
+    { id: 1, section: 'A', sectionName: 'التعقيم والأدوات', text: 'استخدام أجهزة تعقيم فعالة (UV/Autoclave)', points: 15 },
+    { id: 2, section: 'A', sectionName: 'التعقيم والأدوات', text: 'تعقيم الأدوات المعدنية (مقصات، أمشاط، ملاقط) بعد كل زبون', points: 15 },
+    { id: 3, section: 'A', sectionName: 'التعقيم والأدوات', text: 'استخدام أدوات ذات استخدام واحد (شفرات، مناشف ورقية)', points: 10 },
+    { id: 4, section: 'B', sectionName: 'النظافة العامة للبنية التحتية', text: 'نظافة الأرضيات والجدران والمغاسل', points: 10 },
+    { id: 5, section: 'B', sectionName: 'النظافة العامة للبنية التحتية', text: 'نظافة كراسي الحلاقة وأماكن الانتظار', points: 5 },
+    { id: 6, section: 'B', sectionName: 'النظافة العامة للبنية التحتية', text: 'تهوية المكان والإضاءة', points: 5 },
+    { id: 7, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'تاريخ صلاحية المواد التجميلية (كريمات، أصباغ)', points: 10 },
+    { id: 8, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'ظروف خزن المواد وسلامة العبوات', points: 5 },
+    { id: 9, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'وجود بطاقة بيان للمواد الكيميائية', points: 5 },
+    { id: 10, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'النظافة الشخصية والمظهر العام', points: 10 },
+    { id: 11, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'ارتداء ملابس عمل نظيفة (روب)', points: 5 },
+    { id: 12, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'وجود بطاقة صحية سارية المفعول', points: 5 }
+  ],
+  'قاعات الأعراس والمناسبات': [
+    { id: 1, section: 'A', sectionName: 'المطبخ والتحضير', text: 'نظافة مطبخ القاعة والشروط الصحية فيه', points: 15 },
+    { id: 2, section: 'A', sectionName: 'المطبخ والتحضير', text: 'نظافة الأواني والصحون', points: 10 },
+    { id: 3, section: 'A', sectionName: 'المطبخ والتحضير', text: 'طرق حفظ الأطعمة المطبوخة', points: 5 },
+    { id: 4, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'صلاحية الأطعمة المقدمة في البوفيه', points: 10 },
+    { id: 5, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'فصل اللحوم عن الخضار', points: 5 },
+    { id: 6, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'سلامة مياه الشرب والثلج', points: 10 },
+    { id: 7, section: 'C', sectionName: 'الموقع والصحيات', text: 'نظافة القاعة العامة', points: 10 },
+    { id: 8, section: 'C', sectionName: 'الموقع والصحيات', text: 'نظافة وتعقيم الصحيات (دورات المياه)', points: 10 },
+    { id: 9, section: 'D', sectionName: 'الأمان والوثائق', text: 'مخارج الطوارئ ومطافئ الحريق', points: 10 },
+    { id: 10, section: 'D', sectionName: 'الأمان والوثائق', text: 'الإجازة الصحية للقاعة', points: 10 },
+    { id: 11, section: 'D', sectionName: 'الأمان والوثائق', text: 'بطاقات صحية للعاملين', points: 5 }
+  ],
+  'الصيدليات ومذاخر الأدوية': [
+    { id: 1, section: 'A', sectionName: 'خزن الأدوية ودرجات الحرارة', text: 'سلامة عمل أجهزة التكييف والمولدات 24/7', points: 15 },
+    { id: 2, section: 'A', sectionName: 'خزن الأدوية ودرجات الحرارة', text: 'مطابقة درجة حرارة الصيدلية العامة', points: 10 },
+    { id: 3, section: 'A', sectionName: 'خزن الأدوية ودرجات الحرارة', text: 'مطابقة درجة حرارة البرادات للأدوية الحساسة', points: 15 },
+    { id: 4, section: 'B', sectionName: 'صلاحية الأدوية', text: 'خلو الأرفف من الأدوية منتهية الصلاحية', points: 20 },
+    { id: 5, section: 'B', sectionName: 'صلاحية الأدوية', text: 'نظام فصل الأدوية القريبة من الانتهاء', points: 5 },
+    { id: 6, section: 'B', sectionName: 'صلاحية الأدوية', text: 'سلامة الأدوية المخزنة من الرطوبة والحرارة', points: 5 },
+    { id: 7, section: 'C', sectionName: 'التخلص من النفايات الطبية', text: 'وجود حاويات خاصة للأدوية التالفة والمنتهية', points: 10 },
+    { id: 8, section: 'C', sectionName: 'التخلص من النفايات الطبية', text: 'التعاقد مع شركة متخصصة للتخلص الآمن من النفايات', points: 10 },
+    { id: 9, section: 'D', sectionName: 'التراخيص والوثائق', text: 'إجازة فتح الصيدلية / المذخر', points: 5 },
+    { id: 10, section: 'D', sectionName: 'التراخيص والوثائق', text: 'وجود الصيدلي المسؤول', points: 5 }
+  ]
+};
 
 const INITIAL_DELIVERIES = [];
 
@@ -318,7 +397,13 @@ export const AppProvider = ({ children }) => {
       }
     });
 
-    return parsed.map(est => {
+    // Deduplicate by name (in case old local storage has different IDs for the same initial data)
+    const uniqueMap = new Map();
+    parsed.forEach(est => {
+      uniqueMap.set(est.name.trim(), est);
+    });
+    
+    return Array.from(uniqueMap.values()).map(est => {
       // Migrate sector strings to standardize them (e.g. "الجانب الأيسر - حي الزهور" -> "الجانب الأيسر")
       let currentSector = est.sector || '';
       let currentNeighborhood = est.neighborhood || '';
@@ -332,10 +417,23 @@ export const AppProvider = ({ children }) => {
         ...est,
         sector: currentSector,
         neighborhood: currentNeighborhood,
-        accessCode: est.accessCode || Math.random().toString(36).substring(2, 8).toUpperCase()
+        accessCode: est.accessCode || est.id.replace(/[^a-zA-Z0-9]/g, '-').toUpperCase()
       };
     });
   });
+
+  // --- NEW: Smart Tasks for Trackers ---
+  const [tasks, setTasks] = useState([
+    {
+      id: 'task_1',
+      title: 'شكوى تسمم - مطعم كرز',
+      description: 'يرجى التوجه فوراً للتأكد من نظافة المطعم بناءً على شكوى وردت لغرفة العمليات.',
+      targetEstId: 'est_2', // Assuming est_2 is a restaurant
+      assignedTo: 'tracker_1', // Specifically assigned to a tracker
+      status: 'pending', // pending, completed
+      createdAt: new Date(Date.now() - 3600000).toISOString()
+    }
+  ]);
 
   const [reports, setReports] = useState(() => {
     const saved = localStorage.getItem('reports');
@@ -390,9 +488,9 @@ export const AppProvider = ({ children }) => {
 
 
 
-  const [inspectionItems, setInspectionItems] = useState(() => {
-    const saved = localStorage.getItem('inspectionItems');
-    return saved ? JSON.parse(saved) : DEFAULT_INSPECTION_ITEMS;
+  const [inspectionTemplates, setInspectionTemplates] = useState(() => {
+    const saved = localStorage.getItem('inspectionTemplates_v3');
+    return saved ? JSON.parse(saved) : DEFAULT_INSPECTION_TEMPLATES;
   });
 
   // Super Admin Configuration parameters
@@ -417,6 +515,8 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('auditLogs');
     return saved ? JSON.parse(saved) : [];
   });
+
+  const activityTypes = Object.keys(inspectionTemplates);
 
   useEffect(() => {
     syncToCloud('auditLogs', auditLogs);
@@ -445,6 +545,7 @@ export const AppProvider = ({ children }) => {
         setReports(JSON.parse(e.newValue));
       } else if (e.key === 'systemConfig' && e.newValue) {
         setConfig(JSON.parse(e.newValue));
+
       } else if (e.key === 'teams' && e.newValue) {
         setTeams(JSON.parse(e.newValue));
       } else if (e.key === 'penaltyRequests' && e.newValue) {
@@ -513,18 +614,22 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('teams_v2', setTeams, teams);
       setupFirebaseSync('trackers_v1', setTrackers, trackers);
       setupFirebaseSync('closureVerifications_v1', setClosureVerifications, closureVerifications);
-      setupFirebaseSync('inspectionItems', setInspectionItems, inspectionItems);
+      setupFirebaseSync('inspectionTemplates_v3', setInspectionTemplates, inspectionTemplates);
       setupFirebaseSync('systemConfig', setConfig, config);
+
       setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
       setupFirebaseSync('globalBroadcast', setGlobalBroadcast, globalBroadcast);
       setupFirebaseSync('systemTickets', setTickets, tickets);
       setupFirebaseSync('sysNotifs', setSystemNotifications, systemNotifications);
       setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
+      setupFirebaseSync('loginCMS', setLoginCMS, loginCMS);
+      setupFirebaseSync('ownerCMS', setOwnerCMS, ownerCMS);
       setupFirebaseSync('directives', setDirectives, directives);
       setupFirebaseSync('directors', setDirectors, directors);
       setupFirebaseSync('deliveries', setDeliveries, deliveries);
       setupFirebaseSync('penaltyRequests_v2', setPenaltyRequests, penaltyRequests);
       setupFirebaseSync('dispatches', setDispatches, dispatches);
+      setupFirebaseSync('fines', setFines, fines);
     } catch (err) {
       console.error("Firebase load error", err);
     }
@@ -602,8 +707,53 @@ export const AppProvider = ({ children }) => {
     syncToCloud('dispatches', dispatches);
   }, [dispatches]);
 
+  // Fines Record State
+  const [fines, setFines] = useState(() => {
+    const saved = localStorage.getItem('fines');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 'fine_1',
+        targetEstId: 'est_new_3',
+        amount: '500,000',
+        reason: 'عدم الالتزام بالشروط الصحية وتكرار المخالفات',
+        date: new Date().toISOString(),
+        status: 'unpaid'
+      }
+    ];
+  });
+
+  useEffect(() => {
+    syncToCloud('fines', fines);
+  }, [fines]);
+
   // Global Notification System
   const [notification, setNotification] = useState({ message: '', type: 'info', id: 0 });
+
+  // User UI Preferences (Density & Typography)
+  const [uiPreferences, setUiPreferences] = useState(() => {
+    const saved = localStorage.getItem('uiPreferences');
+    return saved ? JSON.parse(saved) : {
+      headingSize: '18px', // Default
+      bodySize: '12px',    // Default (text-xs)
+      density: 'comfortable', // comfortable | compact
+    };
+  });
+
+  const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('uiPreferences', JSON.stringify(uiPreferences));
+    
+    // Apply preferences to document body/root for easy CSS variable usage
+    document.documentElement.style.setProperty('--heading-size', uiPreferences.headingSize);
+    document.documentElement.style.setProperty('--body-size', uiPreferences.bodySize);
+    
+    if (uiPreferences.density === 'compact') {
+      document.documentElement.classList.add('density-compact');
+    } else {
+      document.documentElement.classList.remove('density-compact');
+    }
+  }, [uiPreferences]);
 
   // Persistent System Notifications for the Bell Icon
   const [systemNotifications, setSystemNotifications] = useState(() => {
@@ -621,6 +771,31 @@ export const AppProvider = ({ children }) => {
       isRead: false
     };
     setSystemNotifications(prev => [newNotif, ...prev]);
+  };
+
+  const [sosAlerts, setSosAlerts] = useState(() => {
+    const saved = localStorage.getItem('sosAlerts');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const triggerSOSAlert = (teamInfo, locationInfo) => {
+    const newAlert = {
+      id: 'sos_' + Date.now(),
+      teamName: teamInfo?.name || 'فريق غير معروف',
+      teamId: teamInfo?.id || 'unknown',
+      sector: teamInfo?.sector || 'غير محدد',
+      location: locationInfo || 'موقع غير متوفر',
+      date: new Date().toISOString(),
+      status: 'active'
+    };
+    setSosAlerts(prev => [newAlert, ...prev]);
+    
+    // Also notify central ops
+    addSystemNotification(
+      '🚨 نداء استغاثة (SOS) عاجل!',
+      `الفريق: ${newAlert.teamName} في قطاع ${newAlert.sector} يطلب الإسناد الفوري.`,
+      'central_director'
+    );
   };
 
   const playBeep = (type) => {
@@ -683,6 +858,7 @@ export const AppProvider = ({ children }) => {
   const isMountedConf = React.useRef(false);
   const isMountedTick = React.useRef(false);
   const isMountedNotif = React.useRef(false);
+  const isMountedSos = React.useRef(false);
   const isMountedDir = React.useRef(false);
   const isMountedDirst = React.useRef(false);
   const isMountedDeliv = React.useRef(false);
@@ -703,6 +879,34 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     syncToCloud('publicCMS', publicCMS);
   }, [publicCMS]);
+  const [loginCMS, setLoginCMS] = useState(() => {
+    const saved = localStorage.getItem('loginCMS');
+    return saved ? JSON.parse(saved) : {
+      heroTitle: 'بوابة تسجيل الدخول الإلكتروني',
+      heroSubtext: 'بوابة مخصصة للمفتشين واللجان الميدانية',
+      announcement: '',
+      customLink: ''
+    };
+  });
+
+  useEffect(() => {
+    syncToCloud('loginCMS', loginCMS);
+  }, [loginCMS]);
+
+  const [ownerCMS, setOwnerCMS] = useState(() => {
+    const saved = localStorage.getItem('ownerCMS');
+    return saved ? JSON.parse(saved) : {
+      heroTitle: 'بوابة أصحاب المنشآت',
+      heroSubtext: 'يرجى إدخال الكود السري (PIN) المُسلم لك من قبل فرق الرقابة الصحية للاطلاع على التقرير.',
+      announcement: '',
+      customLink: ''
+    };
+  });
+
+  useEffect(() => {
+    syncToCloud('ownerCMS', ownerCMS);
+  }, [ownerCMS]);
+
 
   // Handle HTML document class for theme
   useEffect(() => {
@@ -782,7 +986,7 @@ export const AppProvider = ({ children }) => {
     setEstablishments(prev => prev.filter(est => est.id !== id));
   };
 
-  const addInspection = (establishmentId, score, notes, selectedRatings, inspectorName, coords, isEdit = false, teamId = null) => {
+  const addInspection = (establishmentId, score, notes, selectedRatings, inspectorName, coords, isEdit = false, teamId = null, photoBase64 = null) => {
     const status = score >= 90 ? 'compliant' : score >= 70 ? 'monitoring' : 'non_compliant';
     const date = new Date().toISOString().split('T')[0];
     
@@ -792,7 +996,7 @@ export const AppProvider = ({ children }) => {
       if (est.id === establishmentId) {
         targetEstName = est.name;
         let updatedHistory = [...(est.history || [])];
-        const newEntry = { date, score, notes, inspectorName, ratings: selectedRatings };
+        const newEntry = { date, score, notes, inspectorName, ratings: selectedRatings, photo: photoBase64 };
         if (isEdit && updatedHistory.length > 0) {
           updatedHistory[0] = newEntry;
         } else {
@@ -859,7 +1063,7 @@ export const AppProvider = ({ children }) => {
       if (hasJassim) {
         parsed = parsed.map(d => {
           if (d.id === 'dir_acc_2') {
-            return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } };
+            return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, showDeliveryPage: true, manageEstablishments: true } };
           }
           return d;
         });
@@ -869,7 +1073,7 @@ export const AppProvider = ({ children }) => {
     }
 
     return [
-      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } },
+      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showPublicEvalsPage: true, showDeliveryPage: true } },
       { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS } }
     ];
   });
@@ -895,15 +1099,17 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedTeam.current) syncToCloud('teams_v2', teams); else isMountedTeam.current = true; }, [teams]);
   useEffect(() => { if (isMountedTrack.current) syncToCloud('trackers_v1', trackers); else isMountedTrack.current = true; }, [trackers]);
   useEffect(() => { if (isMountedClosure.current) syncToCloud('closureVerifications_v1', closureVerifications); else isMountedClosure.current = true; }, [closureVerifications]);
-  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionItems', inspectionItems); else isMountedInsp.current = true; }, [inspectionItems]);
+  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionTemplates_v3', inspectionTemplates); else isMountedInsp.current = true; }, [inspectionTemplates]);
   useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
   useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
   useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
+  useEffect(() => { if (isMountedSos.current) syncToCloud('sosAlerts', sosAlerts); else isMountedSos.current = true; }, [sosAlerts]);
   useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
   useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
   useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
   useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
   useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
+
 
   return (
     <AppContext.Provider value={{
@@ -922,8 +1128,7 @@ export const AppProvider = ({ children }) => {
       setTrackers,
       closureVerifications,
       setClosureVerifications,
-      inspectionItems,
-      setInspectionItems,
+      inspectionTemplates, setInspectionTemplates,
       config,
       setConfig,
       user,
@@ -936,8 +1141,11 @@ export const AppProvider = ({ children }) => {
       deliveries, setDeliveries,
       penaltyRequests, setPenaltyRequests,
       dispatches, setDispatches,
+      fines, setFines,
       systemNotifications, setSystemNotifications,
       addSystemNotification,
+      sosAlerts, setSosAlerts,
+      triggerSOSAlert,
       directives,
       setDirectives,
       addDirective,
@@ -951,10 +1159,24 @@ export const AppProvider = ({ children }) => {
       logAudit,
       publicCMS,
       setPublicCMS,
+      loginCMS,
+      setLoginCMS,
+      ownerCMS,
+      setOwnerCMS,
       globalBroadcast,
       setGlobalBroadcast,
       notification,
-      notify
+      notify,
+      // --- NEW: Smart Tasks ---
+      tasks,
+      setTasks,
+      
+      // Settings
+      uiPreferences,
+      setUiPreferences,
+      showDisplayPrefsModal,
+      setShowDisplayPrefsModal,
+      activityTypes
     }}>
       {children}
     </AppContext.Provider>

@@ -4,7 +4,7 @@ import { NINEVEH_GEOGRAPHY } from '../utils/constants';
 import { AppContext } from '../context/AppContext';
 
 export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave }) => {
-  const { user } = useContext(AppContext);
+  const { user, activityTypes } = useContext(AppContext);
   const isTeamMode = user?.role === 'team' || user?.isTeam;
   const teamSector = user?.sector || '';
 
@@ -31,7 +31,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
   const [formData, setFormData] = useState({
     name: '',
-    type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+    type: activityTypes && activityTypes.length > 0 ? activityTypes[0] : '',
     owner: '',
     phone: '',
     licenseNumber: '',
@@ -39,6 +39,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
     geoMain: 'mosul_right', // mosul_right, mosul_left, hamdaniya, etc.
     geoSub: '', // neighborhood or subdistrict
     manualAddress: '', // NEW FIELD
+    hasDelivery: false,
     status: 'compliant'
   });
 
@@ -50,7 +51,8 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
           ...initialData,
           geoMain: parsedMain,
           geoSub: parsedSub,
-          manualAddress: initialData.manualAddress || ''
+          manualAddress: initialData.manualAddress || '',
+          hasDelivery: initialData.hasDelivery || false
         });
       } else {
         const { parsedMain, parsedSub } = isTeamMode ? parseSector(teamSector) : { parsedMain: 'mosul_right', parsedSub: '' };
@@ -70,7 +72,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
         setFormData({
           name: '',
-          type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+          type: activityTypes && activityTypes.length > 0 ? activityTypes[0] : '',
           owner: '',
           phone: '',
           licenseNumber: '',
@@ -78,6 +80,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
           geoMain: parsedMain,
           geoSub: defaultSub,
           manualAddress: '',
+          hasDelivery: false,
           status: 'compliant'
         });
       }
@@ -121,12 +124,12 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md text-right" dir="rtl">
-      <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)] relative overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/50 dark:bg-slate-900/40 sticky top-0 z-20 backdrop-blur-sm shrink-0">
-          <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400 flex items-center gap-3 drop-shadow-md">
-            <div className="p-2.5 rounded-xl bg-slate-800/80 border border-white/10 text-teal-600 dark:text-teal-400 shadow-inner">
+          <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-teal-400 dark:to-emerald-400 flex items-center gap-3 drop-shadow-md">
+            <div className="p-2.5 rounded-xl bg-slate-800/80 border border-white/10 text-indigo-600 dark:text-indigo-400 shadow-inner">
               <Store className="w-5 h-5" />
             </div>
             {mode === 'edit' ? 'تعديل بيانات المنشأة الصحية' : 'تسجيل منشأة جديدة'}
@@ -148,7 +151,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                  <Store className="w-3.5 h-3.5 text-teal-500" />
+                  <Store className="w-3.5 h-3.5 text-indigo-600" />
                   اسم المنشأة التجاري
                 </label>
                 <input
@@ -157,25 +160,22 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="مثال: مطعم لاماسو"
-                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                  <FileBadge className="w-3.5 h-3.5 text-teal-500" />
+                  <FileBadge className="w-3.5 h-3.5 text-indigo-600" />
                   صنف النشاط
                 </label>
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
                 >
-                  <option>🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات</option>
-                  <option>🪒 صالون حلاقة وتجميل</option>
-                  <option>🍞 مخابز وأفران</option>
-                  <option>☕ بيع وطحن القهوة</option>
-                  <option>💧 محطة تعبئة وتصفية المياه R.O</option>
-                  <option>🛒 أسواق ومجمعات غذائية</option>
+                  {activityTypes?.map(activity => (
+                    <option key={activity} value={activity}>{activity}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -184,7 +184,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-teal-500" />
+                  <User className="w-3.5 h-3.5 text-indigo-600" />
                   اسم المالك الحقيقي (صاحب الإجازة)
                 </label>
                 <input
@@ -193,12 +193,12 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.owner}
                   onChange={(e) => setFormData({ ...formData, owner: e.target.value })}
                   placeholder="الاسم الرباعي واللقب"
-                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-teal-500" />
+                  <Phone className="w-3.5 h-3.5 text-indigo-600" />
                   رقم الهاتف (اختياري)
                 </label>
                 <input
@@ -206,7 +206,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="07..."
-                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm text-left"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
                   dir="ltr"
                 />
               </div>
@@ -216,7 +216,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                  <FileBadge className="w-3.5 h-3.5 text-teal-500" />
+                  <FileBadge className="w-3.5 h-3.5 text-indigo-600" />
                   رقم الإجازة الصحية
                 </label>
                 <input
@@ -225,13 +225,13 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.licenseNumber}
                   onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
                   placeholder="مثال: LIC-2026-X11"
-                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm text-left"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
                   dir="ltr"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                  <Hash className="w-3.5 h-3.5 text-teal-500" />
+                  <Hash className="w-3.5 h-3.5 text-indigo-600" />
                   رقم العقار (البلدية)
                 </label>
                 <input
@@ -240,7 +240,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.propertyNumber}
                   onChange={(e) => setFormData({ ...formData, propertyNumber: e.target.value })}
                   placeholder="مثال: 4م/771/01"
-                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm text-left"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
                   dir="ltr"
                 />
               </div>
@@ -248,7 +248,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
             {/* Location Tree */}
             <div className="bg-slate-100/40 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
-              <h4 className="text-xs font-black text-teal-600 dark:text-teal-400 mb-4 flex items-center gap-1.5">
+              <h4 className="text-xs font-black text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-1.5">
                 <MapPin className="w-4 h-4" />
                 التبعية الجغرافية للمنشأة
               </h4>
@@ -269,7 +269,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                       }
                       setFormData({ ...formData, geoMain: newMain, geoSub: newSubOptions[0] || '' });
                     }}
-                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-xs"
+                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-xs"
                   >
                     <optgroup label="مركز محافظة نينوى">
                       <option value="mosul_right">الجانب الأيمن</option>
@@ -288,7 +288,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   <select
                     value={formData.geoSub}
                     onChange={(e) => setFormData({ ...formData, geoSub: e.target.value })}
-                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-xs"
+                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-xs"
                   >
                     {subOptions.map(opt => (
                       <option key={opt} value={opt}>{opt}</option>
@@ -300,7 +300,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-teal-500" />
+                <MapPin className="w-3.5 h-3.5 text-indigo-600" />
                 أضف العنوان الدقيق يدوياً (إلزامي للجان)
               </label>
               <textarea
@@ -308,8 +308,21 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                 value={formData.manualAddress}
                 onChange={(e) => setFormData({ ...formData, manualAddress: e.target.value })}
                 placeholder="اكتب العنوان بالتفصيل الدقيق (مثال: حي النصر، شارع المكاتب، مجاور صيدلية الشفاء...)"
-                className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all shadow-inner font-bold text-sm min-h-[100px]"
+                className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm min-h-[100px]"
               />
+            </div>
+
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800/50">
+              <input
+                type="checkbox"
+                id="hasDelivery"
+                checked={formData.hasDelivery}
+                onChange={(e) => setFormData({ ...formData, hasDelivery: e.target.checked })}
+                className="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 cursor-pointer"
+              />
+              <label htmlFor="hasDelivery" className="text-sm font-bold text-teal-800 dark:text-teal-300 cursor-pointer">
+                هذه المنشأة توفر خدمة التوصيل (ديليفري)
+              </label>
             </div>
 
           </form>
@@ -327,7 +340,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
           <button
             type="submit"
             form="establishment-form"
-            className="px-8 py-3.5 rounded-2xl bg-gradient-to-l from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white text-sm font-black transition-all flex items-center gap-2 shadow-[0_10px_25px_-5px_rgba(20,184,166,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(20,184,166,0.5)] hover:-translate-y-0.5 active:translate-y-0"
+            className="px-8 py-3.5 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm font-black transition-all flex items-center gap-2 shadow-[0_10px_25px_-5px_rgba(99,102,241,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 active:translate-y-0"
           >
             <Store className="w-4 h-4" />
             {mode === 'edit' ? 'حفظ التعديلات المدخلة' : 'إضافة المنشأة للشبكة'}

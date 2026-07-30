@@ -6,7 +6,7 @@ import { Star, Shield, ShieldCheck, AlertOctagon, ChevronDown, ChevronUp, Camera
 import html2canvas from 'html2canvas';
 
 export const PublicQRScore = () => {
-  const { navigate, establishments, routeParams, addReport, user, inspectionItems, config } = useContext(AppContext);
+  const { navigate, establishments, routeParams, addReport, user, inspectionTemplates, config } = useContext(AppContext);
   const [establishment, setEstablishment] = useState(null);
   
   // Accordion details toggle
@@ -33,7 +33,13 @@ export const PublicQRScore = () => {
 
     // Read initial mode from URL parameter
     const params = new URLSearchParams(window.location.search);
-    const queryMode = params.get('mode') || 'dining';
+    let queryMode = params.get('mode') || 'dining';
+    
+    // Fallback if delivery mode is requested but not supported
+    if (queryMode === 'delivery' && target && !target.hasDelivery) {
+      queryMode = 'dining';
+    }
+    
     setCitizenMode(queryMode);
   }, [establishments, routeParams]);
 
@@ -127,15 +133,34 @@ export const PublicQRScore = () => {
     }
   };
 
-  // Mock section scores (for the accordion view)
-  const getSectionScores = () => {
-    if (score >= 95) return { A: 20, B: 20, C: 25, D: 20, E: 15 };
-    if (score >= 90) return { A: 19, B: 18, C: 24, D: 19, E: 14 };
-    if (score >= 80) return { A: 17, B: 16, C: 21, D: 16, E: 12 };
-    if (score >= (config.passingScore || 90)) return { A: 15, B: 14, C: 18, D: 15, E: 10 };
-    return { A: 10, B: 11, C: 13, D: 11, E: 7 };
-  };
-  const sectionScores = getSectionScores();
+  const activeItems = React.useMemo(() => {
+    if (!establishment) return [];
+    return inspectionTemplates[establishment.type] || inspectionTemplates['المطاعم، الكافيهات، والمقاهي'] || [];
+  }, [establishment, inspectionTemplates]);
+
+  const sectionsData = React.useMemo(() => {
+    const uniqueSections = Array.from(new Set(activeItems.map(item => item.section || 'A')));
+    return uniqueSections.map(secKey => {
+      const sectionItems = activeItems.filter(item => item.section === secKey);
+      const maxPoints = sectionItems.reduce((acc, curr) => acc + (parseInt(curr.points)||0), 0);
+      const displayLabel = sectionItems.length > 0 && sectionItems[0].sectionName ? sectionItems[0].sectionName : `القسم ${secKey}`;
+      
+      let mockedPoints = Math.round((score / 100) * maxPoints);
+      if (score >= 95) mockedPoints = maxPoints;
+      else if (score >= 90) mockedPoints = Math.max(0, maxPoints - 1);
+      else if (score >= 80) mockedPoints = Math.max(0, maxPoints - Math.round(maxPoints * 0.15));
+      
+      // Ensure we don't exceed maxPoints due to rounding
+      mockedPoints = Math.min(mockedPoints, maxPoints);
+      
+      return { 
+        key: secKey,
+        label: displayLabel,
+        max: maxPoints,
+        earned: mockedPoints
+      };
+    });
+  }, [activeItems, score]);
 
   return (
     <div className="min-h-screen bg-slatebg-light dark:bg-slatebg-dark p-4 md:p-8 flex items-center justify-center transition-colors duration-300">
@@ -179,29 +204,32 @@ export const PublicQRScore = () => {
           </p>
         </div>
 
-        {/* Mode Switcher Tabs for Citizen */}
-        <div className="flex gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <button
-            onClick={() => setCitizenMode('dining')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
-              citizenMode === 'dining'
-                ? 'bg-teal-600 text-white font-extrabold shadow-md'
-                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-            }`}
-          >
-            🍽️ كشف وتراخيص الصالة
-          </button>
-          <button
-            onClick={() => setCitizenMode('delivery')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
-              citizenMode === 'delivery'
-                ? 'bg-teal-600 text-white font-extrabold shadow-md'
-                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-            }`}
-          >
-            🛵 كشف وتراخيص التوصيل
-          </button>
-        </div>
+        {/* Mode Switcher Tabs for Citizen (Only show if Delivery is an option) */}
+        {establishment.hasDelivery && (
+          <div className="flex gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <button
+              onClick={() => setCitizenMode('dining')}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
+                citizenMode === 'dining'
+                  ? 'bg-teal-600 text-white font-extrabold shadow-md'
+                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              🍽️ التقييم الصحي الميداني
+            </button>
+            
+            <button
+              onClick={() => setCitizenMode('delivery')}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
+                citizenMode === 'delivery'
+                  ? 'bg-teal-600 text-white font-extrabold shadow-md'
+                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              🛵 كشف وتراخيص التوصيل
+            </button>
+          </div>
+        )}
 
         {citizenMode === 'dining' ? (
           <>
@@ -294,26 +322,12 @@ export const PublicQRScore = () => {
                     </div>
                   )}
 
-                  <div className="flex justify-between">
-                    <span>أ. سلامة العمال والجهوزية الطبية</span>
-                    <span className="font-extrabold text-teal-600">{sectionScores.A}/20 نقطة</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>ب. النظافة العامة والبيئة المكانية</span>
-                    <span className="font-extrabold text-teal-600">{sectionScores.B}/20 نقطة</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>ج. سلامة الأغذية وسلاسل الحفظ</span>
-                    <span className="font-extrabold text-teal-600">{sectionScores.C}/25 نقطة</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>د. المعدات والتحضير الفني داخل المطبخ</span>
-                    <span className="font-extrabold text-teal-600">{sectionScores.D}/20 نقطة</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>هـ. إجازة العمل والالتزام بالزيارات السابقة</span>
-                    <span className="font-extrabold text-teal-600">{sectionScores.E}/15 نقطة</span>
-                  </div>
+                  {sectionsData.map((sec, idx) => (
+                    <div key={sec.key || idx} className="flex justify-between">
+                      <span>{sec.label}</span>
+                      <span className="font-extrabold text-teal-600">{sec.earned}/{sec.max} نقطة</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

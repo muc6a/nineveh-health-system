@@ -1,14 +1,25 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { WeatherWidget } from '../components/WeatherWidget';
+import { usePersistentTab } from '../hooks/usePersistentTab';
 import { NotificationBell } from '../components/NotificationBell';
-import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin } from 'lucide-react';
+import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
+import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = () => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
+  
+  // Live Chat State
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([
+    { id: 1, sender: 'admin', text: 'مرحباً، غرفة العمليات المركزية في خدمتكم. هل تحتاجون لأي دعم؟', time: '08:00 ص' }
+  ]);
   
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
@@ -28,7 +39,7 @@ export const TeamDashboard = () => {
   };
 
   // Active Tab: 'summary', 'directory', 'reports', etc.
-  const [activeTab, setActiveTab] = useState(getInitialTab() || 'summary');
+  const [activeTab, setActiveTab] = usePersistentTab('teamActiveTab', getInitialTab() || 'summary');
 
   // Watch for permission changes to set initial tab if it was null
   React.useEffect(() => {
@@ -48,6 +59,7 @@ export const TeamDashboard = () => {
   
   // Modal toggles
   const [establishmentModalState, setEstablishmentModalState] = useState({ isOpen: false, mode: 'add', data: null });
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const [showMetricModal, setShowMetricModal] = useState(false);
   const [metricModalType, setMetricModalType] = useState('all');
   
@@ -60,8 +72,10 @@ export const TeamDashboard = () => {
   const [pendingEditData, setPendingEditData] = useState(null);
   const [selectedViolationImg, setSelectedViolationImg] = useState(null);
 
+  // Get the most up-to-date user from the teams array, falling back to local user object
+  const activeTeam = (teams || []).find(t => t.id === user?.id) || user;
   // User's assigned sector (default to 'الجانب الأيمن' if user isn't logged in correctly)
-  const userSector = user?.sector || 'الجانب الأيمن';
+  const userSector = activeTeam?.sector || (activeTeam?.name?.includes('الأيسر') ? 'الجانب الأيسر' : 'الجانب الأيمن');
 
   // Filter establishments based on team's sector
   const teamEstablishments = (establishments || []).filter(e => e.sector.includes(userSector));
@@ -79,6 +93,15 @@ export const TeamDashboard = () => {
   };
 
   // Filter based on search term and expired license filter
+  const dailyTaskLimit = config?.dailyTaskLimit || 10;
+  
+  // Smart Tasks list (oldest visits first, up to dailyTaskLimit)
+  const smartTasks = [...teamEstablishments].sort((a, b) => {
+    if (a.lastInspection === 'لم يزر بعد') return -1;
+    if (b.lastInspection === 'لم يزر بعد') return 1;
+    return new Date(a.lastInspection) - new Date(b.lastInspection);
+  }).slice(0, dailyTaskLimit);
+
   const filteredEstablishments = teamEstablishments.filter(e => {
     const matchesSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           e.owner.toLowerCase().includes(searchTerm.toLowerCase());
@@ -143,6 +166,21 @@ export const TeamDashboard = () => {
   // Directives Popup Logic
   const [unreadDirective, setUnreadDirective] = useState(null);
 
+  const handleQRScanSuccess = (decodedText) => {
+    setShowQRScanner(false);
+    const est = establishments.find(e => e.accessCode === decodedText);
+    if (est) {
+      if (!est.sector.includes(userSector) && user?.role !== 'admin') {
+        notify('عفواً، هذه المنشأة لا تتبع لقاطع مسؤوليتك.', 'error');
+        return;
+      }
+      notify(`تم العثور على: ${est.name}`, 'success');
+      setSelectedEstDetails(est);
+    } else {
+      notify('الكود غير صالح أو المنشأة غير مسجلة في النظام.', 'error');
+    }
+  };
+
   React.useEffect(() => {
     // Find the first unread directive
     const unread = myDirectives.find(d => !d.isRead);
@@ -171,7 +209,13 @@ export const TeamDashboard = () => {
   const [monthlyStatsModalType, setMonthlyStatsModalType] = useState('closures'); // 'closures' or 'fines'
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300">
+    <div 
+      className={`min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 ${uiPreferences?.density === 'compact' ? 'ui-compact' : 'ui-comfortable'}`}
+      style={{
+        '--ui-heading-size': uiPreferences?.headingSize || '18px',
+        '--ui-body-size': uiPreferences?.bodySize || '12px',
+      }}
+    >
       
       {/* Urgent Dispatch Modal */}
       {myPendingDispatch && (
@@ -313,7 +357,35 @@ export const TeamDashboard = () => {
                 }`}
               >
                 <Database className="w-4.5 h-4.5" />
-                <span>🍽️ دليل المنشآت</span>
+                <span>🍽️ إدارة المنشآت</span>
+              </button>
+            )}
+
+            {hasPerm('showSectorMap') && (
+              <button
+                onClick={() => { setActiveTab('map'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'map'
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Map className="w-4.5 h-4.5" />
+                <span>🗺️ خريطة القطاع</span>
+              </button>
+            )}
+
+            {hasPerm('showSmartTasks') && (
+              <button
+                onClick={() => { setActiveTab('smart_tasks'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'smart_tasks'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <CheckSquare className="w-4.5 h-4.5" />
+                <span>📅 مهام اليوم</span>
               </button>
             )}
 
@@ -340,60 +412,43 @@ export const TeamDashboard = () => {
               </button>
             )}
 
-            {hasPerm('showDirectivesPage') && (
-              <button
-                onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'directives'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="w-4.5 h-4.5" />
-                  <span>📦 المراسلات الإدارية</span>
-                </div>
-              </button>
-            )}
-
-            {hasPerm('showDeliveryPage') && (
-              <button
-                onClick={() => { setActiveTab('delivery'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  activeTab === 'delivery'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <Package className="w-4.5 h-4.5" />
-                <span>🚚 خدمة التوصيل</span>
-              </button>
-            )}
-
-            {hasPerm('showPublicEvalsPage') && (
-              <button
-                onClick={() => { setActiveTab('public_evals'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  activeTab === 'public_evals'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <CheckSquare className="w-4.5 h-4.5" />
-                <span>⭐ التقييمات العامة</span>
-              </button>
-            )}
           </div>
         </div>
 
         {/* User context footer */}
         <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+          <div className="flex flex-col gap-2 mb-4">
+             {hasPerm('canSendSOS') && (
+               <button 
+                  onClick={() => {
+                    if (triggerSOSAlert) {
+                      triggerSOSAlert(user, 'الموقع الحالي للفريق غير مسجل بعد');
+                    }
+                    notify('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true);
+                  }}
+                  className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+               >
+                <Siren className="w-4 h-4 animate-pulse" />
+                <span>إرسال استغاثة (SOS)</span>
+               </button>
+             )}
+          </div>
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col text-right">
               <span className="text-xs font-black text-slate-700 dark:text-slate-300">{user?.name || 'مفتش الرقابة الميداني'}</span>
               <span className="text-[10px] text-teal-600 dark:text-teal-600 dark:text-teal-400 font-bold">قطاع: {userSector}</span>
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setShowDisplayPrefsModal(true)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group relative"
+                title="تخصيص العرض والمظهر"
+              >
+                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+                <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-slate-800 text-white text-[10px] py-1 px-2 rounded-lg whitespace-nowrap">تخصيص العرض</span>
+              </button>
+              <ThemeToggle />
+            </div>
           </div>
           <button
             onClick={handleLogout}
@@ -417,13 +472,14 @@ export const TeamDashboard = () => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+            <NotificationBell />
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300">|</span>
               <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-              <span> Mosul الطقس في الموصل: 38°C مشمس ☀️</span>
+              <WeatherWidget variant="full" />
             </div>
           </div>
         </div>
@@ -450,7 +506,14 @@ export const TeamDashboard = () => {
             <Menu className="w-5 h-5" />
           </button>
           <AnimatedLogo variant="sidebar" className="border-none p-0 scale-75 transform origin-center" />
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setShowDisplayPrefsModal(true)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
+                title="تخصيص العرض والمظهر"
+              >
+                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              </button>
               <NotificationBell />
               <ThemeToggle />
           </div>
@@ -459,9 +522,18 @@ export const TeamDashboard = () => {
         {/* Tab A: Summary Dashboard */}
         {activeTab === 'summary' && hasPerm('showMainDashboard') && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
+              </div>
+              <button 
+                onClick={() => setShowQRScanner(true)}
+                className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
+              >
+                <QrCode className="w-5 h-5" />
+                <span>مسح كود QR لمنشأة 📸</span>
+              </button>
             </div>
 
             {myDirectives.length > 0 && (
@@ -510,68 +582,128 @@ export const TeamDashboard = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div 
-                onClick={() => { setMonthlyStatsModalType('closures'); setShowMonthlyStatsModal(true); }}
-                className="glassmorphic-card p-5 border border-rose-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/5 transition-all duration-300 cursor-pointer select-none"
-              >
-                <span className="text-xs font-black text-slate-500 dark:text-slate-400">المطاعم المغلقة هذا الشهر 🔒</span>
-                <p className="text-4xl font-extrabold text-rose-500 mt-3">{monthlyClosures.length}</p>
-                <span className="text-[10px] text-rose-500 font-bold block mt-2">انقر لعرض المطاعم 👁️</span>
+            {/* Team Analytics Chart */}
+            <div className="glassmorphic-card p-6 mt-6">
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-teal-600" /> إحصائيات الإنجاز الرقابي (هذا الأسبوع)
+              </h3>
+              <div className="h-64 w-full" dir="ltr">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={[
+                    { name: 'السبت', زيارات: 12, غرامات: 2 },
+                    { name: 'الأحد', زيارات: 19, غرامات: 5 },
+                    { name: 'الإثنين', زيارات: 15, غرامات: 1 },
+                    { name: 'الثلاثاء', زيارات: 22, غرامات: 3 },
+                    { name: 'الأربعاء', زيارات: 18, غرامات: 2 },
+                    { name: 'الخميس', زيارات: 25, غرامات: 4 },
+                    { name: 'الجمعة', زيارات: 5, غرامات: 0 },
+                  ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)', textAlign: 'right', direction: 'rtl' }}
+                      itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                    />
+                    <Bar dataKey="زيارات" fill="#0d9488" radius={[4, 4, 0, 0]} barSize={12} />
+                    <Bar dataKey="غرامات" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={12} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-              <div 
-                onClick={() => { setMonthlyStatsModalType('fines'); setShowMonthlyStatsModal(true); }}
-                className="glassmorphic-card p-5 border border-amber-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-300 cursor-pointer select-none"
-              >
-                <span className="text-xs font-black text-slate-500 dark:text-slate-400">الغرامات المالية هذا الشهر 💰</span>
-                <p className="text-4xl font-extrabold text-amber-500 mt-3">{monthlyFines.length}</p>
-                <span className="text-[10px] text-amber-500 font-bold block mt-2">انقر لعرض المطاعم 👁️</span>
+              <div className="flex justify-center gap-6 mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                  <span className="w-3 h-3 rounded-full bg-teal-600"></span> الجولات التفتيشية
+                </div>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                  <span className="w-3 h-3 rounded-full bg-amber-500"></span> الغرامات الفورية
+                </div>
               </div>
             </div>
 
-            {/* Close-up Interactive Map of Sector */}
-            <div className="glassmorphic-card p-5 mt-6">
-              <NinevehMap
-                establishments={establishments}
-                isTeamView={true}
-                teamSector={userSector}
+
+          </div>
+        )}
+
+        {/* Tab E: Map View */}
+        {activeTab === 'map' && hasPerm('showSectorMap') && (
+          <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
+            <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+              <Map className="text-teal-600" />
+              خريطة قطاع ({userSector})
+            </h2>
+            <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white" style={{ borderRadius: '0' }}>
+              <NinevehMap 
+                establishments={establishments} 
+                isTeamView={true} 
+                teamSector={userSector} 
+                fullHeight={true}
               />
-            </div>
-
-            {/* Target States */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div className="glassmorphic-card p-5">
-                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
-                  أحياء وشوارع تم زيارتها بنجاح 🟢
-                </h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {visitedStreets.length > 0 ? visitedStreets.map((street, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-xl text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      <Check className="w-4 h-4 shrink-0" />
-                      <span>{street}</span>
-                    </div>
-                  )) : <p className="text-xs text-slate-400">لم يتم إتمام أي زيارات بعد لهذا الشهر.</p>}
-                </div>
-              </div>
-
-              <div className="glassmorphic-card p-5">
-                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
-                  أحياء وشوارع بانتظار الجولة الرقابية الفورية 🔴
-                </h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {pendingStreets.length > 0 ? pendingStreets.map((street, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-red-500/5 dark:bg-red-950/20 rounded-xl text-xs font-bold text-red-500">
-                      <AlertCircle className="w-4 h-4 shrink-0" />
-                      <span>{street}</span>
-                    </div>
-                  )) : <p className="text-xs text-slate-400">كافة المنشآت مغطاة بنجاح 100%.</p>}
-                </div>
-              </div>
             </div>
           </div>
         )}
 
-        {/* Tab B: Directory */}
+        {/* Tab B: Smart Tasks (Today's Tasks) */}
+        {activeTab === 'smart_tasks' && hasPerm('showSmartTasks') && (
+          <div className="space-y-6 animate-fade-in-up">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                  <CheckSquare className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-slate-800 dark:text-white">مهام اليوم المقترحة</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    أمامك <span className="font-bold text-blue-600">{smartTasks.length}</span> منشآت تحتاج للزيارة القصوى اليوم.
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowQRScanner(true)}
+                className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
+              >
+                <QrCode className="w-5 h-5" />
+                <span>بدء التفتيش بمسح QR 📸</span>
+              </button>
+            </div>
+
+            {smartTasks.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {smartTasks.map(est => (
+                  <div key={`smart-${est.id}`} className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between group">
+                    <div>
+                      <h4 className="font-black text-slate-800 dark:text-white text-base mb-2 group-hover:text-blue-600 transition-colors">{est.name}</h4>
+                      <div className="space-y-2 mb-4">
+                        <div className="text-xs text-slate-500 flex items-center gap-2">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{est.address || 'العنوان غير محدد'}</span>
+                        </div>
+                        <div className="text-xs text-slate-500 flex items-center gap-2">
+                          <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                          <span>تاريخ آخر زيارة: <strong className="text-slate-700 dark:text-slate-300 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded">{est.lastInspection}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => navigate(`/inspection/new?id=${est.id}`)}
+                      className="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-600 text-blue-600 hover:text-white font-bold flex items-center justify-center gap-2 transition-all"
+                    >
+                      <FilePlus className="w-4 h-4" />
+                      <span>بدء التقييم اليدوي</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
+                <Check className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+                <h3 className="text-lg font-black text-slate-800 dark:text-white">لا توجد مهام مقترحة حالياً</h3>
+                <p className="text-xs text-slate-500 mt-2">جميع المنشآت مغطاة رقابياً ضمن الحدود المسموحة.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab C: Establishments Directory */}
         {activeTab === 'directory' && hasPerm('manageEstablishments') && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -638,24 +770,23 @@ export const TeamDashboard = () => {
             </div>
 
             {/* Directory Grid */}
-            <div className="glassmorphic-card overflow-hidden">
+            <div className="glassmorphic-card overflow-hidden print-only-report">
               <div className="overflow-x-auto">
                 <table className="w-full text-right border-collapse text-xs">
                   <thead>
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                      <th className="p-4 font-bold">اسم المطعم / المنشأة</th>
-                      <th className="p-4 font-bold">نوع النشاط</th>
-                      <th className="p-4 font-bold">المالك / الهاتف</th>
-                      <th className="p-4 font-bold text-center">كود البوابة</th>
-                      <th className="p-4 font-bold">تاريخ آخر زيارة</th>
-                      <th className="p-4 font-bold text-center">التقييم الحالي</th>
-                      <th className="p-4 font-bold text-center">الإجراءات والعمليات الميدانية</th>
+                      <th className="p-4 font-bold w-[20%]">اسم المنشأة</th>
+                      <th className="p-4 font-bold w-[15%]">نوع النشاط</th>
+                      <th className="p-4 font-bold text-center w-[10%]">كود QR</th>
+                      <th className="p-4 font-bold w-[10%]">تاريخ آخر زيارة</th>
+                      <th className="p-4 font-bold text-center w-[10%]">التقييم الحالي</th>
+                      <th className="p-4 font-bold text-center w-[35%] print:hidden">الإجراءات والعمليات الميدانية</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                     {filteredEstablishments.map((est) => (
                       <tr key={est.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-colors">
-                        <td className="p-4 font-black text-slate-800 dark:text-slate-200">
+                        <td className="p-4 font-black text-slate-800 dark:text-slate-200 cursor-pointer hover:text-teal-600 transition-colors" onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}>
                           <div className="flex items-center gap-2">
                             <span>{est.name}</span>
                             {est.status === 'closed' ? (
@@ -672,21 +803,21 @@ export const TeamDashboard = () => {
                           </div>
                         </td>
                         <td className="p-4 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
-                        <td className="p-4">
-                          <span className="block font-bold">{est.owner}</span>
-                          <span className="text-[10px] text-slate-500">{est.phone}</span>
-                        </td>
                         <td className="p-4 font-bold text-center">
-                          <span className="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 dir-ltr inline-block">
-                            {est.accessCode}
-                          </span>
+                          <div
+                            onClick={() => setSelectedEstDetails(est)}
+                            className="px-3 py-1.5 flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-700 dark:text-slate-300 transition-all active:scale-95 cursor-pointer font-bold text-[10px] mx-auto w-fit print:border print:border-slate-300 print:bg-transparent"
+                          >
+                            <QrCode className="w-5 h-5 text-slate-500" />
+                            <span className="text-xs font-black dir-ltr tracking-wider">{est.accessCode}</span>
+                          </div>
                         </td>
                         <td className="p-4">{est.lastInspection}</td>
                         <td className="p-4 font-bold text-center">
                           {est.lastInspection === 'لم يزر بعد' ? (
                             <span className="text-red-500 font-black">معلق</span>
                           ) : (
-                            <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${
+                            <span className={`px-3 py-1.5 rounded-xl text-sm font-black ${
                               est.score >= (config.passingScore || 90) ? 'bg-emerald-500/10 text-emerald-600' :
                               est.score >= (config.warningScore || 70) ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'
                             }`}>
@@ -694,14 +825,15 @@ export const TeamDashboard = () => {
                             </span>
                           )}
                         </td>
-                        <td className="p-4">
-                          <div className="flex justify-center gap-2 flex-wrap">
+                        <td className="p-4 print:hidden">
+                          <div className="flex justify-center items-center gap-1.5 flex-wrap w-full max-w-[320px] mx-auto">
                             {hasPerm('addEval') && (
                               <button
                                 onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                                className="px-2.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-600 dark:text-teal-400 font-bold transition-all active:scale-95 cursor-pointer no-print"
+                                className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                               >
-                                ➕ إضافة تقييم جديد
+                                <FilePlus className="w-3.5 h-3.5" />
+                                <span>إضافة تقييم</span>
                               </button>
                             )}
                             {(() => {
@@ -713,89 +845,92 @@ export const TeamDashboard = () => {
                                 const evalTime = new Date(lastEval.date).getTime();
                                 const nowTime = new Date().getTime();
                                 const diffHours = (nowTime - evalTime) / (1000 * 60 * 60);
-                                isEditLocked = diffHours > 48; // 48-hour limit
-                                lockReason = 'مغلق تلقائياً لمرور أكثر من 48 ساعة على التقييم';
+                                isEditLocked = diffHours > 48;
+                                lockReason = 'مغلق تلقائياً (مرور 48 ساعة)';
                               }
                               return hasHistory && (
                                 <button
                                   disabled={isEditLocked}
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
-                                  className={`px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print ${
+                                  className={`px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] ${
                                     isEditLocked 
                                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
                                       : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                                   }`}
-                                  title={isEditLocked ? lockReason : 'تعديل التقييم الأخير'}
+                                  title={isEditLocked ? lockReason : ''}
                                 >
-                                  ✏️ تعديل التقييم
+                                  <CheckSquare className="w-3.5 h-3.5" />
+                                  <span>تعديل تقييم</span>
                                 </button>
                               );
                             })()}
-                            <div className="flex gap-2 w-full mt-2 justify-center">
-                              <button
-                                onClick={() => {
-                                  const reason = window.prompt(`أدخل سبب طلب غرامة مالية لمنشأة (${est.name}):`);
-                                  if (reason) {
-                                    setPenaltyRequests(prev => [...prev, {
-                                      id: 'pen_' + Date.now(),
-                                      type: 'fine',
-                                      estId: est.id,
-                                      estName: est.name,
-                                      sector: est.sector,
-                                      teamName: user?.name,
-                                      reason,
-                                      status: 'pending',
-                                      date: new Date().toISOString()
-                                    }]);
-                                    addSystemNotification(
-                                      'طلب غرامة مالية جديد',
-                                      `قام الفريق (${user?.name}) برفع طلب غرامة لمنشأة ${est.name} للسبب: ${reason}`,
-                                      'central_director'
-                                    );
-                                    notify('تم رفع طلب الغرامة للغرفة المركزية بانتظار المصادقة', 'success', true);
-                                  }
-                                }}
-                                className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400"
-                                title="رفع طلب غرامة مالية للمصادقة المركزية"
-                              >
-                                💰 طلب غرامة
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const reason = window.prompt(`أدخل سبب طلب إغلاق منشأة (${est.name}):`);
-                                  if (reason) {
-                                    setPenaltyRequests(prev => [...prev, {
-                                      id: 'pen_' + Date.now(),
-                                      type: 'closure',
-                                      estId: est.id,
-                                      estName: est.name,
-                                      sector: est.sector,
-                                      teamName: user?.name,
-                                      reason,
-                                      status: 'pending',
-                                      date: new Date().toISOString()
-                                    }]);
-                                    addSystemNotification(
-                                      'طلب إغلاق وتشميع جديد',
-                                      `قام الفريق (${user?.name}) برفع طلب إغلاق لمنشأة ${est.name} للسبب: ${reason}`,
-                                      'central_director'
-                                    );
-                                    notify('تم رفع طلب الإغلاق للغرفة المركزية بانتظار المصادقة', 'success', true);
-                                  }
-                                }}
-                                className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400"
-                                title="رفع طلب تشميع أو غلق للمصادقة المركزية"
-                              >
-                                🔒 طلب إغلاق
-                              </button>
-                              </div>
+                            
+                            <button
+                              onClick={() => {
+                                const reason = window.prompt(`أدخل سبب طلب غرامة مالية لمنشأة (${est.name}):`);
+                                if (reason) {
+                                  setPenaltyRequests(prev => [...prev, {
+                                    id: 'pen_' + Date.now(),
+                                    type: 'fine',
+                                    estId: est.id,
+                                    estName: est.name,
+                                    sector: est.sector,
+                                    teamName: user?.name,
+                                    reason,
+                                    status: 'pending',
+                                    date: new Date().toISOString()
+                                  }]);
+                                  addSystemNotification(
+                                    'طلب غرامة مالية جديد',
+                                    `قام الفريق (${user?.name}) برفع طلب غرامة لمنشأة ${est.name} للسبب: ${reason}`,
+                                    'central_director'
+                                  );
+                                  notify('تم رفع طلب الغرامة بنجاح', 'success', true);
+                                }
+                              }}
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                            >
+                              <DollarSign className="w-3.5 h-3.5" />
+                              <span>طلب غرامة</span>
+                            </button>
+                            
+                            <button
+                              onClick={() => {
+                                const reason = window.prompt(`أدخل سبب طلب إغلاق منشأة (${est.name}):`);
+                                if (reason) {
+                                  setPenaltyRequests(prev => [...prev, {
+                                    id: 'pen_' + Date.now(),
+                                    type: 'closure',
+                                    estId: est.id,
+                                    estName: est.name,
+                                    sector: est.sector,
+                                    teamName: user?.name,
+                                    reason,
+                                    status: 'pending',
+                                    date: new Date().toISOString()
+                                  }]);
+                                  addSystemNotification(
+                                    'طلب إغلاق وتشميع جديد',
+                                    `قام الفريق (${user?.name}) برفع طلب إغلاق لمنشأة ${est.name} للسبب: ${reason}`,
+                                    'central_director'
+                                  );
+                                  notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
+                                }
+                              }}
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                            >
+                              <Ban className="w-3.5 h-3.5" />
+                              <span>طلب إغلاق</span>
+                            </button>
+
                             {hasPerm('manageEstablishments') && (
                               <>
                                 <button
                                   onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}
-                                  className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                                 >
-                                  📝 تعديل
+                                  <Edit className="w-3.5 h-3.5" />
+                                  <span>تعديل منشأة</span>
                                 </button>
                                 <button
                                   onClick={() => {
@@ -804,20 +939,13 @@ export const TeamDashboard = () => {
                                       deleteEstablishment(est.id);
                                     }
                                   }}
-                                  className="px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer no-print bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400"
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                                 >
-                                  🗑️ حذف
+                                  <Trash className="w-3.5 h-3.5" />
+                                  <span>حذف</span>
                                 </button>
                               </>
                             )}
-                            <button
-                              onClick={() => {
-                                setSelectedEstDetails(est);
-                              }}
-                              className="px-2.5 py-1.5 rounded-xl bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold transition-all active:scale-95 cursor-pointer no-print"
-                            >
-                              🔗 كود QR
-                            </button>
                           </div>
                         </td>
                       </tr>
@@ -914,44 +1042,7 @@ export const TeamDashboard = () => {
             </div>
           </div>
         )}
-        {/* Placeholder: Directives / Communications Tab */}
-        {activeTab === 'directives' && hasPerm('showDirectivesPage') && (
-          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="w-10 h-10 text-teal-500" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">صندوق المراسلات والبلاغات</h2>
-            <p className="text-xs text-slate-500 max-w-sm">
-              هذه الصفحة قيد التطوير وسيتم تفعيلها قريباً لاستقبال أوامر وتوجيهات الإدارة العليا والتبليغات.
-            </p>
-          </div>
-        )}
 
-        {/* Placeholder: Delivery Service Tab */}
-        {activeTab === 'delivery' && hasPerm('showDeliveryPage') && (
-          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-              <Package className="w-10 h-10 text-teal-500" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">إدارة خدمة التوصيل</h2>
-            <p className="text-xs text-slate-500 max-w-sm">
-              قريباً سيتم إدارة عمال التوصيل والمناديب المتعاقدين مع المنشآت وتدقيق هوياتهم الصحية من هنا.
-            </p>
-          </div>
-        )}
-
-        {/* Placeholder: Public Evaluations Tab */}
-        {activeTab === 'public_evals' && hasPerm('showPublicEvalsPage') && (
-          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-              <Check className="w-10 h-10 text-teal-500" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">التقييمات العامة (المواطنين)</h2>
-            <p className="text-xs text-slate-500 max-w-sm">
-              سيتم عرض تقييمات وبلاغات المواطنين الواردة عبر مسح الـ QR الخاص بالمنشآت لمتابعتها.
-            </p>
-          </div>
-        )}
 
       </main>
 
@@ -987,7 +1078,6 @@ export const TeamDashboard = () => {
                   <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold">
                     <th className="p-3">اسم المنشأة</th>
                     <th className="p-3">النوع</th>
-                    <th className="p-3">المالك</th>
                     <th className="p-3">تاريخ آخر زيارة</th>
                     <th className="p-3 text-center">الدرجة</th>
                   </tr>
@@ -995,9 +1085,16 @@ export const TeamDashboard = () => {
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                   {modalEstList.map(e => (
                     <tr key={e.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/10">
-                      <td className="p-3 font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">{e.name}</td>
+                      <td 
+                        className="p-3 font-black text-slate-800 dark:text-slate-200 cursor-pointer hover:text-teal-600 transition-colors"
+                        onClick={() => {
+                          setShowMetricModal(false);
+                          setEstablishmentModalState({ isOpen: true, mode: 'edit', data: e });
+                        }}
+                      >
+                        {e.name}
+                      </td>
                       <td className="p-3 text-slate-500">{e.type}</td>
-                      <td className="p-3 text-slate-500">{e.owner}</td>
                       <td className="p-3 text-slate-550 dark:text-slate-400">{e.lastInspection}</td>
                       <td className="p-3 text-center">
                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${
@@ -1180,6 +1277,88 @@ export const TeamDashboard = () => {
           </div>
         </div>
       )}
+
+
+
+      <QRScannerModal 
+        isOpen={showQRScanner}
+        onClose={() => setShowQRScanner(false)}
+        onScanSuccess={handleQRScanSuccess}
+      />
+
+      {/* Floating Chat Widget */}
+      <div className="fixed bottom-6 left-6 z-[60] flex flex-col items-end">
+        {isChatOpen && (
+          <div className="bg-white dark:bg-slate-900 w-80 sm:w-96 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 mb-4 flex flex-col overflow-hidden animate-fade-in-up">
+            <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-4 flex items-center justify-between text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-right">الدعم المباشر</h4>
+                  <p className="text-[10px] text-teal-100">غرفة العمليات المركزية</p>
+                </div>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-4 h-64 overflow-y-auto flex flex-col gap-3 bg-slate-50 dark:bg-slate-950">
+              {chatHistory.map(msg => (
+                <div key={msg.id} className={`flex ${msg.sender === 'team' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${msg.sender === 'team' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-bl-none'}`}>
+                    <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
+                    <span className={`text-[9px] block mt-1 text-left ${msg.sender === 'team' ? 'text-teal-200' : 'text-slate-400'}`}>{msg.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+              <button 
+                onClick={() => {
+                  if (chatMessage.trim()) {
+                    setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    setChatMessage('');
+                    // Mock auto-reply
+                    setTimeout(() => {
+                      setChatHistory(prev => [...prev, { id: Date.now()+1, sender: 'admin', text: 'تم استلام بلاغك. جاري المتابعة.', time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    }, 1500);
+                  }
+                }}
+                className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 hover:bg-teal-700 transition-colors"
+              >
+                <Send className="w-4 h-4 rtl:-scale-x-100" />
+              </button>
+              <input 
+                type="text" 
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && chatMessage.trim()) {
+                    setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    setChatMessage('');
+                    setTimeout(() => {
+                      setChatHistory(prev => [...prev, { id: Date.now()+1, sender: 'admin', text: 'تم استلام بلاغك. جاري المتابعة.', time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    }, 1500);
+                  }
+                }}
+                placeholder="اكتب رسالتك لغرفة العمليات..."
+                className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-4 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-teal-500/50 text-right"
+              />
+            </div>
+          </div>
+        )}
+        
+        <button 
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all hover:scale-110 ${isChatOpen ? 'bg-slate-800' : 'bg-teal-600 animate-bounce'}`}
+        >
+          {isChatOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+        </button>
+      </div>
 
     </div>
   );
