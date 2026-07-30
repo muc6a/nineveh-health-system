@@ -13,7 +13,7 @@ import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { QRCodeSVG } from 'qrcode.react';
 
 export const OwnerPortal = () => {
-  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionItems } = useContext(AppContext);
+  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionItems, fines } = useContext(AppContext);
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);
@@ -589,23 +589,50 @@ export const OwnerPortal = () => {
             {/* TAB: FINES */}
             {activeTab === 'fines' && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
-                {isNonCompliant ? (
-                  <div className="p-6 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 flex items-start gap-4 mb-8">
-                    <AlertOctagon className="w-8 h-8 text-red-600 dark:text-red-400 shrink-0 mt-1" />
-                    <div>
-                      <h3 className="text-base font-black text-red-800 dark:text-red-300 mb-2">تحذير أخير للإغلاق</h3>
-                      <p className="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
-                        نظراً لتدني مستوى النظافة والتقييم في الكشف الأخير، تم إصدار تحذير نهائي بمنحك مهلة 72 ساعة فقط لتصحيح وضع المنشأة وإلا سيتم تنفيذ قرار الغلق والتشميع بالشمع الأحمر حسب قانون الصحة العامة.
-                      </p>
+                {(() => {
+                  const ownerFines = (fines || []).filter(f => f.targetEstId === ownerEst.id);
+                  if (ownerFines.length > 0) {
+                    return (
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <h3 className="text-xl font-black text-slate-800 dark:text-white">الغرامات المسجلة بحق المنشأة</h3>
+                          <span className="px-3 py-1 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 font-bold text-xs rounded-full border border-red-200 dark:border-red-500/30">
+                            يوجد {ownerFines.length} غرامات غير مسددة
+                          </span>
+                        </div>
+                        {ownerFines.map(fine => (
+                          <div key={fine.id} className="p-6 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Receipt className="w-5 h-5 text-red-600 dark:text-red-400" />
+                                  <h4 className="text-lg font-black text-red-800 dark:text-red-300">غرامة مالية: {fine.amount} دينار عراقي</h4>
+                                </div>
+                                <p className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">السبب: {fine.reason}</p>
+                                <p className="text-xs text-red-600/70 dark:text-red-400/70 font-medium">تاريخ الإصدار: {new Date(fine.date).toLocaleDateString('ar-IQ')}</p>
+                              </div>
+                              <div className="bg-white/80 dark:bg-slate-900/50 p-4 rounded-xl border border-red-100 dark:border-red-500/20 md:w-64">
+                                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">إجراء مطلوب:</p>
+                                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                  يرجى مراجعة <strong className="text-slate-800 dark:text-slate-200">دائرة صحة نينوى - قسم الحسابات</strong> لتسديد المبلغ تجنباً لإغلاق المنشأة.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="flex flex-col items-center justify-center py-16 opacity-70">
+                      <History className="w-16 h-16 text-slate-300 dark:text-slate-600 mb-4" />
+                      <p className="text-lg font-black text-slate-700 dark:text-slate-300">سجلك نظيف</p>
+                      <p className="text-sm font-bold text-slate-500 mt-2">لا توجد غرامات مالية مسجلة بحق منشأتك.</p>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 opacity-70">
-                    <History className="w-16 h-16 text-slate-300 dark:text-slate-600 mb-4" />
-                    <p className="text-lg font-black text-slate-700 dark:text-slate-300">سجلك نظيف</p>
-                    <p className="text-sm font-bold text-slate-500 mt-2">لا توجد غرامات مالية أو إنذارات مسجلة بحق منشأتك.</p>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             )}
 

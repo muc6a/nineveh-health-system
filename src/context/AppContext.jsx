@@ -567,6 +567,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('deliveries', setDeliveries, deliveries);
       setupFirebaseSync('penaltyRequests_v2', setPenaltyRequests, penaltyRequests);
       setupFirebaseSync('dispatches', setDispatches, dispatches);
+      setupFirebaseSync('fines', setFines, fines);
     } catch (err) {
       console.error("Firebase load error", err);
     }
@@ -643,6 +644,25 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     syncToCloud('dispatches', dispatches);
   }, [dispatches]);
+
+  // Fines Record State
+  const [fines, setFines] = useState(() => {
+    const saved = localStorage.getItem('fines');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 'fine_1',
+        targetEstId: 'est_new_3',
+        amount: '500,000',
+        reason: 'عدم الالتزام بالشروط الصحية وتكرار المخالفات',
+        date: new Date().toISOString(),
+        status: 'unpaid'
+      }
+    ];
+  });
+
+  useEffect(() => {
+    syncToCloud('fines', fines);
+  }, [fines]);
 
   // Global Notification System
   const [notification, setNotification] = useState({ message: '', type: 'info', id: 0 });
@@ -1061,6 +1081,7 @@ export const AppProvider = ({ children }) => {
       deliveries, setDeliveries,
       penaltyRequests, setPenaltyRequests,
       dispatches, setDispatches,
+      fines, setFines,
       systemNotifications, setSystemNotifications,
       addSystemNotification,
       sosAlerts, setSosAlerts,
