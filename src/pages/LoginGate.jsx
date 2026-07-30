@@ -297,17 +297,10 @@ export const LoginGate = () => {
           <div className="flex flex-col gap-3 mb-6">
             <button
               type="button"
-              onClick={() => navigate('/owner')}
-              className="py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-black transition-all shadow-md w-full cursor-pointer flex items-center justify-center gap-2"
+              onClick={() => navigate('/')}
+              className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-900 text-white text-sm font-black transition-all shadow-md w-full cursor-pointer flex items-center justify-center gap-2"
             >
-              <span>🔑 دخول أصحاب المطاعم والمنشآت</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/public-search')}
-              className="py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-black transition-all shadow-md w-full cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>🌍 دخول المواطنين للبحث والإبلاغ</span>
+              <span>🏠 العودة للبوابة الرئيسية الموحدة</span>
             </button>
           </div>
 

@@ -120,7 +120,7 @@ export const OwnerPortal = () => {
         </div>
         <div className="absolute top-4 right-4 z-50">
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/')}
             className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> العودة للرئيسية
