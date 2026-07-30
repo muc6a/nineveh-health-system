@@ -24,6 +24,9 @@ export const OwnerPortal = () => {
   const [isRequestingInspection, setIsRequestingInspection] = useState(false);
   const [inspectionRequested, setInspectionRequested] = useState(false);
   
+  const [isPrintingQR, setIsPrintingQR] = useState(false);
+  const [isPrintingCert, setIsPrintingCert] = useState(false);
+  
   const [activeTab, setActiveTab] = useState('dashboard');
   
   // Action Plan State
@@ -219,18 +222,28 @@ export const OwnerPortal = () => {
 
   const handlePrintCertificate = () => {
     document.body.classList.add('print-certificate-only');
-    window.print();
-    const cleanup = () => document.body.classList.remove('print-certificate-only');
-    window.addEventListener('afterprint', cleanup, { once: true });
-    setTimeout(cleanup, 10000);
+    setIsPrintingCert(true);
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+
+  const closePrintCertificate = () => {
+    document.body.classList.remove('print-certificate-only');
+    setIsPrintingCert(false);
   };
 
   const handlePrintQR = () => {
     document.body.classList.add('print-qr-only');
-    window.print();
-    const cleanup = () => document.body.classList.remove('print-qr-only');
-    window.addEventListener('afterprint', cleanup, { once: true });
-    setTimeout(cleanup, 10000);
+    setIsPrintingQR(true);
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+
+  const closePrintQR = () => {
+    document.body.classList.remove('print-qr-only');
+    setIsPrintingQR(false);
   };
 
   const getTaskDetails = (id) => {
@@ -682,6 +695,18 @@ export const OwnerPortal = () => {
                       </div>
                     </div>
 
+                    {/* Print Top Bar for Certificate */}
+                    {isPrintingCert && (
+                      <div className="fixed top-0 left-0 right-0 z-[200] bg-white/80 backdrop-blur-md p-4 border-b shadow-sm flex justify-center gap-4 no-print">
+                        <button onClick={() => window.print()} className="px-6 py-2 bg-teal-600 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg">
+                          <Printer className="w-5 h-5" /> طباعة أو حفظ PDF
+                        </button>
+                        <button onClick={closePrintCertificate} className="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-colors">
+                          <ArrowLeft className="w-5 h-5" /> رجوع للمنصة
+                        </button>
+                      </div>
+                    )}
+
                     {/* The Certificate UI (Hidden from regular layout but shown here and in print) */}
                     <div ref={certificateRef} className="relative w-full max-w-4xl bg-white p-12 rounded-[2rem] shadow-2xl overflow-hidden print-only-certificate" style={{ border: '1px solid #e2e8f0', outline: '8px solid #0f766e', outlineOffset: '-16px', minHeight: '500px', backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%230f766e\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")' }}>
                       <div className="absolute top-0 right-0 w-48 h-48 bg-teal-600/10 rounded-bl-[150px] -z-10"></div>
@@ -732,25 +757,37 @@ export const OwnerPortal = () => {
           </div>
         </div>
 
-        {/* Hidden QR Poster for PDF Export */}
-        <div className="hidden qr-poster-wrapper">
-           <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 mx-auto print:scale-100 origin-top overflow-hidden">
-             {/* User's Custom Design Background */}
-             <img src="/poster_bg.jpg" alt="Poster Background" className="absolute inset-0 w-[794px] h-[1122px] object-contain z-0" />
-             
-             {/* Dynamic Content: Restaurant Name */}
-             <div className="absolute top-[300px] left-0 right-0 flex justify-center px-12 z-10">
-               <h2 className="text-[3.5rem] font-black text-[#108c7f] text-center leading-tight drop-shadow-sm">{ownerEst.name}</h2>
-             </div>
-             
-             {/* Dynamic Content: QR Code */}
-             <div className="absolute top-[500px] left-0 right-0 flex justify-center z-10">
-               <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border-[8px] border-[#108c7f]">
-                 <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={320} bgColor="#ffffff" fgColor="#0f172a" />
-               </div>
-             </div>
-           </div>
-        </div>
+        {/* QR Poster Print View */}
+        {isPrintingQR && (
+          <div className="fixed inset-0 z-[200] bg-slate-200 overflow-y-auto">
+            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md p-4 border-b shadow-sm flex justify-center gap-4 no-print">
+              <button onClick={() => window.print()} className="px-6 py-2 bg-teal-600 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg">
+                <Printer className="w-5 h-5" /> طباعة أو حفظ PDF
+              </button>
+              <button onClick={closePrintQR} className="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-colors">
+                <ArrowLeft className="w-5 h-5" /> رجوع للمنصة
+              </button>
+            </div>
+            <div className="p-8 flex justify-center">
+              <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 origin-top overflow-hidden shadow-2xl">
+                {/* User's Custom Design Background */}
+                <img src="/poster_bg.jpg" alt="Poster Background" className="absolute inset-0 w-[794px] h-[1122px] object-contain z-0" />
+                
+                {/* Dynamic Content: Restaurant Name */}
+                <div className="absolute top-[300px] left-0 right-0 flex justify-center px-12 z-10">
+                  <h2 className="text-[3.5rem] font-black text-[#108c7f] text-center leading-tight drop-shadow-sm">{ownerEst.name}</h2>
+                </div>
+                
+                {/* Dynamic Content: QR Code */}
+                <div className="absolute top-[500px] left-0 right-0 flex justify-center z-10">
+                  <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border-[8px] border-[#108c7f]">
+                    <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={320} bgColor="#ffffff" fgColor="#0f172a" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Task Details Modal */}
         {selectedTask && (
