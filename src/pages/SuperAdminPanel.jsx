@@ -1164,7 +1164,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                📢 نظام التعميم والبث العاجل
+                📢 إدارة البوابات
               </button>
               <button
                 onClick={() => setSubSettingsTab('database')}
@@ -1317,98 +1317,7 @@ export const SuperAdminPanel = () => {
                     
                   </div>
 
-                  <div className="border-t border-slate-200 dark:border-slate-800 my-8"></div>
 
-                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <ShieldAlert className="w-5 h-5 text-red-500" />
-                    <span>ضوابط ومعايير النظام السيادية</span>
-                  </h2>
-
-                  {/* Maintenance Mode Toggle */}
-                  <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4 text-right">
-                    <div>
-                      <h3 className="text-sm font-black text-red-600 dark:text-red-400 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="sr-only peer" 
-                        checked={config.maintenanceMode || false}
-                        onChange={(e) => setConfig({ ...config, maintenanceMode: e.target.checked })}
-                      />
-                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-red-600"></div>
-                    </label>
-                  </div>
-
-                  {/* Dynamic Grading Thresholds */}
-                  <div className="space-y-6 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 text-right">
-                    <div>
-                      <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 mb-1">التحكم الديناميكي بمعايير التقييم</h3>
-                      <p className="text-xs text-slate-500 font-bold">حدد درجات النجاح والرسوب، والتي سينعكس تأثيرها فوراً على ألوان ونتائج جميع المطاعم في المحافظة.</p>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* Passing Score Slider */}
-                      <div className="bg-teal-500/5 border border-teal-500/10 p-4 rounded-xl">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-black text-teal-700 dark:text-teal-600 dark:text-teal-400">الحد الأدنى للمنشأة "الملتزمة" (أخضر)</span>
-                          <span className="text-sm font-black text-teal-600">{config.passingScore || 90}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="50" max="100" 
-                          value={config.passingScore || 90} 
-                          onChange={(e) => setConfig({ ...config, passingScore: parseInt(e.target.value) })}
-                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-teal-600"
-                        />
-                      </div>
-
-                      {/* Warning Score Slider */}
-                      <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-xl">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-black text-amber-700 dark:text-amber-400">الحد الأدنى للمنشأة "تحت المراقبة" (أصفر)</span>
-                          <span className="text-sm font-black text-amber-600">{config.warningScore || 70}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="1" max="100" 
-                          value={config.warningScore || 70} 
-                          onChange={(e) => setConfig({ ...config, warningScore: parseInt(e.target.value) })}
-                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-amber-500"
-                        />
-                        <p className="text-[10px] text-slate-400 mt-2">ما دون هذه الدرجة سيُعتبر "مخالف" (أحمر).</p>
-                      </div>
-
-                      {/* Daily Task Limit Slider */}
-                      <div className="bg-blue-500/5 border border-blue-500/10 p-4 rounded-xl">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-black text-blue-700 dark:text-blue-400">الحد الأقصى للمهام اليومية (لكل فريق)</span>
-                          <span className="text-sm font-black text-blue-600">{config.dailyTaskLimit || 10} مطاعم</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="1" max="50" step="1"
-                          value={config.dailyTaskLimit || 10} 
-                          onChange={(e) => setConfig({ ...config, dailyTaskLimit: parseInt(e.target.value) })}
-                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-blue-500"
-                        />
-                        <p className="text-[10px] text-slate-400 mt-2">سيتم اقتراح هذا العدد من المطاعم كـ "مهام يومية" للفرق الميدانية بناءً على أقدمية الزيارة.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end pt-4">
-                    <button
-                      onClick={() => {
-                        localStorage.setItem('systemConfig', JSON.stringify(config));
-                        notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
-                      }}
-                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
-                    >
-                      حفظ التغييرات
-                    </button>
-                  </div>
                 </div>
               )}
               
@@ -3069,7 +2978,8 @@ export const SuperAdminPanel = () => {
         />
       )}
         {activeTab === 'broadcast' && (
-          <div className="glassmorphic-card p-6 border border-red-500/20">
+          <>
+            <div className="glassmorphic-card p-6 border border-red-500/20">
             <h2 className="text-xl font-black text-red-600 dark:text-red-500 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 animate-pulse" />
               <span>نظام البث العاجل (إنذار الطوارئ وإقفال الشاشات)</span>
@@ -3130,6 +3040,43 @@ export const SuperAdminPanel = () => {
               )}
             </div>
           </div>
+          
+          <div className="glassmorphic-card p-6 mt-6">
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <ShieldAlert className="w-5 h-5 text-red-500" />
+                    <span>ضوابط ومعايير النظام السيادية</span>
+                  </h2>
+
+                  {/* Maintenance Mode Toggle */}
+                  <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4 text-right mt-4">
+                    <div>
+                      <h3 className="text-sm font-black text-red-600 dark:text-red-400 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer" 
+                        checked={config.maintenanceMode || false}
+                        onChange={(e) => setConfig({ ...config, maintenanceMode: e.target.checked })}
+                      />
+                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-red-600"></div>
+                    </label>
+                  </div>
+                  
+                  <div className="flex justify-end pt-4">
+                    <button
+                      onClick={() => {
+                        localStorage.setItem('systemConfig', JSON.stringify(config));
+                        notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
+                      }}
+                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
+                    >
+                      حفظ التغييرات
+                    </button>
+                  </div>
+          </div>
+        </>
         )}
 
         {activeTab === 'analytics' && (
