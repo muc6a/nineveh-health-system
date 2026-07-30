@@ -39,6 +39,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
     geoMain: 'mosul_right', // mosul_right, mosul_left, hamdaniya, etc.
     geoSub: '', // neighborhood or subdistrict
     manualAddress: '', // NEW FIELD
+    hasDelivery: false,
     status: 'compliant'
   });
 
@@ -50,7 +51,8 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
           ...initialData,
           geoMain: parsedMain,
           geoSub: parsedSub,
-          manualAddress: initialData.manualAddress || ''
+          manualAddress: initialData.manualAddress || '',
+          hasDelivery: initialData.hasDelivery || false
         });
       } else {
         const { parsedMain, parsedSub } = isTeamMode ? parseSector(teamSector) : { parsedMain: 'mosul_right', parsedSub: '' };
@@ -78,6 +80,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
           geoMain: parsedMain,
           geoSub: defaultSub,
           manualAddress: '',
+          hasDelivery: false,
           status: 'compliant'
         });
       }
@@ -307,6 +310,19 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                 placeholder="اكتب العنوان بالتفصيل الدقيق (مثال: حي النصر، شارع المكاتب، مجاور صيدلية الشفاء...)"
                 className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm min-h-[100px]"
               />
+            </div>
+
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800/50">
+              <input
+                type="checkbox"
+                id="hasDelivery"
+                checked={formData.hasDelivery}
+                onChange={(e) => setFormData({ ...formData, hasDelivery: e.target.checked })}
+                className="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 cursor-pointer"
+              />
+              <label htmlFor="hasDelivery" className="text-sm font-bold text-teal-800 dark:text-teal-300 cursor-pointer">
+                هذه المنشأة توفر خدمة التوصيل (ديليفري)
+              </label>
             </div>
 
           </form>

@@ -33,7 +33,13 @@ export const PublicQRScore = () => {
 
     // Read initial mode from URL parameter
     const params = new URLSearchParams(window.location.search);
-    const queryMode = params.get('mode') || 'dining';
+    let queryMode = params.get('mode') || 'dining';
+    
+    // Fallback if delivery mode is requested but not supported
+    if (queryMode === 'delivery' && target && !target.hasDelivery) {
+      queryMode = 'dining';
+    }
+    
     setCitizenMode(queryMode);
   }, [establishments, routeParams]);
 
@@ -191,16 +197,19 @@ export const PublicQRScore = () => {
           >
             🍽️ كشف وتراخيص الصالة
           </button>
-          <button
-            onClick={() => setCitizenMode('delivery')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
-              citizenMode === 'delivery'
-                ? 'bg-teal-600 text-white font-extrabold shadow-md'
-                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-            }`}
-          >
-            🛵 كشف وتراخيص التوصيل
-          </button>
+          
+          {establishment.hasDelivery && (
+            <button
+              onClick={() => setCitizenMode('delivery')}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all ${
+                citizenMode === 'delivery'
+                  ? 'bg-teal-600 text-white font-extrabold shadow-md'
+                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              🛵 كشف وتراخيص التوصيل
+            </button>
+          )}
         </div>
 
         {citizenMode === 'dining' ? (

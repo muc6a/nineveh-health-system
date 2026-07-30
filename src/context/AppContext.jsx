@@ -55,7 +55,8 @@ const INITIAL_ESTABLISHMENTS = [
     longitude: '43.1610',
     history: [
       { date: '2026-07-02', score: 91, notes: 'المطبخ والتهوية جيدة، والشهادات الصحية للعاملين سارية المفعول.' }
-    ]
+    ],
+    hasDelivery: true
   },
   {
     id: 'est_new_3',
