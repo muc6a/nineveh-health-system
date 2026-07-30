@@ -6,7 +6,7 @@ import AccountModal from './AccountModal';
 
 export default function OperationsRoom() {
   const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts } = useContext(AppContext);
-  const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'sos_alerts');
+  const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'live_operations');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
   
@@ -59,26 +59,7 @@ export default function OperationsRoom() {
   const [selectedTeamId, setSelectedTeamId] = useState('');
   
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
-
-  // Monthly Stats States
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
-  const allMonthlyClosures = (penaltyRequests || []).filter(req => 
-    req.type === 'closure' && req.status === 'approved' &&
-    new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
-  );
-
-  const allMonthlyFines = (penaltyRequests || []).filter(req => 
-    req.type === 'fine' && req.status === 'approved' &&
-    new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
-  );
-
-  const [showStatsModal, setShowStatsModal] = useState(false);
-  const [statsModalType, setStatsModalType] = useState('closures'); // 'closures' or 'fines'
-  const [selectedSector, setSelectedSector] = useState(null); // Which sector to view inside the modal
-
-  // Listen for navigation events from NotificationBell
+// Listen for navigation events from NotificationBell
   useEffect(() => {
     const handleNav = () => {
       setActiveTab('penalties');
@@ -183,229 +164,17 @@ export default function OperationsRoom() {
           المصادقة على العقوبات
         </button>
         <button
-          onClick={() => setActiveTab('dispatch')}
+          onClick={() => setActiveTab('live_operations')}
           className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'dispatch' ? 'border-b-2 border-fuchsia-600 text-fuchsia-600 dark:text-fuchsia-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
+            activeTab === 'live_operations' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <Target className="w-4 h-4" />
-          التوجيه الميداني العاجل
-        </button>
-        <button
-          onClick={() => setActiveTab('monthly_stats')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'monthly_stats' ? 'border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Target className="w-4 h-4" />
-          إحصائيات الإغلاق والغرامات
-        </button>
-        <button
-          onClick={() => setActiveTab('closure_verifications')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'closure_verifications' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Camera className="w-4 h-4" />
-          أدلة الإغلاق (الميدانية)
-        </button>
-        <button
-          onClick={() => setActiveTab('sos_alerts')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'sos_alerts' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <AlertCircle className="w-4 h-4" />
-          سجل الطوارئ (SOS)
-        </button>
-        <button
-          onClick={() => setActiveTab('live_tracking')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'live_tracking' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Target className="w-4 h-4" />
-          التتبع الحي للفرق
+          التتبع والعمليات الحية
         </button>
       </div>
 
-      {activeTab === 'sos_alerts' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-black text-slate-800 dark:text-white">سجل استغاثات الطوارئ (SOS) من الفرق الميدانية</h3>
-          </div>
-          {sosAlerts && sosAlerts.length > 0 ? (
-            sosAlerts.map(alert => (
-              <div key={alert.id} className="glassmorphic-card p-4 border border-red-500/30 bg-red-50 dark:bg-red-900/10 relative">
-                <div className="absolute top-0 right-0 w-2 h-full bg-red-600 rounded-r-2xl"></div>
-                <div className="flex justify-between items-start mb-2 mr-2">
-                  <div>
-                    <h4 className="font-black text-sm text-red-700 dark:text-red-400">
-                      🚨 استغاثة من: {alert.teamName}
-                    </h4>
-                    <p className="text-xs text-slate-600 mt-1">القطاع: {alert.sector}</p>
-                    <p className="text-[10px] text-slate-500 font-bold mt-1">التاريخ: {new Date(alert.date).toLocaleString('ar-IQ')}</p>
-                  </div>
-                  {alert.status === 'active' ? (
-                    <span className="bg-red-600 text-white text-[10px] px-2 py-1 rounded-full font-bold animate-pulse">مفتوح وعاجل</span>
-                  ) : (
-                    <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-1 rounded-full font-bold">تمت الاستجابة</span>
-                  )}
-                </div>
-                <div className="mr-2 mt-3 p-3 bg-white dark:bg-slate-900 rounded-xl border border-red-200 dark:border-red-900/50">
-                  <p className="text-xs text-slate-700 dark:text-slate-300 font-bold">📍 الموقع وقت الاستغاثة:</p>
-                  <p className="text-xs text-red-600 mt-1 font-mono">{alert.location}</p>
-                </div>
-                {alert.status === 'active' && (
-                  <div className="mr-2 mt-4 flex gap-2">
-                    <button 
-                      onClick={() => {
-                        setSosAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, status: 'resolved' } : a));
-                        triggerAlert('تم تسجيل الاستجابة لنداء الاستغاثة.');
-                      }}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md"
-                    >
-                      ✅ تأكيد الاستجابة وإغلاق النداء
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))
-          ) : (
-            <div className="text-center p-8 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
-              <AlertCircle className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
-              <p className="text-slate-500 font-bold text-sm">لا توجد نداءات استغاثة مسجلة</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeTab === 'live_tracking' && (
-        <div className="glassmorphic-card p-6 border border-blue-500/20">
-          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">التتبع الحي للفرق الميدانية (Live Tracking)</h3>
-          <p className="text-[10px] text-slate-500 mb-6">يتم تحديد موقع الفرق بناءً على آخر تقييم أو استغاثة صدرت منهم.</p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-right border-collapse text-xs font-bold">
-              <thead>
-                <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                  <th className="p-3">اسم الفريق</th>
-                  <th className="p-3">القطاع</th>
-                  <th className="p-3">آخر نشاط مسجل</th>
-                  <th className="p-3">الموقع التقريبي (بناءً على آخر منشأة)</th>
-                  <th className="p-3 text-center">إجراء</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
-                {teams.map(t => {
-                  // Find last inspection for this team
-                  const teamInspections = establishments
-                    .filter(e => e.lastInspection !== 'لم يزر بعد' && e.lastInspectorId === t.id)
-                    .sort((a, b) => new Date(b.lastInspectionDate || 0) - new Date(a.lastInspectionDate || 0));
-                  
-                  const lastEst = teamInspections[0];
-                  
-                  return (
-                    <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
-                      <td className="p-3 text-slate-800 dark:text-slate-200">{t.name}</td>
-                      <td className="p-3 text-teal-600 dark:text-teal-400">{t.sector}</td>
-                      <td className="p-3 text-slate-500">
-                        {lastEst ? new Date(lastEst.lastInspectionDate).toLocaleString('ar-IQ') : 'لا يوجد نشاط مسجل'}
-                      </td>
-                      <td className="p-3 text-slate-600 dark:text-slate-400">
-                        {lastEst ? `${lastEst.name} (${lastEst.neighborhood || 'حي غير محدد'})` : 'غير متوفر'}
-                      </td>
-                      <td className="p-3">
-                        <div className="flex justify-center">
-                          <button
-                            onClick={() => {
-                              setSelectedEstId(lastEst ? lastEst.id : '');
-                              setSelectedTeamId(t.id);
-                              setActiveTab('dispatch');
-                            }}
-                            className="px-3 py-1.5 rounded-lg bg-fuchsia-500/10 hover:bg-fuchsia-500/20 text-fuchsia-600 transition-all cursor-pointer text-[10px]"
-                          >
-                            توجيه نداء عاجل
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'monthly_stats' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div 
-              onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
-              className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none"
-            >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المطاعم المغلقة هذا الشهر 🔒</h3>
-              <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في عموم المحافظة.</p>
-              <p className="text-5xl font-extrabold text-rose-500">{allMonthlyClosures.length}</p>
-              <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل حسب القطاعات 👁️</span>
-            </div>
-            
-            <div 
-              onClick={() => { setStatsModalType('fines'); setSelectedSector(null); setShowStatsModal(true); }}
-              className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none"
-            >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
-              <p className="text-[10px] text-slate-500 mb-4">إجمالي المطاعم التي تم تغريمها مالياً خلال الشهر الحالي في عموم المحافظة.</p>
-              <p className="text-5xl font-extrabold text-amber-500">{allMonthlyFines.length}</p>
-              <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل حسب القطاعات 👁️</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'dispatch' && (
-        <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
-          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">إرسال فرق الطوارئ وتوجيه اللجان</h3>
-          <p className="text-[10px] text-slate-500 mb-6">اختر المطعم واللجنة لإرسال أمر تفتيش حصري وعاجل يظهر في شاشاتهم.</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-[10px] font-bold text-slate-400 mb-1">المنشأة المستهدفة</label>
-              <select 
-                value={selectedEstId}
-                onChange={(e) => setSelectedEstId(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-white"
-              >
-                <option value="">-- اختر المطعم أو الكافيه --</option>
-                {establishments.map(est => (
-                  <option key={est.id} value={est.id}>{est.name} ({est.sector})</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold text-slate-400 mb-1">اللجنة المُكلفة بالواجب</label>
-              <select 
-                value={selectedTeamId}
-                onChange={(e) => setSelectedTeamId(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-white"
-              >
-                <option value="">-- اختر اللجنة الرقابية --</option>
-                {teams.map(t => (
-                  <option key={t.id} value={t.id}>{t.name} ({t.sector})</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <button 
-            onClick={handleDispatch}
-            className="w-full py-3 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black text-xs transition-all shadow-md"
-          >
-            🚀 إرسال أمر التفتيش الآن
-          </button>
-        </div>
-      )}
-
-      {activeTab === 'teams_management' && (
+{activeTab === 'teams_management' && (
         <div className="glassmorphic-card p-6 border border-teal-500/20">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
@@ -628,6 +397,165 @@ export default function OperationsRoom() {
         </div>
       )}
 
+      
+      {activeTab === 'live_operations' && (
+        <div className="space-y-6">
+          
+          {/* Top Section: Alerts & Notifications */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* SOS Alerts */}
+            <div className="glassmorphic-card p-4 border border-red-500/20 max-h-80 overflow-y-auto">
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                سجل الطوارئ (SOS)
+              </h3>
+              {sosAlerts && sosAlerts.length > 0 ? (
+                sosAlerts.map(alert => (
+                  <div key={alert.id} className="mb-3 p-3 rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-900/10 relative">
+                    <div className="absolute top-0 right-0 w-1 h-full bg-red-600 rounded-r-xl"></div>
+                    <div className="flex justify-between items-start mb-2 mr-2">
+                      <div>
+                        <h4 className="font-black text-xs text-red-700 dark:text-red-400">🚨 {alert.teamName}</h4>
+                        <p className="text-[10px] text-slate-600">القطاع: {alert.sector}</p>
+                      </div>
+                      {alert.status === 'active' ? (
+                        <span className="bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold animate-pulse">عاجل</span>
+                      ) : (
+                        <span className="bg-emerald-100 text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مستجاب</span>
+                      )}
+                    </div>
+                    {alert.status === 'active' && (
+                      <button 
+                        onClick={() => {
+                          setSosAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, status: 'resolved' } : a));
+                          triggerAlert('تم الاستجابة لنداء الاستغاثة.');
+                        }}
+                        className="mr-2 mt-2 w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold"
+                      >
+                        ✅ تأكيد الاستجابة
+                      </button>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-xs text-slate-500 py-4">لا توجد استغاثات حالياً.</p>
+              )}
+            </div>
+
+            {/* Closure Verifications */}
+            <div className="glassmorphic-card p-4 border border-indigo-500/20 max-h-80 overflow-y-auto">
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <Camera className="w-4 h-4 text-indigo-500" />
+                أدلة الإغلاق الواردة
+              </h3>
+              {closureVerifications && closureVerifications.length > 0 ? (
+                closureVerifications.map(ver => (
+                  <div key={ver.id} className="mb-3 p-3 rounded-xl border border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-900/10 relative">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="font-bold text-xs text-indigo-700 dark:text-indigo-400">
+                          {ver.type === 'reopening' ? '🔓 طلب فتح:' : '🔒 إغلاق:'} {ver.estName}
+                        </h4>
+                        <p className="text-[10px] text-slate-500">{ver.trackerName}</p>
+                      </div>
+                      {ver.status === 'pending' ? (
+                        <span className="bg-amber-100 text-amber-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مراجعة</span>
+                      ) : ver.status === 'approved' ? (
+                        <span className="bg-emerald-100 text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مُصادق</span>
+                      ) : (
+                        <span className="bg-rose-100 text-rose-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مرفوض</span>
+                      )}
+                    </div>
+                    {ver.photo && (
+                      <div className="mt-2 mb-2 bg-slate-900 rounded-lg overflow-hidden flex justify-center items-center h-20">
+                        <img src={ver.photo} alt="دليل" className="max-h-full object-contain" />
+                      </div>
+                    )}
+                    {ver.status === 'pending' && (
+                      <div className="flex gap-1 mt-2">
+                        <button onClick={() => handleApproveClosure(ver)} className="flex-1 bg-emerald-600 text-white rounded py-1 text-[10px] font-bold">قبول</button>
+                        <button onClick={() => handleRejectClosure(ver.id)} className="flex-1 bg-rose-600 text-white rounded py-1 text-[10px] font-bold">رفض</button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-xs text-slate-500 py-4">لا توجد أدلة إغلاق معلقة.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Section: Teams Live Tracking & Dispatch */}
+          <div className="glassmorphic-card p-6 border border-blue-500/20">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+              <Target className="w-5 h-5 text-blue-500" />
+              الفرق الميدانية والتوجيه السريع
+            </h3>
+            
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-right border-collapse text-xs font-bold">
+                <thead>
+                  <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                    <th className="p-3">الفريق / القطاع</th>
+                    <th className="p-3">آخر تواجد مسجل</th>
+                    <th className="p-3">المنشأة المستهدفة للتوجيه</th>
+                    <th className="p-3 text-center">إجراء التوجيه</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+                  {teams.map(t => {
+                    const teamInspections = establishments
+                      .filter(e => e.lastInspection !== 'لم يزر بعد' && e.lastInspectorId === t.id)
+                      .sort((a, b) => new Date(b.lastInspectionDate || 0) - new Date(a.lastInspectionDate || 0));
+                    const lastEst = teamInspections[0];
+                    
+                    return (
+                      <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
+                        <td className="p-3">
+                          <span className="text-slate-800 dark:text-slate-200 block">{t.name}</span>
+                          <span className="text-[10px] text-teal-600">{t.sector}</span>
+                        </td>
+                        <td className="p-3 text-slate-500">
+                          <span className="block text-slate-700 dark:text-slate-300">
+                            {lastEst ? `${lastEst.name}` : 'غير متوفر'}
+                          </span>
+                          <span className="text-[10px]">
+                            {lastEst ? new Date(lastEst.lastInspectionDate).toLocaleString('ar-IQ') : 'لا يوجد نشاط'}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <select 
+                            onChange={(e) => setSelectedEstId(e.target.value)}
+                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          >
+                            <option value="">-- اختر المطعم --</option>
+                            {establishments.filter(e => e.sector === t.sector).map(est => (
+                              <option key={est.id} value={est.id}>{est.name}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="p-3 text-center">
+                          <button
+                            onClick={() => {
+                              setSelectedTeamId(t.id);
+                              // We wait a tick to ensure selectedTeamId is set before dispatching.
+                              setTimeout(handleDispatch, 0);
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
+                          >
+                            🚀 إرسال التوجيه
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Account Modal for Adding/Editing Teams */}
       {accountModalState.isOpen && (
         <AccountModal
@@ -641,167 +569,13 @@ export default function OperationsRoom() {
         />
       )}
 
-      {/* Central Stats Modal (Grouped by Sector) */}
-      {showStatsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[85vh] overflow-y-auto text-right">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
-              <div>
-                <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
-                  {statsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
-                </h3>
-                {selectedSector && (
-                  <button 
-                    onClick={() => setSelectedSector(null)}
-                    className="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-white mt-1 underline"
-                  >
-                    العودة لقائمة القطاعات
-                  </button>
-                )}
-              </div>
-              <button onClick={() => setShowStatsModal(false)} className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              {(() => {
-                const dataList = statsModalType === 'closures' ? allMonthlyClosures : allMonthlyFines;
-                if (dataList.length === 0) {
-                  return <p className="text-center text-sm text-slate-500 py-8">لا توجد بيانات لهذا الشهر.</p>;
-                }
-
-                // If a sector is selected, show list of items for that sector
-                if (selectedSector) {
-                  const itemsInSector = dataList.filter(req => req.sector === selectedSector);
-                  return (
-                    <div className="space-y-3">
-                      <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-2">قطاع: {selectedSector}</h4>
-                      {itemsInSector.map(req => {
-                        const estData = establishments.find(e => e.id === req.estId);
-                        const neighborhood = estData ? estData.neighborhood : 'غير محدد';
-                        return (
-                          <div key={req.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
-                            <div>
-                              <h4 className="font-black text-sm">{req.estName}</h4>
-                              <p className="text-[10px] text-slate-500 mt-1">الحي: {neighborhood}</p>
-                            </div>
-                            <div className="text-left">
-                              <span className="text-[10px] font-bold text-slate-400 block mb-1">
-                                {new Date(req.date).toLocaleDateString('ar-IQ')}
-                              </span>
-                              <span className="text-[9px] text-teal-600 bg-teal-500/10 px-2 py-0.5 rounded">
-                                {req.teamName || 'غير متوفر'}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }
-
-                // Otherwise, group by sector and show summary cards
-                const groupedBySector = dataList.reduce((acc, req) => {
-                  const sector = req.sector || 'قطاعات أخرى';
-                  if (!acc[sector]) acc[sector] = 0;
-                  acc[sector]++;
-                  return acc;
-                }, {});
-
-                return (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {Object.entries(groupedBySector).map(([sector, count]) => (
-                      <div 
-                        key={sector} 
-                        onClick={() => setSelectedSector(sector)}
-                        className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-2xl cursor-pointer hover:border-teal-500 hover:shadow-lg transition-all text-center group"
-                      >
-                        <h4 className="font-black text-sm text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors mb-2">
-                          {sector}
-                        </h4>
-                        <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center mx-auto mb-2">
-                          <span className="text-xl font-extrabold text-teal-600 dark:text-teal-400">{count}</span>
-                        </div>
-                        <span className="text-[10px] text-slate-500">
-                          {statsModalType === 'closures' ? 'مطعم مغلق' : 'غرامة مسجلة'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
-        </div>
-      )}
-      {activeTab === 'closure_verifications' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-black text-slate-800 dark:text-white">أدلة الإغلاق الميدانية الواردة من فرق المتابعة</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {closureVerifications && closureVerifications.length > 0 ? (
-              closureVerifications.map(ver => (
-                <div key={ver.id} className="glassmorphic-card p-4 border border-indigo-500/20 relative">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="font-bold text-sm text-indigo-700 dark:text-indigo-400">
-                        {ver.type === 'reopening' ? '🔓 طلب إعادة فتح:' : '🔒 توثيق إغلاق:'} {ver.estName}
-                      </h4>
-                      <p className="text-[10px] text-slate-500 font-bold mt-1">المرسل: {ver.trackerName}</p>
-                      <p className="text-[10px] text-slate-500">{new Date(ver.date).toLocaleString('ar-IQ')}</p>
-                    </div>
-                    {ver.status === 'pending' ? (
-                      <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-1 rounded-full font-bold">قيد المراجعة</span>
-                    ) : ver.status === 'approved' ? (
-                      <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-1 rounded-full font-bold">مصادق عليه</span>
-                    ) : (
-                      <span className="bg-rose-100 text-rose-700 text-[10px] px-2 py-1 rounded-full font-bold">مرفوض</span>
-                    )}
-                  </div>
-                  
-                  {ver.photo && (
-                    <div className="mt-2 mb-3 bg-slate-900 rounded-xl overflow-hidden flex justify-center items-center border border-slate-700 h-48 relative group">
-                      <img src={ver.photo} alt="دليل إغلاق" className="max-h-full max-w-full object-contain" />
-                    </div>
-                  )}
-
-                  {ver.notes && (
+      
+{ver.notes && (
                     <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700 mb-4">
                       <p className="text-xs text-slate-700 dark:text-slate-300 font-bold">ملاحظات فريق المتابعة:</p>
                       <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{ver.notes}</p>
                     </div>
                   )}
-
-                  {ver.status === 'pending' && (
-                    <div className="flex gap-2 mt-4 border-t border-slate-200 dark:border-slate-700 pt-3">
-                      <button 
-                        onClick={() => handleApproveClosure(ver)}
-                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-xl text-xs font-bold transition-all flex justify-center items-center gap-1"
-                      >
-                        <CheckCircle className="w-4 h-4" /> {ver.type === 'reopening' ? 'مصادقة الفتح' : 'مصادقة الإغلاق'}
-                      </button>
-                      <button 
-                        onClick={() => handleRejectClosure(ver.id)}
-                        className="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 p-2 rounded-xl text-xs font-bold transition-all flex justify-center items-center gap-1"
-                      >
-                        <XCircle className="w-4 h-4" /> رفض
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="col-span-1 md:col-span-2 text-center p-8 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
-                <Camera className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
-                <p className="text-slate-500 font-bold text-sm">لا توجد أدلة إغلاق واردة حالياً</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
 
       {/* Closure Duration Modal */}
       {closureModalData && (

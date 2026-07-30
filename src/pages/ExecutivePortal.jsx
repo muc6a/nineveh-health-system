@@ -167,6 +167,21 @@ export const ExecutivePortal = () => {
     .sort((a, b) => b.value - a.value);
 
   // Calculate Closed and Fined from penaltyRequests
+  
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const allMonthlyClosures = (penaltyRequests || []).filter(req => 
+    req.type === 'closure' && req.status === 'approved' &&
+    new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
+  );
+  const allMonthlyFines = (penaltyRequests || []).filter(req => 
+    req.type === 'fine' && req.status === 'approved' &&
+    new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
+  );
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [statsModalType, setStatsModalType] = useState('closures'); 
+  const [selectedSector, setSelectedSector] = useState(null); 
+
   const closedRestaurants = (penaltyRequests || []).filter(p => p.type === 'closure' && p.status === 'approved');
   const finedRestaurants = (penaltyRequests || []).filter(p => p.type === 'fine' && p.status === 'approved');
 
@@ -541,7 +556,29 @@ export const ExecutivePortal = () => {
           </div>
         </div>
 
-        
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div 
+              onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
+              className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none"
+            >
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المطاعم المغلقة هذا الشهر 🔒</h3>
+              <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في عموم المحافظة.</p>
+              <p className="text-5xl font-extrabold text-rose-500">{allMonthlyClosures.length}</p>
+              <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل حسب القطاعات 👁️</span>
+            </div>
+            
+            <div 
+              onClick={() => { setStatsModalType('fines'); setSelectedSector(null); setShowStatsModal(true); }}
+              className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none"
+            >
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
+              <p className="text-[10px] text-slate-500 mb-4">إجمالي المطاعم التي تم تغريمها مالياً خلال الشهر الحالي في عموم المحافظة.</p>
+              <p className="text-5xl font-extrabold text-amber-500">{allMonthlyFines.length}</p>
+              <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل حسب القطاعات 👁️</span>
+            </div>
+          </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Compliance Bar Chart */}
               <div 
@@ -768,6 +805,103 @@ export const ExecutivePortal = () => {
             >
               إغلاق النافذة
             </button>
+          </div>
+        </div>
+      )}
+
+      
+
+      {/* Central Stats Modal (Grouped by Sector) */}
+      {showStatsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
+          <div className="w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[85vh] overflow-y-auto text-right">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
+              <div>
+                <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
+                  {statsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
+                </h3>
+                {selectedSector && (
+                  <button 
+                    onClick={() => setSelectedSector(null)}
+                    className="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-white mt-1 underline"
+                  >
+                    العودة لقائمة القطاعات
+                  </button>
+                )}
+              </div>
+              <button onClick={() => setShowStatsModal(false)} className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {(() => {
+                const dataList = statsModalType === 'closures' ? allMonthlyClosures : allMonthlyFines;
+                if (dataList.length === 0) {
+                  return <p className="text-center text-sm text-slate-500 py-8">لا توجد بيانات لهذا الشهر.</p>;
+                }
+
+                // If a sector is selected, show list of items for that sector
+                if (selectedSector) {
+                  const itemsInSector = dataList.filter(req => req.sector === selectedSector);
+                  return (
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-2">قطاع: {selectedSector}</h4>
+                      {itemsInSector.map(req => {
+                        const estData = establishments.find(e => e.id === req.estId);
+                        const neighborhood = estData ? estData.neighborhood : 'غير محدد';
+                        return (
+                          <div key={req.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
+                            <div>
+                              <h4 className="font-black text-sm">{req.estName}</h4>
+                              <p className="text-[10px] text-slate-500 mt-1">الحي: {neighborhood}</p>
+                            </div>
+                            <div className="text-left">
+                              <span className="text-[10px] font-bold text-slate-400 block mb-1">
+                                {new Date(req.date).toLocaleDateString('ar-IQ')}
+                              </span>
+                              <span className="text-[9px] text-teal-600 bg-teal-500/10 px-2 py-0.5 rounded">
+                                {req.teamName || 'غير متوفر'}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+
+                // Otherwise, group by sector and show summary cards
+                const groupedBySector = dataList.reduce((acc, req) => {
+                  const sector = req.sector || 'قطاعات أخرى';
+                  if (!acc[sector]) acc[sector] = 0;
+                  acc[sector]++;
+                  return acc;
+                }, {});
+
+                return (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {Object.entries(groupedBySector).map(([sector, count]) => (
+                      <div 
+                        key={sector} 
+                        onClick={() => setSelectedSector(sector)}
+                        className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-2xl cursor-pointer hover:border-teal-500 hover:shadow-lg transition-all text-center group"
+                      >
+                        <h4 className="font-black text-sm text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors mb-2">
+                          {sector}
+                        </h4>
+                        <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center mx-auto mb-2">
+                          <span className="text-xl font-extrabold text-teal-600 dark:text-teal-400">{count}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-500">
+                          {statsModalType === 'closures' ? 'مطعم مغلق' : 'غرامة مسجلة'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
           </div>
         </div>
       )}
