@@ -1902,8 +1902,7 @@ export const SuperAdminPanel = () => {
                 </div>
                 </div>
               </div>
-            </div>
-              )}
+            )}
             </div>
           </section>
         )}
