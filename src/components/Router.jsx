@@ -10,14 +10,17 @@ import { SuperAdminPanel } from '../pages/SuperAdminPanel';
 import { PublicSearch } from '../pages/PublicSearch';
 import { OwnerPortal } from '../pages/OwnerPortal';
 import { TrackerDashboard } from '../pages/TrackerDashboard';
+import { LandingPage } from '../pages/LandingPage';
 
 export const Router = () => {
   const { currentRoute } = useContext(AppContext);
 
   // Simple state router rendering matching component
   switch (currentRoute) {
-    case '/login':
     case '/':
+      return <LandingPage />;
+      
+    case '/login':
       return <LoginGate />;
     
     case '/dashboard/director':
