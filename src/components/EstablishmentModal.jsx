@@ -31,7 +31,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
   const [formData, setFormData] = useState({
     name: '',
-    type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+    type: activityTypes && activityTypes.length > 0 ? activityTypes[0] : '',
     owner: '',
     phone: '',
     licenseNumber: '',
@@ -72,7 +72,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
         setFormData({
           name: '',
-          type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+          type: activityTypes && activityTypes.length > 0 ? activityTypes[0] : '',
           owner: '',
           phone: '',
           licenseNumber: '',

@@ -1154,7 +1154,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                📝 إدارة وتخصيص استمارات التقييم
+                📝 إدارة النشاطات وبنود التقييم
               </button>
               <button
                 onClick={() => setSubSettingsTab('public_cms')}

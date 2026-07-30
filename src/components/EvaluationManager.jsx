@@ -134,7 +134,7 @@ export const EvaluationManager = () => {
         <div>
           <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
             <Shield className="w-6 h-6 text-teal-600" />
-            <span>إدارة وتخصيص استمارات التقييم</span>
+            <span>إدارة النشاطات وبنود التقييم</span>
           </h2>
           <p className="text-[11px] text-slate-500 mt-1">
             قم ببناء الهيكل التقييمي لكل نشاط (المستوى الأول: النشاط، المستوى الثاني: الأقسام، المستوى الثالث: البنود).
