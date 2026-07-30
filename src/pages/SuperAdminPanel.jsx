@@ -10,7 +10,7 @@ import { AccountModal } from '../components/AccountModal';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setActivityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
@@ -1153,7 +1153,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                📝 بنود التقييم
+                📝 إدارة أنواع النشاطات وبنود التقييم
               </button>
               <button
                 onClick={() => setSubSettingsTab('public_cms')}
@@ -1174,16 +1174,6 @@ export const SuperAdminPanel = () => {
                 }`}
               >
                 💾 البيانات
-              </button>
-              <button
-                onClick={() => setSubSettingsTab('activities')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'activities'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                📋 إدارة أنواع النشاطات
               </button>
             </div>
 
@@ -1668,22 +1658,131 @@ export const SuperAdminPanel = () => {
                   تعديل الصياغة اللغوية لأي بند من بنود التقييم أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان. تأكد دائماً أن مجموع نقاط القالب يساوي 100 بالتمام.
                 </p>
 
-                {/* Template Selector */}
-                <div className="mb-6 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">اختر قالب التقييم (نوع المنشأة):</label>
-                  <select
-                    value={activeTemplateKey}
-                    onChange={(e) => {
-                      setActiveTemplateKey(e.target.value);
-                      setActiveEvalSection('A'); // Reset to section A on template change
-                    }}
-                    className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                  >
-                    {Object.keys(inspectionTemplates).map(key => (
-                      <option key={key} value={key}>{key}</option>
-                    ))}
-                  </select>
+                {/* Activities List (Templates) */}
+                <div className="mb-6 space-y-4">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newActivity}
+                      onChange={(e) => setNewActivity(e.target.value)}
+                      placeholder="إضافة نشاط جديد (مثال: 🏨 فندق 5 نجوم)"
+                      className="flex-1 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all"
+                    />
+                    <button
+                      onClick={() => {
+                        if (newActivity.trim() && !inspectionTemplates[newActivity.trim()]) {
+                          setInspectionTemplates(prev => ({
+                            ...prev,
+                            [newActivity.trim()]: [] // Create new empty template
+                          }));
+                          setActiveTemplateKey(newActivity.trim());
+                          setActiveEvalSection('A');
+                          setNewActivity('');
+                          triggerAlert('تمت إضافة النشاط بنجاح', 'success');
+                        }
+                      }}
+                      className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-all cursor-pointer"
+                    >
+                      إضافة نشاط
+                    </button>
+                  </div>
                   
+                  <div className="space-y-2">
+                    {Object.keys(inspectionTemplates).map((activityKey) => (
+                      <div key={activityKey} className={`flex justify-between items-center border p-3 rounded-xl transition-all ${activeTemplateKey === activityKey ? 'bg-teal-50 dark:bg-teal-900/20 border-teal-500' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700'}`}>
+                        {editingActivityIndex === activityKey ? (
+                          <div className="flex gap-2 flex-1 ml-4">
+                            <input
+                              type="text"
+                              value={editingActivityText}
+                              onChange={(e) => setEditingActivityText(e.target.value)}
+                              className="flex-1 p-2 rounded-lg bg-white dark:bg-slate-900 border border-teal-500 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+                            />
+                            <button
+                              onClick={() => {
+                                if (editingActivityText.trim() && editingActivityText.trim() !== activityKey) {
+                                  setInspectionTemplates(prev => {
+                                    const copy = { ...prev };
+                                    copy[editingActivityText.trim()] = copy[activityKey];
+                                    delete copy[activityKey];
+                                    return copy;
+                                  });
+                                  if (activeTemplateKey === activityKey) {
+                                    setActiveTemplateKey(editingActivityText.trim());
+                                  }
+                                  setEditingActivityIndex(null);
+                                  triggerAlert('تم تعديل النشاط بنجاح', 'success');
+                                } else {
+                                  setEditingActivityIndex(null);
+                                }
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs cursor-pointer"
+                            >
+                              حفظ
+                            </button>
+                            <button
+                              onClick={() => setEditingActivityIndex(null)}
+                              className="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer"
+                            >
+                              إلغاء
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <span
+                              className={`text-xs font-bold flex-1 cursor-pointer hover:text-teal-600 ${activeTemplateKey === activityKey ? 'text-teal-700 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300'}`}
+                              onClick={() => {
+                                setActiveTemplateKey(activityKey);
+                                setActiveEvalSection('A');
+                              }}
+                            >
+                              {activityKey}
+                            </span>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditingActivityIndex(activityKey);
+                                  setEditingActivityText(activityKey);
+                                }}
+                                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-500 flex items-center justify-center transition-all cursor-pointer"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (Object.keys(inspectionTemplates).length <= 1) {
+                                    triggerAlert('لا يمكن حذف النشاط الأخير. يجب إبقاء نشاط واحد على الأقل.', 'error');
+                                    return;
+                                  }
+                                  if (window.confirm('هل أنت متأكد من حذف هذا النشاط وقالب التقييم الخاص به؟')) {
+                                    setInspectionTemplates(prev => {
+                                      const copy = { ...prev };
+                                      delete copy[activityKey];
+                                      return copy;
+                                    });
+                                    if (activeTemplateKey === activityKey) {
+                                      const remainingKeys = Object.keys(inspectionTemplates).filter(k => k !== activityKey);
+                                      setActiveTemplateKey(remainingKeys[0]);
+                                    }
+                                    triggerAlert('تم حذف النشاط بنجاح', 'success');
+                                  }
+                                }}
+                                className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-all cursor-pointer"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                  <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4">
+                    أقسام بنود: <span className="text-teal-600">{activeTemplateKey}</span>
+                  </h3>
                   {(() => {
                     const templateItems = inspectionTemplates[activeTemplateKey] || [];
                     const totalPoints = templateItems.reduce((acc, item) => acc + (parseInt(item.points)||0), 0);
@@ -1800,6 +1899,7 @@ export const SuperAdminPanel = () => {
                       </div>
                     );
                   })()}
+                </div>
                 </div>
               </div>
             </div>
