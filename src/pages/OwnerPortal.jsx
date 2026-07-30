@@ -708,50 +708,20 @@ export const OwnerPortal = () => {
 
         {/* Hidden QR Poster for PDF Export */}
         <div className="hidden qr-poster-wrapper">
-           <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 flex flex-col items-center p-12 pt-28 pb-28 font-sans mx-auto print:scale-100 origin-top">
-             <div className="absolute inset-12 border-[24px] border-[#108c7f] rounded-[2.5rem] pointer-events-none"></div>
+           <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 mx-auto print:scale-100 origin-top overflow-hidden">
+             {/* User's Custom Design Background */}
+             <img src="/poster_bg.jpg" alt="Poster Background" className="absolute inset-0 w-[794px] h-[1122px] object-contain z-0" />
              
-             {/* Logos */}
-             <div className="flex items-center justify-between w-full px-20 mb-10 z-10">
-               <div className="flex flex-col items-center">
-                 <img src="/logos/public_health_logo.png" alt="دائرة الصحة العامة" className="h-20 object-contain mb-2" />
-                 <span className="text-[#108c7f] font-bold text-sm">دائرة الصحة العامة</span>
-               </div>
-               <div className="flex flex-col items-center">
-                 <img src="/logos/nineveh_health_logo.png" alt="دائرة صحة نينوى" className="h-20 object-contain mb-2" />
-                 <span className="text-[#108c7f] font-bold text-sm">دائرة صحة نينوى</span>
-               </div>
-               <div className="flex flex-col items-center">
-                 <img src="/logos/nineveh_gov_logo.png" alt="محافظة نينوى" className="h-20 object-contain mb-2" />
-                 <span className="text-[#108c7f] font-bold text-sm">محافظة نينوى</span>
-               </div>
-               <div className="flex flex-col items-center">
-                 <img src="/logos/iraq_moh_logo.png" alt="وزارة الصحة العراقية" className="h-20 object-contain mb-2" />
-                 <span className="text-[#108c7f] font-bold text-sm">وزارة الصحة العراقية</span>
-               </div>
+             {/* Dynamic Content: Restaurant Name */}
+             <div className="absolute top-[310px] left-0 right-0 flex justify-center px-12 z-10">
+               <h2 className="text-[3.5rem] font-black text-[#108c7f] text-center leading-tight drop-shadow-sm">{ownerEst.name}</h2>
              </div>
              
-             {/* Title */}
-             <div className="text-center w-full mb-10 z-10">
-               <h1 className="text-4xl font-black text-[#108c7f] leading-tight mb-2">النظام الرقمي للرقابة الصحية</h1>
-               <h1 className="text-4xl font-black text-[#108c7f] leading-tight">في محافظة نينوى</h1>
-             </div>
-             
-             {/* Subtitle / Restaurant Name */}
-             <div className="text-center w-full mb-12 z-10 px-24">
-               <h2 className="text-5xl font-black text-[#108c7f] mb-6 leading-tight">{ownerEst.name}</h2>
-               <p className="text-2xl font-bold text-[#108c7f]">"هذه المنشأة خاضعة للرقابة الصحية المستمرة"</p>
-             </div>
-             
-             {/* QR Code Container */}
-             <div className="bg-white p-6 rounded-[3rem] shadow-2xl mb-12 border-[12px] border-[#108c7f] z-10 flex-1 flex items-center justify-center">
-               <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={380} bgColor="#ffffff" fgColor="#0f172a" />
-             </div>
-             
-             {/* Footer Text */}
-             <div className="text-center text-[#108c7f] mt-auto z-10">
-               <p className="text-3xl font-black leading-snug mb-2">امسح الرمز الباركود</p>
-               <p className="text-3xl font-black leading-snug">للاطلاع على مستوى النظافة والتقييم المنشأة</p>
+             {/* Dynamic Content: QR Code */}
+             <div className="absolute top-[450px] left-0 right-0 flex justify-center z-10 mt-8">
+               <div className="bg-white p-6 rounded-[3rem] shadow-xl border-[12px] border-[#108c7f]">
+                 <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={420} bgColor="#ffffff" fgColor="#0f172a" />
+               </div>
              </div>
            </div>
         </div>
