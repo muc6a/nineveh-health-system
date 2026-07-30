@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { Search, Building2, ShieldCheck, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { Search, Building2, ShieldCheck, ArrowUpRight, LogIn } from 'lucide-react';
 
 export const LandingPage = () => {
   const { navigate } = useContext(AppContext);
@@ -16,7 +16,9 @@ export const LandingPage = () => {
       {/* Top Header */}
       <header className="relative z-50 p-6 max-w-7xl mx-auto w-full flex items-center justify-between animate-in fade-in slide-in-from-top-8 duration-700">
         <div className="flex items-center gap-4">
-          <AnimatedLogo variant="login" className="scale-75 origin-right" />
+          <span className="font-black text-lg md:text-xl text-slate-800 dark:text-white tracking-tight">
+            منظومة الرقابة الصحية
+          </span>
         </div>
         <div className="flex items-center gap-4">
           <ThemeToggle />
@@ -26,7 +28,7 @@ export const LandingPage = () => {
           >
             <ShieldCheck className="w-5 h-5" />
             <span>الإدارة</span>
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <LogIn className="w-4 h-4 rtl:rotate-180 opacity-70 group-hover:opacity-100 transition-opacity" />
           </button>
         </div>
       </header>
@@ -36,22 +38,22 @@ export const LandingPage = () => {
         <div className="mb-12 animate-in fade-in zoom-in-95 duration-1000 delay-150 fill-mode-both w-full max-w-4xl mx-auto">
           {/* Official Logos */}
           <div className="flex items-center justify-center gap-6 md:gap-10 mb-8 bg-white/40 dark:bg-slate-900/40 p-4 md:p-6 rounded-3xl backdrop-blur-sm border border-white/50 dark:border-slate-800/50 shadow-sm mx-auto w-fit">
-            <img src="/logos/moh.png" alt="وزارة الصحة العراقية" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform" />
+            <img src="/logos/moh.png" alt="وزارة الصحة العراقية" title="وزارة الصحة العراقية" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
             <div className="w-px h-10 md:h-16 bg-slate-200 dark:bg-slate-700/50"></div>
-            <img src="/logos/nineveh_gov.png" alt="محافظة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform" />
+            <img src="/logos/nineveh_gov.png" alt="محافظة نينوى" title="محافظة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
             <div className="w-px h-10 md:h-16 bg-slate-200 dark:bg-slate-700/50"></div>
-            <img src="/logos/nineveh_health.png" alt="دائرة صحة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform" />
+            <img src="/logos/nineveh_health.png" alt="دائرة صحة نينوى" title="دائرة صحة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
             <div className="w-px h-10 md:h-16 bg-slate-200 dark:bg-slate-700/50"></div>
-            <img src="/logos/public_health.png" alt="قسم الصحة العامة" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform" />
+            <img src="/logos/public_health.png" alt="قسم الصحة العامة" title="قسم الصحة العامة" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
           </div>
 
           <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/20 text-teal-700 dark:text-teal-400 font-bold text-xs">
             <span className="w-2 h-2 rounded-full bg-teal-500 mr-2 animate-pulse"></span>
             النسخة الرقمية المحدثة 2026
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-[1.6] md:leading-[1.4] tracking-tight drop-shadow-sm">
-            مرحباً بكم في <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-500">منظومة الرقابة الصحية</span>
+          <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-tight tracking-tight drop-shadow-sm">
+            مرحباً بكم في
+            <span className="text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-500 block mt-3 md:mt-5 pb-2">منظومة الرقابة الصحية</span>
           </h1>
           <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 font-bold max-w-2xl mx-auto leading-relaxed">
             نافذتكم الموثوقة لضمان بيئة صحية آمنة. اختر البوابة المناسبة لك للوصول إلى الخدمات الرقمية بكل سهولة وسرعة.
