@@ -25,7 +25,7 @@ export const LandingPage = () => {
             className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-500 dark:hover:text-teal-400 font-black text-xs md:text-sm transition-all shadow-sm group"
           >
             <ShieldCheck className="w-5 h-5" />
-            <span>الإدارة والموظفين</span>
+            <span>الإدارة</span>
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           </button>
         </div>

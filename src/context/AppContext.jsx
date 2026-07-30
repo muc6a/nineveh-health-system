@@ -375,7 +375,7 @@ export const AppProvider = ({ children }) => {
   });
 
   const [currentRoute, setCurrentRoute] = useState(() => {
-    return localStorage.getItem('currentRoute') || '/login';
+    return localStorage.getItem('currentRoute') || '/';
   });
 
   useEffect(() => {
