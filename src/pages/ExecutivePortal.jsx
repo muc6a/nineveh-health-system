@@ -364,7 +364,7 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Welcome Headers */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
+        <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">💼</span>
             <div>
