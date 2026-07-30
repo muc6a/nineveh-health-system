@@ -4,7 +4,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { ShieldCheck, Camera, AlertOctagon, MapPin, Search, Star, Edit, Save, ArrowRight, Activity, Plus, Trash2, Cpu, FileText, WifiOff, Printer, ClipboardCheck, Siren } from 'lucide-react';
 
 export const InspectionForm = () => {
-  const { navigate, establishments, inspectionItems, addInspection, config, user, logAudit, notify: triggerAlert, triggerSOSAlert } = useContext(AppContext);
+  const { navigate, establishments, inspectionTemplates, addInspection, config, user, logAudit, notify: triggerAlert, triggerSOSAlert } = useContext(AppContext);
 
   // Parse establishment ID from query string
   const [establishment, setEstablishment] = useState(null);
@@ -125,38 +125,43 @@ export const InspectionForm = () => {
     setTimestamp(now.toLocaleString('ar-IQ', { hour12: true }));
     setLocationLog('36.3489° N, 43.1578° E (الموصل - نينوى)');
 
+    const targetItems = inspectionTemplates[target?.type] || inspectionTemplates['المطاعم، الكافيهات، والمقاهي'] || [];
+    
     const initialRatings = {};
     if (isEdit && target && target.history && target.history.length > 0) {
       const lastEval = target.history[0];
-      inspectionItems.forEach(item => {
+      targetItems.forEach(item => {
         initialRatings[item.id] = lastEval.ratings && lastEval.ratings[item.id] !== undefined ? lastEval.ratings[item.id] : 5;
       });
       if (lastEval.notes) {
         setRemarks(lastEval.notes);
       }
     } else {
-      inspectionItems.forEach(item => {
+      targetItems.forEach(item => {
         initialRatings[item.id] = 5;
       });
     }
     setRatings(initialRatings);
-  }, [establishments, inspectionItems]);
+  }, [establishments, inspectionTemplates]);
 
   if (!establishment) {
     return <div className="p-8 text-center text-xs font-bold text-slate-400">تحميل بيانات المنشأة...</div>;
   }
 
-  const isAtrOrCafe = establishment.type === 'بيع وطحن القهوة' || establishment.type === 'عطارية' || establishment.type === 'مقهى وكافيه' || establishment.type === 'مقهى';
-  const activeItems = isAtrOrCafe ? inspectionItems.filter(item => item.section !== 'D') : inspectionItems;
+  const activeItems = React.useMemo(() => {
+    if (!establishment) return [];
+    return inspectionTemplates[establishment.type] || inspectionTemplates['المطاعم، الكافيهات، والمقاهي'] || [];
+  }, [establishment, inspectionTemplates]);
 
-  const sumScores = Object.keys(ratings).reduce((acc, itemId) => {
+  const sumScores = Math.round(Object.keys(ratings).reduce((acc, itemId) => {
     const item = activeItems.find(i => String(i.id) === String(itemId));
     if (!item) return acc;
     const val = ratings[itemId] !== undefined ? ratings[itemId] : 5;
-    return acc + val;
-  }, 0);
+    const itemScore = (val / 5) * (parseInt(item.points) || 5);
+    return acc + itemScore;
+  }, 0));
 
-  const maxPossible = activeItems.reduce((acc, curr) => acc + 5, 0);
+  const maxPossible = activeItems.reduce((acc, curr) => acc + (parseInt(curr.points) || 0), 0);
   const scorePercentage = maxPossible > 0 ? Math.round((sumScores / maxPossible) * 100) : 0;
 
   const handleRatingChange = (itemId, val) => {
@@ -285,15 +290,16 @@ export const InspectionForm = () => {
     }, 1200);
   };
 
-  const uniqueSections = Array.from(new Set(activeItems.map(item => item.section || 'A'))).sort();
-  const sectionLabels = {
-    'A': 'النظافة العامة (20 درجة)',
-    'B': 'سلامة الأغذية (25 درجة)',
-    'C': 'العاملون (20 درجة)',
-    'D': 'المطبخ والتحضير (20 درجة)',
-    'E': 'الوثائق والالتزام (15 درجة)'
-  };
-  const sections = uniqueSections.map(secKey => ({ key: secKey, title: sectionLabels[secKey] || secKey }));
+  const uniqueSections = Array.from(new Set(activeItems.map(item => item.section || 'A')));
+  const sections = uniqueSections.map(secKey => {
+    const sectionItems = activeItems.filter(item => item.section === secKey);
+    const sectionMax = sectionItems.reduce((acc, curr) => acc + (parseInt(curr.points)||0), 0);
+    const displayLabel = sectionItems.length > 0 && sectionItems[0].sectionName ? sectionItems[0].sectionName : `القسم ${secKey}`;
+    return { 
+      key: secKey, 
+      title: `${displayLabel} (${sectionMax} درجة)`
+    };
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8 transition-colors duration-300">

@@ -272,33 +272,98 @@ const INITIAL_TEAMS = [
   }
 ];
 
-const DEFAULT_INSPECTION_ITEMS = [
-  // Section A: النظافة العامة (20 points total)
-  { id: 1, section: 'A', text: 'نظافة الأرضيات والجدران والأسقف', points: 5 },
-  { id: 2, section: 'A', text: 'نظافة الطاولات وأماكن تقديم الطعام', points: 5 },
-  { id: 3, section: 'A', text: 'التخلص من النفايات بطريقة صحية', points: 5 },
-  { id: 4, section: 'A', text: 'مكافحة الحشرات والقوارض', points: 5 },
-  // Section B: سلامة الأغذية (25 points total)
-  { id: 5, section: 'B', text: 'صلاحية المواد الغذائية', points: 5 },
-  { id: 6, section: 'B', text: 'وجود بطاقة بيان للمواد', points: 5 },
-  { id: 7, section: 'B', text: 'طرق الخزن والتبريد والتجميد', points: 5 },
-  { id: 8, section: 'B', text: 'فصل المواد النيئة عن المطبوخة', points: 5 },
-  { id: 9, section: 'B', text: 'سلامة مصادر المياه والثلج', points: 5 },
-  // Section C: العاملون (20 points total)
-  { id: 10, section: 'C', text: 'وجود بطاقة صحية للعاملين', points: 5 },
-  { id: 11, section: 'C', text: 'الالتزام بالملابس الواقية', points: 5 },
-  { id: 12, section: 'C', text: 'النظافة الشخصية', points: 5 },
-  { id: 13, section: 'C', text: 'التدريب على الممارسات الصحية', points: 5 },
-  // Section D: المطبخ والتحضير (20 points total)
-  { id: 14, section: 'D', text: 'نظافة المعدات والأدوات', points: 5 },
-  { id: 15, section: 'D', text: 'درجات حرارة الحفظ والطهي', points: 5 },
-  { id: 16, section: 'D', text: 'طريقة إعداد وتجهيز الطعام', points: 5 },
-  { id: 17, section: 'D', text: 'منع التلوث المتبادل', points: 5 },
-  // Section E: الوثائق والالتزام (15 points total)
-  { id: 18, section: 'E', text: 'الإجازة الصحية سارية', points: 5 },
-  { id: 19, section: 'E', text: 'الالتزام بملاحظات الرقابة السابقة', points: 5 },
-  { id: 20, section: 'E', text: 'وجود سجلات المتابعة', points: 5 }
-];
+const DEFAULT_INSPECTION_TEMPLATES = {
+  'المطاعم، الكافيهات، والمقاهي': [
+    { id: 1, section: 'A', sectionName: 'النظافة العامة', text: 'نظافة الأرضيات والجدران والأسقف', points: 5 },
+    { id: 2, section: 'A', sectionName: 'النظافة العامة', text: 'نظافة الطاولات وأماكن تقديم الطعام', points: 5 },
+    { id: 3, section: 'A', sectionName: 'النظافة العامة', text: 'التخلص من النفايات بطريقة صحية', points: 5 },
+    { id: 4, section: 'A', sectionName: 'النظافة العامة', text: 'مكافحة الحشرات والقوارض', points: 5 },
+    { id: 5, section: 'B', sectionName: 'سلامة الأغذية', text: 'صلاحية المواد الغذائية', points: 5 },
+    { id: 6, section: 'B', sectionName: 'سلامة الأغذية', text: 'وجود بطاقة بيان للمواد', points: 5 },
+    { id: 7, section: 'B', sectionName: 'سلامة الأغذية', text: 'طرق الخزن والتبريد والتجميد', points: 5 },
+    { id: 8, section: 'B', sectionName: 'سلامة الأغذية', text: 'فصل المواد النيئة عن المطبوخة', points: 5 },
+    { id: 9, section: 'B', sectionName: 'سلامة الأغذية', text: 'سلامة مصادر المياه والثلج', points: 5 },
+    { id: 10, section: 'C', sectionName: 'العاملون', text: 'وجود بطاقة صحية للعاملين', points: 5 },
+    { id: 11, section: 'C', sectionName: 'العاملون', text: 'الالتزام بالملابس الواقية', points: 5 },
+    { id: 12, section: 'C', sectionName: 'العاملون', text: 'النظافة الشخصية', points: 5 },
+    { id: 13, section: 'C', sectionName: 'العاملون', text: 'التدريب على الممارسات الصحية', points: 5 },
+    { id: 14, section: 'D', sectionName: 'المطبخ والتحضير', text: 'نظافة المعدات والأدوات', points: 5 },
+    { id: 15, section: 'D', sectionName: 'المطبخ والتحضير', text: 'درجات حرارة الحفظ والطهي', points: 5 },
+    { id: 16, section: 'D', sectionName: 'المطبخ والتحضير', text: 'طريقة إعداد وتجهيز الطعام', points: 5 },
+    { id: 17, section: 'D', sectionName: 'المطبخ والتحضير', text: 'منع التلوث المتبادل', points: 5 },
+    { id: 18, section: 'E', sectionName: 'الوثائق والالتزام', text: 'الإجازة الصحية سارية', points: 5 },
+    { id: 19, section: 'E', sectionName: 'الوثائق والالتزام', text: 'الالتزام بملاحظات الرقابة السابقة', points: 5 },
+    { id: 20, section: 'E', sectionName: 'الوثائق والالتزام', text: 'وجود سجلات المتابعة', points: 5 }
+  ],
+  'المخابز، الأفران، ومعجنات الحلويات': [
+    { id: 1, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'نظافة منطقة العجن والخبز', points: 10 },
+    { id: 2, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'نظافة الأسطح وطاولات العمل', points: 5 },
+    { id: 3, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'خلو المكان من الحشرات والقوارض', points: 5 },
+    { id: 4, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'تهوية مناسبة للتخلص من الحرارة والأبخرة', points: 5 },
+    { id: 5, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'صلاحية الطحين والمحسنات', points: 10 },
+    { id: 6, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'طرق خزن المواد الجافة', points: 5 },
+    { id: 7, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'سلامة مصادر المياه المستخدمة', points: 5 },
+    { id: 8, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'حفظ الأجبان والألبان (للمعجنات) في مبردات', points: 5 },
+    { id: 9, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'نظافة ونوعية الأحواض والقطاعات', points: 10 },
+    { id: 10, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'نظافة صواني الخبز والرفوف', points: 10 },
+    { id: 11, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'الوقود المستخدم في الفرن آمن', points: 5 },
+    { id: 12, section: 'D', sectionName: 'العاملون والوثائق', text: 'النظافة الشخصية والملابس', points: 10 },
+    { id: 13, section: 'D', sectionName: 'العاملون والوثائق', text: 'وجود بطاقات صحية سارية المفعول', points: 10 },
+    { id: 14, section: 'D', sectionName: 'العاملون والوثائق', text: 'الإجازة الصحية للمخبز', points: 5 }
+  ],
+  'الأسواق، السوبرماركت، ومخازن المواد الغذائية': [
+    { id: 1, section: 'A', sectionName: 'صلاحية المواد المعروضة', text: 'خلو الأرفف من المواد منتهية الصلاحية', points: 20 },
+    { id: 2, section: 'A', sectionName: 'صلاحية المواد المعروضة', text: 'سلامة أغلفة المواد وعدم وجود تلف', points: 10 },
+    { id: 3, section: 'A', sectionName: 'صلاحية المواد المعروضة', text: 'ظهور تواريخ الإنتاج والانتهاء بوضوح', points: 10 },
+    { id: 4, section: 'B', sectionName: 'أجهزة التبريد والتجميد', text: 'مطابقة درجات حرارة المجمدات للشروط', points: 15 },
+    { id: 5, section: 'B', sectionName: 'أجهزة التبريد والتجميد', text: 'مطابقة درجات حرارة البرادات للشروط', points: 10 },
+    { id: 6, section: 'B', sectionName: 'أجهزة التبريد والتجميد', text: 'عدم تكدس المواد فوق الحد المسموح به', points: 5 },
+    { id: 7, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'ترتيب المواد على رفوف بعيداً عن الأرضية', points: 10 },
+    { id: 8, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'نظافة المخازن الرئيسية', points: 5 },
+    { id: 9, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'نظافة الأرضيات العامة للسوق', points: 5 },
+    { id: 10, section: 'D', sectionName: 'الوثائق والشهادات', text: 'الإجازة الصحية للسوق', points: 5 },
+    { id: 11, section: 'D', sectionName: 'الوثائق والشهادات', text: 'شهادات صحية للعاملين', points: 5 }
+  ],
+  'صالونات الحلاقة ومراكز التجميل': [
+    { id: 1, section: 'A', sectionName: 'التعقيم والأدوات', text: 'استخدام أجهزة تعقيم فعالة (UV/Autoclave)', points: 15 },
+    { id: 2, section: 'A', sectionName: 'التعقيم والأدوات', text: 'تعقيم الأدوات المعدنية (مقصات، أمشاط، ملاقط) بعد كل زبون', points: 15 },
+    { id: 3, section: 'A', sectionName: 'التعقيم والأدوات', text: 'استخدام أدوات ذات استخدام واحد (شفرات، مناشف ورقية)', points: 10 },
+    { id: 4, section: 'B', sectionName: 'النظافة العامة للبنية التحتية', text: 'نظافة الأرضيات والجدران والمغاسل', points: 10 },
+    { id: 5, section: 'B', sectionName: 'النظافة العامة للبنية التحتية', text: 'نظافة كراسي الحلاقة وأماكن الانتظار', points: 5 },
+    { id: 6, section: 'B', sectionName: 'النظافة العامة للبنية التحتية', text: 'تهوية المكان والإضاءة', points: 5 },
+    { id: 7, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'تاريخ صلاحية المواد التجميلية (كريمات، أصباغ)', points: 10 },
+    { id: 8, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'ظروف خزن المواد وسلامة العبوات', points: 5 },
+    { id: 9, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'وجود بطاقة بيان للمواد الكيميائية', points: 5 },
+    { id: 10, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'النظافة الشخصية والمظهر العام', points: 10 },
+    { id: 11, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'ارتداء ملابس عمل نظيفة (روب)', points: 5 },
+    { id: 12, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'وجود بطاقة صحية سارية المفعول', points: 5 }
+  ],
+  'قاعات الأعراس والمناسبات': [
+    { id: 1, section: 'A', sectionName: 'المطبخ والتحضير', text: 'نظافة مطبخ القاعة والشروط الصحية فيه', points: 15 },
+    { id: 2, section: 'A', sectionName: 'المطبخ والتحضير', text: 'نظافة الأواني والصحون', points: 10 },
+    { id: 3, section: 'A', sectionName: 'المطبخ والتحضير', text: 'طرق حفظ الأطعمة المطبوخة', points: 5 },
+    { id: 4, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'صلاحية الأطعمة المقدمة في البوفيه', points: 10 },
+    { id: 5, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'فصل اللحوم عن الخضار', points: 5 },
+    { id: 6, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'سلامة مياه الشرب والثلج', points: 10 },
+    { id: 7, section: 'C', sectionName: 'الموقع والصحيات', text: 'نظافة القاعة العامة', points: 10 },
+    { id: 8, section: 'C', sectionName: 'الموقع والصحيات', text: 'نظافة وتعقيم الصحيات (دورات المياه)', points: 10 },
+    { id: 9, section: 'D', sectionName: 'الأمان والوثائق', text: 'مخارج الطوارئ ومطافئ الحريق', points: 10 },
+    { id: 10, section: 'D', sectionName: 'الأمان والوثائق', text: 'الإجازة الصحية للقاعة', points: 10 },
+    { id: 11, section: 'D', sectionName: 'الأمان والوثائق', text: 'بطاقات صحية للعاملين', points: 5 }
+  ],
+  'الصيدليات ومذاخر الأدوية': [
+    { id: 1, section: 'A', sectionName: 'خزن الأدوية ودرجات الحرارة', text: 'سلامة عمل أجهزة التكييف والمولدات 24/7', points: 15 },
+    { id: 2, section: 'A', sectionName: 'خزن الأدوية ودرجات الحرارة', text: 'مطابقة درجة حرارة الصيدلية العامة', points: 10 },
+    { id: 3, section: 'A', sectionName: 'خزن الأدوية ودرجات الحرارة', text: 'مطابقة درجة حرارة البرادات للأدوية الحساسة', points: 15 },
+    { id: 4, section: 'B', sectionName: 'صلاحية الأدوية', text: 'خلو الأرفف من الأدوية منتهية الصلاحية', points: 20 },
+    { id: 5, section: 'B', sectionName: 'صلاحية الأدوية', text: 'نظام فصل الأدوية القريبة من الانتهاء', points: 5 },
+    { id: 6, section: 'B', sectionName: 'صلاحية الأدوية', text: 'سلامة الأدوية المخزنة من الرطوبة والحرارة', points: 5 },
+    { id: 7, section: 'C', sectionName: 'التخلص من النفايات الطبية', text: 'وجود حاويات خاصة للأدوية التالفة والمنتهية', points: 10 },
+    { id: 8, section: 'C', sectionName: 'التخلص من النفايات الطبية', text: 'التعاقد مع شركة متخصصة للتخلص الآمن من النفايات', points: 10 },
+    { id: 9, section: 'D', sectionName: 'التراخيص والوثائق', text: 'إجازة فتح الصيدلية / المذخر', points: 5 },
+    { id: 10, section: 'D', sectionName: 'التراخيص والوثائق', text: 'وجود الصيدلي المسؤول', points: 5 }
+  ]
+};
 
 const INITIAL_DELIVERIES = [];
 
@@ -423,9 +488,9 @@ export const AppProvider = ({ children }) => {
 
 
 
-  const [inspectionItems, setInspectionItems] = useState(() => {
-    const saved = localStorage.getItem('inspectionItems_v2');
-    return saved ? JSON.parse(saved) : DEFAULT_INSPECTION_ITEMS;
+  const [inspectionTemplates, setInspectionTemplates] = useState(() => {
+    const saved = localStorage.getItem('inspectionTemplates_v3');
+    return saved ? JSON.parse(saved) : DEFAULT_INSPECTION_TEMPLATES;
   });
 
   // Super Admin Configuration parameters
@@ -452,8 +517,8 @@ export const AppProvider = ({ children }) => {
   });
 
   const [activityTypes, setActivityTypes] = useState(() => {
-    const saved = localStorage.getItem('activityTypes');
-    return saved ? JSON.parse(saved) : INITIAL_ACTIVITY_TYPES;
+    const saved = localStorage.getItem('activityTypes_v3');
+    return saved ? JSON.parse(saved) : Object.keys(DEFAULT_INSPECTION_TEMPLATES);
   });
 
   useEffect(() => {
@@ -553,7 +618,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('teams_v2', setTeams, teams);
       setupFirebaseSync('trackers_v1', setTrackers, trackers);
       setupFirebaseSync('closureVerifications_v1', setClosureVerifications, closureVerifications);
-      setupFirebaseSync('inspectionItems_v2', setInspectionItems, inspectionItems);
+      setupFirebaseSync('inspectionTemplates_v3', setInspectionTemplates, inspectionTemplates);
       setupFirebaseSync('systemConfig', setConfig, config);
       setupFirebaseSync('activityTypes', setActivityTypes, activityTypes);
       setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
@@ -1039,7 +1104,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedTeam.current) syncToCloud('teams_v2', teams); else isMountedTeam.current = true; }, [teams]);
   useEffect(() => { if (isMountedTrack.current) syncToCloud('trackers_v1', trackers); else isMountedTrack.current = true; }, [trackers]);
   useEffect(() => { if (isMountedClosure.current) syncToCloud('closureVerifications_v1', closureVerifications); else isMountedClosure.current = true; }, [closureVerifications]);
-  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionItems_v2', inspectionItems); else isMountedInsp.current = true; }, [inspectionItems]);
+  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionTemplates_v3', inspectionTemplates); else isMountedInsp.current = true; }, [inspectionTemplates]);
   useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
   useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
   useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
@@ -1068,8 +1133,7 @@ export const AppProvider = ({ children }) => {
       setTrackers,
       closureVerifications,
       setClosureVerifications,
-      inspectionItems,
-      setInspectionItems,
+      inspectionTemplates, setInspectionTemplates,
       config,
       setConfig,
       user,

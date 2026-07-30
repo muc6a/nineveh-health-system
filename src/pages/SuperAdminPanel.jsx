@@ -10,7 +10,7 @@ import { AccountModal } from '../components/AccountModal';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setActivityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setActivityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
@@ -55,6 +55,8 @@ export const SuperAdminPanel = () => {
 
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
   const [subSettingsTab, setSubSettingsTab] = useState(() => sessionStorage.getItem('superAdminSubSettingsTab') || 'evaluations');
+  const defaultTemplateKey = Object.keys(inspectionTemplates)[0] || 'المطاعم، الكافيهات، والمقاهي';
+  const [activeTemplateKey, setActiveTemplateKey] = useState(defaultTemplateKey);
   const [activeEvalSection, setActiveEvalSection] = useState('A');
   const [newEvalSection, setNewEvalSection] = useState('');
   const [newActivity, setNewActivity] = useState('');
@@ -548,27 +550,42 @@ export const SuperAdminPanel = () => {
 
   // Checklist text editing
   const handleItemTextChange = (id, newText) => {
-    setInspectionItems(prev => prev.map(item => item.id === id ? { ...item, text: newText } : item));
+    setInspectionTemplates(prev => {
+      const updatedTemplate = prev[activeTemplateKey].map(item => item.id === id ? { ...item, text: newText } : item);
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
   };
 
   const handleItemPointsChange = (id, newPoints) => {
-    setInspectionItems(prev => prev.map(item => item.id === id ? { ...item, points: parseInt(newPoints) || 0 } : item));
+    setInspectionTemplates(prev => {
+      const updatedTemplate = prev[activeTemplateKey].map(item => item.id === id ? { ...item, points: parseInt(newPoints) || 0 } : item);
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
   };
 
   const handleAddChecklistItem = (sectionKey = 'A') => {
-    const newId = inspectionItems.length > 0 ? Math.max(...inspectionItems.map(i => i.id)) + 1 : 1;
+    const currentTemplate = inspectionTemplates[activeTemplateKey] || [];
+    const newId = currentTemplate.length > 0 ? Math.max(...currentTemplate.map(i => i.id)) + 1 : 1;
     const newItem = {
       id: newId,
       section: typeof sectionKey === 'string' ? sectionKey : 'A',
+      sectionName: typeof sectionKey === 'string' ? sectionKey : 'A', // Add sectionName for dynamic handling
       text: 'بند فحص رقابي مضاف حديثاً - يرجى كتابة الاشتراط الصحي هنا.',
       points: 5
     };
-    setInspectionItems(prev => [...prev, newItem]);
+    
+    setInspectionTemplates(prev => {
+      const updatedTemplate = [...(prev[activeTemplateKey] || []), newItem];
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
     triggerAlert('تم إضافة بند رقابي جديد لقائمة التقييم بقيمة 5 درجات.');
   };
 
   const handleDeleteChecklistItem = (id) => {
-    setInspectionItems(prev => prev.filter(item => item.id !== id));
+    setInspectionTemplates(prev => {
+      const updatedTemplate = prev[activeTemplateKey].filter(item => item.id !== id);
+      return { ...prev, [activeTemplateKey]: updatedTemplate };
+    });
     triggerAlert('تم حذف البند الرقابي بنجاح.');
   };
 
@@ -1648,26 +1665,49 @@ export const SuperAdminPanel = () => {
                 </h2>
 
                 <p className="text-[10px] text-slate-400 mb-4 leading-relaxed">
-                  تعديل الصياغة اللغوية لأي بند من بنود التقييم أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان:
+                  تعديل الصياغة اللغوية لأي بند من بنود التقييم أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان. تأكد دائماً أن مجموع نقاط القالب يساوي 100 بالتمام.
                 </p>
+
+                {/* Template Selector */}
+                <div className="mb-6 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">اختر قالب التقييم (نوع المنشأة):</label>
+                  <select
+                    value={activeTemplateKey}
+                    onChange={(e) => {
+                      setActiveTemplateKey(e.target.value);
+                      setActiveEvalSection('A'); // Reset to section A on template change
+                    }}
+                    className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  >
+                    {Object.keys(inspectionTemplates).map(key => (
+                      <option key={key} value={key}>{key}</option>
+                    ))}
+                  </select>
+                  
+                  {(() => {
+                    const templateItems = inspectionTemplates[activeTemplateKey] || [];
+                    const totalPoints = templateItems.reduce((acc, item) => acc + (parseInt(item.points)||0), 0);
+                    const isPerfect = totalPoints === 100;
+                    return (
+                      <div className={`mt-3 p-3 rounded-xl border ${isPerfect ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-400'} flex items-center justify-between`}>
+                        <span className="text-xs font-black">إجمالي نقاط القالب الحالي:</span>
+                        <span className="text-sm font-black">{totalPoints} / 100</span>
+                      </div>
+                    );
+                  })()}
+                </div>
 
                 <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-4 items-center">
                   {(() => {
-                    const uniqueSections = Array.from(new Set((inspectionItems || []).map(item => item.section)));
+                    const currentTemplate = inspectionTemplates[activeTemplateKey] || [];
+                    const uniqueSections = Array.from(new Set(currentTemplate.map(item => item.section)));
                     const baseSections = ['A', 'B', 'C', 'D', 'E'];
                     const allSections = Array.from(new Set([...baseSections, ...uniqueSections]));
                     
-                    const sectionLabels = {
-                      'A': 'النظافة العامة',
-                      'B': 'سلامة الأغذية',
-                      'C': 'العاملون',
-                      'D': 'المطبخ والتحضير',
-                      'E': 'الوثائق والالتزام'
-                    };
-
                     return allSections.map(sectionKey => {
                       const isActive = activeEvalSection === sectionKey;
-                      const displayLabel = sectionLabels[sectionKey] || sectionKey;
+                      const sectionItems = currentTemplate.filter(item => item.section === sectionKey);
+                      const displayLabel = sectionItems.length > 0 && sectionItems[0].sectionName ? sectionItems[0].sectionName : `القسم ${sectionKey}`;
                       return (
                         <button
                           key={sectionKey}
@@ -1705,15 +1745,9 @@ export const SuperAdminPanel = () => {
                 <div className="space-y-6 max-h-[420px] overflow-y-auto pr-2">
                   {(() => {
                     const sectionKey = activeEvalSection;
-                    const sectionLabels = {
-                      'A': 'النظافة العامة',
-                      'B': 'سلامة الأغذية',
-                      'C': 'العاملون',
-                      'D': 'المطبخ والتحضير',
-                      'E': 'الوثائق والالتزام'
-                    };
-                    const displayLabel = sectionLabels[sectionKey] || sectionKey;
-                    const sectionItems = (inspectionItems || []).filter(item => item.section === sectionKey);
+                    const currentTemplate = inspectionTemplates[activeTemplateKey] || [];
+                    const sectionItems = currentTemplate.filter(item => item.section === sectionKey);
+                    const displayLabel = sectionItems.length > 0 && sectionItems[0].sectionName ? sectionItems[0].sectionName : `القسم ${sectionKey}`;
                     
                     return (
                       <div key={sectionKey} className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/20 animate-fade-in">
@@ -1744,7 +1778,7 @@ export const SuperAdminPanel = () => {
                                 <span className="text-[8px] text-slate-400 font-bold block text-center">الدرجة</span>
                                 <input
                                   type="number"
-                                  value={item.points || 5}
+                                  value={item.points || 0}
                                   onChange={(e) => handleItemPointsChange(item.id, e.target.value)}
                                   className="w-14 p-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-[11px] font-black text-center text-teal-600 dark:text-teal-400 outline-none focus:border-teal-500 transition-all"
                                 />
