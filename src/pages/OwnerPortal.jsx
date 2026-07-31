@@ -156,6 +156,9 @@ export const OwnerPortal = () => {
                   dir="ltr"
                 />
               </div>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold mt-3 text-center">
+                * أدخل الكود المكون من أحرف وأرقام الذي تسلمته من فريق الرقابة
+              </p>
             </div>
 
             {error && (
