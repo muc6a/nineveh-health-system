@@ -869,9 +869,16 @@ export const AppProvider = ({ children }) => {
   // Public Search Page CMS
   const [publicCMS, setPublicCMS] = useState(() => {
     const saved = localStorage.getItem('publicCMS');
-    return saved ? JSON.parse(saved) : {
-      heroTitle: 'ابحث عن مطاعم ومقاهي نينوى',
-      heroSubtext: 'استعلم عن التقييم الصحي ومدى التزام المنشآت الغذائية بالشروط الصحية قبل الشراء، أو قدم شكوى مباشرة لفرق التفتيش.',
+    const parsed = saved ? JSON.parse(saved) : null;
+    
+    if (parsed && parsed.heroTitle === 'ابحث عن مطاعم ومقاهي نينوى') {
+      parsed.heroTitle = 'ابحث عن المنشآت في محافظة نينوى';
+      parsed.heroSubtext = 'استعلم عن التقييم الصحي (مثل المطاعم، المقاهي، الصالونات وغيرها) ومدى التزامها بالشروط الصحية، أو قدم شكوى مباشرة لفرق التفتيش.';
+    }
+
+    return parsed || {
+      heroTitle: 'ابحث عن المنشآت في محافظة نينوى',
+      heroSubtext: 'استعلم عن التقييم الصحي (مثل المطاعم، المقاهي، الصالونات وغيرها) ومدى التزامها بالشروط الصحية، أو قدم شكوى مباشرة لفرق التفتيش.',
       announcement: ''
     };
   });
