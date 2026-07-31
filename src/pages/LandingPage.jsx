@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { Search, Building2, ShieldCheck, ArrowUpRight, LogIn } from 'lucide-react';
+import { Search, Building2, ShieldCheck, ArrowUpRight, ArrowDownLeft, LogIn } from 'lucide-react';
 
 export const LandingPage = () => {
   const { navigate } = useContext(AppContext);
@@ -109,7 +109,7 @@ export const LandingPage = () => {
                 دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم.
               </p>
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-sm">
-                الدخول كصاحب منشأة <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                الدخول كصاحب منشأة <ArrowDownLeft className="w-4 h-4 group-hover:translate-y-1 group-hover:-translate-x-1 transition-transform" />
               </div>
             </div>
           </button>
