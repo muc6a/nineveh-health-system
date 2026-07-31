@@ -68,13 +68,13 @@ export const PublicSearch = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/login')}
-              className="text-[10px] font-bold text-slate-500 hover:text-teal-600 transition-colors"
-            >
-              دخول الموظفين
-            </button>
             <ThemeToggle />
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> العودة للرئيسية
+            </button>
           </div>
         </div>
       </header>
