@@ -589,7 +589,6 @@ export const ExecutivePortal = () => {
                 className="glassmorphic-card p-5 flex flex-col min-h-[320px] cursor-pointer hover:shadow-2xl transition-all"
                 onClick={() => setChartModalState({ isOpen: true, title: 'تفاصيل مؤشر امتثال السلامة الصحية للمطاعم والمنشآت', data: chart3Data })}
               >
-                <div className="absolute top-2 left-2 text-[10px] bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 px-2 py-1 rounded-lg">اضغط للتفاصيل</div>
                 <ThreeDBarChart
                   title="مؤشر امتثال السلامة الصحية للمطاعم والمنشآت"
                   data={chart3Data}
@@ -601,7 +600,6 @@ export const ExecutivePortal = () => {
                 className="glassmorphic-card p-5 flex flex-col min-h-[320px] cursor-pointer hover:shadow-2xl transition-all relative"
                 onClick={() => setChartModalState({ isOpen: true, title: 'تفاصيل نسبة تقييم وإصدار رموز QR هذا الشهر', data: chart1Data })}
               >
-                <div className="absolute top-2 left-2 text-[10px] bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 px-2 py-1 rounded-lg z-10">اضغط للتفاصيل</div>
                 <ThreeDPieChart
                   title="نسبة تقييم وإصدار رموز QR هذا الشهر"
                   data={chart1Data}
