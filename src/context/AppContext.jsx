@@ -961,11 +961,7 @@ export const AppProvider = ({ children }) => {
     
     // Set initial route based on URL path and search query params
     const initialPath = window.location.pathname + window.location.search;
-    if (window.location.pathname && window.location.pathname !== '/') {
-      navigate(initialPath);
-    } else {
-      navigate('/login');
-    }
+    navigate(initialPath || '/');
     
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
