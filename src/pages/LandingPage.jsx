@@ -106,7 +106,7 @@ export const LandingPage = () => {
                 بوابة أصحاب المنشآت
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed mb-8 flex-1">
-                دخول مخصص لأصحاب المطاعم والمعامل لمتابعة التقييمات، خطط العمل، والشهادات الصحية الخاصة بهم.
+                دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم.
               </p>
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-sm">
                 الدخول كصاحب منشأة <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
