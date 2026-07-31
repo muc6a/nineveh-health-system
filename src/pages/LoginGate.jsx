@@ -173,13 +173,6 @@ export const LoginGate = () => {
       {/* Top Floating Controls */}
       <div className="absolute top-4 left-4 z-50 flex items-center gap-3">
         <ThemeToggle />
-        {/* Quick Route to Citizen portals */}
-        <button 
-          onClick={() => navigate('/report')}
-          className="text-xs font-bold px-3 py-2 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 hover:bg-teal-500/20 transition-all duration-300"
-        >
-          بوابات المواطن الخارجية
-        </button>
       </div>
 
       <div className="w-full max-w-lg glassmorphic-card p-6 md:p-8 relative overflow-hidden border border-white/35">
@@ -260,8 +253,8 @@ export const LoginGate = () => {
             </div>
           </div>
 
-          {/* Remember and Recovery links */}
-          <div className="flex items-center justify-between pt-1 pb-2">
+          {/* Remember Me */}
+          <div className="flex items-center pt-1 pb-2">
             <label 
               onClick={() => setRememberMe(!rememberMe)}
               className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-600 dark:text-slate-400 select-none"
@@ -273,13 +266,6 @@ export const LoginGate = () => {
               )}
               <span>تذكر حسابي على هذا الجهاز</span>
             </label>
-
-            <button
-              type="button"
-              className="text-[11px] font-bold text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400 transition-colors"
-            >
-              نسيت كلمة المرور؟ استرجاع الحساب عبر الهاتف
-            </button>
           </div>
 
           {/* Secure login action button */}

@@ -28,7 +28,6 @@ export const LandingPage = () => {
           >
             <ShieldCheck className="w-5 h-5" />
             <span>الإدارة</span>
-            <LogIn className="w-4 h-4 rtl:rotate-180 opacity-70 group-hover:opacity-100 transition-opacity" />
           </button>
         </div>
       </header>
@@ -38,18 +37,28 @@ export const LandingPage = () => {
         <div className="mb-12 animate-in fade-in zoom-in-95 duration-1000 delay-150 fill-mode-both w-full max-w-4xl mx-auto">
           {/* Official Logos */}
           <div className="flex items-center justify-center gap-6 md:gap-10 mb-8 bg-white/40 dark:bg-slate-900/40 p-4 md:p-6 rounded-3xl backdrop-blur-sm border border-white/50 dark:border-slate-800/50 shadow-sm mx-auto w-fit">
-            <img src="/logos/moh.png" alt="وزارة الصحة العراقية" title="وزارة الصحة العراقية" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
+            <div className="group relative flex flex-col items-center">
+              <img src="/logos/moh.png" alt="وزارة الصحة العراقية" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
+              <span className="absolute -bottom-8 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded whitespace-nowrap pointer-events-none z-10 shadow-lg">وزارة الصحة العراقية</span>
+            </div>
             <div className="w-px h-10 md:h-16 bg-slate-200 dark:bg-slate-700/50"></div>
-            <img src="/logos/nineveh_gov.png" alt="محافظة نينوى" title="محافظة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
+            
+            <div className="group relative flex flex-col items-center">
+              <img src="/logos/nineveh_gov.png" alt="محافظة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
+              <span className="absolute -bottom-8 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded whitespace-nowrap pointer-events-none z-10 shadow-lg">محافظة نينوى</span>
+            </div>
             <div className="w-px h-10 md:h-16 bg-slate-200 dark:bg-slate-700/50"></div>
-            <img src="/logos/nineveh_health.png" alt="دائرة صحة نينوى" title="دائرة صحة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
+            
+            <div className="group relative flex flex-col items-center">
+              <img src="/logos/nineveh_health.png" alt="دائرة صحة نينوى" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
+              <span className="absolute -bottom-8 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded whitespace-nowrap pointer-events-none z-10 shadow-lg">دائرة صحة نينوى</span>
+            </div>
             <div className="w-px h-10 md:h-16 bg-slate-200 dark:bg-slate-700/50"></div>
-            <img src="/logos/public_health.png" alt="قسم الصحة العامة" title="قسم الصحة العامة" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
-          </div>
-
-          <div className="inline-flex items-center justify-center px-4 py-1.5 mb-6 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/20 text-teal-700 dark:text-teal-400 font-bold text-xs">
-            <span className="w-2 h-2 rounded-full bg-teal-500 mr-2 animate-pulse"></span>
-            النسخة الرقمية المحدثة 2026
+            
+            <div className="group relative flex flex-col items-center">
+              <img src="/logos/public_health.png" alt="قسم الصحة العامة" className="h-14 md:h-20 w-auto object-contain drop-shadow-sm hover:scale-110 transition-transform cursor-help" />
+              <span className="absolute -bottom-8 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded whitespace-nowrap pointer-events-none z-10 shadow-lg">قسم الصحة العامة</span>
+            </div>
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-tight tracking-tight drop-shadow-sm">
             مرحباً بكم في
