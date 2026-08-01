@@ -677,7 +677,16 @@ export const AppProvider = ({ children }) => {
 
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Migrate existing logged in director
+      if (parsed.role === 'director' && !parsed.permissions?.sendDirectives) {
+        parsed.permissions = { ...parsed.permissions, showDirectivesPage: true, sendDirectives: true, replyDirective: true };
+        localStorage.setItem('user', JSON.stringify(parsed));
+      }
+      return parsed;
+    }
+    return null;
   });
 
   useEffect(() => {
@@ -1068,13 +1077,21 @@ export const AppProvider = ({ children }) => {
     if (parsed) {
       // Force migration for dir_acc_2 from Jassim to Dr. Ibtihal
       const hasJassim = parsed.some(d => d.id === 'dir_acc_2' && d.name.includes('جاسم'));
-      if (hasJassim) {
-        parsed = parsed.map(d => {
-          if (d.id === 'dir_acc_2') {
-            return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, showDeliveryPage: true, manageEstablishments: true } };
-          }
-          return d;
-        });
+      let needsMigration = false;
+      
+      parsed = parsed.map(d => {
+        if (d.id === 'dir_acc_2' && hasJassim) {
+          needsMigration = true;
+          return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, showDeliveryPage: true, manageEstablishments: true } };
+        }
+        if (d.id === 'dir_acc_1' && !d.permissions.sendDirectives) {
+          needsMigration = true;
+          return { ...d, permissions: { ...d.permissions, showDirectivesPage: true, sendDirectives: true, replyDirective: true } };
+        }
+        return d;
+      });
+
+      if (needsMigration) {
         localStorage.setItem('directors', JSON.stringify(parsed));
       }
       return parsed;
