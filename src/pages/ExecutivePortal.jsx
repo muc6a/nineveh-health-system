@@ -166,15 +166,20 @@ export const ExecutivePortal = () => {
     .filter(d => d.value > 0)
     .sort((a, b) => b.value - a.value);
 
-  // Calculate Closed and Fined from penaltyRequests
-  
+  // Filter penalty requests based on selected targetSector
+  const filteredPenaltyRequests = (penaltyRequests || []).filter(req => {
+    if (!targetSector) return true;
+    const est = establishments.find(e => e.id === req.targetEstId);
+    return est && est.sector === targetSector;
+  });
+
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
-  const allMonthlyClosures = (penaltyRequests || []).filter(req => 
+  const allMonthlyClosures = filteredPenaltyRequests.filter(req => 
     req.type === 'closure' && req.status === 'approved' &&
     new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
   );
-  const allMonthlyFines = (penaltyRequests || []).filter(req => 
+  const allMonthlyFines = filteredPenaltyRequests.filter(req => 
     req.type === 'fine' && req.status === 'approved' &&
     new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
   );
@@ -182,8 +187,8 @@ export const ExecutivePortal = () => {
   const [statsModalType, setStatsModalType] = useState('closures'); 
   const [selectedSector, setSelectedSector] = useState(null); 
 
-  const closedRestaurants = (penaltyRequests || []).filter(p => p.type === 'closure' && p.status === 'approved');
-  const finedRestaurants = (penaltyRequests || []).filter(p => p.type === 'fine' && p.status === 'approved');
+  const closedRestaurants = filteredPenaltyRequests.filter(p => p.type === 'closure' && p.status === 'approved');
+  const finedRestaurants = filteredPenaltyRequests.filter(p => p.type === 'fine' && p.status === 'approved');
 
   // Calculate Public Complaints
   const publicComplaintsCount = (reports || []).filter(r => !r.isDelivery).length;
@@ -592,15 +597,16 @@ export const ExecutivePortal = () => {
         </div>
 
 
+          {user?.role !== 'director' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div 
               onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
               className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none"
             >
               <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المطاعم المغلقة هذا الشهر 🔒</h3>
-              <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في عموم المحافظة.</p>
+              <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-rose-500">{allMonthlyClosures.length}</p>
-              <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل حسب القطاعات 👁️</span>
+              <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
             </div>
             
             <div 
@@ -608,11 +614,12 @@ export const ExecutivePortal = () => {
               className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none"
             >
               <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
-              <p className="text-[10px] text-slate-500 mb-4">إجمالي المطاعم التي تم تغريمها مالياً خلال الشهر الحالي في عموم المحافظة.</p>
+              <p className="text-[10px] text-slate-500 mb-4">إجمالي المطاعم التي تم تغريمها مالياً خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-amber-500">{allMonthlyFines.length}</p>
-              <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل حسب القطاعات 👁️</span>
+              <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
             </div>
           </div>
+          )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Compliance Bar Chart */}
