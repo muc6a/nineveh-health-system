@@ -280,12 +280,12 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
   );
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-      <div className="w-full max-w-2xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative text-right max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md">
+      <div className="w-full max-w-2xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 dark:border-slate-200 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative text-right max-h-[90vh] overflow-y-auto custom-scrollbar">
         
-        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/50 dark:bg-slate-900/40 sticky top-0 z-20 backdrop-blur-sm">
+        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-slate-900/40 dark:bg-white/50 sticky top-0 z-20 backdrop-blur-sm">
           <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-3 drop-shadow-md">
-            <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400 shadow-inner">
+            <div className="p-2.5 rounded-xl bg-slate-800/80 dark:bg-slate-100 border border-white/10 dark:border-slate-200 text-purple-400 dark:text-purple-600 shadow-inner">
               {accountType === 'director' ? <Briefcase className="w-5 h-5"/> : <Users className="w-5 h-5"/>}
             </div>
             {mode === 'add' 
@@ -293,7 +293,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
               : 'تعديل بيانات الحساب'
             }
           </h3>
-          <button onClick={onClose} className="flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5">
+          <button onClick={onClose} className="flex p-2.5 rounded-xl bg-slate-100 hover:bg-white/5 dark:bg-slate-200 dark:hover:bg-white/10 text-slate-300 dark:text-slate-600 transition-all items-center justify-center group shadow-sm border border-white/5 dark:border-slate-200">
             <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
           </button>
         </div>
@@ -306,24 +306,24 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             <>
               {/* 1. Location */}
               <div className="space-y-2">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 1. تحديد الموقع وتوزيع الأحياء</label>
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><MapPin className="w-4 h-4"/> 1. تحديد الموقع وتوزيع الأحياء</label>
                 {renderGeoSelection()}
               </div>
 
               {/* 2. Team Name */}
               <div className="space-y-3 pt-6 border-t border-white/5">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Users className="w-4 h-4"/> 2. اسم اللجنة الرقابية</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: لجنة الرقابة الصحية الأولى" className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner" />
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><Users className="w-4 h-4"/> 2. اسم اللجنة الرقابية</label>
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: لجنة الرقابة الصحية الأولى" className="w-full p-4 rounded-xl bg-slate-900/50 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner" />
               </div>
 
               {/* 3. Members */}
               <div className="space-y-3 pt-6 border-t border-white/5">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><User className="w-4 h-4"/> 3. إدارة أعضاء الفريق والمسميات</label>
-                <div className="bg-slate-100/40 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 space-y-6">
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><User className="w-4 h-4"/> 3. إدارة أعضاء الفريق والمسميات</label>
+                <div className="bg-slate-800/40 dark:bg-slate-100/40 p-5 rounded-2xl border border-white/5 dark:border-slate-200 space-y-6">
                   <div>
                     <label className="text-slate-400 block mb-3 text-xs font-semibold">الأطباء والمفتشون المسؤولون</label>
                     {doctors.map((doc, idx) => (
-                      <div key={idx} className="flex flex-col md:flex-row gap-3 mb-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 relative group">
+                      <div key={idx} className="flex flex-col md:flex-row gap-3 mb-3 p-3 bg-slate-900/40 rounded-xl border border-white/5 dark:border-slate-200 relative group">
                         <div className="flex-1 space-y-1">
                           <label className="text-[10px] text-slate-500">اسم العضو</label>
                           <input type="text" placeholder="الاسم الرباعي واللقب" value={doc.name} onChange={(e) => { const newDocs = [...doctors]; newDocs[idx].name = e.target.value; setDoctors(newDocs); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner" />
@@ -342,7 +342,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                         )}
                       </div>
                     ))}
-                    <button type="button" onClick={() => setDoctors([...doctors, { name: '', title: 'طبيب / مفتش' }])} className="text-indigo-600 dark:text-indigo-400 text-xs font-black hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                    <button type="button" onClick={() => setDoctors([...doctors, { name: '', title: 'طبيب / مفتش' }])} className="text-indigo-400 dark:text-indigo-600 text-xs font-black hover:text-indigo-300 flex items-center gap-1 transition-colors">
                       <Plus className="w-3 h-3" /> إضافة عضو آخر
                     </button>
                   </div>
@@ -350,7 +350,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                   <div className="pt-4 border-t border-white/5">
                     <label className="text-slate-400 block mb-3 text-xs font-semibold">الكوادر الساندة (ملاحظين / مدققين)</label>
                     {assistants.map((ast, idx) => (
-                      <div key={idx} className="flex flex-col md:flex-row gap-3 mb-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 relative group">
+                      <div key={idx} className="flex flex-col md:flex-row gap-3 mb-3 p-3 bg-slate-900/40 rounded-xl border border-white/5 dark:border-slate-200 relative group">
                         <div className="flex-1 space-y-1">
                           <label className="text-[10px] text-slate-500">اسم العضو</label>
                           <input type="text" placeholder="الاسم الرباعي" value={ast.name} onChange={(e) => { const newAst = [...assistants]; newAst[idx].name = e.target.value; setAssistants(newAst); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner" />
@@ -369,7 +369,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                         )}
                       </div>
                     ))}
-                    <button type="button" onClick={() => setAssistants([...assistants, { name: '', title: 'ملاحظ فني / مدقق' }])} className="text-indigo-600 dark:text-indigo-400 text-xs font-black hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                    <button type="button" onClick={() => setAssistants([...assistants, { name: '', title: 'ملاحظ فني / مدقق' }])} className="text-indigo-400 dark:text-indigo-600 text-xs font-black hover:text-indigo-300 flex items-center gap-1 transition-colors">
                       <Plus className="w-3 h-3" /> إضافة عضو آخر
                     </button>
                   </div>
@@ -378,11 +378,11 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
 
               {/* 4. Smart Edit Control (Flexible Edit) */}
               <div className="space-y-3 pt-6 border-t border-white/5">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Clock className="w-4 h-4"/> 4. قيود تعديل التقييمات (التعديل الذكي)</label>
-                <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 space-y-4">
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><Clock className="w-4 h-4"/> 4. قيود تعديل التقييمات (التعديل الذكي)</label>
+                <div className="bg-slate-900/40 p-5 rounded-2xl border border-white/5 dark:border-slate-200 space-y-4">
                   <div className="space-y-2">
                     <label className="text-slate-400 text-xs block font-semibold">الفترة الزمنية المسموحة للتعديل بعد الحفظ</label>
-                    <select value={editTimeWindow} onChange={(e) => setEditTimeWindow(e.target.value)} className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 shadow-inner">
+                    <select value={editTimeWindow} onChange={(e) => setEditTimeWindow(e.target.value)} className="w-full p-3.5 rounded-xl bg-slate-900/50 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 shadow-inner">
                       <option value="open">مفتوح (لا يوجد قيد زمني)</option>
                       <option value="1h">ساعة واحدة فقط</option>
                       <option value="5h">5 ساعات</option>
@@ -390,7 +390,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                     </select>
                   </div>
                   
-                  <label className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 cursor-pointer hover:bg-slate-900/60 transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-xl border border-white/5 dark:border-slate-200 cursor-pointer hover:bg-slate-900/60 transition-colors">
                     <input type="checkbox" checked={editOneTimeOnly} onChange={(e) => setEditOneTimeOnly(e.target.checked)} className="w-4 h-4 accent-indigo-500 rounded" />
                     <span className="text-sm font-semibold text-slate-300">السماح بتعديل النموذج لمرة واحدة فقط</span>
                   </label>
@@ -399,9 +399,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
 
               {/* 5. Statistics Settings */}
               <div className="space-y-3 pt-6 border-t border-white/5">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><BarChart3 className="w-4 h-4"/> 5. إحصائيات الفريق</label>
-                <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5">
-                  <label className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 cursor-pointer hover:bg-slate-900/60 transition-colors">
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><BarChart3 className="w-4 h-4"/> 5. إحصائيات الفريق</label>
+                <div className="bg-slate-900/40 p-5 rounded-2xl border border-white/5 dark:border-slate-200">
+                  <label className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-xl border border-white/5 dark:border-slate-200 cursor-pointer hover:bg-slate-900/60 transition-colors">
                     <input type="checkbox" checked={canViewMonthlyStats} onChange={(e) => setCanViewMonthlyStats(e.target.checked)} className="w-4 h-4 accent-indigo-500 rounded" />
                     <span className="text-sm font-semibold text-slate-300">عرض الإحصائيات الشهرية (الإغلاقات والغرامات) في لوحة الفريق</span>
                   </label>
@@ -415,13 +415,13 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             <>
               {/* 1. Name */}
               <div className="space-y-2">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><User className="w-4 h-4"/> 1. الاسم الكامل للقيادي</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: د. أحمد صالح الجبوري" className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500" />
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><User className="w-4 h-4"/> 1. الاسم الكامل للقيادي</label>
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: د. أحمد صالح الجبوري" className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500" />
               </div>
 
               {/* 2. Job Title (Open Field / Datalist) */}
               <div className="space-y-2 pt-4 border-t border-slate-800">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Briefcase className="w-4 h-4"/> 2. المسمى الوظيفي / المنصب (قابل للتعديل)</label>
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><Briefcase className="w-4 h-4"/> 2. المسمى الوظيفي / المنصب (قابل للتعديل)</label>
                 <input 
                   type="text" 
                   list="roles-list"
@@ -429,7 +429,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                   value={directorTitle} 
                   onChange={(e) => setDirectorTitle(e.target.value)} 
                   placeholder="مثال: مدير قسم الصحة العامة" 
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500" 
+                  className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500" 
                 />
                 <datalist id="roles-list">
                   {ROLES_DICTIONARY.filter(r => r.category === 'المدراء والقيادات' || r.category === 'الإدارة العليا' || r.category === 'الإدارة الوسطى').map(role => (
@@ -441,14 +441,14 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
 
               {/* 3. Scope of Authority */}
               <div className="space-y-2 pt-4 border-t border-slate-800">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 3. الربط الجغرافي ونطاق الصلاحية التقنية</label>
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><MapPin className="w-4 h-4"/> 3. الربط الجغرافي ونطاق الصلاحية التقنية</label>
                 
                 <div className="flex gap-4 mb-4">
-                  <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer text-xs font-bold">
+                  <label className="flex items-center gap-2 text-slate-300 dark:text-slate-600 cursor-pointer text-xs font-bold">
                     <input type="radio" name="directorScopeMode" value="all" checked={directorScopeMode === 'all'} onChange={(e) => setDirectorScopeMode('all')} className="accent-indigo-500 w-4 h-4" />
                     الكل (صلاحية كاملة لعموم نينوى)
                   </label>
-                  <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer text-xs font-bold">
+                  <label className="flex items-center gap-2 text-slate-300 dark:text-slate-600 cursor-pointer text-xs font-bold">
                     <input type="radio" name="directorScopeMode" value="sector" checked={directorScopeMode === 'sector'} onChange={(e) => setDirectorScopeMode('sector')} className="accent-indigo-500 w-4 h-4" />
                     تحديد قاطع / منطقة محددة
                   </label>
@@ -466,18 +466,18 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             <>
               {/* 1. Name */}
               <div className="space-y-2">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><User className="w-4 h-4"/> 1. اسم المتابع الميداني</label>
-                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: أحمد خليل" className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500" />
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><User className="w-4 h-4"/> 1. اسم المتابع الميداني</label>
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: أحمد خليل" className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500" />
               </div>
 
               {/* 2. Linked Team Sector */}
               <div className="space-y-2 pt-4 border-t border-slate-800">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 2. ربط المتابع بقطاع الفريق الميداني</label>
+                <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><MapPin className="w-4 h-4"/> 2. ربط المتابع بقطاع الفريق الميداني</label>
                 <select 
                   required 
                   value={linkedTeamSector} 
                   onChange={(e) => setLinkedTeamSector(e.target.value)} 
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500"
+                  className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500"
                 >
                   <option value="">اختر القطاع / الفريق الميداني المرتبط</option>
                   {teams.map(team => (
@@ -493,16 +493,16 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
 
           {/* 4. Login Credentials (Common) */}
           <div className="space-y-4 pt-4 border-t border-slate-800">
-            <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Lock className="w-4 h-4"/> {accountType === 'team' ? '4. بيانات حساب الفريق' : '4. بيانات تسجيل الدخول'}</label>
+            <label className="text-indigo-400 dark:text-indigo-600 flex items-center gap-2"><Lock className="w-4 h-4"/> {accountType === 'team' ? '4. بيانات حساب الفريق' : '4. بيانات تسجيل الدخول'}</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-slate-400 block text-xs">اسم المستخدم (Username)</label>
-                <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} dir="ltr" className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500 text-left" />
+                <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} dir="ltr" className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 text-left" />
               </div>
               <div className="space-y-2">
                 <label className="text-slate-400 block text-xs">كلمة المرور</label>
                 <div className="relative">
-                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr" className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500 text-left" />
+                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" dir="ltr" className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 text-left" />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-white cursor-pointer">
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -510,11 +510,11 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
               </div>
               <div className="space-y-2">
                 <label className="text-slate-400 block text-xs flex items-center gap-1"><Mail className="w-3 h-3"/> البريد الإلكتروني</label>
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500 text-left" />
+                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 text-left" />
               </div>
               <div className="space-y-2">
                 <label className="text-slate-400 block text-xs flex items-center gap-1"><Phone className="w-3 h-3"/> رقم الهاتف</label>
-                <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500 text-left" />
+                <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 text-left" />
               </div>
             </div>
           </div>

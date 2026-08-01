@@ -21,19 +21,19 @@ export const BroadcastModal = () => {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-red-950/90 backdrop-blur-md">
       <div className="w-full max-w-2xl bg-slate-900 dark:bg-white rounded-3xl p-8 border-4 border-red-500 shadow-2xl relative text-center flex flex-col items-center">
         
-        <div className="w-24 h-24 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center mb-6 animate-pulse">
-          <AlertTriangle className="w-12 h-12 text-red-600 dark:text-red-500" />
+        <div className="w-24 h-24 rounded-full bg-red-900/50 dark:bg-red-100 flex items-center justify-center mb-6 animate-pulse">
+          <AlertTriangle className="w-12 h-12 text-red-500 dark:text-red-600" />
         </div>
         
-        <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">
+        <h2 className="text-3xl font-black text-white dark:text-slate-800 mb-2 tracking-tight">
           إنذار عاجل وإلزامي
         </h2>
-        <p className="text-sm font-bold text-red-600 dark:text-red-400 mb-8 uppercase tracking-widest">
+        <p className="text-sm font-bold text-red-400 dark:text-red-600 mb-8 uppercase tracking-widest">
           صادر من: {globalBroadcast.sender || 'مدير الموقع'}
         </p>
         
-        <div className="w-full bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-2xl p-6 mb-8 text-right">
-          <p className="text-lg font-bold text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+        <div className="w-full bg-red-950/30 dark:bg-red-50 border border-red-900/50 dark:border-red-200 rounded-2xl p-6 mb-8 text-right">
+          <p className="text-lg font-bold text-slate-300 dark:text-slate-700 leading-relaxed whitespace-pre-wrap">
             {globalBroadcast.message}
           </p>
         </div>

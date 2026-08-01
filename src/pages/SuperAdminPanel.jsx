@@ -1667,26 +1667,26 @@ export const SuperAdminPanel = () => {
               {/* Audit Log Details Modal */}
               {selectedAuditLog && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all text-right">
-                  <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                  <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-700 dark:border-slate-200 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-800 dark:border-slate-200 mb-4">
                       <h3 className="text-base font-black text-teal-600 flex items-center gap-2">
                         🔍 تفاصيل حركة السجل
                       </h3>
-                      <button onClick={() => setSelectedAuditLog(null)} className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer">
+                      <button onClick={() => setSelectedAuditLog(null)} className="p-1 rounded bg-slate-800 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                     
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
+                      <div className="grid grid-cols-2 gap-4 bg-slate-800/50 dark:bg-slate-50 p-4 rounded-2xl border border-slate-700 dark:border-slate-100">
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold mb-1">المستخدم المنفذ</p>
-                          <p className="text-sm font-black text-slate-800 dark:text-white">{selectedAuditLog.user}</p>
+                          <p className="text-sm font-black text-white dark:text-slate-800">{selectedAuditLog.user}</p>
                           <p className="text-[10px] text-slate-500 mt-0.5">{selectedAuditLog.role === 'team' ? 'فريق ميداني' : 'إدارة عليا'}</p>
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold mb-1">تاريخ الحركة</p>
-                          <p className="text-sm font-black text-slate-800 dark:text-white dir-ltr">{new Date(selectedAuditLog.date).toLocaleString('ar-IQ')}</p>
+                          <p className="text-sm font-black text-white dark:text-slate-800 dir-ltr">{new Date(selectedAuditLog.date).toLocaleString('ar-IQ')}</p>
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold mb-1">نوع الإجراء</p>
@@ -1694,14 +1694,14 @@ export const SuperAdminPanel = () => {
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold mb-1">سبب التعديل</p>
-                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300 italic">"{selectedAuditLog.justification}"</p>
+                          <p className="text-sm font-medium text-slate-300 dark:text-slate-600 italic">"{selectedAuditLog.justification}"</p>
                         </div>
                       </div>
 
                       {/* Differences Viewer */}
                       {selectedAuditLog.oldData && selectedAuditLog.newData ? (
                         <div className="space-y-2">
-                          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 mb-2">التغييرات التي طرأت:</h4>
+                          <h4 className="text-xs font-black text-slate-300 dark:text-slate-700 mb-2">التغييرات التي طرأت:</h4>
                           {(() => {
                             const oldObj = selectedAuditLog.oldData;
                             const newObj = selectedAuditLog.newData;
@@ -1741,14 +1741,14 @@ export const SuperAdminPanel = () => {
                             };
 
                             return changes.map((change, i) => (
-                              <div key={i} className="flex flex-col md:flex-row gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl items-center">
+                              <div key={i} className="flex flex-col md:flex-row gap-2 bg-slate-900 dark:bg-white border border-slate-800 dark:border-slate-200 p-3 rounded-xl items-center">
                                 <div className="w-full md:w-1/4 text-xs font-bold text-slate-500">{fieldNames[change.key] || change.key}</div>
                                 <div className="w-full md:w-3/4 flex items-center gap-2">
-                                  <div className="flex-1 p-2 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-xs text-red-600 dark:text-red-400 line-through">
+                                  <div className="flex-1 p-2 rounded-lg bg-red-500/10 dark:bg-red-50 border border-red-500/20 dark:border-red-100 text-xs text-red-400 dark:text-red-600 line-through">
                                     {change.oldVal || 'فارغ'}
                                   </div>
                                   <span className="text-slate-400">➔</span>
-                                  <div className="flex-1 p-2 rounded-lg bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-xs font-bold text-teal-700 dark:text-teal-400">
+                                  <div className="flex-1 p-2 rounded-lg bg-teal-500/10 dark:bg-teal-50 border border-teal-500/20 dark:border-teal-100 text-xs font-bold text-teal-400 dark:text-teal-700">
                                     {change.newVal || 'فارغ'}
                                   </div>
                                 </div>
@@ -1757,7 +1757,7 @@ export const SuperAdminPanel = () => {
                           })()}
                         </div>
                       ) : (
-                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700 text-center text-xs text-slate-500">
+                        <div className="p-4 rounded-xl bg-slate-800/40 dark:bg-slate-50 border border-slate-700 dark:border-slate-100 text-center text-xs text-slate-500">
                           لا توجد تفاصيل مقارنة (قبل/بعد) لهذا الإجراء.
                         </div>
                       )}
@@ -1772,7 +1772,7 @@ export const SuperAdminPanel = () => {
             {subAuditTab === 'tickets' && (
               <>
                 <div>
-                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2">
                     <ShieldAlert className="w-5 h-5 text-teal-600" />
                     <span>مركز استقبال الدعم الفني وبلاغات اللجان (Tickets Center)</span>
                   </h2>
@@ -1788,7 +1788,7 @@ export const SuperAdminPanel = () => {
                     <div className="overflow-x-auto">
                       <table className="w-full text-right border-collapse text-xs">
                         <thead>
-                          <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400">
+                          <tr className="border-b border-slate-800 dark:border-slate-200 text-slate-400">
                             <th className="py-2 px-3">المرسل</th>
                             <th className="py-2 px-3">النوع</th>
                             <th className="py-2 px-3">نص الرسالة/المشكلة</th>
@@ -1798,8 +1798,8 @@ export const SuperAdminPanel = () => {
                         </thead>
                         <tbody>
                           {tickets.map((ticket) => (
-                            <tr key={ticket.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                              <td className="py-2.5 px-3 font-extrabold text-slate-700 dark:text-slate-300">{ticket.sender}</td>
+                            <tr key={ticket.id} className="border-b border-slate-700 dark:border-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                              <td className="py-2.5 px-3 font-extrabold text-slate-300 dark:text-slate-700">{ticket.sender}</td>
                               <td className="py-2.5 px-3">
                                 <span className={`px-2 py-0.5 rounded text-[10px] ${
                                   ticket.type === 'bug' ? 'bg-red-500/10 text-red-500' :
@@ -1809,7 +1809,7 @@ export const SuperAdminPanel = () => {
                                    ticket.type === 'feature' ? '💡 مقترح ميزة' : '📊 إشكال تقارير'}
                                 </span>
                               </td>
-                              <td className="py-2.5 px-3 text-slate-600 dark:text-slate-400 max-w-xs truncate" title={ticket.text}>
+                              <td className="py-2.5 px-3 text-slate-400 dark:text-slate-600 max-w-xs truncate" title={ticket.text}>
                                 {ticket.text}
                               </td>
                               <td className="py-2.5 px-3">
@@ -1851,11 +1851,11 @@ export const SuperAdminPanel = () => {
 
       {/* VIEW TEAM DETAILS MODAL - High visibility design */}
       {selectedTeamDetails && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right">
             
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
-              <h3 className="text-sm font-black text-teal-600 dark:text-teal-400">🔍 بطاقة معلومات فريق التفتيش بالتفصيل</h3>
+              <h3 className="text-sm font-black text-teal-400 dark:text-teal-600">🔍 بطاقة معلومات فريق التفتيش بالتفصيل</h3>
               <button 
                 onClick={() => setSelectedTeamDetails(null)} 
                 className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 cursor-pointer"
@@ -1872,7 +1872,7 @@ export const SuperAdminPanel = () => {
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-400 block mb-1">القطاع المكلف</span>
-                  <span className="font-extrabold text-sm text-teal-600 dark:text-teal-400">{selectedTeamDetails.sector}</span>
+                  <span className="font-extrabold text-sm text-teal-400 dark:text-teal-600">{selectedTeamDetails.sector}</span>
                 </div>
               </div>
 
@@ -1889,14 +1889,14 @@ export const SuperAdminPanel = () => {
 
               {/* Members listing */}
               <div className="pt-4 border-t border-slate-800">
-                <span className="text-[11px] font-black text-teal-600 dark:text-teal-400 block mb-3">👥 الكادر الإشرافي وأعضاء اللجنة الميدانية</span>
+                <span className="text-[11px] font-black text-teal-400 dark:text-teal-600 block mb-3">👥 الكادر الإشرافي وأعضاء اللجنة الميدانية</span>
                 
                 <div className="space-y-3">
                   <div>
                     <span className="text-[9px] text-slate-400 block mb-1">الأطباء المعتمدون (دكتور):</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.doctors?.map((doc, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-300 border border-teal-500/20 font-black">
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-300 dark:text-teal-600 border border-teal-500/20 font-black">
                           {typeof doc === 'object' ? doc.name : doc}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد أطباء بعد</span>}
@@ -1907,7 +1907,7 @@ export const SuperAdminPanel = () => {
                     <span className="text-[9px] text-slate-400 block mb-1">مساعد دكتور:</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.assistants?.map((asst, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-300 border border-blue-500/20 font-black">
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-300 dark:text-blue-600 border border-blue-500/20 font-black">
                           {typeof asst === 'object' ? asst.name : asst}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد مساعدين بعد</span>}
@@ -1918,7 +1918,7 @@ export const SuperAdminPanel = () => {
                     <span className="text-[9px] text-slate-400 block mb-1">الملاحظين الفنيين:</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.technicians?.map((tech, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20 font-black">
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 dark:text-amber-600 border border-amber-500/20 font-black">
                           {typeof tech === 'object' ? tech.name : tech}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد ملاحظين فنيين بعد</span>}
@@ -1938,11 +1938,11 @@ export const SuperAdminPanel = () => {
         </div>
       )}
       {showAddTeamModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
-              <h3 className="text-sm font-black text-teal-600 dark:text-teal-400">➕ إضافة وتعيين لجنة رقابية جديدة</h3>
+              <h3 className="text-sm font-black text-teal-400 dark:text-teal-600">➕ إضافة وتعيين لجنة رقابية جديدة</h3>
               <button 
                 onClick={() => setShowAddTeamModal(false)} 
                 className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 cursor-pointer"
@@ -1960,7 +1960,7 @@ export const SuperAdminPanel = () => {
                       placeholder="مثال: اللجنة الرقابية الرابعة"
                       value={newTeamName}
                       onChange={(e) => setNewTeamName(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                      className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                     />
                   </div>
 
@@ -1980,7 +1980,7 @@ export const SuperAdminPanel = () => {
                     <select
                       value={generalScope}
                       onChange={(e) => setGeneralScope(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
+                      className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
                     >
                       <option value="mosul">مركز المدينة (الموصل)</option>
                       <option value="districts">أقضية ونواحي المحافظة</option>
@@ -1994,7 +1994,7 @@ export const SuperAdminPanel = () => {
                         <select
                           value={mosulSide}
                           onChange={(e) => setMosulSide(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
                         >
                           <option value="left">الجانب الأيسر</option>
                           <option value="right">الجانب الأيمن</option>
@@ -2008,7 +2008,7 @@ export const SuperAdminPanel = () => {
                           placeholder="مثال: الزهور، الغزلاني"
                           value={mosulNeighborhood}
                           onChange={(e) => setMosulNeighborhood(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                         />
                       </div>
                     </div>
@@ -2022,7 +2022,7 @@ export const SuperAdminPanel = () => {
                           placeholder="مثال: تلعفر، الحمدانية"
                           value={districtName}
                           onChange={(e) => setDistrictName(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                         />
                       </div>
                       <div>
@@ -2033,7 +2033,7 @@ export const SuperAdminPanel = () => {
                           placeholder="مثال: ربيعة، حمام العليل"
                           value={districtSubsector}
                           onChange={(e) => setDistrictSubsector(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                         />
                       </div>
                     </div>
@@ -2048,7 +2048,7 @@ export const SuperAdminPanel = () => {
                         placeholder="team@ninveh.health.gov.iq"
                         value={newTeamEmail}
                         onChange={(e) => setNewTeamEmail(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500 text-left dir-ltr"
+                        className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500 text-left dir-ltr"
                       />
                     </div>
                     <div>
@@ -2059,7 +2059,7 @@ export const SuperAdminPanel = () => {
                         placeholder="077xxxxxxxx"
                         value={newTeamPhone}
                         onChange={(e) => setNewTeamPhone(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                        className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                       />
                     </div>
                   </div>
@@ -2073,7 +2073,7 @@ export const SuperAdminPanel = () => {
                         placeholder="••••••••"
                         value={newTeamPass}
                         onChange={(e) => setNewTeamPass(e.target.value)}
-                        className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                        className="w-full p-2.5 pl-10 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                       />
                       <button
                         type="button"
@@ -2087,7 +2087,7 @@ export const SuperAdminPanel = () => {
 
                   {/* Permissions Note */}
                   <div className="pt-3 border-t border-slate-800 space-y-2">
-                    <span className="text-[11px] text-teal-600 dark:text-teal-400 block mb-1">🛡️ صلاحيات حساب اللجنة الميدانية:</span>
+                    <span className="text-[11px] text-teal-400 dark:text-teal-600 block mb-1">🛡️ صلاحيات حساب اللجنة الميدانية:</span>
                     <p className="text-[9px] text-slate-400 leading-relaxed">
                       تنويه: سيتم منح هذا الفريق الصلاحيات الأساسية (إضافة وتقييم المنشآت) افتراضياً. يمكنك تعديل الصلاحيات بشكل دقيق (مثل منح إذن الحذف) من خلال خيار "الأذونات" في جدول اللجان بعد الإنشاء.
                     </p>
@@ -2095,20 +2095,20 @@ export const SuperAdminPanel = () => {
 
                   {/* Mosul Warning Banner */}
                   {generalScope === 'mosul' && (
-                    <div className="mt-3 p-2 rounded-lg bg-teal-500/10 border border-teal-500/20 text-[9px] text-teal-600 dark:text-teal-400 text-center font-bold">
+                    <div className="mt-3 p-2 rounded-lg bg-teal-500/10 border border-teal-500/20 text-[9px] text-teal-400 dark:text-teal-600 text-center font-bold">
                       (تنبيه: هذا الفريق يتبع إدارياً لمدير شعبة الأيسر/الأيمن الحالي في مركز المدينة)
                     </div>
                   )}
 
                   {/* Members registration form */}
                   <div className="pt-3 border-t border-slate-800 space-y-3">
-                    <span className="text-[11px] text-teal-600 dark:text-teal-400 block mb-2">👥 كادر وأعضاء اللجنة الميدانية:</span>
+                    <span className="text-[11px] text-teal-400 dark:text-teal-600 block mb-2">👥 كادر وأعضاء اللجنة الميدانية:</span>
                     
                     {/* Doctors */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] text-slate-400">حملة شهادة الطب البشري (دكتور)</span>
-                        <button type="button" onClick={() => addField('doc')} className="p-1 rounded bg-teal-500/10 text-teal-600 dark:text-teal-400 text-[10px] flex items-center gap-1 cursor-pointer">
+                        <button type="button" onClick={() => addField('doc')} className="p-1 rounded bg-teal-500/10 text-teal-400 dark:text-teal-600 text-[10px] flex items-center gap-1 cursor-pointer">
                           <Plus className="w-3 h-3" /> إضافة دكتور
                         </button>
                       </div>
@@ -2119,7 +2119,7 @@ export const SuperAdminPanel = () => {
                             placeholder="اسم الدكتور الكامل..."
                             value={doc}
                             onChange={(e) => handleFieldChange('doc', idx, e.target.value)}
-                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
+                            className="flex-1 p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 text-[10px]"
                           />
                           {doctors.length > 1 && (
                             <button type="button" onClick={() => removeField('doc', idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2145,7 +2145,7 @@ export const SuperAdminPanel = () => {
                             placeholder="اسم المساعد الكامل..."
                             value={asst}
                             onChange={(e) => handleFieldChange('asst', idx, e.target.value)}
-                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
+                            className="flex-1 p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 text-[10px]"
                           />
                           {assistants.length > 1 && (
                             <button type="button" onClick={() => removeField('asst', idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2171,7 +2171,7 @@ export const SuperAdminPanel = () => {
                             placeholder="اسم الملاحظ الفني الكامل..."
                             value={tech}
                             onChange={(e) => handleFieldChange('tech', idx, e.target.value)}
-                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
+                            className="flex-1 p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 text-[10px]"
                           />
                           {technicians.length > 1 && (
                             <button type="button" onClick={() => removeField('tech', idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2198,11 +2198,11 @@ export const SuperAdminPanel = () => {
 
       {/* EDIT TEAM MODAL - High visibility design */}
       {showEditTeamModal && editingTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
-              <h3 className="text-sm font-black text-teal-600 dark:text-teal-400">📝 تعديل بيانات حساب اللجنة الميدانية</h3>
+              <h3 className="text-sm font-black text-teal-400 dark:text-teal-600">📝 تعديل بيانات حساب اللجنة الميدانية</h3>
               <button 
                 onClick={() => {
                   setShowEditTeamModal(false);
@@ -2222,7 +2222,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingTeam.name}
                   onChange={(e) => setEditingTeam({ ...editingTeam, name: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
                 />
               </div>
 
@@ -2231,7 +2231,7 @@ export const SuperAdminPanel = () => {
                 <select
                   value={editingTeam.sector}
                   onChange={(e) => setEditingTeam({ ...editingTeam, sector: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-xs font-bold"
                 >
                   <option value="الزهور">قطاع الزهور</option>
                   <option value="المصارف">قطاع المصارف</option>
@@ -2248,7 +2248,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingTeam.email}
                     onChange={(e) => setEditingTeam({ ...editingTeam, email: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold text-left dir-ltr focus:border-teal-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-xs font-bold text-left dir-ltr focus:border-teal-500"
                   />
                 </div>
 
@@ -2259,7 +2259,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingTeam.phone}
                     onChange={(e) => setEditingTeam({ ...editingTeam, phone: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -2272,7 +2272,7 @@ export const SuperAdminPanel = () => {
                     placeholder="اتركه فارغاً للاحتفاظ بكلمة المرور الحالية"
                     value={editingTeam.password || ''}
                     onChange={(e) => setEditingTeam({ ...editingTeam, password: e.target.value })}
-                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                   />
                   <button
                     type="button"
@@ -2286,13 +2286,13 @@ export const SuperAdminPanel = () => {
 
               {/* dynamic members inputs for editing */}
               <div className="pt-3 border-t border-slate-800 space-y-3">
-                <span className="text-[11px] text-teal-600 dark:text-teal-400 block mb-2">👥 تعديل كادر اللجنة الميدانية</span>
+                <span className="text-[11px] text-teal-400 dark:text-teal-600 block mb-2">👥 تعديل كادر اللجنة الميدانية</span>
                 
                 {/* Doctors */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-slate-400">حملة شهادة الطب البشري (دكتور)</span>
-                    <button type="button" onClick={() => addField('doc', true)} className="p-1 rounded bg-teal-500/10 text-teal-600 dark:text-teal-400 text-[10px] flex items-center gap-1 cursor-pointer">
+                    <button type="button" onClick={() => addField('doc', true)} className="p-1 rounded bg-teal-500/10 text-teal-400 dark:text-teal-600 text-[10px] flex items-center gap-1 cursor-pointer">
                       <Plus className="w-3 h-3" /> إضافة دكتور
                     </button>
                   </div>
@@ -2303,7 +2303,7 @@ export const SuperAdminPanel = () => {
                         placeholder="اسم الدكتور الكامل..."
                         value={doc}
                         onChange={(e) => handleFieldChange('doc', idx, e.target.value, true)}
-                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
+                        className="flex-1 p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 text-[10px]"
                       />
                       {editDoctors.length > 1 && (
                         <button type="button" onClick={() => removeField('doc', idx, true)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2329,7 +2329,7 @@ export const SuperAdminPanel = () => {
                         placeholder="اسم المساعد الكامل..."
                         value={asst}
                         onChange={(e) => handleFieldChange('asst', idx, e.target.value, true)}
-                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
+                        className="flex-1 p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 text-[10px]"
                       />
                       {editAssistants.length > 1 && (
                         <button type="button" onClick={() => removeField('asst', idx, true)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2355,7 +2355,7 @@ export const SuperAdminPanel = () => {
                         placeholder="اسم الملاحظ الفني الكامل..."
                         value={tech}
                         onChange={(e) => handleFieldChange('tech', idx, e.target.value, true)}
-                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
+                        className="flex-1 p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 text-[10px]"
                       />
                       {editTechnicians.length > 1 && (
                         <button type="button" onClick={() => removeField('tech', idx, true)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2379,10 +2379,10 @@ export const SuperAdminPanel = () => {
       )}
       {/* ADD DIRECTOR MODAL */}
       {showAddDirectorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
-              <h3 className="text-sm font-black text-teal-600 dark:text-teal-400">💼 إنشاء وتعيين حساب قيادي/مدير جديد</h3>
+              <h3 className="text-sm font-black text-teal-400 dark:text-teal-600">💼 إنشاء وتعيين حساب قيادي/مدير جديد</h3>
               <button onClick={() => setShowAddDirectorModal(false)} className="p-1 rounded bg-slate-800 text-slate-400 hover:text-white cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
@@ -2397,7 +2397,7 @@ export const SuperAdminPanel = () => {
                   placeholder="مثال: د. عماد محمد عبد الله"
                   value={newDirName}
                   onChange={(e) => setNewDirName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                 />
               </div>
 
@@ -2417,7 +2417,7 @@ export const SuperAdminPanel = () => {
                       setNewDirTitle('مدير شعبة الرقابة الصحية');
                     }
                   }}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-teal-500 font-bold"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-teal-500 font-bold"
                 >
                   <option value="director">مدير عام صحة نينوى (Director General)</option>
                   <option value="public_health">مدير قسم الصحة العامة (Public Health Director)</option>
@@ -2429,7 +2429,7 @@ export const SuperAdminPanel = () => {
               {/* Conditional Fields for Sector Chief */}
               {newDirRole === 'director_committee' && (
                 <div className="p-3.5 rounded-2xl bg-slate-950/40 border border-slate-800 space-y-3 animate-fadeIn">
-                  <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black">🗺️ النطاق الجغرافي المعين للمدير</span>
+                  <span className="text-[10px] text-teal-400 dark:text-teal-600 block font-black">🗺️ النطاق الجغرافي المعين للمدير</span>
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
@@ -2437,7 +2437,7 @@ export const SuperAdminPanel = () => {
                       <select
                         value={newDirScope}
                         onChange={(e) => setNewDirScope(e.target.value)}
-                        className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                        className="w-full p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                       >
                         <option value="centre">مركز المدينة</option>
                         <option value="districts">أقضية ونواحي</option>
@@ -2449,7 +2449,7 @@ export const SuperAdminPanel = () => {
                       <select
                         value={newDirSide}
                         onChange={(e) => setNewDirSide(e.target.value)}
-                        className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                        className="w-full p-2 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                       >
                         <option value="left">الجانب الأيسر</option>
                         <option value="right">الجانب الأيمن</option>
@@ -2468,7 +2468,7 @@ export const SuperAdminPanel = () => {
                     placeholder="director@ninveh.health.gov.iq"
                     value={newDirEmail}
                     onChange={(e) => setNewDirEmail(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-left dir-ltr"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2479,7 +2479,7 @@ export const SuperAdminPanel = () => {
                     placeholder="07700000000"
                     value={newDirPhone}
                     onChange={(e) => setNewDirPhone(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-left dir-ltr"
                   />
                 </div>
               </div>
@@ -2493,7 +2493,7 @@ export const SuperAdminPanel = () => {
                     placeholder="••••••••"
                     value={newDirPass}
                     onChange={(e) => setNewDirPass(e.target.value)}
-                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                   />
                   <button
                     type="button"
@@ -2518,7 +2518,7 @@ export const SuperAdminPanel = () => {
 
       {/* EDIT DIRECTOR MODAL */}
       {showEditDirectorModal && editingDirector && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
               <h3 className="text-sm font-black text-blue-400">📝 تعديل حساب القيادي/المدير</h3>
@@ -2535,7 +2535,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingDirector.name}
                   onChange={(e) => setEditingDirector({ ...editingDirector, name: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                 />
               </div>
 
@@ -2544,7 +2544,7 @@ export const SuperAdminPanel = () => {
                 <select
                   value={editingDirector.title}
                   onChange={(e) => setEditingDirector({ ...editingDirector, title: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-teal-500 font-bold"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-teal-500 font-bold"
                 >
                   <option value="مدير عام صحة نينوى">مدير عام صحة نينوى (Director General)</option>
                   <option value="مدير قسم الصحة العامة">مدير قسم الصحة العامة (Public Health Director)</option>
@@ -2563,7 +2563,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingDirector.email}
                     onChange={(e) => setEditingDirector({ ...editingDirector, email: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-left dir-ltr"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2573,7 +2573,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingDirector.phone}
                     onChange={(e) => setEditingDirector({ ...editingDirector, phone: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none text-left dir-ltr"
                   />
                 </div>
               </div>
@@ -2586,7 +2586,7 @@ export const SuperAdminPanel = () => {
                     placeholder="اتركه فارغاً للاحتفاظ بكلمة المرور الحالية"
                     value={editingDirector.password || ''}
                     onChange={(e) => setEditingDirector({ ...editingDirector, password: e.target.value })}
-                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                   />
                   <button
                     type="button"
@@ -2611,7 +2611,7 @@ export const SuperAdminPanel = () => {
 
       {/* EDIT ESTABLISHMENT PROFILE MODAL */}
       {editingEst && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
               <h3 className="text-sm font-black text-blue-400">📝 تعديل بيانات المنشأة الصحية</h3>
@@ -2628,7 +2628,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.name}
                   onChange={(e) => setEditingEst({ ...editingEst, name: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                 />
               </div>
 
@@ -2639,7 +2639,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.type}
                   onChange={(e) => setEditingEst({ ...editingEst, type: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                 />
               </div>
 
@@ -2650,7 +2650,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.owner}
                   onChange={(e) => setEditingEst({ ...editingEst, owner: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                 />
               </div>
 
@@ -2662,7 +2662,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingEst.phone}
                     onChange={(e) => setEditingEst({ ...editingEst, phone: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2672,7 +2672,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingEst.licenseNumber}
                     onChange={(e) => setEditingEst({ ...editingEst, licenseNumber: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                   />
                 </div>
               </div>
@@ -2684,7 +2684,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.sector}
                   onChange={(e) => setEditingEst({ ...editingEst, sector: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 outline-none"
                 />
               </div>
 
@@ -2701,52 +2701,52 @@ export const SuperAdminPanel = () => {
 
       {/* QR Code and Restaurant Details Modal */}
       {selectedEstDetails && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md animate-fade-in text-right">
           <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
+            <div className="flex items-center justify-between pb-4 border-b border-white/10 dark:border-slate-200 mb-5">
               <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
               <button 
                 onClick={() => setSelectedEstDetails(null)} 
-                className="flex p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5"
+                className="flex p-2 rounded-xl bg-slate-100 hover:bg-white/5 dark:bg-slate-200 dark:hover:bg-white/10 text-slate-300 dark:text-slate-600 transition-all items-center justify-center group shadow-sm border border-white/5 dark:border-slate-200"
               >
                 <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
 
             <div className="space-y-5 text-xs">
-              <div className="p-5 rounded-2xl bg-slate-100/40 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
-                <h4 className="text-base font-black text-slate-800 dark:text-white">{selectedEstDetails.name}</h4>
+              <div className="p-5 rounded-2xl bg-slate-800/40 dark:bg-slate-100/40 border border-white/5 dark:border-slate-200 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
+                <span className="text-[10px] text-teal-400 dark:text-teal-600 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
+                <h4 className="text-base font-black text-white dark:text-slate-800">{selectedEstDetails.name}</h4>
                 <div className="grid grid-cols-1 gap-2 pt-1">
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">النشاط: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.type}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">المالك: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.owner}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">رقم الهاتف: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.phone}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600">النشاط: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.type}</strong></p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600">المالك: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.owner}</strong></p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600">رقم الهاتف: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.phone}</strong></p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600">الترخيص: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.licenseNumber}</strong></p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600">آخر زيارة تفتيش: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.lastInspection}</strong></p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
                   
                   {selectedEstDetails.history && selectedEstDetails.history[0] && selectedEstDetails.history[0].photo && (
-                    <div className="mt-3 p-2 bg-slate-200/50 dark:bg-slate-900/50 rounded-xl">
+                    <div className="mt-3 p-2 bg-slate-900/50 dark:bg-slate-200/50 rounded-xl">
                       <span className="text-[10px] text-slate-500 block mb-2 font-bold">صورة توثيقية من آخر زيارة:</span>
                       <img src={selectedEstDetails.history[0].photo} alt="توثيق الزيارة" className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity" onClick={() => window.open(selectedEstDetails.history[0].photo, '_blank')} />
                     </div>
                   )}
                   {selectedEstDetails.latitude && selectedEstDetails.longitude && selectedEstDetails.latitude !== '36.3489' && (
-                    <p className="text-[10px] text-teal-600 dark:text-teal-400 mt-2 bg-teal-50 dark:bg-teal-900/20 p-2 rounded-lg flex items-center gap-1">
+                    <p className="text-[10px] text-teal-400 dark:text-teal-600 mt-2 bg-teal-900/20 dark:bg-teal-50 p-2 rounded-lg flex items-center gap-1">
                       📍 تم تأكيد التواجد الميداني: {selectedEstDetails.latitude}, {selectedEstDetails.longitude}
                     </p>
                   )}
                 </div>
                 <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl relative overflow-hidden">
                   <div className="absolute -left-4 -top-4 w-12 h-12 bg-teal-500/20 blur-xl rounded-full"></div>
-                  <p className="text-xs text-teal-600 dark:text-teal-400 font-bold text-center">🔑 كود بوابة المالك:</p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white tracking-widest text-center mt-1 dir-ltr drop-shadow-[0_2px_10px_rgba(45,212,191,0.5)]">{selectedEstDetails.accessCode}</p>
+                  <p className="text-xs text-teal-400 dark:text-teal-600 font-bold text-center">🔑 كود بوابة المالك:</p>
+                  <p className="text-2xl font-black text-white dark:text-slate-900 tracking-widest text-center mt-1 dir-ltr drop-shadow-[0_2px_10px_rgba(45,212,191,0.5)]">{selectedEstDetails.accessCode}</p>
                 </div>
               </div>
 
               {/* QR Preview Box */}
-              <div className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border-4 border-slate-200 dark:border-slate-900 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.1)] relative">
+              <div className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border-4 border-slate-900 dark:border-slate-200 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.1)] relative">
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${window.location.origin}/scan/${selectedEstDetails.id}`)}`}
                   alt="Restaurant QR Code"
@@ -2778,7 +2778,7 @@ export const SuperAdminPanel = () => {
               <button
                 type="button"
                 onClick={() => setSelectedEstDetails(null)}
-                className="mt-2 w-full py-3 rounded-2xl bg-transparent hover:bg-white/5 text-slate-600 dark:text-slate-400 font-extrabold transition-all border border-transparent hover:border-slate-300 dark:hover:border-white/10"
+                className="mt-2 w-full py-3 rounded-2xl bg-transparent hover:bg-white/5 text-slate-400 dark:text-slate-600 font-extrabold transition-all border border-transparent hover:border-slate-300 dark:hover:border-white/10"
               >
                 إغلاق النافذة
               </button>
@@ -2854,30 +2854,30 @@ export const SuperAdminPanel = () => {
         const activeTabObj = PERMISSIONS_TABS.find(t => t.id === activePermissionsTab);
 
         return (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right h-[90vh] md:h-[85vh]">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md">
+            <div className="w-full max-w-4xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 dark:border-slate-200 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right h-[90vh] md:h-[85vh]">
               
               {/* Right Sidebar: Tabs & Stats */}
-              <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
+              <div className="w-full md:w-1/3 bg-slate-900/50 dark:bg-slate-100/50 border-l border-white/5 dark:border-slate-200 p-6 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-2 drop-shadow-sm">
                     <Settings className="w-5 h-5 text-purple-400" /> مركز الأذونات
                   </h3>
-                  <button onClick={() => setShowPermissionsModal(false)} className="md:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all">
+                  <button onClick={() => setShowPermissionsModal(false)} className="md:hidden p-2 rounded-xl bg-slate-100 hover:bg-white/5 dark:bg-slate-200 dark:hover:bg-white/10 text-slate-300 dark:text-slate-600 transition-all">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="mb-6 p-4 rounded-2xl bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
+                <div className="mb-6 p-4 rounded-2xl bg-white/5 dark:bg-white/50 border border-white/10 dark:border-slate-200 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
                   <p className="text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wider">الحساب المستهدف</p>
-                  <p className="text-base font-black text-slate-800 dark:text-white mb-5 truncate">{selectedPermissionsAccount.name}</p>
+                  <p className="text-base font-black text-white dark:text-slate-800 mb-5 truncate">{selectedPermissionsAccount.name}</p>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between text-[11px] font-black">
-                      <span className="text-teal-600 dark:text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]">ممنوح ({grantedPerms})</span>
+                      <span className="text-teal-400 dark:text-teal-600 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]">ممنوح ({grantedPerms})</span>
                       <span className="text-slate-500">من {totalPerms} إذن</span>
                     </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-800/80 ring-1 ring-slate-300 dark:ring-white/5 rounded-full h-2 overflow-hidden shadow-inner">
+                    <div className="w-full bg-slate-800/80 dark:bg-slate-200 ring-1 ring-white/5 dark:ring-slate-300 rounded-full h-2 overflow-hidden shadow-inner">
                       <div className="bg-gradient-to-l from-purple-500 via-indigo-500 to-teal-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ width: `${progressPercentage}%` }}></div>
                     </div>
                   </div>
@@ -2895,9 +2895,9 @@ export const SuperAdminPanel = () => {
                     <button
                       key={tab.id}
                       onClick={() => setActivePermissionsTab(tab.id)}
-                      className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-all duration-300 cursor-pointer text-xs font-black relative overflow-hidden ${activePermissionsTab === tab.id ? 'bg-gradient-to-l from-purple-600/20 to-indigo-600/20 text-purple-300 border border-purple-500/30 shadow-[inset_0_0_15px_rgba(168,85,247,0.15)] translate-x-1' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'}`}
+                      className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-all duration-300 cursor-pointer text-xs font-black relative overflow-hidden ${activePermissionsTab === tab.id ? 'bg-gradient-to-l from-purple-600/20 to-indigo-600/20 text-purple-300 border border-purple-500/30 shadow-[inset_0_0_15px_rgba(168,85,247,0.15)] translate-x-1' : 'text-slate-400 dark:text-slate-600 hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'}`}
                     >
-                      <div className={`p-1.5 rounded-lg ${activePermissionsTab === tab.id ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'}`}>
+                      <div className={`p-1.5 rounded-lg ${activePermissionsTab === tab.id ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-800 dark:bg-slate-200 text-slate-500'}`}>
                         {tab.icon}
                       </div>
                       {tab.label}
@@ -2908,8 +2908,8 @@ export const SuperAdminPanel = () => {
                   ))}
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/5 space-y-3">
-                  <button onClick={handleGrantAll} className="w-full py-3 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 dark:text-teal-400 font-extrabold text-[11px] transition-all cursor-pointer border border-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_15px_rgba(45,212,191,0.2)]">
+                <div className="mt-6 pt-6 border-t border-white/5 dark:border-slate-200 space-y-3">
+                  <button onClick={handleGrantAll} className="w-full py-3 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 dark:text-teal-600 font-extrabold text-[11px] transition-all cursor-pointer border border-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_15px_rgba(45,212,191,0.2)]">
                     + منح كافة الصلاحيات
                   </button>
                   <button onClick={handleRevokeAll} className="w-full py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 font-extrabold text-[11px] transition-all cursor-pointer border border-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_15px_rgba(248,113,113,0.2)]">
@@ -2919,15 +2919,15 @@ export const SuperAdminPanel = () => {
               </div>
 
               {/* Left Content Area: Toggle Switches */}
-              <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10">
-                <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5">
-                  <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
-                    <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
+              <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-900/40 dark:bg-slate-50/80 relative z-10">
+                <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/5 dark:border-slate-200">
+                  <h4 className="text-xl font-black text-white dark:text-slate-800 flex items-center gap-3 drop-shadow-md">
+                    <div className="p-2.5 rounded-xl bg-slate-800/80 dark:bg-slate-100 border border-white/10 dark:border-slate-200 text-purple-400 dark:text-purple-600">
                       {activeTabObj?.icon}
                     </div>
                     {activeTabObj?.label}
                   </h4>
-                  <button onClick={() => setShowPermissionsModal(false)} className="hidden md:flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group">
+                  <button onClick={() => setShowPermissionsModal(false)} className="hidden md:flex p-2.5 rounded-xl bg-slate-100 hover:bg-white/5 dark:bg-slate-200 dark:hover:bg-white/10 text-slate-300 dark:text-slate-600 transition-all items-center justify-center group">
                     <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                   </button>
                 </div>
@@ -2937,15 +2937,15 @@ export const SuperAdminPanel = () => {
                     const detail = PERMISSION_DETAILS[key];
                     const isGranted = !!selectedPermissionsAccount.permissions?.[key];
                     return (
-                      <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${isGranted ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-500/40 shadow-[0_0_20px_-5px_rgba(168,85,247,0.1)] dark:shadow-[0_0_20px_-5px_rgba(168,85,247,0.2)]' : 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-white/10'}`}>
+                      <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${isGranted ? 'bg-purple-900/20 dark:bg-purple-50 border-purple-500/40 dark:border-purple-300 shadow-[0_0_20px_-5px_rgba(168,85,247,0.1)] dark:shadow-[0_0_20px_-5px_rgba(168,85,247,0.2)]' : 'bg-slate-800/40 dark:bg-white/60 border-white/5 dark:border-slate-200 hover:bg-white dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-white/10'}`}>
                         {isGranted && <div className="absolute right-0 top-0 bottom-0 w-1 bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>}
                         
                         <div className="flex flex-col pl-4 transition-transform duration-300 group-hover:-translate-x-1">
-                          <span className={`text-sm font-black mb-1.5 transition-colors ${isGranted ? 'text-purple-700 dark:text-purple-300' : 'text-slate-700 dark:text-slate-200'}`}>{detail.title}</span>
-                          <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">{detail.desc}</span>
+                          <span className={`text-sm font-black mb-1.5 transition-colors ${isGranted ? 'text-purple-300 dark:text-purple-700' : 'text-slate-200 dark:text-slate-700'}`}>{detail.title}</span>
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed font-medium">{detail.desc}</span>
                         </div>
                         
-                        <div className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 border ${isGranted ? 'bg-purple-500 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-slate-300 dark:bg-slate-700/80 border-slate-400 dark:border-slate-600 shadow-inner'}`}>
+                        <div className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 border ${isGranted ? 'bg-purple-500 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-slate-700/80 dark:bg-slate-300 border-slate-600 dark:border-slate-400 shadow-inner'}`}>
                           <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md ${isGranted ? 'left-1' : 'left-[26px]'}`}></div>
                         </div>
                       </div>
@@ -2953,7 +2953,7 @@ export const SuperAdminPanel = () => {
                   })}
                   
                   {activePermissionsTab === 'directives' && (
-                    <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-start gap-3">
+                    <div className="mt-6 p-4 rounded-xl bg-amber-500/10 dark:bg-amber-50 border border-amber-500/20 dark:border-amber-200 flex items-start gap-3">
                       <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                       <p className="text-[11px] text-amber-400/90 font-bold leading-relaxed">
                         تنويه: إطفاء إذن الإرسال والرد يكتسب من خلاله الحساب "صلاحية المشاهدة فقط" للتبليغات الموجهة له دون إمكانية الرد عليها أو إرسال تبليغات جديدة.
@@ -2962,7 +2962,7 @@ export const SuperAdminPanel = () => {
                   )}
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5">
+                <div className="mt-8 pt-6 border-t border-white/5 dark:border-slate-200">
                   <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0">
                     حفظ واعتماد صلاحيات الحساب
                   </button>
@@ -2988,22 +2988,22 @@ export const SuperAdminPanel = () => {
         {activeTab === 'broadcast' && (
           <>
             <div className="glassmorphic-card p-6 border border-red-500/20">
-            <h2 className="text-xl font-black text-red-600 dark:text-red-500 mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-black text-red-500 dark:text-red-600 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 animate-pulse" />
               <span>نظام البث العاجل (إنذار الطوارئ وإقفال الشاشات)</span>
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-bold text-right">
+            <p className="text-sm text-slate-400 dark:text-slate-500 mb-6 font-bold text-right">
               سيؤدي هذا إلى إرسال إنذار فوري يقفل شاشات جميع الفرق الميدانية والمدراء ولن يتمكنوا من العمل حتى يؤكدوا الاستلام.
             </p>
             
             <div className="space-y-4 text-right">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">نص رسالة البث</label>
+                <label className="block text-xs font-bold text-slate-300 dark:text-slate-700 mb-2">نص رسالة البث</label>
                 <textarea
                   value={globalBroadcast.message}
                   onChange={(e) => setGlobalBroadcast({ ...globalBroadcast, message: e.target.value })}
                   placeholder="اكتب رسالة الإنذار هنا..."
-                  className="w-full p-4 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 focus:border-red-500 font-bold text-sm h-32"
+                  className="w-full p-4 rounded-xl bg-slate-900/50 dark:bg-white/50 border border-slate-700 dark:border-slate-300 focus:border-red-500 font-bold text-sm h-32"
                 />
               </div>
               
@@ -3025,7 +3025,7 @@ export const SuperAdminPanel = () => {
                     setGlobalBroadcast({ active: false, message: '', acknowledgedBy: [] });
                     notify('تم إيقاف البث العاجل وإلغاء القفل.', 'info');
                   }}
-                  className="px-6 py-3 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black text-sm transition-all"
+                  className="px-6 py-3 rounded-xl bg-slate-200 hover:bg-slate-800 dark:bg-slate-300 dark:hover:bg-slate-700 text-slate-300 dark:text-slate-700 font-black text-sm transition-all"
                 >
                   إيقاف البث (إلغاء)
                 </button>
@@ -3033,10 +3033,10 @@ export const SuperAdminPanel = () => {
 
               {globalBroadcast.active && (
                 <div className="mt-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
-                  <h3 className="text-sm font-black text-green-600 dark:text-green-400 mb-2">المستخدمين الذين أكدوا الاستلام ({globalBroadcast.acknowledgedBy?.length || 0})</h3>
+                  <h3 className="text-sm font-black text-green-400 dark:text-green-600 mb-2">المستخدمين الذين أكدوا الاستلام ({globalBroadcast.acknowledgedBy?.length || 0})</h3>
                   <div className="flex flex-wrap gap-2">
                     {globalBroadcast.acknowledgedBy?.map((id, i) => (
-                      <span key={i} className="px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 text-xs font-bold rounded-lg border border-green-200 dark:border-green-800/50">
+                      <span key={i} className="px-2 py-1 bg-green-900/40 dark:bg-green-100 text-green-300 dark:text-green-800 text-xs font-bold rounded-lg border border-green-800/50 dark:border-green-200">
                         {id}
                       </span>
                     ))}
@@ -3050,7 +3050,7 @@ export const SuperAdminPanel = () => {
           </div>
           
           <div className="glassmorphic-card p-6 mt-6">
-                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2 border-b border-slate-800 dark:border-slate-100 pb-3">
                     <ShieldAlert className="w-5 h-5 text-red-500" />
                     <span>ضوابط ومعايير النظام السيادية</span>
                   </h2>
@@ -3058,8 +3058,8 @@ export const SuperAdminPanel = () => {
                   {/* Maintenance Mode Toggle */}
                   <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4 text-right mt-4">
                     <div>
-                      <h3 className="text-sm font-black text-red-600 dark:text-red-400 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
+                      <h3 className="text-sm font-black text-red-400 dark:text-red-600 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
+                      <p className="text-xs text-slate-400 dark:text-slate-600 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input 
@@ -3078,7 +3078,7 @@ export const SuperAdminPanel = () => {
                         localStorage.setItem('systemConfig', JSON.stringify(config));
                         notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
                       }}
-                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
+                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-200 text-slate-900 dark:text-white font-extrabold text-xs transition-all shadow-md"
                     >
                       حفظ التغييرات
                     </button>
@@ -3091,7 +3091,7 @@ export const SuperAdminPanel = () => {
           <>
             <div className="glassmorphic-card p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-black text-blue-600 dark:text-blue-500 flex items-center gap-2">
+              <h2 className="text-xl font-black text-blue-500 dark:text-blue-600 flex items-center gap-2">
                 <BarChart3 className="w-6 h-6" />
                 <span>لوحة كفاءة وأداء الفرق الميدانية</span>
               </h2>
@@ -3112,25 +3112,25 @@ export const SuperAdminPanel = () => {
                 const coverage = total > 0 ? Math.round((inspectionsDone / total) * 100) : 0;
                 
                 return (
-                  <div key={team.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/50 dark:border-slate-800/50 flex flex-col gap-3 relative overflow-hidden">
+                  <div key={team.id} className="p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-800/50 dark:border-slate-200/50 flex flex-col gap-3 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
-                    <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
+                    <h3 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
                       <Users className="w-4 h-4 text-blue-500" />
                       {team.name}
                     </h3>
                     <div className="grid grid-cols-3 gap-2 mt-2">
-                      <div className="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-xl text-center">
+                      <div className="bg-slate-800/50 dark:bg-slate-100 p-2 rounded-xl text-center">
                         <span className="block text-[10px] text-slate-500 font-bold mb-1">المنشآت المسندة</span>
-                        <span className="text-lg font-black text-slate-800 dark:text-white">{total}</span>
+                        <span className="text-lg font-black text-white dark:text-slate-800">{total}</span>
                       </div>
-                      <div className="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-xl text-center">
+                      <div className="bg-slate-800/50 dark:bg-slate-100 p-2 rounded-xl text-center">
                         <span className="block text-[10px] text-slate-500 font-bold mb-1">الكشوفات المنجزة</span>
-                        <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">{inspectionsDone}</span>
+                        <span className="text-lg font-black text-emerald-400 dark:text-emerald-600">{inspectionsDone}</span>
                       </div>
-                      <div className="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-xl text-center relative overflow-hidden">
+                      <div className="bg-slate-800/50 dark:bg-slate-100 p-2 rounded-xl text-center relative overflow-hidden">
                         <div className="absolute inset-0 bg-blue-500 opacity-10" style={{ width: `${coverage}%` }}></div>
                         <span className="block text-[10px] text-slate-500 font-bold mb-1">نسبة التغطية</span>
-                        <span className="text-lg font-black text-blue-600 dark:text-blue-400">{coverage}%</span>
+                        <span className="text-lg font-black text-blue-400 dark:text-blue-600">{coverage}%</span>
                       </div>
                     </div>
                   </div>
@@ -3140,7 +3140,7 @@ export const SuperAdminPanel = () => {
 
             {/* Advanced Analytics: Violations */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
+              <div className="bg-slate-900/40 dark:bg-white/40 p-5 rounded-2xl border border-rose-900/30 dark:border-rose-200/50">
                 <ThreeDBarChart 
                   title="🚨 المطاعم الأكثر مخالفة (الجانب الأيسر)"
                   data={establishments
@@ -3150,7 +3150,7 @@ export const SuperAdminPanel = () => {
                     .map(e => ({ label: e.name, value: e.score, color: e.score < (config.warningScore || 70) ? '#E11D48' : '#F59E0B' }))}
                 />
               </div>
-              <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
+              <div className="bg-slate-900/40 dark:bg-white/40 p-5 rounded-2xl border border-rose-900/30 dark:border-rose-200/50">
                 <ThreeDBarChart 
                   title="🚨 المطاعم الأكثر مخالفة (الجانب الأيمن)"
                   data={establishments
