@@ -344,7 +344,7 @@ export const InspectionForm = () => {
             <div className="w-24 h-24 rounded-full bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center text-teal-600 mb-4 shadow-inner">
               <MapPin className="w-12 h-12" />
             </div>
-            <h2 className="text-2xl font-black text-white dark:text-slate-800">التحقق المكاني مطلوب لبدء التقييم</h2>
+            <h2 className="text-2xl font-black text-slate-800 dark:text-white">التحقق المكاني مطلوب لبدء التقييم</h2>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
               لضمان موثوقية الرقابة ونزاهة العملية التفتيشية، يرجى تفعيل الموقع (GPS) والضغط على الزر أدناه لتسجيل وتوثيق تواجدك الفعلي في مقر المنشأة: <span className="font-bold text-teal-600">({establishment.name})</span>
             </p>
@@ -411,7 +411,7 @@ export const InspectionForm = () => {
 
           {/* Remarks, File Picker, Action Buttons */}
           <div className="glassmorphic-card p-6 space-y-6">
-            <h3 className="text-xs font-black text-white dark:text-slate-800">التقرير الميداني النهائي واعتماد التقييم</h3>
+            <h3 className="text-xs font-black text-slate-800 dark:text-white">التقرير الميداني النهائي واعتماد التقييم</h3>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 block">ملاحظات اللجنة وتوصيات الإغلاق أو الإنذار</label>
@@ -420,7 +420,7 @@ export const InspectionForm = () => {
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 placeholder="اكتب أي ملاحظات إضافية حول التجهيزات، العمال، أو العقوبات الموقعة هنا..."
-                className="w-full p-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+                className="w-full p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
               />
             </div>
 
@@ -568,14 +568,14 @@ export const InspectionForm = () => {
           </div> {/* End of Remarks and Evidence Card */}
 
           {/* Live Score Sticky Bar (Thin) */}
-          <div className="sticky bottom-4 w-full p-3 rounded-2xl bg-slate-900/95 dark:bg-white/95 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 shadow-2xl flex items-center justify-between no-print z-50">
+          <div className="sticky bottom-4 w-full p-3 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 shadow-2xl flex items-center justify-between no-print z-50">
             
             <div className="flex items-center gap-3">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-black shadow-inner ${scorePercentage >= config.passingScore ? 'bg-emerald-50 text-emerald-500 dark:bg-emerald-900/20' : scorePercentage >= config.warningScore ? 'bg-amber-50 text-amber-500 dark:bg-amber-900/20' : 'bg-red-50 text-red-500 dark:bg-red-900/20'}`}>
                 {scorePercentage}%
               </div>
               <div className="hidden sm:block">
-                <span className="text-[10px] font-bold text-slate-400 block">مجموع النقاط: <strong className="text-white dark:text-slate-800 text-xs">{sumScores}</strong> / {maxPossible}</span>
+                <span className="text-[10px] font-bold text-slate-400 block">مجموع النقاط: <strong className="text-slate-800 dark:text-white text-xs">{sumScores}</strong> / {maxPossible}</span>
                 <span className="text-[10px] font-bold text-slate-500">
                   {scorePercentage >= config.passingScore ? 'مطابق للشروط ✅' : scorePercentage >= config.warningScore ? 'إنذار وتعهد ⚠️' : 'إغلاق وتشميع ❌'}
                 </span>

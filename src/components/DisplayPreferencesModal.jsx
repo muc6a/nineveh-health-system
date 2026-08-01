@@ -16,9 +16,9 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in" dir="rtl">
-      <div className="bg-slate-900 dark:bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800">
-        <div className="sticky top-0 bg-slate-900/80 dark:bg-white/80 backdrop-blur-md p-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 z-10">
-          <h2 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800">
+        <div className="sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 z-10">
+          <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
             <Eye className="w-5 h-5 text-teal-600" />
             <span>تخصيص العرض والمظهر الشخصي</span>
           </h2>
@@ -120,7 +120,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
                 }}
               >
                 <h4 
-                  className="font-black text-white dark:text-slate-800 mb-2"
+                  className="font-black text-slate-800 dark:text-white mb-2"
                   style={{ fontSize: draftUiPreferences?.headingSize || '18px' }}
                 >
                   مطعم لاماسو السياحي
@@ -143,7 +143,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-slate-900/80 dark:bg-white/80 backdrop-blur-md p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 rounded-b-2xl">
+        <div className="sticky bottom-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 rounded-b-2xl">
           <button
             onClick={onClose}
             className="px-6 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-all text-sm"

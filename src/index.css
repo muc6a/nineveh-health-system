@@ -16,18 +16,6 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
-  /* Inverse Modal Logic (High Contrast Modals) */
-  .inverse-modal {
-    filter: invert(1) hue-rotate(180deg);
-  }
-  /* Double invert images, videos, and canvases to restore their original colors */
-  .inverse-modal img, 
-  .inverse-modal video, 
-  .inverse-modal canvas, 
-  .inverse-modal .no-invert {
-    filter: invert(1) hue-rotate(180deg);
-  }
 }
 
 /* Custom Scrollbar for premium feel */

@@ -37,10 +37,10 @@ export const QRScannerModal = ({ isOpen, onClose, onScanSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" dir="rtl">
-      <div className="bg-slate-900 dark:bg-white rounded-3xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-800 overflow-hidden">
         {/* Header */}
         <div className="bg-slate-50 dark:bg-slate-800 p-4 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
-          <h2 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
+          <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
             <QrCode className="w-5 h-5 text-teal-600" />
             <span>مسح كود المنشأة (QR)</span>
           </h2>

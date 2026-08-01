@@ -58,12 +58,12 @@ export const PublicSearch = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col transition-colors duration-300">
       
       {/* Header */}
-      <header className="bg-slate-900/80 dark:bg-white/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 p-4">
+      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 p-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <AnimatedLogo variant="default" className="w-12 h-12" />
             <div className="text-right">
-              <h1 className="text-sm font-black text-white dark:text-slate-800">بوابة المواطن للرقابة الصحية</h1>
+              <h1 className="text-sm font-black text-slate-800 dark:text-white">بوابة المواطن للرقابة الصحية</h1>
               <p className="text-[10px] text-teal-600 dark:text-teal-400 font-bold">دائرة صحة نينوى - قسم الصحة العامة</p>
             </div>
           </div>
@@ -92,7 +92,7 @@ export const PublicSearch = () => {
       {/* Hero Search Area */}
       <div className="bg-gradient-to-b from-teal-600/10 to-transparent py-12 px-4 text-center">
         <div className="max-w-2xl mx-auto space-y-6">
-          <h2 className="text-2xl md:text-3xl font-black text-white dark:text-slate-800">
+          <h2 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white">
             {publicCMS?.heroTitle || 'البحث والتقصي عن المنشآت الخاضعة للرقابة الصحية في نينوى'}
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -106,7 +106,7 @@ export const PublicSearch = () => {
                 placeholder="ابحث عن المنشأة..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-4 pr-12 py-4 rounded-2xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 text-sm font-bold shadow-lg shadow-slate-200/50 dark:shadow-none outline-none focus:border-teal-500 text-right text-white dark:text-slate-800 transition-all"
+                className="w-full pl-4 pr-12 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm font-bold shadow-lg shadow-slate-200/50 dark:shadow-none outline-none focus:border-teal-500 text-right text-slate-800 dark:text-white transition-all"
               />
               <Search className="w-5 h-5 text-slate-400 absolute right-4 top-4" />
             </div>
@@ -158,7 +158,7 @@ export const PublicSearch = () => {
                     </span>
                   </div>
                   
-                  <h3 className="text-base font-black text-white dark:text-slate-800 mb-1.5">{est.name}</h3>
+                  <h3 className="text-base font-black text-slate-800 dark:text-white mb-1.5">{est.name}</h3>
                   
                   <div className="space-y-2 text-xs font-bold text-slate-500 dark:text-slate-400 mt-4">
                     <div className="flex items-center gap-2">
@@ -206,9 +206,9 @@ export const PublicSearch = () => {
       {/* Report Unlisted Modal */}
       {showReportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-          <div className="bg-slate-900 dark:bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
             <div className="flex justify-between items-center p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-              <h2 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
+              <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-amber-500" />
                 الإبلاغ عن منشأة غير مسجلة
               </h2>
@@ -223,7 +223,7 @@ export const PublicSearch = () => {
                   <div className="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Star className="w-8 h-8" />
                   </div>
-                  <h3 className="text-lg font-black text-white dark:text-slate-800 mb-2">تم الإرسال بنجاح!</h3>
+                  <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">تم الإرسال بنجاح!</h3>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     تم إيصال بيانات المنشأة للإدارة لغرض تسجيلها في النظام وتوجيه أقرب فريق ميداني لزيارتها. شكراً لتعاونك.
                   </p>
@@ -238,7 +238,7 @@ export const PublicSearch = () => {
                       value={reportEstName}
                       onChange={(e) => setReportEstName(e.target.value)}
                       placeholder="اكتب اسم المطعم كما هو في اللوحة"
-                      className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold focus:border-amber-500 outline-none text-white dark:text-slate-800"
+                      className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold focus:border-amber-500 outline-none text-slate-800 dark:text-white"
                     />
                   </div>
                   
@@ -250,7 +250,7 @@ export const PublicSearch = () => {
                       value={reportEstAddress}
                       onChange={(e) => setReportEstAddress(e.target.value)}
                       placeholder="مثال: الجانب الأيسر - حي الزهور - قرب التقاطع"
-                      className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold focus:border-amber-500 outline-none text-white dark:text-slate-800"
+                      className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold focus:border-amber-500 outline-none text-slate-800 dark:text-white"
                     />
                   </div>
 

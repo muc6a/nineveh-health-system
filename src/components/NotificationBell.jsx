@@ -80,9 +80,9 @@ export const NotificationBell = () => {
       </button>
 
       {isOpen && (
-        <div className="fixed top-[70px] left-4 right-4 md:absolute md:top-full md:right-0 md:left-auto md:w-[400px] mt-2 max-h-[80vh] overflow-y-auto bg-slate-900/95 dark:bg-white/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 p-2">
+        <div className="fixed top-[70px] left-4 right-4 md:absolute md:top-full md:right-0 md:left-auto md:w-[400px] mt-2 max-h-[80vh] overflow-y-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 p-2">
           <div className="flex items-center justify-between p-2 border-b border-slate-100 dark:border-slate-800 mb-2">
-            <h3 className="text-sm font-black text-white dark:text-slate-800">الإشعارات</h3>
+            <h3 className="text-sm font-black text-slate-800 dark:text-white">الإشعارات</h3>
             {unreadCount > 0 && (
               <button 
                 onClick={markAllAsRead}
@@ -133,7 +133,7 @@ export const NotificationBell = () => {
       {/* Full-Screen Notification Modal overlay */}
       {selectedNotification && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-[0_0_40px_rgba(13,148,136,0.15)] relative overflow-hidden transform scale-100 animate-in fade-in zoom-in duration-200">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-[0_0_40px_rgba(13,148,136,0.15)] relative overflow-hidden transform scale-100 animate-in fade-in zoom-in duration-200">
             <div className="p-6 text-right">
               <div className="flex items-start justify-between mb-4 flex-row-reverse">
                 <button 
@@ -146,7 +146,7 @@ export const NotificationBell = () => {
                   <Bell className="w-6 h-6 text-teal-600 dark:text-teal-400" />
                 </div>
               </div>
-              <h2 className="text-lg font-black text-white dark:text-slate-800 mb-2 leading-tight drop-shadow-sm">
+              <h2 className="text-lg font-black text-slate-800 dark:text-white mb-2 leading-tight drop-shadow-sm">
                 {selectedNotification.title}
               </h2>
               <p className="text-sm font-bold text-slate-600 dark:text-slate-300 leading-relaxed mb-8 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-white/5">

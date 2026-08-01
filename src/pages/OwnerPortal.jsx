@@ -121,17 +121,17 @@ export const OwnerPortal = () => {
         <div className="absolute top-4 right-4 z-50">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-slate-900/60 dark:bg-white/60 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
+            className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> العودة للرئيسية
           </button>
         </div>
 
-        <div className="w-full max-w-md bg-slate-900/80 dark:bg-white/80 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10">
+        <div className="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10">
           <AnimatedLogo variant="login" className="mb-8" />
           
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-black text-white dark:text-slate-800 mb-2 leading-tight tracking-tight">
+            <h1 className="text-2xl font-black text-slate-800 dark:text-white mb-2 leading-tight tracking-tight">
               {ownerCMS?.heroTitle || 'بوابة أصحاب المنشآت'}
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-bold leading-relaxed">
@@ -152,7 +152,7 @@ export const OwnerPortal = () => {
                   value={accessCode}
                   onChange={(e) => setAccessCode(e.target.value.replace(/[–—]/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toUpperCase())}
                   placeholder="مثال: M-782X"
-                  className="w-full pl-4 pr-12 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950/50 border-2 border-slate-100 dark:border-slate-800 text-lg font-black text-white dark:text-slate-800 outline-none focus:border-teal-500/50 focus:ring-4 focus:ring-teal-500/10 text-center uppercase tracking-[0.3em] transition-all"
+                  className="w-full pl-4 pr-12 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950/50 border-2 border-slate-100 dark:border-slate-800 text-lg font-black text-slate-800 dark:text-white outline-none focus:border-teal-500/50 focus:ring-4 focus:ring-teal-500/10 text-center uppercase tracking-[0.3em] transition-all"
                   dir="ltr"
                 />
               </div>
@@ -313,10 +313,10 @@ export const OwnerPortal = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] text-slate-800 dark:text-slate-200 transition-colors duration-300 flex flex-col md:flex-row">
       
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 bg-slate-900/80 dark:bg-white/80 backdrop-blur-xl border-l border-slate-200 dark:border-slate-800/50 flex flex-col no-print shrink-0 md:sticky md:top-0 md:h-screen z-40">
+      <aside className="w-full md:w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-l border-slate-200 dark:border-slate-800/50 flex flex-col no-print shrink-0 md:sticky md:top-0 md:h-screen z-40">
         <div className="p-6 border-b border-slate-200 dark:border-slate-800">
            <AnimatedLogo variant="sidebar" className="scale-90 origin-right mb-4" />
-           <h2 className="text-sm font-black text-white dark:text-slate-800">بوابة أصحاب المنشآت</h2>
+           <h2 className="text-sm font-black text-slate-800 dark:text-white">بوابة أصحاب المنشآت</h2>
            <p className="text-[10px] font-bold text-slate-500 truncate">{ownerEst.name}</p>
         </div>
         
@@ -380,7 +380,7 @@ export const OwnerPortal = () => {
               <div className="grid grid-cols-1 md:grid-cols-12 print:grid-cols-12 gap-6 animate-in fade-in slide-in-from-bottom-4">
                 
                 {/* Main Score Card (Col-span 8) */}
-                <div className="md:col-span-8 print:col-span-8 bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 relative overflow-hidden group">
+                <div className="md:col-span-8 print:col-span-8 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 relative overflow-hidden group">
                   <div className={`absolute top-0 right-0 w-64 h-64 blur-[80px] rounded-full opacity-20 transition-colors duration-700 pointer-events-none ${
                     isCompliant ? 'bg-emerald-500' : isMonitoring ? 'bg-amber-500' : 'bg-red-500'
                   }`}></div>
@@ -399,7 +399,7 @@ export const OwnerPortal = () => {
                         />
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-4xl font-black text-white dark:text-slate-800">{score}%</span>
+                        <span className="text-4xl font-black text-slate-800 dark:text-white">{score}%</span>
                       </div>
                     </div>
 
@@ -414,7 +414,7 @@ export const OwnerPortal = () => {
                         {isNonCompliant && <><AlertOctagon className="w-5 h-5" /> حالة حرجة - إجراءات إغلاق</>}
                       </div>
                       
-                      <h3 className="text-lg font-black text-white dark:text-slate-800 mb-2">التقييم الصحي العام للمنشأة</h3>
+                      <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">التقييم الصحي العام للمنشأة</h3>
                       <p className="text-xs font-bold text-slate-400 dark:text-slate-500 mb-4 bg-slate-50 dark:bg-slate-800/50 inline-block px-3 py-1 rounded-lg">
                         مبني على نتيجة آخر كشف ميداني بتاريخ: {ownerEst.lastInspection}
                       </p>
@@ -428,8 +428,8 @@ export const OwnerPortal = () => {
                 </div>
 
                 {/* QR Code Quick Card (Col-span 4) */}
-                <div className="md:col-span-4 print:col-span-4 bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex flex-col items-center justify-center text-center">
-                  <h3 className="text-sm font-black text-white dark:text-slate-800 mb-2">هوية المنشأة للزبائن</h3>
+                <div className="md:col-span-4 print:col-span-4 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex flex-col items-center justify-center text-center">
+                  <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">هوية المنشأة للزبائن</h3>
                   <p className="text-[10px] text-slate-500 font-bold mb-6">واجهة الجمهور (QR Code)</p>
                   
                   <div className="p-3 bg-white rounded-2xl shadow-inner border-2 border-slate-100 dark:border-slate-800 mb-6">
@@ -447,9 +447,9 @@ export const OwnerPortal = () => {
                 </div>
 
                 {/* History Chart (Col-span 12) */}
-                <div className="md:col-span-12 print:col-span-12 bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50">
+                <div className="md:col-span-12 print:col-span-12 bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50">
                   <div className="flex flex-col sm:flex-row print:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-                    <h3 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2">
+                    <h3 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
                       <TrendingUp className="w-5 h-5 text-teal-600" /> مسار التقييمات
                     </h3>
                   </div>
@@ -477,7 +477,7 @@ export const OwnerPortal = () => {
 
             {/* TAB: INFO */}
             {activeTab === 'info' && (
-              <div className="bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4 print:p-0 print:border-none print:shadow-none">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4 print:p-0 print:border-none print:shadow-none">
                 <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-8 print:gap-4">
                    <div className="space-y-6">
                      <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 print:break-inside-avoid">
@@ -521,7 +521,7 @@ export const OwnerPortal = () => {
 
             {/* TAB: TASKS (Action Plan) */}
             {activeTab === 'tasks' && (
-              <div className="bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
                 <div className="flex items-center justify-between mb-8">
                   <p className="text-sm font-bold text-slate-500">قم بمعالجة هذه المخالفات لإستعادة تقييمك المثالي.</p>
                   {!isCompliant && (
@@ -580,7 +580,7 @@ export const OwnerPortal = () => {
 
                 {!isCompliant && (
                   <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700 mt-8 text-center">
-                    <h4 className="text-sm font-black text-white dark:text-slate-800 mb-2">أتممت الإصلاحات؟</h4>
+                    <h4 className="text-sm font-black text-slate-800 dark:text-white mb-2">أتممت الإصلاحات؟</h4>
                     <p className="text-xs font-bold text-slate-500 mb-6">يجب تحديد جميع المهام كـ "تم الحل" لتتمكن من طلب الكشف.</p>
                     <button 
                       onClick={requestReinspection}
@@ -604,14 +604,14 @@ export const OwnerPortal = () => {
 
             {/* TAB: FINES */}
             {activeTab === 'fines' && (
-              <div className="bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
                 {(() => {
                   const ownerFines = (fines || []).filter(f => f.targetEstId === ownerEst.id);
                   if (ownerFines.length > 0) {
                     return (
                       <div className="space-y-6">
                         <div className="flex items-center justify-between mb-6">
-                          <h3 className="text-xl font-black text-white dark:text-slate-800">الغرامات المسجلة بحق المنشأة</h3>
+                          <h3 className="text-xl font-black text-slate-800 dark:text-white">الغرامات المسجلة بحق المنشأة</h3>
                           <span className="px-3 py-1 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 font-bold text-xs rounded-full border border-red-200 dark:border-red-500/30">
                             يوجد {ownerFines.length} غرامات غير مسددة
                           </span>
@@ -628,7 +628,7 @@ export const OwnerPortal = () => {
                                 <p className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">السبب: {fine.reason}</p>
                                 <p className="text-xs text-red-600/70 dark:text-red-400/70 font-medium">تاريخ الإصدار: {new Date(fine.date).toLocaleDateString('ar-IQ')}</p>
                               </div>
-                              <div className="bg-slate-900/80 dark:bg-white/50 p-4 rounded-xl border border-red-100 dark:border-red-500/20 md:w-64">
+                              <div className="bg-white/80 dark:bg-slate-900/50 p-4 rounded-xl border border-red-100 dark:border-red-500/20 md:w-64">
                                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">إجراء مطلوب:</p>
                                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                                   يرجى مراجعة <strong className="text-slate-800 dark:text-slate-200">دائرة صحة نينوى - قسم الحسابات</strong> لتسديد المبلغ تجنباً لإغلاق المنشأة.
@@ -654,7 +654,7 @@ export const OwnerPortal = () => {
 
             {/* TAB: EVIDENCE */}
             {activeTab === 'evidence' && (
-              <div className="bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
                 <p className="text-sm font-bold text-slate-500 mb-8">هذه الصور تم التقاطها من قبل فرق التفتيش كأدلة قانونية للمخالفات المرصودة.</p>
                 
                 {!isCompliant ? (
@@ -749,7 +749,7 @@ export const OwnerPortal = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-slate-900 dark:bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex flex-col items-center justify-center py-16 opacity-70">
+                  <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex flex-col items-center justify-center py-16 opacity-70">
                     <Award className="w-16 h-16 text-slate-300 dark:text-slate-600 mb-4" />
                     <p className="text-lg font-black text-slate-700 dark:text-slate-300">لا توجد شهادات شكر وتقدير</p>
                     <p className="text-sm font-bold text-slate-500 mt-2">عليك رفع التقييم الصحي للحصول على الشهادة.</p>
@@ -796,9 +796,9 @@ export const OwnerPortal = () => {
         {/* Task Details Modal */}
         {selectedTask && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-slate-900 dark:bg-white rounded-[2rem] w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col scale-100 animate-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-slate-900 rounded-[2rem] w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col scale-100 animate-in zoom-in-95 duration-200">
               <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
-                <h3 className="font-black text-lg text-white dark:text-slate-800">تفاصيل المخالفة والإجراء المطلوب</h3>
+                <h3 className="font-black text-lg text-slate-800 dark:text-white">تفاصيل المخالفة والإجراء المطلوب</h3>
                 <button onClick={() => setSelectedTask(null)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500">
                   <XCircle className="w-6 h-6" />
                 </button>
@@ -809,7 +809,7 @@ export const OwnerPortal = () => {
                   <h4 className="text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest flex items-center gap-2">
                      اسم التقييم (المعيار الرقابي)
                   </h4>
-                  <p className="text-sm font-black text-white dark:text-slate-800 bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <p className="text-sm font-black text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                     {selectedTask.criteria || selectedTask.text}
                   </p>
                 </div>

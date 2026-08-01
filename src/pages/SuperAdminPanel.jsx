@@ -663,7 +663,7 @@ export const SuperAdminPanel = () => {
           <AnimatedLogo variant="sidebar" className="border-none p-0" />
           <div className="h-8 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
           <div>
-            <h1 className="text-xs font-black text-white dark:text-slate-800">شاشة المسؤول المركزي للنظام</h1>
+            <h1 className="text-xs font-black text-slate-800 dark:text-white">شاشة المسؤول المركزي للنظام</h1>
             <p className="text-[10px] text-slate-400">أهلاً بك سيدي مسؤول المنظومة المركزي 👋</p>
           </div>
         </div>
@@ -816,7 +816,7 @@ export const SuperAdminPanel = () => {
               <>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
-                    <h2 className="text-sm font-black text-white dark:text-slate-800">جدول الفرق ومحرك إدارة الحسابات الميدانية</h2>
+                    <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول الفرق ومحرك إدارة الحسابات الميدانية</h2>
                     <p className="text-[11px] text-slate-500 mt-1">توليد حسابات لجان التفتيش وتوزيع المسؤوليات القطاعية في نينوى</p>
                   </div>
 
@@ -832,7 +832,7 @@ export const SuperAdminPanel = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-right">
                   <div className="p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/20">
                     <span className="text-[10px] text-slate-400 font-bold block mb-1">الفرق المسجلة</span>
-                    <span className="text-xl font-black text-white dark:text-slate-800">{teams.length}</span>
+                    <span className="text-xl font-black text-slate-800 dark:text-white">{teams.length}</span>
                   </div>
                   <div className="p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/20">
                     <span className="text-[10px] text-slate-400 font-bold block mb-1">اللجان النشطة الآن</span>
@@ -844,7 +844,7 @@ export const SuperAdminPanel = () => {
                   </div>
                   <div className="p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/20">
                     <span className="text-[10px] text-slate-400 font-bold block mb-1">الالقطاعات المغطاة</span>
-                    <span className="text-xl font-black text-white dark:text-slate-800">
+                    <span className="text-xl font-black text-slate-800 dark:text-white">
                       {new Set(teams.map(t => t.sector)).size}
                     </span>
                   </div>
@@ -933,7 +933,7 @@ export const SuperAdminPanel = () => {
               <>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
-                    <h2 className="text-sm font-black text-white dark:text-slate-800">جدول مدراء الأقسام ورؤساء اللجان الصحية</h2>
+                    <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول مدراء الأقسام ورؤساء اللجان الصحية</h2>
                     <p className="text-[11px] text-slate-500 mt-1">توليد وإدارة حسابات القيادات الإدارية وصحة نينوى المركزية</p>
                   </div>
 
@@ -1038,7 +1038,7 @@ export const SuperAdminPanel = () => {
               <>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
-                    <h2 className="text-sm font-black text-white dark:text-slate-800">جدول فريق متابعة الإغلاق</h2>
+                    <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول فريق متابعة الإغلاق</h2>
                     <p className="text-[10px] font-bold text-slate-500 mt-1">الكوادر المكلفة بالتحقق من الإغلاقات في الميدان</p>
                   </div>
                   <button
@@ -1083,7 +1083,7 @@ export const SuperAdminPanel = () => {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                       {(trackers || []).map(t => (
                         <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                          <td className="p-4 font-black text-white dark:text-slate-800">{t.name}</td>
+                          <td className="p-4 font-black text-slate-800 dark:text-white">{t.name}</td>
                           <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.email || t.username}</td>
                           <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.phone}</td>
                           <td className="p-4 font-bold text-teal-600 dark:text-teal-400">
@@ -1182,7 +1182,7 @@ export const SuperAdminPanel = () => {
 
               {subSettingsTab === 'public_cms' && (
                 <div className="glassmorphic-card p-6 space-y-6">
-                  <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <Globe className="w-5 h-5 text-teal-600" />
                     <span>إدارة البوابات (Portals CMS)</span>
                   </h2>
@@ -1324,7 +1324,7 @@ export const SuperAdminPanel = () => {
 {subSettingsTab === 'database' && (
                 <div className="glassmorphic-card p-6 space-y-6">
                   {/* Backup and Restore Database Panel */}
-              <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <Database className="w-5 h-5 text-teal-600 animate-pulse" />
                 <span>إدارة النسخ الاحتياطي واستعادة البيانات</span>
               </h2>
@@ -1375,7 +1375,7 @@ export const SuperAdminPanel = () => {
                     <select
                       value={retentionDropdown}
                       onChange={(e) => setRetentionDropdown(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+                      className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
                     >
                       <option value="3 Months">حذف تلقائي بعد 3 أشهر</option>
                       <option value="6 Months">حذف تلقائي بعد 6 أشهر</option>
@@ -1389,7 +1389,7 @@ export const SuperAdminPanel = () => {
               <div className="border-t border-slate-200 dark:border-slate-800 my-8"></div>
                   
               {/* Branding and Storage Toggles */}
-              <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <Settings className="w-5 h-5 text-teal-600" />
                 <span>أولاً: محرك التهيئة البصرية والتحكم بمستودعات الصور</span>
               </h2>
@@ -1400,7 +1400,7 @@ export const SuperAdminPanel = () => {
                   type="text"
                   value={headerInput}
                   onChange={(e) => setHeaderInput(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                 />
               </div>
 
@@ -1466,7 +1466,7 @@ export const SuperAdminPanel = () => {
         {activeTab === 'establishments' && (
           <section className="glassmorphic-card p-6 text-right space-y-6">
             <div>
-              <h2 className="text-base font-black text-white dark:text-slate-800">🍽️ إدارة المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
+              <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ إدارة المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
               <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR المخصصة للصالة وخدمات الديليفري</p>
             </div>
 
@@ -1478,7 +1478,7 @@ export const SuperAdminPanel = () => {
                   placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
                   value={estSearchTerm}
                   onChange={(e) => setEstSearchTerm(e.target.value)}
-                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
               </div>
@@ -1486,7 +1486,7 @@ export const SuperAdminPanel = () => {
               <select
                 value={estStatusFilter}
                 onChange={(e) => setEstStatusFilter(e.target.value)}
-                className="px-4 py-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
+                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
               >
                 <option value="all">كل المنشآت</option>
                 <option value="closed">المطاعم المغلقة 🔒</option>
@@ -1620,7 +1620,7 @@ export const SuperAdminPanel = () => {
             {subAuditTab === 'trail' && (
               <>
                 <div>
-                  <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2">
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
                     <ShieldAlert className="w-5 h-5 text-teal-600" />
                     <span>سجل التدقيق والمراقبة الأمنية (Audit Trail)</span>
                   </h2>
@@ -1667,7 +1667,7 @@ export const SuperAdminPanel = () => {
               {/* Audit Log Details Modal */}
               {selectedAuditLog && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all text-right">
-                  <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                  <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                       <h3 className="text-base font-black text-teal-600 flex items-center gap-2">
                         🔍 تفاصيل حركة السجل
@@ -1681,12 +1681,12 @@ export const SuperAdminPanel = () => {
                       <div className="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold mb-1">المستخدم المنفذ</p>
-                          <p className="text-sm font-black text-white dark:text-slate-800">{selectedAuditLog.user}</p>
+                          <p className="text-sm font-black text-slate-800 dark:text-white">{selectedAuditLog.user}</p>
                           <p className="text-[10px] text-slate-500 mt-0.5">{selectedAuditLog.role === 'team' ? 'فريق ميداني' : 'إدارة عليا'}</p>
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold mb-1">تاريخ الحركة</p>
-                          <p className="text-sm font-black text-white dark:text-slate-800 dir-ltr">{new Date(selectedAuditLog.date).toLocaleString('ar-IQ')}</p>
+                          <p className="text-sm font-black text-slate-800 dark:text-white dir-ltr">{new Date(selectedAuditLog.date).toLocaleString('ar-IQ')}</p>
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold mb-1">نوع الإجراء</p>
@@ -1741,7 +1741,7 @@ export const SuperAdminPanel = () => {
                             };
 
                             return changes.map((change, i) => (
-                              <div key={i} className="flex flex-col md:flex-row gap-2 bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-800 p-3 rounded-xl items-center">
+                              <div key={i} className="flex flex-col md:flex-row gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl items-center">
                                 <div className="w-full md:w-1/4 text-xs font-bold text-slate-500">{fieldNames[change.key] || change.key}</div>
                                 <div className="w-full md:w-3/4 flex items-center gap-2">
                                   <div className="flex-1 p-2 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-xs text-red-600 dark:text-red-400 line-through">
@@ -1772,7 +1772,7 @@ export const SuperAdminPanel = () => {
             {subAuditTab === 'tickets' && (
               <>
                 <div>
-                  <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2">
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
                     <ShieldAlert className="w-5 h-5 text-teal-600" />
                     <span>مركز استقبال الدعم الفني وبلاغات اللجان (Tickets Center)</span>
                   </h2>
@@ -1960,7 +1960,7 @@ export const SuperAdminPanel = () => {
                       placeholder="مثال: اللجنة الرقابية الرابعة"
                       value={newTeamName}
                       onChange={(e) => setNewTeamName(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                     />
                   </div>
 
@@ -1980,7 +1980,7 @@ export const SuperAdminPanel = () => {
                     <select
                       value={generalScope}
                       onChange={(e) => setGeneralScope(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
                     >
                       <option value="mosul">مركز المدينة (الموصل)</option>
                       <option value="districts">أقضية ونواحي المحافظة</option>
@@ -1994,7 +1994,7 @@ export const SuperAdminPanel = () => {
                         <select
                           value={mosulSide}
                           onChange={(e) => setMosulSide(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
                         >
                           <option value="left">الجانب الأيسر</option>
                           <option value="right">الجانب الأيمن</option>
@@ -2008,7 +2008,7 @@ export const SuperAdminPanel = () => {
                           placeholder="مثال: الزهور، الغزلاني"
                           value={mosulNeighborhood}
                           onChange={(e) => setMosulNeighborhood(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                         />
                       </div>
                     </div>
@@ -2022,7 +2022,7 @@ export const SuperAdminPanel = () => {
                           placeholder="مثال: تلعفر، الحمدانية"
                           value={districtName}
                           onChange={(e) => setDistrictName(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                         />
                       </div>
                       <div>
@@ -2033,7 +2033,7 @@ export const SuperAdminPanel = () => {
                           placeholder="مثال: ربيعة، حمام العليل"
                           value={districtSubsector}
                           onChange={(e) => setDistrictSubsector(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                          className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                         />
                       </div>
                     </div>
@@ -2048,7 +2048,7 @@ export const SuperAdminPanel = () => {
                         placeholder="team@ninveh.health.gov.iq"
                         value={newTeamEmail}
                         onChange={(e) => setNewTeamEmail(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500 text-left dir-ltr"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500 text-left dir-ltr"
                       />
                     </div>
                     <div>
@@ -2059,7 +2059,7 @@ export const SuperAdminPanel = () => {
                         placeholder="077xxxxxxxx"
                         value={newTeamPhone}
                         onChange={(e) => setNewTeamPhone(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                       />
                     </div>
                   </div>
@@ -2073,7 +2073,7 @@ export const SuperAdminPanel = () => {
                         placeholder="••••••••"
                         value={newTeamPass}
                         onChange={(e) => setNewTeamPass(e.target.value)}
-                        className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                        className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                       />
                       <button
                         type="button"
@@ -2119,7 +2119,7 @@ export const SuperAdminPanel = () => {
                             placeholder="اسم الدكتور الكامل..."
                             value={doc}
                             onChange={(e) => handleFieldChange('doc', idx, e.target.value)}
-                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 text-[10px]"
+                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
                           />
                           {doctors.length > 1 && (
                             <button type="button" onClick={() => removeField('doc', idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2145,7 +2145,7 @@ export const SuperAdminPanel = () => {
                             placeholder="اسم المساعد الكامل..."
                             value={asst}
                             onChange={(e) => handleFieldChange('asst', idx, e.target.value)}
-                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 text-[10px]"
+                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
                           />
                           {assistants.length > 1 && (
                             <button type="button" onClick={() => removeField('asst', idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2171,7 +2171,7 @@ export const SuperAdminPanel = () => {
                             placeholder="اسم الملاحظ الفني الكامل..."
                             value={tech}
                             onChange={(e) => handleFieldChange('tech', idx, e.target.value)}
-                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 text-[10px]"
+                            className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
                           />
                           {technicians.length > 1 && (
                             <button type="button" onClick={() => removeField('tech', idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2222,7 +2222,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingTeam.name}
                   onChange={(e) => setEditingTeam({ ...editingTeam, name: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
                 />
               </div>
 
@@ -2231,7 +2231,7 @@ export const SuperAdminPanel = () => {
                 <select
                   value={editingTeam.sector}
                   onChange={(e) => setEditingTeam({ ...editingTeam, sector: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-xs font-bold"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold"
                 >
                   <option value="الزهور">قطاع الزهور</option>
                   <option value="المصارف">قطاع المصارف</option>
@@ -2248,7 +2248,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingTeam.email}
                     onChange={(e) => setEditingTeam({ ...editingTeam, email: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-xs font-bold text-left dir-ltr focus:border-teal-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold text-left dir-ltr focus:border-teal-500"
                   />
                 </div>
 
@@ -2259,7 +2259,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingTeam.phone}
                     onChange={(e) => setEditingTeam({ ...editingTeam, phone: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -2272,7 +2272,7 @@ export const SuperAdminPanel = () => {
                     placeholder="اتركه فارغاً للاحتفاظ بكلمة المرور الحالية"
                     value={editingTeam.password || ''}
                     onChange={(e) => setEditingTeam({ ...editingTeam, password: e.target.value })}
-                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                   />
                   <button
                     type="button"
@@ -2303,7 +2303,7 @@ export const SuperAdminPanel = () => {
                         placeholder="اسم الدكتور الكامل..."
                         value={doc}
                         onChange={(e) => handleFieldChange('doc', idx, e.target.value, true)}
-                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 text-[10px]"
+                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
                       />
                       {editDoctors.length > 1 && (
                         <button type="button" onClick={() => removeField('doc', idx, true)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2329,7 +2329,7 @@ export const SuperAdminPanel = () => {
                         placeholder="اسم المساعد الكامل..."
                         value={asst}
                         onChange={(e) => handleFieldChange('asst', idx, e.target.value, true)}
-                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 text-[10px]"
+                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
                       />
                       {editAssistants.length > 1 && (
                         <button type="button" onClick={() => removeField('asst', idx, true)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2355,7 +2355,7 @@ export const SuperAdminPanel = () => {
                         placeholder="اسم الملاحظ الفني الكامل..."
                         value={tech}
                         onChange={(e) => handleFieldChange('tech', idx, e.target.value, true)}
-                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 text-[10px]"
+                        className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white text-[10px]"
                       />
                       {editTechnicians.length > 1 && (
                         <button type="button" onClick={() => removeField('tech', idx, true)} className="p-1 text-red-500 hover:bg-red-500/10 rounded cursor-pointer">
@@ -2397,7 +2397,7 @@ export const SuperAdminPanel = () => {
                   placeholder="مثال: د. عماد محمد عبد الله"
                   value={newDirName}
                   onChange={(e) => setNewDirName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                 />
               </div>
 
@@ -2417,7 +2417,7 @@ export const SuperAdminPanel = () => {
                       setNewDirTitle('مدير شعبة الرقابة الصحية');
                     }
                   }}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none focus:border-teal-500 font-bold"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-teal-500 font-bold"
                 >
                   <option value="director">مدير عام صحة نينوى (Director General)</option>
                   <option value="public_health">مدير قسم الصحة العامة (Public Health Director)</option>
@@ -2437,7 +2437,7 @@ export const SuperAdminPanel = () => {
                       <select
                         value={newDirScope}
                         onChange={(e) => setNewDirScope(e.target.value)}
-                        className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                        className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                       >
                         <option value="centre">مركز المدينة</option>
                         <option value="districts">أقضية ونواحي</option>
@@ -2449,7 +2449,7 @@ export const SuperAdminPanel = () => {
                       <select
                         value={newDirSide}
                         onChange={(e) => setNewDirSide(e.target.value)}
-                        className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                        className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                       >
                         <option value="left">الجانب الأيسر</option>
                         <option value="right">الجانب الأيمن</option>
@@ -2468,7 +2468,7 @@ export const SuperAdminPanel = () => {
                     placeholder="director@ninveh.health.gov.iq"
                     value={newDirEmail}
                     onChange={(e) => setNewDirEmail(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2479,7 +2479,7 @@ export const SuperAdminPanel = () => {
                     placeholder="07700000000"
                     value={newDirPhone}
                     onChange={(e) => setNewDirPhone(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
                   />
                 </div>
               </div>
@@ -2493,7 +2493,7 @@ export const SuperAdminPanel = () => {
                     placeholder="••••••••"
                     value={newDirPass}
                     onChange={(e) => setNewDirPass(e.target.value)}
-                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                   />
                   <button
                     type="button"
@@ -2535,7 +2535,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingDirector.name}
                   onChange={(e) => setEditingDirector({ ...editingDirector, name: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                 />
               </div>
 
@@ -2544,7 +2544,7 @@ export const SuperAdminPanel = () => {
                 <select
                   value={editingDirector.title}
                   onChange={(e) => setEditingDirector({ ...editingDirector, title: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none focus:border-teal-500 font-bold"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-teal-500 font-bold"
                 >
                   <option value="مدير عام صحة نينوى">مدير عام صحة نينوى (Director General)</option>
                   <option value="مدير قسم الصحة العامة">مدير قسم الصحة العامة (Public Health Director)</option>
@@ -2563,7 +2563,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingDirector.email}
                     onChange={(e) => setEditingDirector({ ...editingDirector, email: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2573,7 +2573,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingDirector.phone}
                     onChange={(e) => setEditingDirector({ ...editingDirector, phone: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none text-left dir-ltr"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-left dir-ltr"
                   />
                 </div>
               </div>
@@ -2586,7 +2586,7 @@ export const SuperAdminPanel = () => {
                     placeholder="اتركه فارغاً للاحتفاظ بكلمة المرور الحالية"
                     value={editingDirector.password || ''}
                     onChange={(e) => setEditingDirector({ ...editingDirector, password: e.target.value })}
-                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
+                    className="w-full p-2.5 pl-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 outline-none text-xs font-bold focus:border-teal-500"
                   />
                   <button
                     type="button"
@@ -2628,7 +2628,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.name}
                   onChange={(e) => setEditingEst({ ...editingEst, name: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                 />
               </div>
 
@@ -2639,7 +2639,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.type}
                   onChange={(e) => setEditingEst({ ...editingEst, type: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                 />
               </div>
 
@@ -2650,7 +2650,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.owner}
                   onChange={(e) => setEditingEst({ ...editingEst, owner: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                 />
               </div>
 
@@ -2662,7 +2662,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingEst.phone}
                     onChange={(e) => setEditingEst({ ...editingEst, phone: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                   />
                 </div>
                 <div className="space-y-1">
@@ -2672,7 +2672,7 @@ export const SuperAdminPanel = () => {
                     required
                     value={editingEst.licenseNumber}
                     onChange={(e) => setEditingEst({ ...editingEst, licenseNumber: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                   />
                 </div>
               </div>
@@ -2684,7 +2684,7 @@ export const SuperAdminPanel = () => {
                   required
                   value={editingEst.sector}
                   onChange={(e) => setEditingEst({ ...editingEst, sector: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 outline-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                 />
               </div>
 
@@ -2702,7 +2702,7 @@ export const SuperAdminPanel = () => {
       {/* QR Code and Restaurant Details Modal */}
       {selectedEstDetails && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
-          <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
               <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
@@ -2717,7 +2717,7 @@ export const SuperAdminPanel = () => {
             <div className="space-y-5 text-xs">
               <div className="p-5 rounded-2xl bg-slate-100/40 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
                 <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
-                <h4 className="text-base font-black text-white dark:text-slate-800">{selectedEstDetails.name}</h4>
+                <h4 className="text-base font-black text-slate-800 dark:text-white">{selectedEstDetails.name}</h4>
                 <div className="grid grid-cols-1 gap-2 pt-1">
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">النشاط: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.type}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">المالك: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.owner}</strong></p>
@@ -2855,7 +2855,7 @@ export const SuperAdminPanel = () => {
 
         return (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right h-[90vh] md:h-[85vh]">
+            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right h-[90vh] md:h-[85vh]">
               
               {/* Right Sidebar: Tabs & Stats */}
               <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
@@ -2870,7 +2870,7 @@ export const SuperAdminPanel = () => {
 
                 <div className="mb-6 p-4 rounded-2xl bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
                   <p className="text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wider">الحساب المستهدف</p>
-                  <p className="text-base font-black text-white dark:text-slate-800 mb-5 truncate">{selectedPermissionsAccount.name}</p>
+                  <p className="text-base font-black text-slate-800 dark:text-white mb-5 truncate">{selectedPermissionsAccount.name}</p>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between text-[11px] font-black">
@@ -2921,7 +2921,7 @@ export const SuperAdminPanel = () => {
               {/* Left Content Area: Toggle Switches */}
               <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10">
                 <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5">
-                  <h4 className="text-xl font-black text-white dark:text-slate-800 flex items-center gap-3 drop-shadow-md">
+                  <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
                     <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
                       {activeTabObj?.icon}
                     </div>
@@ -3003,7 +3003,7 @@ export const SuperAdminPanel = () => {
                   value={globalBroadcast.message}
                   onChange={(e) => setGlobalBroadcast({ ...globalBroadcast, message: e.target.value })}
                   placeholder="اكتب رسالة الإنذار هنا..."
-                  className="w-full p-4 rounded-xl bg-slate-900/50 dark:bg-white/50 border border-slate-300 dark:border-slate-700 focus:border-red-500 font-bold text-sm h-32"
+                  className="w-full p-4 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 focus:border-red-500 font-bold text-sm h-32"
                 />
               </div>
               
@@ -3050,7 +3050,7 @@ export const SuperAdminPanel = () => {
           </div>
           
           <div className="glassmorphic-card p-6 mt-6">
-                  <h2 className="text-base font-black text-white dark:text-slate-800 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <ShieldAlert className="w-5 h-5 text-red-500" />
                     <span>ضوابط ومعايير النظام السيادية</span>
                   </h2>
@@ -3078,7 +3078,7 @@ export const SuperAdminPanel = () => {
                         localStorage.setItem('systemConfig', JSON.stringify(config));
                         notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
                       }}
-                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
+                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
                     >
                       حفظ التغييرات
                     </button>
@@ -3112,16 +3112,16 @@ export const SuperAdminPanel = () => {
                 const coverage = total > 0 ? Math.round((inspectionsDone / total) * 100) : 0;
                 
                 return (
-                  <div key={team.id} className="p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-200/50 dark:border-slate-800/50 flex flex-col gap-3 relative overflow-hidden">
+                  <div key={team.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/50 dark:border-slate-800/50 flex flex-col gap-3 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
-                    <h3 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
+                    <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
                       <Users className="w-4 h-4 text-blue-500" />
                       {team.name}
                     </h3>
                     <div className="grid grid-cols-3 gap-2 mt-2">
                       <div className="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-xl text-center">
                         <span className="block text-[10px] text-slate-500 font-bold mb-1">المنشآت المسندة</span>
-                        <span className="text-lg font-black text-white dark:text-slate-800">{total}</span>
+                        <span className="text-lg font-black text-slate-800 dark:text-white">{total}</span>
                       </div>
                       <div className="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-xl text-center">
                         <span className="block text-[10px] text-slate-500 font-bold mb-1">الكشوفات المنجزة</span>
@@ -3140,7 +3140,7 @@ export const SuperAdminPanel = () => {
 
             {/* Advanced Analytics: Violations */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-slate-900/40 dark:bg-white/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
+              <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
                   title="🚨 المطاعم الأكثر مخالفة (الجانب الأيسر)"
                   data={establishments
@@ -3150,7 +3150,7 @@ export const SuperAdminPanel = () => {
                     .map(e => ({ label: e.name, value: e.score, color: e.score < (config.warningScore || 70) ? '#E11D48' : '#F59E0B' }))}
                 />
               </div>
-              <div className="bg-slate-900/40 dark:bg-white/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
+              <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
                   title="🚨 المطاعم الأكثر مخالفة (الجانب الأيمن)"
                   data={establishments
