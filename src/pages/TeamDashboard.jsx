@@ -220,11 +220,11 @@ export const TeamDashboard = () => {
       {/* Urgent Dispatch Modal */}
       {myPendingDispatch && (
         <div className="fixed inset-0 bg-red-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-lg w-full text-center border-4 border-red-500 shadow-2xl shadow-red-500/20 animate-pulse-slow">
+          <div className="bg-slate-900 dark:bg-white rounded-3xl p-8 max-w-lg w-full text-center border-4 border-red-500 shadow-2xl shadow-red-500/20 animate-pulse-slow">
             <div className="w-20 h-20 bg-red-500 rounded-full mx-auto flex items-center justify-center mb-6 animate-bounce">
               <AlertCircle className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">أمر تفتيش عاجل وفوري!</h2>
+            <h2 className="text-2xl font-black text-white dark:text-slate-800 mb-2">أمر تفتيش عاجل وفوري!</h2>
             <p className="text-slate-600 dark:text-slate-300 mb-6 font-bold leading-relaxed">
               ورد أمر الآن من غرفة العمليات المركزية للتوجه فوراً وإجراء كشف صحي على مطعم/منشأة:
               <br/>
@@ -246,11 +246,11 @@ export const TeamDashboard = () => {
       {/* Unread Directive Alert Modal */}
       {unreadDirective && (
         <div className="fixed inset-0 bg-amber-900/80 backdrop-blur-md z-[90] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-lg w-full text-center border-4 border-amber-500 shadow-2xl shadow-amber-500/20 animate-pulse-slow">
+          <div className="bg-slate-900 dark:bg-white rounded-3xl p-8 max-w-lg w-full text-center border-4 border-amber-500 shadow-2xl shadow-amber-500/20 animate-pulse-slow">
             <div className="w-20 h-20 bg-amber-500 rounded-full mx-auto flex items-center justify-center mb-6 animate-bounce">
               <ShieldAlert className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">أمر إداري / توجيه عاجل 📢</h2>
+            <h2 className="text-2xl font-black text-white dark:text-slate-800 mb-2">أمر إداري / توجيه عاجل 📢</h2>
             <p className="text-xs text-slate-500 font-bold mb-4">مرسل من: {unreadDirective.sender}</p>
             <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl mb-6 border border-slate-200 dark:border-slate-700">
               <p className="text-slate-800 dark:text-slate-200 font-bold text-sm leading-relaxed text-right">
@@ -275,7 +275,7 @@ export const TeamDashboard = () => {
       {/* Monthly Stats Modal */}
       {showMonthlyStatsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
+          <div className="w-full max-w-lg bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
               <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
                 {monthlyStatsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
@@ -323,7 +323,7 @@ export const TeamDashboard = () => {
       )}
 
       {/* Fixed Sticky Sidebar */}
-      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
+      <aside className={`w-80 shrink-0 bg-slate-900/95 dark:bg-white/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
         isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
       } right-0`}>
         <div>
@@ -463,11 +463,11 @@ export const TeamDashboard = () => {
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         
         {/* Welcome Headers with Date/Time and Mosul Weather */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-200/20 backdrop-blur-md text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">👥</span>
             <div>
-              <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
+              <h2 className="text-xs font-black text-white dark:text-slate-800">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
               <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم قطاع: {userSector}</p>
             </div>
           </div>
@@ -490,7 +490,7 @@ export const TeamDashboard = () => {
             <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
               <ShieldAlert className="w-10 h-10 text-slate-400" />
             </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">لا توجد صلاحيات مخصصة</h2>
+            <h2 className="text-lg font-black text-white dark:text-slate-800">لا توجد صلاحيات مخصصة</h2>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
               عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب حتى الآن. جميع القوائم والمهام محجوبة. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر لوحة التحكم.
             </p>
@@ -524,7 +524,7 @@ export const TeamDashboard = () => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
+                <h2 className="text-xl md:text-2xl font-black text-white dark:text-slate-800">ملخص المهام والمناطق الغذائية للجنة</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
               </div>
               <button 
@@ -584,7 +584,7 @@ export const TeamDashboard = () => {
 
             {/* Team Analytics Chart */}
             <div className="glassmorphic-card p-6 mt-6">
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
+              <h3 className="text-sm font-black text-white dark:text-slate-800 mb-6 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-teal-600" /> إحصائيات الإنجاز الرقابي (هذا الأسبوع)
               </h3>
               <div className="h-64 w-full" dir="ltr">
@@ -627,7 +627,7 @@ export const TeamDashboard = () => {
         {/* Tab E: Map View */}
         {activeTab === 'map' && hasPerm('showSectorMap') && (
           <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
-            <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+            <h2 className="text-xl font-black text-white dark:text-slate-800 mb-6 flex items-center gap-3">
               <Map className="text-teal-600" />
               خريطة قطاع ({userSector})
             </h2>
@@ -651,7 +651,7 @@ export const TeamDashboard = () => {
                   <CheckSquare className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-slate-800 dark:text-white">مهام اليوم المقترحة</h2>
+                  <h2 className="text-xl font-black text-white dark:text-slate-800">مهام اليوم المقترحة</h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     أمامك <span className="font-bold text-blue-600">{smartTasks.length}</span> منشآت تحتاج للزيارة القصوى اليوم.
                   </p>
@@ -671,7 +671,7 @@ export const TeamDashboard = () => {
                 {smartTasks.map(est => (
                   <div key={`smart-${est.id}`} className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between group">
                     <div>
-                      <h4 className="font-black text-slate-800 dark:text-white text-base mb-2 group-hover:text-blue-600 transition-colors">{est.name}</h4>
+                      <h4 className="font-black text-white dark:text-slate-800 text-base mb-2 group-hover:text-blue-600 transition-colors">{est.name}</h4>
                       <div className="space-y-2 mb-4">
                         <div className="text-xs text-slate-500 flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-slate-400" />
@@ -696,7 +696,7 @@ export const TeamDashboard = () => {
             ) : (
               <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
                 <Check className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                <h3 className="text-lg font-black text-slate-800 dark:text-white">لا توجد مهام مقترحة حالياً</h3>
+                <h3 className="text-lg font-black text-white dark:text-slate-800">لا توجد مهام مقترحة حالياً</h3>
                 <p className="text-xs text-slate-500 mt-2">جميع المنشآت مغطاة رقابياً ضمن الحدود المسموحة.</p>
               </div>
             )}
@@ -708,7 +708,7 @@ export const TeamDashboard = () => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">إدارة منشآت قطاع {userSector}</h2>
+                <h2 className="text-xl md:text-2xl font-black text-white dark:text-slate-800">إدارة منشآت قطاع {userSector}</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">إضافة، تعديل، وتقييم منشآت الخدمات الغذائية والمقاهي بالمنطقة</p>
               </div>
 
@@ -731,7 +731,7 @@ export const TeamDashboard = () => {
                   placeholder="ابحث باسم المطعم أو اسم المالك..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
               </div>
@@ -742,7 +742,7 @@ export const TeamDashboard = () => {
                 className={`px-4 py-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
                   filterExpiredOnly 
                     ? 'bg-red-500 text-white shadow-md shadow-red-500/10' 
-                    : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                    : 'bg-slate-900 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <span>⚠️ الإجازات المنتهية</span>
@@ -752,7 +752,7 @@ export const TeamDashboard = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
+                className="px-4 py-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
               >
                 <option value="all">كل المنشآت</option>
                 <option value="closed">المطاعم المغلقة 🔒</option>
@@ -968,7 +968,7 @@ export const TeamDashboard = () => {
         {activeTab === 'reports' && hasPerm('showReportsPage') && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">صندوق البلاغات والتوجيهات الميدانية للقطاع</h2>
+              <h2 className="text-xl md:text-2xl font-black text-white dark:text-slate-800">صندوق البلاغات والتوجيهات الميدانية للقطاع</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التوجيهات الرسمية الصادرة من مدير الصحة وشكاوى المواطنين والمستهلكين لقطاع {userSector}</p>
             </div>
 
@@ -1014,9 +1014,9 @@ export const TeamDashboard = () => {
 
                 <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
                   {teamReports.map((r) => (
-                    <div key={r.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
+                    <div key={r.id} className="p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-black text-slate-800 dark:text-white">{r.establishmentName}</span>
+                        <span className="text-xs font-black text-white dark:text-slate-800">{r.establishmentName}</span>
                         <span className="text-[9px] text-slate-400 font-bold">{r.date}</span>
                       </div>
                       <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 leading-relaxed mt-1.5">{r.details}</p>
@@ -1057,7 +1057,7 @@ export const TeamDashboard = () => {
       {/* Metric details popup modal */}
       {showMetricModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-600 dark:text-teal-400">
                 {metricModalType === 'all' && '🍽️ قائمة كافة منشآت القطاع المعينة'}
@@ -1132,7 +1132,7 @@ export const TeamDashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
           <div className="w-full max-w-md glassmorphic-card p-6 border border-white/20 shadow-2xl relative text-center">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/50 dark:border-slate-800/50 mb-4">
-              <span className="text-xs font-black text-slate-800 dark:text-white">الصورة المرفقة بالبلاغ للمطعم</span>
+              <span className="text-xs font-black text-white dark:text-slate-800">الصورة المرفقة بالبلاغ للمطعم</span>
               <button onClick={() => setSelectedViolationImg(null)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"><X className="w-4 h-4" /></button>
             </div>
             
@@ -1163,7 +1163,7 @@ export const TeamDashboard = () => {
       {/* QR Code and Restaurant Details Modal */}
       {selectedEstDetails && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
-          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
               <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
@@ -1265,7 +1265,7 @@ export const TeamDashboard = () => {
                 onChange={(e) => setEditJustification(e.target.value)}
                 placeholder="اكتب هنا سبب التعديل الرسمي... (مثال: تصحيح رقم الهاتف بطلب من المالك، تحديث الترخيص الصحي...)"
                 rows="4"
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-500 outline-none text-xs font-bold focus:border-amber-500 mb-4"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-white dark:text-slate-800 placeholder-slate-500 outline-none text-xs font-bold focus:border-amber-500 mb-4"
               />
               <button
                 type="submit"
@@ -1289,7 +1289,7 @@ export const TeamDashboard = () => {
       {/* Floating Chat Widget */}
       <div className="fixed bottom-6 left-6 z-[60] flex flex-col items-end">
         {isChatOpen && (
-          <div className="bg-white dark:bg-slate-900 w-80 sm:w-96 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 mb-4 flex flex-col overflow-hidden animate-fade-in-up">
+          <div className="bg-slate-900 dark:bg-white w-80 sm:w-96 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 mb-4 flex flex-col overflow-hidden animate-fade-in-up">
             <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-4 flex items-center justify-between text-white">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -1316,7 +1316,7 @@ export const TeamDashboard = () => {
               ))}
             </div>
             
-            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+            <div className="p-3 bg-slate-900 dark:bg-white border-t border-slate-100 dark:border-slate-800 flex gap-2">
               <button 
                 onClick={() => {
                   if (chatMessage.trim()) {

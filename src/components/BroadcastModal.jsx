@@ -19,13 +19,13 @@ export const BroadcastModal = () => {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-red-950/90 backdrop-blur-md">
-      <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl p-8 border-4 border-red-500 shadow-2xl relative text-center flex flex-col items-center">
+      <div className="w-full max-w-2xl bg-slate-900 dark:bg-white rounded-3xl p-8 border-4 border-red-500 shadow-2xl relative text-center flex flex-col items-center">
         
         <div className="w-24 h-24 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center mb-6 animate-pulse">
           <AlertTriangle className="w-12 h-12 text-red-600 dark:text-red-500" />
         </div>
         
-        <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">
+        <h2 className="text-3xl font-black text-white dark:text-slate-800 mb-2 tracking-tight">
           إنذار عاجل وإلزامي
         </h2>
         <p className="text-sm font-bold text-red-600 dark:text-red-400 mb-8 uppercase tracking-widest">

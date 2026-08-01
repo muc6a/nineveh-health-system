@@ -45,12 +45,12 @@ export const CriticalAlertModal = () => {
 
   return (
     <div className="fixed inset-0 bg-red-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-lg w-full text-center border-4 border-red-500 shadow-2xl shadow-red-500/20 animate-pulse-slow">
+      <div className="bg-slate-900 dark:bg-white rounded-3xl p-8 max-w-lg w-full text-center border-4 border-red-500 shadow-2xl shadow-red-500/20 animate-pulse-slow">
         <div className="w-20 h-20 bg-red-500 rounded-full mx-auto flex items-center justify-center mb-6 animate-bounce">
           <AlertTriangle className="w-10 h-10 text-white" />
         </div>
         
-        <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">
+        <h2 className="text-2xl font-black text-white dark:text-slate-800 mb-2">
           طلب {pendingPenalty.type === 'fine' ? 'غرامة مالية' : 'إغلاق وتشميع'} عاجل!
         </h2>
         {pendingRequests.length > 1 && (

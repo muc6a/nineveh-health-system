@@ -229,7 +229,7 @@ export const ExecutivePortal = () => {
         <CriticalAlertModal />
         
         {/* Fixed Sticky Left Sidebar */}
-        <aside className="w-80 shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between hidden md:flex sticky top-0 h-screen">
+        <aside className="w-80 shrink-0 bg-slate-900/60 dark:bg-white/60 backdrop-blur-lg border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between hidden md:flex sticky top-0 h-screen">
           <div>
             {/* Logo */}
             <AnimatedLogo variant="sidebar" className="mb-4" />
@@ -237,7 +237,7 @@ export const ExecutivePortal = () => {
           {/* User Profile Card */}
           <div className="mb-4 p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 flex items-center justify-between text-right">
             <div className="flex flex-col">
-              <span className="text-xs font-black text-slate-800 dark:text-white">
+              <span className="text-xs font-black text-white dark:text-slate-800">
                 {user?.name || 'مدير النظام'}
               </span>
               <span className="text-[9px] text-teal-650 dark:text-teal-400 font-extrabold uppercase mt-0.5">
@@ -379,7 +379,7 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Logout at bottom - Sticky */}
-        <div className="pt-4 mt-auto border-t border-slate-200/50 dark:border-slate-800/50 sticky bottom-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pb-6 -mb-6 space-y-2">
+        <div className="pt-4 mt-auto border-t border-slate-200/50 dark:border-slate-800/50 sticky bottom-0 bg-slate-900/80 dark:bg-white/80 backdrop-blur-md pb-6 -mb-6 space-y-2">
           <button 
             onClick={() => setShowDisplayPrefsModal(true)}
             className="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
@@ -436,7 +436,7 @@ export const ExecutivePortal = () => {
                 setActiveTab('strategic');
               }
             }}
-            className="w-full p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+            className="w-full p-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
           >
             {hasPerm('showMainDashboard') && (
               <option value="all">📊 اللوحة الرئيسية (الاستراتيجية)</option>
@@ -466,12 +466,12 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Welcome Headers */}
-        <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
+        <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-200/20 text-right">
           {['strategic', 'establishments'].includes(activeTab) ? (
             <div className="flex items-center gap-3">
               <span className="text-xl">💼</span>
               <div>
-                <h2 className="text-xs font-black text-slate-800 dark:text-white">
+                <h2 className="text-xs font-black text-white dark:text-slate-800">
                   {activeTab === 'establishments' ? 'إدارة المنشآت والـ QR' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`)}
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-1">
@@ -520,7 +520,7 @@ export const ExecutivePortal = () => {
             <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
               <ShieldAlert className="w-10 h-10 text-slate-400" />
             </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">لا توجد صلاحيات مخصصة</h2>
+            <h2 className="text-lg font-black text-white dark:text-slate-800">لا توجد صلاحيات مخصصة</h2>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
               عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب الإداري. جميع المؤشرات والمهام محجوبة كإجراء احترازي. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر لوحة التحكم المركزية.
             </p>
@@ -607,7 +607,7 @@ export const ExecutivePortal = () => {
               onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
               className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none"
             >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المطاعم المغلقة هذا الشهر 🔒</h3>
+              <h3 className="text-sm font-black text-white dark:text-slate-800 mb-2">المطاعم المغلقة هذا الشهر 🔒</h3>
               <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-rose-500">{allMonthlyClosures.length}</p>
               <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
@@ -617,7 +617,7 @@ export const ExecutivePortal = () => {
               onClick={() => { setStatsModalType('fines'); setSelectedSector(null); setShowStatsModal(true); }}
               className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none"
             >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
+              <h3 className="text-sm font-black text-white dark:text-slate-800 mb-2">الغرامات المالية هذا الشهر 💰</h3>
               <p className="text-[10px] text-slate-500 mb-4">إجمالي المطاعم التي تم تغريمها مالياً خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-amber-500">{allMonthlyFines.length}</p>
               <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
@@ -675,7 +675,7 @@ export const ExecutivePortal = () => {
                 <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
                   <ShieldAlert className="w-5 h-5 text-amber-500" />
                   <div>
-                    <h3 className="text-xs font-black text-slate-800 dark:text-white">📢 بوابة الأوامر والتعميمات الإدارية</h3>
+                    <h3 className="text-xs font-black text-white dark:text-slate-800">📢 بوابة الأوامر والتعميمات الإدارية</h3>
                     <p className="text-[10px] text-slate-500 mt-0.5">توجيه اللجان الميدانية أو شعب الرقابة بمختلف القطاعات</p>
                   </div>
                 </div>
@@ -686,7 +686,7 @@ export const ExecutivePortal = () => {
                     <select
                       value={targetRecipient}
                       onChange={(e) => setTargetRecipient(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
+                      className="w-full p-2.5 rounded-xl bg-slate-900 dark:bg-white border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
                     >
                       <option value="all">📢 كافة شعب ولجان التفتيش بالمحافظة</option>
                       <option value="public_health">🏢 مدير قسم الصحة العامة</option>
@@ -701,7 +701,7 @@ export const ExecutivePortal = () => {
                   <div className="space-y-1">
                     <label className="text-slate-600 dark:text-slate-400">الأولوية ودرجة الإلحاح</label>
                     <select
-                      className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"
+                      className="w-full p-2.5 rounded-xl bg-slate-900 dark:bg-white border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"
                     >
                       <option value="high">🚨 عاجل وهام جداً - تنفيذ فوري</option>
                       <option value="medium">⚠️ متابعة روتينية يومية</option>
@@ -789,7 +789,7 @@ export const ExecutivePortal = () => {
             <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
               <Package className="w-10 h-10 text-teal-500" />
             </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">إدارة خدمة التوصيل</h2>
+            <h2 className="text-lg font-black text-white dark:text-slate-800">إدارة خدمة التوصيل</h2>
             <p className="text-xs text-slate-500 max-w-sm">قريباً سيتم إدارة عمال التوصيل والمناديب المتعاقدين مع المنشآت وتدقيق هوياتهم الصحية من هنا.</p>
           </div>
         ) : null}
@@ -802,7 +802,7 @@ export const ExecutivePortal = () => {
       {/* Pop modal for Category breakdown details */}
       {showCategoryBreakdownModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative text-right">
+          <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-400">📊 تفاصيل وإحصائيات المنشآت حسب التصنيف</h3>
               <button 
@@ -839,8 +839,8 @@ export const ExecutivePortal = () => {
       {/* Central Stats Modal (Grouped by Sector) */}
       {showStatsModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[85vh] overflow-y-auto text-right">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
+          <div className="w-full max-w-3xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative max-h-[85vh] overflow-y-auto text-right">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sticky top-0 bg-slate-900 dark:bg-white z-10">
               <div>
                 <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
                   {statsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
@@ -934,7 +934,7 @@ export const ExecutivePortal = () => {
       {/* Uninspected Locations Modal */}
       {showUninspectedModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl p-6 border border-red-500/20 dark:border-red-500/20 shadow-2xl shadow-red-500/10 rounded-3xl relative overflow-hidden">
+          <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/95 backdrop-blur-2xl p-6 border border-red-500/20 dark:border-red-500/20 shadow-2xl shadow-red-500/10 rounded-3xl relative overflow-hidden">
             <div className="flex items-center justify-between pb-4 border-b border-red-500/10 dark:border-red-500/20 mb-4">
               <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <AlertTriangle className="w-5 h-5" />
@@ -969,7 +969,7 @@ export const ExecutivePortal = () => {
       {/* Chart Details Modal */}
       {chartModalState.isOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative text-right">
+          <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-400 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
@@ -991,7 +991,7 @@ export const ExecutivePortal = () => {
                       <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
                       {item.label}
                     </span>
-                    <span className="px-3 py-1 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-black text-xs border border-slate-200 dark:border-slate-700">
+                    <span className="px-3 py-1 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-800 font-black text-xs border border-slate-200 dark:border-slate-700">
                       {item.value}
                     </span>
                   </div>
@@ -1014,7 +1014,7 @@ export const ExecutivePortal = () => {
       {/* Complaints List Modal */}
       {showComplaintsModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative text-right">
+          <div className="w-full max-w-3xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-red-500 dark:text-red-400 flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5" />
@@ -1035,14 +1035,14 @@ export const ExecutivePortal = () => {
                     <div className="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h4 className="text-sm font-black text-slate-800 dark:text-white">{comp.establishmentName}</h4>
+                        <h4 className="text-sm font-black text-white dark:text-slate-800">{comp.establishmentName}</h4>
                         <span className="text-[10px] text-slate-500 dark:text-slate-400">القطاع: {comp.sector}</span>
                       </div>
                       <span className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-[10px] font-bold px-2 py-1 rounded-full border border-red-500/20">
                         {comp.date || 'تاريخ غير محدد'}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-700 dark:text-slate-300 font-bold bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700 mt-2">
+                    <p className="text-xs text-slate-700 dark:text-slate-300 font-bold bg-slate-900 dark:bg-white p-3 rounded-xl border border-slate-200 dark:border-slate-700 mt-2">
                       {comp.details}
                     </p>
                     {comp.evidenceImage && (

@@ -178,7 +178,7 @@ export default function OperationsRoom() {
         <div className="glassmorphic-card p-6 border border-teal-500/20">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
-              <h3 className="text-sm font-black text-slate-800 dark:text-white">إدارة اللجان الميدانية</h3>
+              <h3 className="text-sm font-black text-white dark:text-slate-800">إدارة اللجان الميدانية</h3>
               <p className="text-[10px] text-slate-500 mt-1">توليد حسابات لجان التفتيش وتوزيع المسؤوليات القطاعية في نينوى</p>
             </div>
             <button
@@ -244,7 +244,7 @@ export default function OperationsRoom() {
 
       {activeTab === 'penalties' && (
         <div className="glassmorphic-card p-6 border border-red-500/20">
-          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
+          <h3 className="text-sm font-black text-white dark:text-slate-800 mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
           <p className="text-[10px] text-slate-500 mb-6">طلبات الإغلاق المعلقة من الفرق الميدانية والتي تنتظر مصادقتك لتنفيذها قانونياً.</p>
           {(() => {
             const pendingPenalties = penaltyRequests.filter(req => req.status === 'pending');
@@ -315,7 +315,7 @@ export default function OperationsRoom() {
         <div className="glassmorphic-card p-6 border border-indigo-500/20">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
-              <h3 className="text-sm font-black text-slate-800 dark:text-white">إدارة المتابعين الميدانيين</h3>
+              <h3 className="text-sm font-black text-white dark:text-slate-800">إدارة المتابعين الميدانيين</h3>
               <p className="text-[10px] text-slate-500 mt-1">حسابات المتابعين السريين الموزعين على القطاعات لتقييم الفرق الميدانية.</p>
             </div>
             <button
@@ -405,7 +405,7 @@ export default function OperationsRoom() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* SOS Alerts */}
             <div className="glassmorphic-card p-4 border border-red-500/20 max-h-80 overflow-y-auto">
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-black text-white dark:text-slate-800 mb-4 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-red-500" />
                 سجل الطوارئ (SOS)
               </h3>
@@ -444,7 +444,7 @@ export default function OperationsRoom() {
 
             {/* Closure Verifications */}
             <div className="glassmorphic-card p-4 border border-indigo-500/20 max-h-80 overflow-y-auto">
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-black text-white dark:text-slate-800 mb-4 flex items-center gap-2">
                 <Camera className="w-4 h-4 text-indigo-500" />
                 أدلة الإغلاق الواردة
               </h3>
@@ -487,7 +487,7 @@ export default function OperationsRoom() {
 
           {/* Bottom Section: Teams Live Tracking & Dispatch */}
           <div className="glassmorphic-card p-6 border border-blue-500/20">
-            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+            <h3 className="text-sm font-black text-white dark:text-slate-800 mb-2 flex items-center gap-2">
               <Target className="w-5 h-5 text-blue-500" />
               الفرق الميدانية والتوجيه السريع
             </h3>
@@ -573,8 +573,8 @@ export default function OperationsRoom() {
       {/* Closure Duration Modal */}
       {closureModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-rose-500/30 text-center animate-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">مصادقة قرار الإغلاق</h3>
+          <div className="bg-slate-900 dark:bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-rose-500/30 text-center animate-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-black text-white dark:text-slate-800 mb-2">مصادقة قرار الإغلاق</h3>
             
             {closureModalData.photo && (
               <div className="w-full h-40 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-4 overflow-hidden border border-slate-200 dark:border-slate-700 relative">
@@ -592,7 +592,7 @@ export default function OperationsRoom() {
               <select 
                 value={closureDuration}
                 onChange={(e) => setClosureDuration(e.target.value)}
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-white outline-none focus:border-rose-500"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-white dark:text-slate-800 outline-none focus:border-rose-500"
               >
                 <option value="3 أيام">3 أيام (إنذار غلق)</option>
                 <option value="أسبوع واحد">أسبوع واحد (7 أيام)</option>

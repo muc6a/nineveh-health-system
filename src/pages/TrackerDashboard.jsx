@@ -241,14 +241,14 @@ export const TrackerDashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-cairo dir-rtl pb-20">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 transition-colors">
+      <header className="sticky top-0 z-40 bg-slate-900/80 dark:bg-white/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
               <ScanLine className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-black text-slate-800 dark:text-white">المتابع الميداني</h1>
+              <h1 className="text-sm sm:text-base font-black text-white dark:text-slate-800">المتابع الميداني</h1>
               <p className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">حساب المتابعة والرصد المستمر</p>
             </div>
           </div>
@@ -347,17 +347,17 @@ export const TrackerDashboard = () => {
         {activeTab === 'daily_tasks' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
             {pendingTasks.length === 0 ? (
-              <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[40vh]">
+              <div className="text-center p-8 bg-slate-900 dark:bg-white rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center min-h-[40vh]">
                 <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mb-4">
                   <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                 </div>
-                <h3 className="font-black text-slate-800 dark:text-white text-lg">لا توجد مهام حالية</h3>
+                <h3 className="font-black text-white dark:text-slate-800 text-lg">لا توجد مهام حالية</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-xs mt-2 font-bold max-w-xs leading-relaxed">أنتظر توجيهات جديدة من غرفة العمليات أو يمكنك البدء بالرصد الميداني الروتيني.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <h2 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                     مهام موجهة عاجلة
                   </h2>
@@ -367,11 +367,11 @@ export const TrackerDashboard = () => {
                 {pendingTasks.map(task => {
                   const targetEst = establishments.find(e => e.id === task.targetEstId);
                   return (
-                    <div key={task.id} className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-purple-200 dark:border-purple-900/30 shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+                    <div key={task.id} className="bg-slate-900 dark:bg-white rounded-3xl p-5 border border-purple-200 dark:border-purple-900/30 shadow-sm relative overflow-hidden transition-all hover:shadow-md">
                       <div className="absolute top-0 right-0 w-1.5 h-full bg-gradient-to-b from-purple-500 to-indigo-500"></div>
                       
                       <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-black text-slate-800 dark:text-white text-sm pl-2 leading-relaxed">{task.title}</h3>
+                        <h3 className="font-black text-white dark:text-slate-800 text-sm pl-2 leading-relaxed">{task.title}</h3>
                         <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-lg">
                           <Clock className="w-3 h-3" />
                           {new Date(task.createdAt).toLocaleTimeString('ar-IQ', {hour: '2-digit', minute:'2-digit'})}
@@ -443,7 +443,7 @@ export const TrackerDashboard = () => {
             
             {/* Pending Verifications */}
             <div>
-              <h2 className="text-sm font-black text-slate-800 dark:text-white flex justify-between items-center mb-4">
+              <h2 className="text-sm font-black text-white dark:text-slate-800 flex justify-between items-center mb-4">
                 <span>مطاعم مغلقة بانتظار التأكد من الالتزام</span>
                 <span className="bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400 px-2 py-1 rounded-lg text-[10px]">{pendingVerifications.length}</span>
               </h2>
@@ -456,18 +456,18 @@ export const TrackerDashboard = () => {
               </div>
               
               {pendingVerifications.length === 0 ? (
-                <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="text-center p-8 bg-slate-900 dark:bg-white rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
                   <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
                   <h3 className="font-bold text-slate-700 dark:text-slate-300">لقد وثقت جميع المطاعم المغلقة لليوم!</h3>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {pendingVerifications.map(est => (
-                    <div key={est.id} className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-rose-200 dark:border-rose-900/30 shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+                    <div key={est.id} className="bg-slate-900 dark:bg-white rounded-3xl p-5 border border-rose-200 dark:border-rose-900/30 shadow-sm relative overflow-hidden transition-all hover:shadow-md">
                       <div className="absolute top-0 right-0 w-1.5 h-full bg-rose-500"></div>
                       <div className="flex flex-col gap-4">
                         <div>
-                          <h3 className="font-black text-slate-800 dark:text-white text-base">{est.name}</h3>
+                          <h3 className="font-black text-white dark:text-slate-800 text-base">{est.name}</h3>
                           <p className="text-xs text-slate-500 mt-1 font-bold">القطاع/الحي: {est.neighborhood || est.sector}</p>
                           <p className="text-[11px] font-bold mt-2 inline-block px-2 py-1 rounded-lg bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400">
                             {est.status === 'closed' ? 'حالة المطعم: مغلق بالشمع الأحمر' : `التقييم: ${est.score}% - حرج (تأكد من إغلاقه)`}
@@ -499,7 +499,7 @@ export const TrackerDashboard = () => {
                     return (
                       <div key={est.id} className="bg-emerald-50/50 dark:bg-emerald-900/10 rounded-2xl p-4 border border-emerald-100 dark:border-emerald-900/30 flex items-center justify-between">
                         <div>
-                          <h3 className="font-bold text-sm text-slate-800 dark:text-white line-through decoration-emerald-500/50">{est.name}</h3>
+                          <h3 className="font-bold text-sm text-white dark:text-slate-800 line-through decoration-emerald-500/50">{est.name}</h3>
                           <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" /> تم التوثيق {new Date(verification.date).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute:'2-digit' })}
                           </p>
@@ -522,13 +522,13 @@ export const TrackerDashboard = () => {
 
         {/* Tab 2: Add New */}
         {activeTab === 'add_new' && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm transition-all">
+          <div className="bg-slate-900 dark:bg-white rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm transition-all">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl flex items-center justify-center">
                 <Target className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-sm font-black text-slate-800 dark:text-white">رصد منشأة جديدة</h2>
+                <h2 className="text-sm font-black text-white dark:text-slate-800">رصد منشأة جديدة</h2>
                 <p className="text-[10px] text-slate-500 font-bold mt-1">ابحث عن المحل للتأكد من عدم وجوده أولاً</p>
               </div>
             </div>
@@ -640,13 +640,13 @@ export const TrackerDashboard = () => {
                </div>
             ) : (
               establishmentsNeedsLocation.slice(0, 15).map(est => (
-                <div key={est.id} className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm transition-shadow">
+                <div key={est.id} className="bg-slate-900 dark:bg-white p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm transition-shadow">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center shrink-0">
                       <Building className="w-4 h-4 text-slate-500" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-black text-slate-800 dark:text-white text-sm">{est.name}</h3>
+                      <h3 className="font-black text-white dark:text-slate-800 text-sm">{est.name}</h3>
                       <p className="text-[10px] text-slate-500 font-bold mt-1">المنطقة: {est.sector}</p>
                     </div>
                     {updatingEstId !== est.id && (

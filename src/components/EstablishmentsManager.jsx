@@ -43,7 +43,7 @@ export const EstablishmentsManager = () => {
   return (
     <section className="glassmorphic-card p-6 text-right space-y-6 animate-fade-in print:hidden">
       <div>
-        <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ إدارة المنشآت والتحكم بالبيانات</h2>
+        <h2 className="text-base font-black text-white dark:text-slate-800">🍽️ إدارة المنشآت والتحكم بالبيانات</h2>
         <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR</p>
       </div>
 
@@ -54,7 +54,7 @@ export const EstablishmentsManager = () => {
             placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
             value={estSearchTerm}
             onChange={(e) => setEstSearchTerm(e.target.value)}
-            className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all"
+            className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all"
           />
           <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
         </div>
@@ -62,7 +62,7 @@ export const EstablishmentsManager = () => {
         <select 
           value={smartFilter} 
           onChange={(e) => setSmartFilter(e.target.value)}
-          className="w-full md:w-64 p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-fuchsia-500 transition-all shadow-sm"
+          className="w-full md:w-64 p-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-fuchsia-500 transition-all shadow-sm"
         >
           <option value="all">الكل (بدون فلترة ذكية)</option>
           <option value="closed">🚫 مطاعم مغلقة بالشمع الأحمر</option>
@@ -73,7 +73,7 @@ export const EstablishmentsManager = () => {
         <select 
           value={sectorFilter} 
           onChange={(e) => setSectorFilter(e.target.value)}
-          className="w-full md:w-64 p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all shadow-sm"
+          className="w-full md:w-64 p-3 rounded-2xl bg-slate-900/80 dark:bg-white/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all shadow-sm"
         >
           <option value="all">الكل (جميع القطاعات والأقضية)</option>
           {uniqueSectors.map(sector => (
