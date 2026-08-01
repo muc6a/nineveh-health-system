@@ -134,7 +134,7 @@ export const LoginGate = () => {
 
     // Fallback logic
     if (input === 'director@ninveh.health.gov.iq' || input === 'director' || input.includes('مدير')) {
-      setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDirectivesPage: true, sendDirectives: true, replyDirective: true, notify_closures: false, notify_inspections: false, notify_directives: true } });
+      setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, notify_closures: false, notify_inspections: false, notify_directives: true } });
       notify('تم تسجيل الدخول كمدير عام لصحة نينوى', 'success', true);
       navigate('/dashboard/director');
     } else if (input === 'central_director@ninveh.health.gov.iq' || input === 'central_director' || input.includes('مركزية')) {

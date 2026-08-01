@@ -224,11 +224,11 @@ export const TeamDashboard = () => {
             <div className="w-20 h-20 bg-red-500 rounded-full mx-auto flex items-center justify-center mb-6 animate-bounce">
               <AlertCircle className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white dark:text-slate-800 mb-2">أمر تفتيش عاجل وفوري!</h2>
-            <p className="text-slate-300 dark:text-slate-600 mb-6 font-bold leading-relaxed">
+            <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">أمر تفتيش عاجل وفوري!</h2>
+            <p className="text-slate-600 dark:text-slate-300 mb-6 font-bold leading-relaxed">
               ورد أمر الآن من غرفة العمليات المركزية للتوجه فوراً وإجراء كشف صحي على مطعم/منشأة:
               <br/>
-              <span className="text-xl text-red-400 dark:text-red-600 font-black inline-block mt-2">{myPendingDispatch.estName}</span>
+              <span className="text-xl text-red-600 dark:text-red-400 font-black inline-block mt-2">{myPendingDispatch.estName}</span>
             </p>
             <button 
               onClick={() => {
@@ -250,10 +250,10 @@ export const TeamDashboard = () => {
             <div className="w-20 h-20 bg-amber-500 rounded-full mx-auto flex items-center justify-center mb-6 animate-bounce">
               <ShieldAlert className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white dark:text-slate-800 mb-2">أمر إداري / توجيه عاجل 📢</h2>
+            <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">أمر إداري / توجيه عاجل 📢</h2>
             <p className="text-xs text-slate-500 font-bold mb-4">مرسل من: {unreadDirective.sender}</p>
-            <div className="bg-white/10 dark:bg-slate-100 p-4 rounded-2xl mb-6 border border-slate-700 dark:border-slate-200">
-              <p className="text-slate-200 dark:text-slate-800 font-bold text-sm leading-relaxed text-right">
+            <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl mb-6 border border-slate-200 dark:border-slate-700">
+              <p className="text-slate-800 dark:text-slate-200 font-bold text-sm leading-relaxed text-right">
                 {unreadDirective.text}
               </p>
             </div>
@@ -274,10 +274,10 @@ export const TeamDashboard = () => {
 
       {/* Monthly Stats Modal */}
       {showMonthlyStatsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-slate-900 dark:bg-white border border-slate-700 dark:border-slate-200 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800 dark:border-slate-100 mb-4">
-              <h3 className="text-lg font-black text-teal-400 dark:text-teal-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
+          <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+              <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
                 {monthlyStatsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
               </h3>
               <button onClick={() => setShowMonthlyStatsModal(false)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
@@ -295,7 +295,7 @@ export const TeamDashboard = () => {
                   const neighborhood = estData ? estData.neighborhood : 'غير محدد';
                   
                   return (
-                    <div key={req.id} className="p-4 rounded-xl bg-slate-800/50 dark:bg-slate-50 border border-slate-700/50 dark:border-slate-100 flex justify-between items-center">
+                    <div key={req.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
                       <div>
                         <h4 className="font-black text-sm">{req.estName}</h4>
                         <p className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
@@ -317,20 +317,20 @@ export const TeamDashboard = () => {
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Fixed Sticky Sidebar */}
-      <aside className={`w-80 shrink-0 bg-slate-900/95 dark:bg-white/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-black/20 border-l border-slate-800/50 dark:border-slate-200/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
+      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
         isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
       } right-0`}>
         <div>
           <AnimatedLogo variant="sidebar" className="mb-6" />
 
           <div className="space-y-1 mb-6">
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block px-3 mb-2">
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
               لوحة تحكم اللجنة الرقابية
             </span>
             {hasPerm('showMainDashboard') && (
@@ -339,7 +339,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'summary'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <LayoutDashboard className="w-4.5 h-4.5" />
@@ -353,7 +353,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'directory'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <Database className="w-4.5 h-4.5" />
@@ -367,7 +367,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'map'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <Map className="w-4.5 h-4.5" />
@@ -381,7 +381,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'smart_tasks'
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <CheckSquare className="w-4.5 h-4.5" />
@@ -395,7 +395,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
                   activeTab === 'reports'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -416,7 +416,7 @@ export const TeamDashboard = () => {
         </div>
 
         {/* User context footer */}
-        <div className="pt-4 border-t border-slate-800/50 dark:border-slate-200/50">
+        <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
           <div className="flex flex-col gap-2 mb-4">
              {hasPerm('canSendSOS') && (
                <button 
@@ -435,13 +435,13 @@ export const TeamDashboard = () => {
           </div>
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col text-right">
-              <span className="text-xs font-black text-slate-300 dark:text-slate-700">{user?.name || 'مفتش الرقابة الميداني'}</span>
+              <span className="text-xs font-black text-slate-700 dark:text-slate-300">{user?.name || 'مفتش الرقابة الميداني'}</span>
               <span className="text-[10px] text-teal-600 dark:text-teal-600 dark:text-teal-400 font-bold">قطاع: {userSector}</span>
             </div>
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => setShowDisplayPrefsModal(true)}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-800 dark:bg-slate-200 dark:hover:bg-slate-700 text-slate-300 dark:text-slate-600 transition-all cursor-pointer shadow-sm border border-slate-700 dark:border-slate-200 flex items-center justify-center group relative"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group relative"
                 title="تخصيص العرض والمظهر"
               >
                 <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
@@ -452,7 +452,7 @@ export const TeamDashboard = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 dark:text-red-600 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+            className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
           >
             <span>تسجيل الخروج</span>
           </button>
@@ -463,22 +463,22 @@ export const TeamDashboard = () => {
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         
         {/* Welcome Headers with Date/Time and Mosul Weather */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/5 dark:bg-white/40 border border-slate-200/20 backdrop-blur-md text-right">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">👥</span>
             <div>
-              <h2 className="text-xs font-black text-white dark:text-slate-800">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
+              <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
               <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم قطاع: {userSector}</p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-300 dark:text-slate-600">
+          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
             <NotificationBell />
-            <div className="flex items-center gap-1 bg-white/10 dark:bg-slate-100 px-2.5 py-1 rounded-xl">
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300">|</span>
               <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-400 dark:text-amber-600 px-2.5 py-1 rounded-xl border border-amber-500/20">
+            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
               <WeatherWidget variant="full" />
             </div>
           </div>
@@ -487,10 +487,10 @@ export const TeamDashboard = () => {
         {/* Welcome / No Permissions State */}
         {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !hasPerm('showDirectivesPage') && !hasPerm('showDeliveryPage') && !hasPerm('showPublicEvalsPage') && (
           <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-white/10 dark:bg-slate-100 rounded-full flex items-center justify-center mb-4 shadow-inner">
+            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
               <ShieldAlert className="w-10 h-10 text-slate-400" />
             </div>
-            <h2 className="text-lg font-black text-white dark:text-slate-800">لا توجد صلاحيات مخصصة</h2>
+            <h2 className="text-lg font-black text-slate-800 dark:text-white">لا توجد صلاحيات مخصصة</h2>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
               عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب حتى الآن. جميع القوائم والمهام محجوبة. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر لوحة التحكم.
             </p>
@@ -501,7 +501,7 @@ export const TeamDashboard = () => {
         <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 bg-white/10 dark:bg-slate-100 text-slate-300 dark:text-slate-700 rounded-xl"
+            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -509,7 +509,7 @@ export const TeamDashboard = () => {
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => setShowDisplayPrefsModal(true)}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-800 dark:bg-slate-200 dark:hover:bg-slate-700 text-slate-300 dark:text-slate-600 transition-all cursor-pointer shadow-sm border border-slate-700 dark:border-slate-200 flex items-center justify-center group"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
                 title="تخصيص العرض والمظهر"
               >
                 <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
@@ -524,8 +524,8 @@ export const TeamDashboard = () => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl md:text-2xl font-black text-white dark:text-slate-800">ملخص المهام والمناطق الغذائية للجنة</h2>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
+                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
               </div>
               <button 
                 onClick={() => setShowQRScanner(true)}
@@ -539,15 +539,15 @@ export const TeamDashboard = () => {
             {myDirectives.length > 0 && (
               <div className="space-y-3 cursor-pointer" onClick={() => setActiveTab('reports')}>
                 {myDirectives.map((dir) => (
-                  <div key={dir.id} className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/20 dark:bg-amber-500/10 text-right relative overflow-hidden hover:scale-[1.01] transition-all">
+                  <div key={dir.id} className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 text-right relative overflow-hidden hover:scale-[1.01] transition-all">
                     <div className="absolute top-0 right-0 h-full w-1.5 bg-amber-500"></div>
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">
                         📢 بلاغ وتوجيه رسمي من {dir.sender} (انقر للانتقال لصندوق البلاغات 📬)
                       </span>
-                      <span className="text-[9px] text-amber-400 dark:text-amber-600 font-bold">{dir.date}</span>
+                      <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold">{dir.date}</span>
                     </div>
-                    <p className="text-xs font-black text-amber-200 dark:text-amber-900 mt-1.5 leading-relaxed">
+                    <p className="text-xs font-black text-amber-900 dark:text-amber-200 mt-1.5 leading-relaxed">
                       {dir.text}
                     </p>
                   </div>
@@ -560,7 +560,7 @@ export const TeamDashboard = () => {
                 onClick={() => { setMetricModalType('all'); setShowMetricModal(true); }}
                 className="glassmorphic-card p-5 border border-teal-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 cursor-pointer select-none"
               >
-                <span className="text-xs font-black text-slate-400 dark:text-slate-500">إجمالي المنشآت المخصصة للجنة</span>
+                <span className="text-xs font-black text-slate-500 dark:text-slate-400">إجمالي المنشآت المخصصة للجنة</span>
                 <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-600 dark:text-teal-400 mt-3">{totalShops}</p>
                 <span className="text-[10px] text-teal-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
               </div>
@@ -568,7 +568,7 @@ export const TeamDashboard = () => {
                 onClick={() => { setMetricModalType('inspected'); setShowMetricModal(true); }}
                 className="glassmorphic-card p-5 border border-emerald-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer select-none"
               >
-                <span className="text-xs font-black text-slate-400 dark:text-slate-500">منشآت تم زيارتها بنجاح هذا الشهر 🟢</span>
+                <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت تم زيارتها بنجاح هذا الشهر 🟢</span>
                 <p className="text-4xl font-extrabold text-emerald-500 mt-3">{inspectedShops}</p>
                 <span className="text-[10px] text-emerald-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
               </div>
@@ -576,7 +576,7 @@ export const TeamDashboard = () => {
                 onClick={() => { setMetricModalType('uninspected'); setShowMetricModal(true); }}
                 className="glassmorphic-card p-5 border border-red-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/5 transition-all duration-300 cursor-pointer select-none"
               >
-                <span className="text-xs font-black text-slate-400 dark:text-slate-500">منشآت متأخرة بانتظار الزيارة الفورية 🔴</span>
+                <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت متأخرة بانتظار الزيارة الفورية 🔴</span>
                 <p className="text-4xl font-extrabold text-red-500 mt-3">{uninspectedShops}</p>
                 <span className="text-[10px] text-red-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
               </div>
@@ -584,7 +584,7 @@ export const TeamDashboard = () => {
 
             {/* Team Analytics Chart */}
             <div className="glassmorphic-card p-6 mt-6">
-              <h3 className="text-sm font-black text-white dark:text-slate-800 mb-6 border-b border-slate-800 dark:border-slate-100 pb-3 flex items-center gap-2">
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-teal-600" /> إحصائيات الإنجاز الرقابي (هذا الأسبوع)
               </h3>
               <div className="h-64 w-full" dir="ltr">
@@ -610,7 +610,7 @@ export const TeamDashboard = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex justify-center gap-6 mt-4 border-t border-slate-800 dark:border-slate-100 pt-4">
+              <div className="flex justify-center gap-6 mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
                 <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
                   <span className="w-3 h-3 rounded-full bg-teal-600"></span> الجولات التفتيشية
                 </div>
@@ -627,11 +627,11 @@ export const TeamDashboard = () => {
         {/* Tab E: Map View */}
         {activeTab === 'map' && hasPerm('showSectorMap') && (
           <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
-            <h2 className="text-xl font-black text-white dark:text-slate-800 mb-6 flex items-center gap-3">
+            <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
               <Map className="text-teal-600" />
               خريطة قطاع ({userSector})
             </h2>
-            <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-800 dark:border-slate-200 bg-white" style={{ borderRadius: '0' }}>
+            <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white" style={{ borderRadius: '0' }}>
               <NinevehMap 
                 establishments={establishments} 
                 isTeamView={true} 
@@ -645,14 +645,14 @@ export const TeamDashboard = () => {
         {/* Tab B: Smart Tasks (Today's Tasks) */}
         {activeTab === 'smart_tasks' && hasPerm('showSmartTasks') && (
           <div className="space-y-6 animate-fade-in-up">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-900/10 dark:bg-blue-50 p-6 rounded-3xl border border-blue-900/30 dark:border-blue-100">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
                   <CheckSquare className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-white dark:text-slate-800">مهام اليوم المقترحة</h2>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                  <h2 className="text-xl font-black text-slate-800 dark:text-white">مهام اليوم المقترحة</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     أمامك <span className="font-bold text-blue-600">{smartTasks.length}</span> منشآت تحتاج للزيارة القصوى اليوم.
                   </p>
                 </div>
@@ -669,9 +669,9 @@ export const TeamDashboard = () => {
             {smartTasks.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {smartTasks.map(est => (
-                  <div key={`smart-${est.id}`} className="bg-slate-800 dark:bg-white p-5 rounded-3xl border border-slate-700 dark:border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between group">
+                  <div key={`smart-${est.id}`} className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between group">
                     <div>
-                      <h4 className="font-black text-white dark:text-slate-800 text-base mb-2 group-hover:text-blue-600 transition-colors">{est.name}</h4>
+                      <h4 className="font-black text-slate-800 dark:text-white text-base mb-2 group-hover:text-blue-600 transition-colors">{est.name}</h4>
                       <div className="space-y-2 mb-4">
                         <div className="text-xs text-slate-500 flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-slate-400" />
@@ -679,13 +679,13 @@ export const TeamDashboard = () => {
                         </div>
                         <div className="text-xs text-slate-500 flex items-center gap-2">
                           <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
-                          <span>تاريخ آخر زيارة: <strong className="text-slate-300 dark:text-slate-700 bg-amber-900/20 dark:bg-amber-50 px-1.5 py-0.5 rounded">{est.lastInspection}</strong></span>
+                          <span>تاريخ آخر زيارة: <strong className="text-slate-700 dark:text-slate-300 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded">{est.lastInspection}</strong></span>
                         </div>
                       </div>
                     </div>
                     <button 
                       onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                      className="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-900/20 dark:bg-blue-600 dark:hover:bg-blue-600 text-blue-600 hover:text-white font-bold flex items-center justify-center gap-2 transition-all"
+                      className="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-600 text-blue-600 hover:text-white font-bold flex items-center justify-center gap-2 transition-all"
                     >
                       <FilePlus className="w-4 h-4" />
                       <span>بدء التقييم اليدوي</span>
@@ -694,9 +694,9 @@ export const TeamDashboard = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 bg-slate-800 dark:bg-white rounded-3xl border border-slate-700 dark:border-slate-200">
+              <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
                 <Check className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                <h3 className="text-lg font-black text-white dark:text-slate-800">لا توجد مهام مقترحة حالياً</h3>
+                <h3 className="text-lg font-black text-slate-800 dark:text-white">لا توجد مهام مقترحة حالياً</h3>
                 <p className="text-xs text-slate-500 mt-2">جميع المنشآت مغطاة رقابياً ضمن الحدود المسموحة.</p>
               </div>
             )}
@@ -708,8 +708,8 @@ export const TeamDashboard = () => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl md:text-2xl font-black text-white dark:text-slate-800">إدارة منشآت قطاع {userSector}</h2>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">إضافة، تعديل، وتقييم منشآت الخدمات الغذائية والمقاهي بالمنطقة</p>
+                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">إدارة منشآت قطاع {userSector}</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">إضافة، تعديل، وتقييم منشآت الخدمات الغذائية والمقاهي بالمنطقة</p>
               </div>
 
               {hasPerm('createEst') && (
@@ -731,7 +731,7 @@ export const TeamDashboard = () => {
                   placeholder="ابحث باسم المطعم أو اسم المالك..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-black/20 dark:bg-white/80 border border-slate-800 dark:border-slate-200 text-xs font-bold outline-none text-slate-200 dark:text-slate-800 focus:border-teal-500"
+                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
               </div>
@@ -742,7 +742,7 @@ export const TeamDashboard = () => {
                 className={`px-4 py-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
                   filterExpiredOnly 
                     ? 'bg-red-500 text-white shadow-md shadow-red-500/10' 
-                    : 'bg-black/20 dark:bg-white border border-slate-800 dark:border-slate-200 text-slate-300 dark:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                    : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <span>⚠️ الإجازات المنتهية</span>
@@ -752,7 +752,7 @@ export const TeamDashboard = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 rounded-2xl bg-black/20 dark:bg-white/80 border border-slate-800 dark:border-slate-200 text-xs font-bold outline-none text-slate-200 dark:text-slate-800 focus:border-teal-500 cursor-pointer"
+                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
               >
                 <option value="all">كل المنشآت</option>
                 <option value="closed">المطاعم المغلقة 🔒</option>
@@ -774,7 +774,7 @@ export const TeamDashboard = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-right border-collapse text-xs">
                   <thead>
-                    <tr className="bg-slate-800/50 dark:bg-slate-100/50 border-b border-slate-700 dark:border-slate-200 text-slate-300 dark:text-slate-600">
+                    <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                       <th className="p-4 font-bold w-[20%]">اسم المنشأة</th>
                       <th className="p-4 font-bold w-[15%]">نوع النشاط</th>
                       <th className="p-4 font-bold text-center w-[10%]">كود QR</th>
@@ -783,30 +783,30 @@ export const TeamDashboard = () => {
                       <th className="p-4 font-bold text-center w-[35%] print:hidden">الإجراءات والعمليات الميدانية</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/50 dark:divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                     {filteredEstablishments.map((est) => (
                       <tr key={est.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-colors">
-                        <td className="p-4 font-black text-slate-200 dark:text-slate-800 cursor-pointer hover:text-teal-600 transition-colors" onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}>
+                        <td className="p-4 font-black text-slate-800 dark:text-slate-200 cursor-pointer hover:text-teal-600 transition-colors" onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}>
                           <div className="flex items-center gap-2">
                             <span>{est.name}</span>
                             {est.status === 'closed' ? (
-                              <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-400 dark:text-red-600 text-[9px] font-black border border-red-500/20 flex items-center gap-1">
+                              <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 text-[9px] font-black border border-red-500/20 flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
                                 مغلق
                               </span>
                             ) : (
-                              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 dark:text-emerald-600 text-[9px] font-black border border-emerald-500/20 flex items-center gap-1">
+                              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-black border border-emerald-500/20 flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                                 مفتوح
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="p-4 font-bold text-slate-300 dark:text-slate-600">{est.type}</td>
+                        <td className="p-4 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
                         <td className="p-4 font-bold text-center">
                           <div
                             onClick={() => setSelectedEstDetails(est)}
-                            className="px-3 py-1.5 flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-300 dark:text-slate-700 transition-all active:scale-95 cursor-pointer font-bold text-[10px] mx-auto w-fit print:border print:border-slate-300 print:bg-transparent"
+                            className="px-3 py-1.5 flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-700 dark:text-slate-300 transition-all active:scale-95 cursor-pointer font-bold text-[10px] mx-auto w-fit print:border print:border-slate-300 print:bg-transparent"
                           >
                             <QrCode className="w-5 h-5 text-slate-500" />
                             <span className="text-xs font-black dir-ltr tracking-wider">{est.accessCode}</span>
@@ -830,7 +830,7 @@ export const TeamDashboard = () => {
                             {hasPerm('addEval') && (
                               <button
                                 onClick={() => navigate(`/inspection/new?id=${est.id}`)}
-                                className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-teal-400 dark:text-emerald-600 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                                className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-teal-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                               >
                                 <FilePlus className="w-3.5 h-3.5" />
                                 <span>إضافة تقييم</span>
@@ -854,8 +854,8 @@ export const TeamDashboard = () => {
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
                                   className={`px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] ${
                                     isEditLocked 
-                                      ? 'bg-white/10 dark:bg-slate-100 text-slate-600 dark:text-slate-400 cursor-not-allowed opacity-50' 
-                                      : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 dark:text-amber-600'
+                                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
+                                      : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
                                   }`}
                                   title={isEditLocked ? lockReason : ''}
                                 >
@@ -888,7 +888,7 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الغرامة بنجاح', 'success', true);
                                 }
                               }}
-                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 dark:text-orange-600 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
                               <DollarSign className="w-3.5 h-3.5" />
                               <span>طلب غرامة</span>
@@ -917,7 +917,7 @@ export const TeamDashboard = () => {
                                   notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
                                 }
                               }}
-                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 dark:text-red-600 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                              className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
                               <Ban className="w-3.5 h-3.5" />
                               <span>طلب إغلاق</span>
@@ -927,7 +927,7 @@ export const TeamDashboard = () => {
                               <>
                                 <button
                                   onClick={() => setEstablishmentModalState({ isOpen: true, mode: 'edit', data: est })}
-                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 dark:text-blue-600 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
                                   <span>تعديل منشأة</span>
@@ -939,7 +939,7 @@ export const TeamDashboard = () => {
                                       deleteEstablishment(est.id);
                                     }
                                   }}
-                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 dark:text-red-600 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                                 >
                                   <Trash className="w-3.5 h-3.5" />
                                   <span>حذف</span>
@@ -968,8 +968,8 @@ export const TeamDashboard = () => {
         {activeTab === 'reports' && hasPerm('showReportsPage') && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-black text-white dark:text-slate-800">صندوق البلاغات والتوجيهات الميدانية للقطاع</h2>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">تتبع التوجيهات الرسمية الصادرة من مدير الصحة وشكاوى المواطنين والمستهلكين لقطاع {userSector}</p>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">صندوق البلاغات والتوجيهات الميدانية للقطاع</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التوجيهات الرسمية الصادرة من مدير الصحة وشكاوى المواطنين والمستهلكين لقطاع {userSector}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -977,7 +977,7 @@ export const TeamDashboard = () => {
               {/* Right Side: Official Directives */}
               <div className="glassmorphic-card p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
-                  <h3 className="text-xs font-black text-amber-400 dark:text-amber-700 flex items-center gap-1.5">
+                  <h3 className="text-xs font-black text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
                     <span>📢 التوجيهات والتبليغات الرسمية الصادرة من المدير</span>
                   </h3>
                   <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">{myDirectives.length} توجيه</span>
@@ -985,18 +985,18 @@ export const TeamDashboard = () => {
 
                 <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
                   {myDirectives.map((dir) => (
-                    <div key={dir.id} className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/20 dark:bg-amber-500/10 relative overflow-hidden transition-all hover:scale-[1.01]">
+                    <div key={dir.id} className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 relative overflow-hidden transition-all hover:scale-[1.01]">
                       <div className="absolute top-0 right-0 h-full w-1 bg-amber-500"></div>
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">توجيه عاجل</span>
-                        <span className="text-[9px] text-amber-400 dark:text-amber-600 font-bold">{dir.date}</span>
+                        <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold">{dir.date}</span>
                       </div>
-                      <p className="text-xs font-black text-amber-200 dark:text-amber-900 leading-relaxed mt-1.5">{dir.text}</p>
+                      <p className="text-xs font-black text-amber-900 dark:text-amber-200 leading-relaxed mt-1.5">{dir.text}</p>
                       <span className="text-[9px] text-slate-400 block mt-2">الجهة المرسلة: {dir.sender}</span>
                     </div>
                   ))}
                   {myDirectives.length === 0 && (
-                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-black/20 dark:bg-slate-100/50 rounded-2xl">
+                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
                       لا توجد توجيهات رسمية نشطة حالياً لهذا القطاع.
                     </div>
                   )}
@@ -1006,7 +1006,7 @@ export const TeamDashboard = () => {
               {/* Left Side: Citizen Reports */}
               <div className="glassmorphic-card p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-teal-500/20 pb-2">
-                  <h3 className="text-xs font-black text-teal-600 dark:text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
+                  <h3 className="text-xs font-black text-teal-700 dark:text-teal-600 dark:text-teal-400 flex items-center gap-1.5">
                     <span>📩 بلاغات وشكاوى المواطنين والمستهلكين</span>
                   </h3>
                   <span className="text-[10px] bg-teal-500 text-white px-2 py-0.5 rounded-lg font-black">{teamReports.length} شكوى</span>
@@ -1014,16 +1014,16 @@ export const TeamDashboard = () => {
 
                 <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
                   {teamReports.map((r) => (
-                    <div key={r.id} className="p-4 rounded-2xl bg-white/5 dark:bg-white/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
+                    <div key={r.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-black text-white dark:text-slate-800">{r.establishmentName}</span>
+                        <span className="text-xs font-black text-slate-800 dark:text-white">{r.establishmentName}</span>
                         <span className="text-[9px] text-slate-400 font-bold">{r.date}</span>
                       </div>
-                      <p className="text-xs font-semibold text-slate-300 dark:text-slate-600 leading-relaxed mt-1.5">{r.details}</p>
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 leading-relaxed mt-1.5">{r.details}</p>
                       
                       <div className="mt-3 flex items-center justify-between">
                         {r.isDelivery && (
-                          <span className="px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-400 dark:text-blue-600 font-extrabold text-[9px] flex items-center gap-1 shrink-0">
+                          <span className="px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-[9px] flex items-center gap-1 shrink-0">
                             <Package className="w-3 h-3" />
                             <span>📦 توصيل منزلي</span>
                           </span>
@@ -1032,7 +1032,7 @@ export const TeamDashboard = () => {
                     </div>
                   ))}
                   {teamReports.length === 0 && (
-                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-black/20 dark:bg-slate-100/50 rounded-2xl">
+                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
                       صندوق بلاغات المواطنين خالٍ تماماً لهذا القطاع.
                     </div>
                   )}
@@ -1056,9 +1056,9 @@ export const TeamDashboard = () => {
 
       {/* Metric details popup modal */}
       {showMetricModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-800 dark:border-slate-200 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 dark:border-slate-200 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-600 dark:text-teal-400">
                 {metricModalType === 'all' && '🍽️ قائمة كافة منشآت القطاع المعينة'}
                 {metricModalType === 'inspected' && '🟢 المنشآت التي تم زيارتها وتقييمها هذا الشهر'}
@@ -1066,7 +1066,7 @@ export const TeamDashboard = () => {
               </h3>
               <button 
                 onClick={() => setShowMetricModal(false)} 
-                className="p-1 rounded bg-white/10 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
+                className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1075,18 +1075,18 @@ export const TeamDashboard = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-right border-collapse text-xs">
                 <thead>
-                  <tr className="bg-slate-800/50 dark:bg-slate-100/50 border-b border-slate-700 dark:border-slate-200 text-slate-300 dark:text-slate-600 font-bold">
+                  <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold">
                     <th className="p-3">اسم المنشأة</th>
                     <th className="p-3">النوع</th>
                     <th className="p-3">تاريخ آخر زيارة</th>
                     <th className="p-3 text-center">الدرجة</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/40 dark:divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                   {modalEstList.map(e => (
                     <tr key={e.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/10">
                       <td 
-                        className="p-3 font-black text-slate-200 dark:text-slate-800 cursor-pointer hover:text-teal-600 transition-colors"
+                        className="p-3 font-black text-slate-800 dark:text-slate-200 cursor-pointer hover:text-teal-600 transition-colors"
                         onClick={() => {
                           setShowMetricModal(false);
                           setEstablishmentModalState({ isOpen: true, mode: 'edit', data: e });
@@ -1095,7 +1095,7 @@ export const TeamDashboard = () => {
                         {e.name}
                       </td>
                       <td className="p-3 text-slate-500">{e.type}</td>
-                      <td className="p-3 text-slate-400 dark:text-slate-550">{e.lastInspection}</td>
+                      <td className="p-3 text-slate-550 dark:text-slate-400">{e.lastInspection}</td>
                       <td className="p-3 text-center">
                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${
                           e.score >= (config.passingScore || 90) ? 'bg-emerald-500/10 text-emerald-600' :
@@ -1119,7 +1119,7 @@ export const TeamDashboard = () => {
 
             <button
               onClick={() => setShowMetricModal(false)}
-              className="mt-6 w-full py-3 rounded-2xl bg-slate-100 hover:bg-slate-800 dark:bg-slate-200 dark:hover:bg-slate-750 text-slate-200 dark:text-slate-700 text-xs font-black transition-all cursor-pointer"
+              className="mt-6 w-full py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-black transition-all cursor-pointer"
             >
               إغلاق قائمة التفاصيل
             </button>
@@ -1131,13 +1131,13 @@ export const TeamDashboard = () => {
       {selectedViolationImg && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
           <div className="w-full max-w-md glassmorphic-card p-6 border border-white/20 shadow-2xl relative text-center">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800/50 dark:border-slate-200/50 mb-4">
-              <span className="text-xs font-black text-white dark:text-slate-800">الصورة المرفقة بالبلاغ للمطعم</span>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200/50 dark:border-slate-800/50 mb-4">
+              <span className="text-xs font-black text-slate-800 dark:text-white">الصورة المرفقة بالبلاغ للمطعم</span>
               <button onClick={() => setSelectedViolationImg(null)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"><X className="w-4 h-4" /></button>
             </div>
             
             {/* Real placeholder or styled block representing evidence photo */}
-            <div className="w-full h-64 bg-slate-950 dark:bg-slate-200 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-teal-500/30 overflow-hidden relative">
+            <div className="w-full h-64 bg-slate-200 dark:bg-slate-950 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-teal-500/30 overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent z-10 opacity-70"></div>
               {/* Evidence Graphic */}
               <div className="z-20 text-white p-4 absolute bottom-0 right-0 text-right">
@@ -1152,7 +1152,7 @@ export const TeamDashboard = () => {
 
             <button
               onClick={() => setSelectedViolationImg(null)}
-              className="mt-6 w-full py-2.5 rounded-xl bg-slate-250 dark:bg-slate-800 text-slate-950 dark:text-white text-xs font-black transition-all cursor-pointer"
+              className="mt-6 w-full py-2.5 rounded-xl bg-slate-800 dark:bg-slate-250 text-white dark:text-slate-950 text-xs font-black transition-all cursor-pointer"
             >
               إغلاق المعاينة المباشرة
             </button>
@@ -1162,40 +1162,40 @@ export const TeamDashboard = () => {
 
       {/* QR Code and Restaurant Details Modal */}
       {selectedEstDetails && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md animate-fade-in text-right">
-          <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
+          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 dark:border-slate-200 mb-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
               <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
               <button 
                 onClick={() => setSelectedEstDetails(null)} 
-                className="flex p-2 rounded-xl bg-slate-100 hover:bg-white/5 dark:bg-slate-200 dark:hover:bg-white/10 text-slate-300 dark:text-slate-600 transition-all items-center justify-center group shadow-sm border border-white/5 dark:border-slate-200"
+                className="flex p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5"
               >
                 <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
 
             <div className="space-y-5 text-xs">
-              <div className="p-5 rounded-2xl bg-white/5 dark:bg-slate-100/40 border border-white/5 dark:border-slate-200 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
-                <span className="text-[10px] text-teal-400 dark:text-teal-600 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
+              <div className="p-5 rounded-2xl bg-slate-100/40 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
+                <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
                 <h4 className="text-base font-black text-white">{selectedEstDetails.name}</h4>
                 <div className="grid grid-cols-1 gap-2 pt-1">
-                  <p className="text-[11px] text-slate-400 dark:text-slate-600">النشاط: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.type}</strong></p>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-600">المالك: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.owner}</strong></p>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-600">رقم الهاتف: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.phone}</strong></p>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-600">الترخيص: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.licenseNumber}</strong></p>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-600">آخر زيارة تفتيش: <strong className="text-slate-200 dark:text-slate-800">{selectedEstDetails.lastInspection}</strong></p>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-600">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">النشاط: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.type}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">المالك: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.owner}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">رقم الهاتف: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.phone}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
                 </div>
                 <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl relative overflow-hidden">
                   <div className="absolute -left-4 -top-4 w-12 h-12 bg-teal-500/20 blur-xl rounded-full"></div>
-                  <p className="text-xs text-teal-400 dark:text-teal-600 font-bold text-center">🔑 كود بوابة المالك:</p>
-                  <p className="text-2xl font-black text-white dark:text-slate-900 tracking-widest text-center mt-1 dir-ltr drop-shadow-[0_2px_10px_rgba(45,212,191,0.5)]">{selectedEstDetails.accessCode}</p>
+                  <p className="text-xs text-teal-600 dark:text-teal-400 font-bold text-center">🔑 كود بوابة المالك:</p>
+                  <p className="text-2xl font-black text-slate-900 dark:text-white tracking-widest text-center mt-1 dir-ltr drop-shadow-[0_2px_10px_rgba(45,212,191,0.5)]">{selectedEstDetails.accessCode}</p>
                 </div>
               </div>
 
               {/* QR Preview Box */}
-              <div className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border-4 border-slate-900 dark:border-slate-200 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.1)] relative">
+              <div className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border-4 border-slate-200 dark:border-slate-900 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.1)] relative">
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${window.location.origin}/scan/${selectedEstDetails.id}`)}`}
                   alt="Restaurant QR Code"
@@ -1227,7 +1227,7 @@ export const TeamDashboard = () => {
               <button
                 type="button"
                 onClick={() => setSelectedEstDetails(null)}
-                className="mt-2 w-full py-3 rounded-2xl bg-transparent hover:bg-white/5 text-slate-400 dark:text-slate-600 font-extrabold transition-all border border-transparent hover:border-slate-300 dark:hover:border-white/10"
+                className="mt-2 w-full py-3 rounded-2xl bg-transparent hover:bg-white/5 text-slate-600 dark:text-slate-400 font-extrabold transition-all border border-transparent hover:border-slate-300 dark:hover:border-white/10"
               >
                 إغلاق وخروج
               </button>
@@ -1238,7 +1238,7 @@ export const TeamDashboard = () => {
 
       {/* Justification Modal */}
       {showJustificationModal && pendingEditData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-md bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
               <h3 className="text-sm font-black text-amber-500">⚠️ تأكيد التعديل والإفصاح الرسمي</h3>
@@ -1265,7 +1265,7 @@ export const TeamDashboard = () => {
                 onChange={(e) => setEditJustification(e.target.value)}
                 placeholder="اكتب هنا سبب التعديل الرسمي... (مثال: تصحيح رقم الهاتف بطلب من المالك، تحديث الترخيص الصحي...)"
                 rows="4"
-                className="w-full p-3 rounded-xl bg-white/10 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-500 outline-none text-xs font-bold focus:border-amber-500 mb-4"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-500 outline-none text-xs font-bold focus:border-amber-500 mb-4"
               />
               <button
                 type="submit"
@@ -1289,7 +1289,7 @@ export const TeamDashboard = () => {
       {/* Floating Chat Widget */}
       <div className="fixed bottom-6 left-6 z-[60] flex flex-col items-end">
         {isChatOpen && (
-          <div className="bg-slate-900 dark:bg-white w-80 sm:w-96 rounded-3xl shadow-2xl border border-slate-800 dark:border-slate-200 mb-4 flex flex-col overflow-hidden animate-fade-in-up">
+          <div className="bg-white dark:bg-slate-900 w-80 sm:w-96 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 mb-4 flex flex-col overflow-hidden animate-fade-in-up">
             <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-4 flex items-center justify-between text-white">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -1305,10 +1305,10 @@ export const TeamDashboard = () => {
               </button>
             </div>
             
-            <div className="p-4 h-64 overflow-y-auto flex flex-col gap-3 bg-slate-950 dark:bg-slate-50">
+            <div className="p-4 h-64 overflow-y-auto flex flex-col gap-3 bg-slate-50 dark:bg-slate-950">
               {chatHistory.map(msg => (
                 <div key={msg.id} className={`flex ${msg.sender === 'team' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${msg.sender === 'team' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-slate-800 dark:bg-white border border-slate-700 dark:border-slate-100 text-slate-300 dark:text-slate-700 rounded-bl-none'}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${msg.sender === 'team' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-bl-none'}`}>
                     <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
                     <span className={`text-[9px] block mt-1 text-left ${msg.sender === 'team' ? 'text-teal-200' : 'text-slate-400'}`}>{msg.time}</span>
                   </div>
@@ -1316,7 +1316,7 @@ export const TeamDashboard = () => {
               ))}
             </div>
             
-            <div className="p-3 bg-slate-900 dark:bg-white border-t border-slate-800 dark:border-slate-100 flex gap-2">
+            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2">
               <button 
                 onClick={() => {
                   if (chatMessage.trim()) {
@@ -1346,7 +1346,7 @@ export const TeamDashboard = () => {
                   }
                 }}
                 placeholder="اكتب رسالتك لغرفة العمليات..."
-                className="flex-1 bg-white/10 dark:bg-slate-100 border-none rounded-xl px-4 text-xs font-bold text-slate-300 dark:text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/50 text-right"
+                className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-4 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-teal-500/50 text-right"
               />
             </div>
           </div>

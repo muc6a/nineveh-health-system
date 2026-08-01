@@ -133,7 +133,7 @@ export const NotificationBell = () => {
       {/* Full-Screen Notification Modal overlay */}
       {selectedNotification && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-[0_0_40px_rgba(13,148,136,0.15)] relative overflow-hidden transform scale-100 animate-in fade-in zoom-in duration-200">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-[0_0_40px_rgba(13,148,136,0.15)] relative overflow-hidden transform scale-100 animate-in fade-in zoom-in duration-200">
             <div className="p-6 text-right">
               <div className="flex items-start justify-between mb-4 flex-row-reverse">
                 <button 

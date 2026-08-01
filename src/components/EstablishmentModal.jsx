@@ -123,20 +123,20 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md text-right" dir="rtl">
-      <div className="w-full max-w-2xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 dark:border-slate-200 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)] relative overflow-hidden flex flex-col max-h-[90vh]" dir="rtl">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md text-right" dir="rtl">
+      <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)] relative overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/5 dark:bg-white/50 sticky top-0 z-20 backdrop-blur-sm shrink-0">
+        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/50 dark:bg-slate-900/40 sticky top-0 z-20 backdrop-blur-sm shrink-0">
           <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-teal-400 dark:to-emerald-400 flex items-center gap-3 drop-shadow-md">
-            <div className="p-2.5 rounded-xl bg-slate-800/80 border border-white/10 text-indigo-400 dark:text-indigo-600 shadow-inner">
+            <div className="p-2.5 rounded-xl bg-slate-800/80 border border-white/10 text-indigo-600 dark:text-indigo-400 shadow-inner">
               <Store className="w-5 h-5" />
             </div>
             {mode === 'edit' ? 'تعديل بيانات المنشأة الصحية' : 'تسجيل منشأة جديدة'}
           </h3>
           <button 
             onClick={onClose}
-            className="flex p-2.5 rounded-xl bg-slate-100 hover:bg-white/5 dark:bg-slate-200 dark:hover:bg-white/10 text-slate-300 dark:text-slate-600 transition-all items-center justify-center group shadow-sm border border-white/5 dark:border-slate-200"
+            className="flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5"
           >
             <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
           </button>
@@ -160,7 +160,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="مثال: مطعم لاماسو"
-                  className="w-full p-4 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
                 />
               </div>
               <div className="space-y-2">
@@ -171,7 +171,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full p-4 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
                 >
                   {activityTypes?.map(activity => (
                     <option key={activity} value={activity}>{activity}</option>
@@ -193,7 +193,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.owner}
                   onChange={(e) => setFormData({ ...formData, owner: e.target.value })}
                   placeholder="الاسم الرباعي واللقب"
-                  className="w-full p-4 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm"
                 />
               </div>
               <div className="space-y-2">
@@ -206,7 +206,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="07..."
-                  className="w-full p-4 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
                   dir="ltr"
                 />
               </div>
@@ -225,7 +225,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.licenseNumber}
                   onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
                   placeholder="مثال: LIC-2026-X11"
-                  className="w-full p-4 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
                   dir="ltr"
                 />
               </div>
@@ -240,15 +240,15 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   value={formData.propertyNumber}
                   onChange={(e) => setFormData({ ...formData, propertyNumber: e.target.value })}
                   placeholder="مثال: 4م/771/01"
-                  className="w-full p-4 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm text-left"
                   dir="ltr"
                 />
               </div>
             </div>
 
             {/* Location Tree */}
-            <div className="bg-white/5 dark:bg-slate-100/40 p-5 rounded-2xl border border-white/5 dark:border-slate-200 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
-              <h4 className="text-xs font-black text-indigo-400 dark:text-indigo-600 mb-4 flex items-center gap-1.5">
+            <div className="bg-slate-100/40 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
+              <h4 className="text-xs font-black text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-1.5">
                 <MapPin className="w-4 h-4" />
                 التبعية الجغرافية للمنشأة
               </h4>
@@ -269,7 +269,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                       }
                       setFormData({ ...formData, geoMain: newMain, geoSub: newSubOptions[0] || '' });
                     }}
-                    className="w-full p-3.5 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-xs"
+                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-xs"
                   >
                     <optgroup label="مركز محافظة نينوى">
                       <option value="mosul_right">الجانب الأيمن</option>
@@ -288,7 +288,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                   <select
                     value={formData.geoSub}
                     onChange={(e) => setFormData({ ...formData, geoSub: e.target.value })}
-                    className="w-full p-3.5 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-xs"
+                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-xs"
                   >
                     {subOptions.map(opt => (
                       <option key={opt} value={opt}>{opt}</option>
@@ -308,11 +308,11 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                 value={formData.manualAddress}
                 onChange={(e) => setFormData({ ...formData, manualAddress: e.target.value })}
                 placeholder="اكتب العنوان بالتفصيل الدقيق (مثال: حي النصر، شارع المكاتب، مجاور صيدلية الشفاء...)"
-                className="w-full p-4 rounded-xl bg-black/20 dark:bg-slate-50 border border-white/10 dark:border-slate-300 text-white dark:text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm min-h-[100px]"
+                className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-sm min-h-[100px]"
               />
             </div>
 
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-teal-900/20 dark:bg-teal-50 border border-teal-800/50 dark:border-teal-200">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800/50">
               <input
                 type="checkbox"
                 id="hasDelivery"
@@ -320,7 +320,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                 onChange={(e) => setFormData({ ...formData, hasDelivery: e.target.checked })}
                 className="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 cursor-pointer"
               />
-              <label htmlFor="hasDelivery" className="text-sm font-bold text-teal-300 dark:text-teal-800 cursor-pointer">
+              <label htmlFor="hasDelivery" className="text-sm font-bold text-teal-800 dark:text-teal-300 cursor-pointer">
                 هذه المنشأة توفر خدمة التوصيل (ديليفري)
               </label>
             </div>
@@ -329,7 +329,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 border-t border-white/5 dark:border-slate-200 bg-white/5 dark:bg-white/50 flex items-center justify-end gap-3 shrink-0 backdrop-blur-sm">
+        <div className="p-6 border-t border-slate-200 dark:border-white/5 bg-white/50 dark:bg-slate-900/40 flex items-center justify-end gap-3 shrink-0 backdrop-blur-sm">
           <button
             type="button"
             onClick={onClose}
