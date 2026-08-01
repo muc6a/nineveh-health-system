@@ -2849,10 +2849,10 @@ export const SuperAdminPanel = () => {
 
         return (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right max-h-[85vh]">
+            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right h-[90vh] md:h-[85vh]">
               
               {/* Right Sidebar: Tabs & Stats */}
-              <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10">
+              <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-2 drop-shadow-sm">
                     <Settings className="w-5 h-5 text-purple-400" /> مركز الأذونات
