@@ -121,7 +121,7 @@ export const OwnerPortal = () => {
         <div className="absolute top-4 right-4 z-50">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
+            className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-white/60 dark:bg-black/20 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> العودة للرئيسية
           </button>
@@ -628,7 +628,7 @@ export const OwnerPortal = () => {
                                 <p className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">السبب: {fine.reason}</p>
                                 <p className="text-xs text-red-600/70 dark:text-red-400/70 font-medium">تاريخ الإصدار: {new Date(fine.date).toLocaleDateString('ar-IQ')}</p>
                               </div>
-                              <div className="bg-white/80 dark:bg-slate-900/50 p-4 rounded-xl border border-red-100 dark:border-red-500/20 md:w-64">
+                              <div className="bg-white/80 dark:bg-black/20 p-4 rounded-xl border border-red-100 dark:border-red-500/20 md:w-64">
                                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">إجراء مطلوب:</p>
                                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                                   يرجى مراجعة <strong className="text-slate-800 dark:text-slate-200">دائرة صحة نينوى - قسم الحسابات</strong> لتسديد المبلغ تجنباً لإغلاق المنشأة.
@@ -795,7 +795,7 @@ export const OwnerPortal = () => {
 
         {/* Task Details Modal */}
         {selectedTask && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-slate-900 rounded-[2rem] w-full max-w-lg shadow-2xl border border-slate-700 dark:border-slate-200 overflow-hidden flex flex-col scale-100 animate-in zoom-in-95 duration-200">
               <div className="p-6 border-b border-slate-800 dark:border-slate-100 flex justify-between items-center bg-slate-800/50 dark:bg-slate-50">
                 <h3 className="font-black text-lg text-white dark:text-slate-800">تفاصيل المخالفة والإجراء المطلوب</h3>
@@ -809,7 +809,7 @@ export const OwnerPortal = () => {
                   <h4 className="text-[10px] font-black text-slate-500 mb-1 uppercase tracking-widest flex items-center gap-2">
                      اسم التقييم (المعيار الرقابي)
                   </h4>
-                  <p className="text-sm font-black text-white dark:text-slate-800 bg-slate-800 dark:bg-slate-100 p-4 rounded-xl border border-slate-700 dark:border-slate-200">
+                  <p className="text-sm font-black text-white dark:text-slate-800 bg-white/10 dark:bg-slate-100 p-4 rounded-xl border border-slate-700 dark:border-slate-200">
                     {selectedTask.criteria || selectedTask.text}
                   </p>
                 </div>

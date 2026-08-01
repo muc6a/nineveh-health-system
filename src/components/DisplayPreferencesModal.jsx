@@ -15,7 +15,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in" dir="rtl">
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in" dir="rtl">
       <div className="bg-slate-900 dark:bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-800 dark:border-slate-200">
         <div className="sticky top-0 bg-slate-900/80 dark:bg-white/80 backdrop-blur-md p-4 flex justify-between items-center border-b border-slate-800 dark:border-slate-100 z-10">
           <h2 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
@@ -24,7 +24,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 dark:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/10 dark:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -110,7 +110,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
             </div>
 
             {/* Live Preview */}
-            <div className="bg-slate-900/50 dark:bg-slate-50 p-6 rounded-2xl border border-slate-800 dark:border-slate-200 text-right">
+            <div className="bg-black/20 dark:bg-slate-50 p-6 rounded-2xl border border-slate-800 dark:border-slate-200 text-right">
               <h3 className="text-sm font-bold text-slate-500 mb-4 border-b border-slate-700 dark:border-slate-200 pb-2">نافذة العرض المباشر (Live Preview)</h3>
               
               <div 
@@ -136,7 +136,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
                   style={{ marginTop: draftUiPreferences?.density === 'compact' ? '0.5rem' : '1rem' }}
                 >
                   <button className="bg-teal-600 text-white px-4 py-2 rounded-lg" style={{ fontSize: draftUiPreferences?.bodySize || '12px' }}>قبول</button>
-                  <button className="bg-slate-800 dark:bg-slate-100 text-slate-300 dark:text-slate-700 px-4 py-2 rounded-lg" style={{ fontSize: draftUiPreferences?.bodySize || '12px' }}>رفض</button>
+                  <button className="bg-white/10 dark:bg-slate-100 text-slate-300 dark:text-slate-700 px-4 py-2 rounded-lg" style={{ fontSize: draftUiPreferences?.bodySize || '12px' }}>رفض</button>
                 </div>
               </div>
             </div>

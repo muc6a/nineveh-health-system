@@ -229,7 +229,7 @@ export const ExecutivePortal = () => {
         <CriticalAlertModal />
         
         {/* Fixed Sticky Left Sidebar */}
-        <aside className="w-80 shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between hidden md:flex sticky top-0 h-screen">
+        <aside className="w-80 shrink-0 bg-white/60 dark:bg-black/20 backdrop-blur-lg border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between hidden md:flex sticky top-0 h-screen">
           <div>
             {/* Logo */}
             <AnimatedLogo variant="sidebar" className="mb-4" />
@@ -262,7 +262,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'dashboard' && selectedTeamId === 'all' && activeTab === 'strategic'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <TrendingUp className="w-4.5 h-4.5" />
@@ -278,7 +278,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'dashboard' && selectedTeamId === t.id && activeTab === 'strategic'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <Users className="w-4.5 h-4.5" />
@@ -293,7 +293,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'dashboard' && activeTab === 'operations_room'
                     ? 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <ShieldAlert className="w-4.5 h-4.5 text-fuchsia-500" />
@@ -308,7 +308,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'dashboard' && activeTab === 'geographic'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <Map className="w-4.5 h-4.5 text-emerald-500" />
@@ -323,7 +323,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'dashboard' && activeTab === 'directives'
                     ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <Mail className="w-4.5 h-4.5 text-amber-500" />
@@ -338,7 +338,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'dashboard' && activeTab === 'complaints'
                     ? 'bg-red-600 text-white shadow-md shadow-red-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <ShieldAlert className="w-4.5 h-4.5 text-red-500" />
@@ -353,7 +353,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'establishments'
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <Building className="w-4.5 h-4.5 text-blue-500" />
@@ -368,7 +368,7 @@ export const ExecutivePortal = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'dashboard' && activeTab === 'delivery'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <Package className="w-4.5 h-4.5" />
@@ -436,7 +436,7 @@ export const ExecutivePortal = () => {
                 setActiveTab('strategic');
               }
             }}
-            className="w-full p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
+            className="w-full p-3 rounded-2xl bg-white/80 dark:bg-black/20 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
           >
             {hasPerm('showMainDashboard') && (
               <option value="all">📊 اللوحة الرئيسية (الاستراتيجية)</option>
@@ -466,7 +466,7 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Welcome Headers */}
-        <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
+        <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-white/5 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">
               {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'delivery' ? '📦' : '💼'}
@@ -810,13 +810,13 @@ export const ExecutivePortal = () => {
 
       {/* Pop modal for Category breakdown details */}
       {showCategoryBreakdownModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md transition-all">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md transition-all">
           <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-700/60 dark:border-slate-200 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 dark:border-slate-200 mb-4">
               <h3 className="text-sm font-black text-teal-400 dark:text-teal-600">📊 تفاصيل وإحصائيات المنشآت حسب التصنيف</h3>
               <button 
                 onClick={() => setShowCategoryBreakdownModal(false)}
-                className="p-1 rounded bg-slate-800 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
+                className="p-1 rounded bg-white/10 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -824,7 +824,7 @@ export const ExecutivePortal = () => {
 
             <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
               {Object.keys(categoryCounts).map((cat) => (
-                <div key={cat} className="flex justify-between items-center p-2.5 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-800/80 dark:border-slate-200">
+                <div key={cat} className="flex justify-between items-center p-2.5 rounded-xl bg-white/10 dark:bg-slate-50 border border-slate-800/80 dark:border-slate-200">
                   <span className="font-extrabold text-slate-200 dark:text-slate-700">{cat}</span>
                   <span className="px-3 py-1 rounded-lg bg-teal-500/10 dark:bg-teal-50 text-teal-400 dark:text-teal-600 font-black text-xs border border-teal-500/20">
                     {categoryCounts[cat]} منشأة
@@ -835,7 +835,7 @@ export const ExecutivePortal = () => {
 
             <button
               onClick={() => setShowCategoryBreakdownModal(false)}
-              className="mt-6 w-full py-2.5 rounded-xl bg-slate-800 dark:bg-slate-100 hover:bg-slate-200 dark:hover:bg-slate-750 text-white dark:text-slate-700 font-extrabold text-xs transition-all cursor-pointer"
+              className="mt-6 w-full py-2.5 rounded-xl bg-white/10 dark:bg-slate-100 hover:bg-slate-200 dark:hover:bg-slate-750 text-white dark:text-slate-700 font-extrabold text-xs transition-all cursor-pointer"
             >
               إغلاق النافذة
             </button>
@@ -847,7 +847,7 @@ export const ExecutivePortal = () => {
 
       {/* Central Stats Modal (Grouped by Sector) */}
       {showStatsModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md">
           <div className="w-full max-w-3xl bg-slate-900 dark:bg-white border border-slate-700 dark:border-slate-200 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative max-h-[85vh] overflow-y-auto text-right">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800 dark:border-slate-100 mb-4 sticky top-0 bg-slate-900 dark:bg-white z-10">
               <div>
@@ -919,7 +919,7 @@ export const ExecutivePortal = () => {
                       <div 
                         key={sector} 
                         onClick={() => setSelectedSector(sector)}
-                        className="bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-200 p-4 rounded-2xl cursor-pointer hover:border-teal-500 hover:shadow-lg transition-all text-center group"
+                        className="bg-white/10 dark:bg-slate-50 border border-slate-700 dark:border-slate-200 p-4 rounded-2xl cursor-pointer hover:border-teal-500 hover:shadow-lg transition-all text-center group"
                       >
                         <h4 className="font-black text-sm text-slate-300 dark:text-slate-700 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors mb-2">
                           {sector}
@@ -942,7 +942,7 @@ export const ExecutivePortal = () => {
 
       {/* Uninspected Locations Modal */}
       {showUninspectedModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md transition-all">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md transition-all">
           <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/95 backdrop-blur-2xl p-6 border border-red-500/20 dark:border-red-500/20 shadow-2xl shadow-red-500/10 rounded-3xl relative overflow-hidden">
             <div className="flex items-center justify-between pb-4 border-b border-red-500/20 dark:border-red-500/10 mb-4">
               <div className="flex items-center gap-2 text-red-400 dark:text-red-600">
@@ -977,7 +977,7 @@ export const ExecutivePortal = () => {
 
       {/* Chart Details Modal */}
       {chartModalState.isOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md transition-all">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md transition-all">
           <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-700/60 dark:border-slate-200 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 dark:border-slate-200 mb-4">
               <h3 className="text-sm font-black text-teal-400 dark:text-teal-600 flex items-center gap-2">
@@ -986,7 +986,7 @@ export const ExecutivePortal = () => {
               </h3>
               <button 
                 onClick={() => setChartModalState({ ...chartModalState, isOpen: false })}
-                className="p-1 rounded bg-slate-800 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
+                className="p-1 rounded bg-white/10 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1012,7 +1012,7 @@ export const ExecutivePortal = () => {
 
             <button
               onClick={() => setChartModalState({ ...chartModalState, isOpen: false })}
-              className="mt-6 w-full py-2.5 rounded-xl bg-slate-800 dark:bg-slate-100 hover:bg-slate-200 dark:hover:bg-slate-750 text-white dark:text-slate-700 font-extrabold text-xs transition-all cursor-pointer"
+              className="mt-6 w-full py-2.5 rounded-xl bg-white/10 dark:bg-slate-100 hover:bg-slate-200 dark:hover:bg-slate-750 text-white dark:text-slate-700 font-extrabold text-xs transition-all cursor-pointer"
             >
               إغلاق النافذة
             </button>
@@ -1022,7 +1022,7 @@ export const ExecutivePortal = () => {
 
       {/* Complaints List Modal */}
       {showComplaintsModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md transition-all">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md transition-all">
           <div className="w-full max-w-3xl bg-slate-900 dark:bg-white border border-slate-700/60 dark:border-slate-200 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 dark:border-slate-200 mb-4">
               <h3 className="text-sm font-black text-red-400 dark:text-red-500 flex items-center gap-2">
@@ -1031,7 +1031,7 @@ export const ExecutivePortal = () => {
               </h3>
               <button 
                 onClick={() => setShowComplaintsModal(false)}
-                className="p-1 rounded bg-slate-800 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
+                className="p-1 rounded bg-white/10 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1040,7 +1040,7 @@ export const ExecutivePortal = () => {
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
               {(reports || []).filter(r => !r.isDelivery).length > 0 ? (
                 (reports || []).filter(r => !r.isDelivery).map((comp, idx) => (
-                  <div key={idx} className="bg-slate-800 dark:bg-slate-50 p-4 rounded-2xl border border-red-500/20 shadow-lg relative overflow-hidden">
+                  <div key={idx} className="bg-white/10 dark:bg-slate-50 p-4 rounded-2xl border border-red-500/20 shadow-lg relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
                     <div className="flex justify-between items-start mb-2">
                       <div>

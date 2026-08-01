@@ -252,7 +252,7 @@ export const TeamDashboard = () => {
             </div>
             <h2 className="text-2xl font-black text-white dark:text-slate-800 mb-2">أمر إداري / توجيه عاجل 📢</h2>
             <p className="text-xs text-slate-500 font-bold mb-4">مرسل من: {unreadDirective.sender}</p>
-            <div className="bg-slate-800 dark:bg-slate-100 p-4 rounded-2xl mb-6 border border-slate-700 dark:border-slate-200">
+            <div className="bg-white/10 dark:bg-slate-100 p-4 rounded-2xl mb-6 border border-slate-700 dark:border-slate-200">
               <p className="text-slate-200 dark:text-slate-800 font-bold text-sm leading-relaxed text-right">
                 {unreadDirective.text}
               </p>
@@ -274,7 +274,7 @@ export const TeamDashboard = () => {
 
       {/* Monthly Stats Modal */}
       {showMonthlyStatsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md">
           <div className="w-full max-w-lg bg-slate-900 dark:bg-white border border-slate-700 dark:border-slate-200 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800 dark:border-slate-100 mb-4">
               <h3 className="text-lg font-black text-teal-400 dark:text-teal-600">
@@ -317,13 +317,13 @@ export const TeamDashboard = () => {
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Fixed Sticky Sidebar */}
-      <aside className={`w-80 shrink-0 bg-slate-900/95 dark:bg-white/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-800/50 dark:border-slate-200/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
+      <aside className={`w-80 shrink-0 bg-slate-900/95 dark:bg-white/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-black/20 border-l border-slate-800/50 dark:border-slate-200/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
         isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
       } right-0`}>
         <div>
@@ -339,7 +339,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'summary'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <LayoutDashboard className="w-4.5 h-4.5" />
@@ -353,7 +353,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'directory'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <Database className="w-4.5 h-4.5" />
@@ -367,7 +367,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'map'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <Map className="w-4.5 h-4.5" />
@@ -381,7 +381,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'smart_tasks'
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <CheckSquare className="w-4.5 h-4.5" />
@@ -395,7 +395,7 @@ export const TeamDashboard = () => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
                   activeTab === 'reports'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    : 'text-slate-300 dark:text-slate-700 hover:bg-slate-100 dark:hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -463,7 +463,7 @@ export const TeamDashboard = () => {
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         
         {/* Welcome Headers with Date/Time and Mosul Weather */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-200/20 backdrop-blur-md text-right">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/5 dark:bg-white/40 border border-slate-200/20 backdrop-blur-md text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">👥</span>
             <div>
@@ -473,7 +473,7 @@ export const TeamDashboard = () => {
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-300 dark:text-slate-600">
             <NotificationBell />
-            <div className="flex items-center gap-1 bg-slate-800 dark:bg-slate-100 px-2.5 py-1 rounded-xl">
+            <div className="flex items-center gap-1 bg-white/10 dark:bg-slate-100 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300">|</span>
               <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -487,7 +487,7 @@ export const TeamDashboard = () => {
         {/* Welcome / No Permissions State */}
         {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !hasPerm('showDirectivesPage') && !hasPerm('showDeliveryPage') && !hasPerm('showPublicEvalsPage') && (
           <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-800 dark:bg-slate-100 rounded-full flex items-center justify-center mb-4 shadow-inner">
+            <div className="w-20 h-20 bg-white/10 dark:bg-slate-100 rounded-full flex items-center justify-center mb-4 shadow-inner">
               <ShieldAlert className="w-10 h-10 text-slate-400" />
             </div>
             <h2 className="text-lg font-black text-white dark:text-slate-800">لا توجد صلاحيات مخصصة</h2>
@@ -501,7 +501,7 @@ export const TeamDashboard = () => {
         <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 bg-slate-800 dark:bg-slate-100 text-slate-300 dark:text-slate-700 rounded-xl"
+            className="p-2 bg-white/10 dark:bg-slate-100 text-slate-300 dark:text-slate-700 rounded-xl"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -731,7 +731,7 @@ export const TeamDashboard = () => {
                   placeholder="ابحث باسم المطعم أو اسم المالك..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-900/60 dark:bg-white/80 border border-slate-800 dark:border-slate-200 text-xs font-bold outline-none text-slate-200 dark:text-slate-800 focus:border-teal-500"
+                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-black/20 dark:bg-white/80 border border-slate-800 dark:border-slate-200 text-xs font-bold outline-none text-slate-200 dark:text-slate-800 focus:border-teal-500"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
               </div>
@@ -742,7 +742,7 @@ export const TeamDashboard = () => {
                 className={`px-4 py-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
                   filterExpiredOnly 
                     ? 'bg-red-500 text-white shadow-md shadow-red-500/10' 
-                    : 'bg-slate-900/60 dark:bg-white border border-slate-800 dark:border-slate-200 text-slate-300 dark:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                    : 'bg-black/20 dark:bg-white border border-slate-800 dark:border-slate-200 text-slate-300 dark:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 <span>⚠️ الإجازات المنتهية</span>
@@ -752,7 +752,7 @@ export const TeamDashboard = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 rounded-2xl bg-slate-900/60 dark:bg-white/80 border border-slate-800 dark:border-slate-200 text-xs font-bold outline-none text-slate-200 dark:text-slate-800 focus:border-teal-500 cursor-pointer"
+                className="px-4 py-3 rounded-2xl bg-black/20 dark:bg-white/80 border border-slate-800 dark:border-slate-200 text-xs font-bold outline-none text-slate-200 dark:text-slate-800 focus:border-teal-500 cursor-pointer"
               >
                 <option value="all">كل المنشآت</option>
                 <option value="closed">المطاعم المغلقة 🔒</option>
@@ -854,7 +854,7 @@ export const TeamDashboard = () => {
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
                                   className={`px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] ${
                                     isEditLocked 
-                                      ? 'bg-slate-800 dark:bg-slate-100 text-slate-600 dark:text-slate-400 cursor-not-allowed opacity-50' 
+                                      ? 'bg-white/10 dark:bg-slate-100 text-slate-600 dark:text-slate-400 cursor-not-allowed opacity-50' 
                                       : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 dark:text-amber-600'
                                   }`}
                                   title={isEditLocked ? lockReason : ''}
@@ -996,7 +996,7 @@ export const TeamDashboard = () => {
                     </div>
                   ))}
                   {myDirectives.length === 0 && (
-                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-900/50 dark:bg-slate-100/50 rounded-2xl">
+                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-black/20 dark:bg-slate-100/50 rounded-2xl">
                       لا توجد توجيهات رسمية نشطة حالياً لهذا القطاع.
                     </div>
                   )}
@@ -1014,7 +1014,7 @@ export const TeamDashboard = () => {
 
                 <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
                   {teamReports.map((r) => (
-                    <div key={r.id} className="p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
+                    <div key={r.id} className="p-4 rounded-2xl bg-white/5 dark:bg-white/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-xs font-black text-white dark:text-slate-800">{r.establishmentName}</span>
                         <span className="text-[9px] text-slate-400 font-bold">{r.date}</span>
@@ -1032,7 +1032,7 @@ export const TeamDashboard = () => {
                     </div>
                   ))}
                   {teamReports.length === 0 && (
-                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-900/50 dark:bg-slate-100/50 rounded-2xl">
+                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-black/20 dark:bg-slate-100/50 rounded-2xl">
                       صندوق بلاغات المواطنين خالٍ تماماً لهذا القطاع.
                     </div>
                   )}
@@ -1056,7 +1056,7 @@ export const TeamDashboard = () => {
 
       {/* Metric details popup modal */}
       {showMetricModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-sm">
           <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-800 dark:border-slate-200 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 dark:border-slate-200 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-600 dark:text-teal-400">
@@ -1066,7 +1066,7 @@ export const TeamDashboard = () => {
               </h3>
               <button 
                 onClick={() => setShowMetricModal(false)} 
-                className="p-1 rounded bg-slate-800 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
+                className="p-1 rounded bg-white/10 dark:bg-slate-100 text-slate-500 hover:text-slate-800 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1162,7 +1162,7 @@ export const TeamDashboard = () => {
 
       {/* QR Code and Restaurant Details Modal */}
       {selectedEstDetails && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-md animate-fade-in text-right">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-md animate-fade-in text-right">
           <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             <div className="flex items-center justify-between pb-4 border-b border-white/10 dark:border-slate-200 mb-5">
@@ -1176,7 +1176,7 @@ export const TeamDashboard = () => {
             </div>
 
             <div className="space-y-5 text-xs">
-              <div className="p-5 rounded-2xl bg-slate-800/40 dark:bg-slate-100/40 border border-white/5 dark:border-slate-200 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
+              <div className="p-5 rounded-2xl bg-white/5 dark:bg-slate-100/40 border border-white/5 dark:border-slate-200 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
                 <span className="text-[10px] text-teal-400 dark:text-teal-600 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
                 <h4 className="text-base font-black text-white">{selectedEstDetails.name}</h4>
                 <div className="grid grid-cols-1 gap-2 pt-1">
@@ -1238,7 +1238,7 @@ export const TeamDashboard = () => {
 
       {/* Justification Modal */}
       {showJustificationModal && pendingEditData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-white/5 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-md bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
               <h3 className="text-sm font-black text-amber-500">⚠️ تأكيد التعديل والإفصاح الرسمي</h3>
@@ -1265,7 +1265,7 @@ export const TeamDashboard = () => {
                 onChange={(e) => setEditJustification(e.target.value)}
                 placeholder="اكتب هنا سبب التعديل الرسمي... (مثال: تصحيح رقم الهاتف بطلب من المالك، تحديث الترخيص الصحي...)"
                 rows="4"
-                className="w-full p-3 rounded-xl bg-slate-800 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-500 outline-none text-xs font-bold focus:border-amber-500 mb-4"
+                className="w-full p-3 rounded-xl bg-white/10 dark:bg-slate-50 border border-slate-700 dark:border-slate-300 text-white dark:text-slate-800 placeholder-slate-500 outline-none text-xs font-bold focus:border-amber-500 mb-4"
               />
               <button
                 type="submit"
@@ -1346,7 +1346,7 @@ export const TeamDashboard = () => {
                   }
                 }}
                 placeholder="اكتب رسالتك لغرفة العمليات..."
-                className="flex-1 bg-slate-800 dark:bg-slate-100 border-none rounded-xl px-4 text-xs font-bold text-slate-300 dark:text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/50 text-right"
+                className="flex-1 bg-white/10 dark:bg-slate-100 border-none rounded-xl px-4 text-xs font-bold text-slate-300 dark:text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/50 text-right"
               />
             </div>
           </div>

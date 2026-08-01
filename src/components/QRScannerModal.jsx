@@ -36,10 +36,10 @@ export const QRScannerModal = ({ isOpen, onClose, onScanSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" dir="rtl">
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" dir="rtl">
       <div className="bg-slate-900 dark:bg-white rounded-3xl shadow-2xl w-full max-w-md border border-slate-800 dark:border-slate-200 overflow-hidden">
         {/* Header */}
-        <div className="bg-slate-800 dark:bg-slate-50 p-4 flex justify-between items-center border-b border-slate-700 dark:border-slate-200">
+        <div className="bg-white/10 dark:bg-slate-50 p-4 flex justify-between items-center border-b border-slate-700 dark:border-slate-200">
           <h2 className="text-sm font-black text-white dark:text-slate-800 flex items-center gap-2">
             <QrCode className="w-5 h-5 text-teal-600" />
             <span>مسح كود المنشأة (QR)</span>
@@ -57,7 +57,7 @@ export const QRScannerModal = ({ isOpen, onClose, onScanSuccess }) => {
           <p className="text-xs text-slate-400 dark:text-slate-500 mb-4 text-center">
             قم بتوجيه كاميرا الهاتف نحو كود الـ QR الخاص بالمنشأة ليتم فتح ملفها تلقائياً وبدء التقييم.
           </p>
-          <div className="rounded-2xl overflow-hidden border-2 border-dashed border-teal-500/50 p-2 bg-slate-800 dark:bg-slate-50">
+          <div className="rounded-2xl overflow-hidden border-2 border-dashed border-teal-500/50 p-2 bg-white/10 dark:bg-slate-50">
             <div id="qr-reader" className="w-full"></div>
           </div>
           {error && (
