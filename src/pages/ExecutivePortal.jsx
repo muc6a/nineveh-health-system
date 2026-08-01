@@ -660,11 +660,12 @@ export const ExecutivePortal = () => {
 
           </div>
         ) : activeTab === 'geographic' && hasPerm('showReportsPage') ? (
-          <div className="w-full h-[85vh] min-h-[800px] rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/20 relative z-10 bg-slate-50 dark:bg-slate-900">
+          <div className="w-full h-[85vh] min-h-[800px] rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/20 relative z-10 bg-slate-50 dark:bg-slate-900 flex flex-col p-6">
             <NinevehMap
               establishments={establishments}
               selectedSector={targetSector}
               onSectorSelect={handleMapSectorSelect}
+              fullHeight={true}
             />
           </div>
         ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
