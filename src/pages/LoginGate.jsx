@@ -134,11 +134,11 @@ export const LoginGate = () => {
 
     // Fallback logic
     if (input === 'director@ninveh.health.gov.iq' || input === 'director' || input.includes('مدير')) {
-      setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true } });
+      setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, notify_closures: false, notify_inspections: false, notify_directives: true } });
       notify('تم تسجيل الدخول كمدير عام لصحة نينوى', 'success', true);
       navigate('/dashboard/director');
     } else if (input === 'central_director@ninveh.health.gov.iq' || input === 'central_director' || input.includes('مركزية')) {
-      setUser({ role: 'central_director', name: 'دكتورة ابتهال غازي', email: 'central_director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirectives: true, manageEstablishments: true, showPublicEvalsPage: true } });
+      setUser({ role: 'central_director', name: 'دكتورة ابتهال غازي', email: 'central_director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirectives: true, manageEstablishments: true, showPublicEvalsPage: true, notify_closures: true, notify_inspections: true, notify_directives: true } });
       notify('تم تسجيل الدخول كمدير شعبة الرقابة المركزية', 'success', true);
       navigate('/dashboard/director');
     } else if (input.includes('team') || input === 'team' || input.includes('فريق') || input.includes('لجنة')) {

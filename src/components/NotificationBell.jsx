@@ -23,10 +23,27 @@ export const NotificationBell = () => {
 
   // Filter notifications for the current user
   const myNotifications = systemNotifications.filter(notif => {
-    if (notif.targetRole === 'all') return true;
-    if (notif.targetRole === user.role) return true;
-    if (notif.targetRole === user.id) return true; // targeted to specific team or user ID
-    return false;
+    const isTargeted = notif.targetRole === 'all' || notif.targetRole === user.role || notif.targetRole === user.id;
+    if (!isTargeted) return false;
+
+    if (user.role === 'admin') return true; // Super admin sees everything targeted to him
+
+    const t = notif.title || '';
+    const isClosureOrPenalty = t.includes('إغلاق') || t.includes('عقوب') || t.includes('غرامة') || t.includes('مخالفة');
+    const isInspection = t.includes('كشف') || t.includes('تفتيش') || t.includes('مهمة');
+    const isDirective = t.includes('قرار') || t.includes('تبليغ') || t.includes('توجيه') || t.includes('مجلس') || t.includes('SOS') || t.includes('استغاثة');
+
+    let allowed = true;
+
+    if (isClosureOrPenalty) {
+      allowed = user.permissions?.notify_closures !== false;
+    } else if (isInspection) {
+      allowed = user.permissions?.notify_inspections !== false;
+    } else if (isDirective) {
+      allowed = user.permissions?.notify_directives !== false;
+    }
+
+    return allowed;
   });
 
   const unreadCount = myNotifications.filter(n => !n.isRead).length;
