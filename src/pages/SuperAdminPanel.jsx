@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
-import { Plus, Trash2, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity } from 'lucide-react';
+import { Plus, Trash2, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity, Bell } from 'lucide-react';
 import { AccountModal } from '../components/AccountModal';
 import { EvaluationManager } from '../components/EvaluationManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
