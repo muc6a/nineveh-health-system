@@ -467,21 +467,29 @@ export const ExecutivePortal = () => {
 
         {/* Welcome Headers */}
         <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-slate-900/40 dark:bg-white/40 border border-slate-200/20 text-right">
-          {['strategic', 'establishments'].includes(activeTab) ? (
-            <div className="flex items-center gap-3">
-              <span className="text-xl">💼</span>
-              <div>
-                <h2 className="text-xs font-black text-white dark:text-slate-800">
-                  {activeTab === 'establishments' ? 'إدارة المنشآت والـ QR' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`)}
-                </h2>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة'}
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xl">
+              {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'delivery' ? '📦' : '💼'}
+            </span>
+            <div>
+              <h2 className="text-xs font-black text-white dark:text-slate-800">
+                {activeTab === 'establishments' ? 'إدارة المنشآت والـ QR' : 
+                 activeTab === 'directives' ? 'التبليغات والتوجيهات' : 
+                 activeTab === 'complaints' ? 'التقييمات العامة (الشكاوى)' :
+                 activeTab === 'geographic' ? 'الخريطة التفاعلية' :
+                 activeTab === 'delivery' ? 'خدمة التوصيل' :
+                 (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`)}
+              </h2>
+              <p className="text-[10px] text-slate-400 mt-1">
+                {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 
+                 activeTab === 'directives' ? 'إرسال الأوامر والتعميمات للفرق الرقابية' :
+                 activeTab === 'complaints' ? 'عرض شكاوى وملاحظات المواطنين الواردة من خلال مسح QR' :
+                 activeTab === 'geographic' ? 'عرض المواقع الجغرافية للمنشآت حسب القطاع' :
+                 activeTab === 'delivery' ? 'إدارة مناديب التوصيل' :
+                 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة'}
+              </p>
             </div>
-          ) : (
-            <div />
-          )}
+          </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
             <NotificationBell />
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
@@ -671,7 +679,7 @@ export const ExecutivePortal = () => {
         ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Direct Command Directive Form */}
-            {(user?.permissions?.sendDirectives) && (
+            {hasPerm('sendDirectives') && (
               <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl sticky top-6">
                 <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
                   <ShieldAlert className="w-5 h-5 text-amber-500" />
