@@ -266,7 +266,7 @@ export const ExecutivePortal = () => {
             )}
 
             {/* Teams Roster list for sidebar */}
-            {hasPerm('showReportsPage') && !isDirectorGeneral && allowedTeams.map((t) => (
+            {hasPerm('showReportsPage') && allowedTeams.map((t) => (
               <button
                 key={t.id}
                 onClick={() => { setExecutiveTab('dashboard'); setSelectedTeamId(t.id); setActiveTab('strategic'); }}
@@ -297,7 +297,7 @@ export const ExecutivePortal = () => {
             )}
 
             {/* Geographic Map */}
-            {hasPerm('showReportsPage') && !isDirectorGeneral && (
+            {hasPerm('showReportsPage') && (
               <button
                 onClick={() => { setExecutiveTab('dashboard'); setActiveTab('geographic'); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
@@ -436,13 +436,13 @@ export const ExecutivePortal = () => {
             {hasPerm('showMainDashboard') && (
               <option value="all">📊 اللوحة الرئيسية (الاستراتيجية)</option>
             )}
-            {hasPerm('showReportsPage') && !isDirectorGeneral && allowedTeams.map(t => (
+            {hasPerm('showReportsPage') && allowedTeams.map(t => (
               <option key={t.id} value={t.id}>👥 {t.name}</option>
             ))}
             {user?.role === 'central_director' && (
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
-            {hasPerm('showReportsPage') && !isDirectorGeneral && (
+            {hasPerm('showReportsPage') && (
               <option value="geographic">🗺️ التقارير الجغرافية</option>
             )}
             {hasPerm('showDirectivesPage') && (
@@ -683,7 +683,7 @@ export const ExecutivePortal = () => {
         ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Direct Command Directive Form */}
-            {(!isDirectorGeneral && user?.permissions?.sendDirectives) && (
+            {(user?.permissions?.sendDirectives) && (
               <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl sticky top-6">
                 <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
                   <ShieldAlert className="w-5 h-5 text-amber-500" />
