@@ -425,7 +425,7 @@ export const ExecutivePortal = () => {
             </button>
           )}
 
-          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && (
+          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && user?.role !== 'director_general' && (
             <button
               onClick={() => { setActiveTab('unified_inbox'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -451,7 +451,7 @@ export const ExecutivePortal = () => {
             </button>
           )}
 
-          {hasPerm('showDeliveryPage') && (
+          {hasPerm('showDeliveryPage') && user?.role !== 'director_general' && (
             <button
               onClick={() => { setActiveTab('delivery'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
