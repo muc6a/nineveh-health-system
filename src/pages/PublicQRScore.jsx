@@ -56,19 +56,32 @@ export const PublicQRScore = () => {
       const maxPoints = sectionItems.reduce((acc, curr) => acc + (parseInt(curr.points)||0), 0);
       const displayLabel = sectionItems.length > 0 && sectionItems[0].sectionName ? sectionItems[0].sectionName : `القسم ${secKey}`;
       
-      let mockedPoints = Math.round((scoreVal / 100) * maxPoints);
-      if (scoreVal >= 95) mockedPoints = maxPoints;
-      else if (scoreVal >= 90) mockedPoints = Math.max(0, maxPoints - 1);
-      else if (scoreVal >= 80) mockedPoints = Math.max(0, maxPoints - Math.round(maxPoints * 0.15));
+      const estRatings = establishment?.ratings || (establishment?.history?.[0]?.ratings) || null;
+      let earnedPoints = 0;
+      
+      if (estRatings) {
+        // Calculate real points based on inspector's ratings
+        earnedPoints = Math.round(sectionItems.reduce((acc, item) => {
+          const val = estRatings[item.id] !== undefined ? estRatings[item.id] : 5;
+          const itemScore = (val / 5) * (parseInt(item.points) || 5);
+          return acc + itemScore;
+        }, 0));
+      } else {
+        // Fallback: mock data logic for old test data
+        earnedPoints = Math.round((scoreVal / 100) * maxPoints);
+        if (scoreVal >= 95) earnedPoints = maxPoints;
+        else if (scoreVal >= 90) earnedPoints = Math.max(0, maxPoints - 1);
+        else if (scoreVal >= 80) earnedPoints = Math.max(0, maxPoints - Math.round(maxPoints * 0.15));
+      }
       
       // Ensure we don't exceed maxPoints due to rounding
-      mockedPoints = Math.min(mockedPoints, maxPoints);
+      earnedPoints = Math.min(earnedPoints, maxPoints);
       
       return { 
         key: secKey,
         label: displayLabel,
         max: maxPoints,
-        earned: mockedPoints
+        earned: earnedPoints
       };
     });
   }, [activeItems, establishment]);
@@ -313,7 +326,7 @@ export const PublicQRScore = () => {
                 onClick={() => setShowDetails(!showDetails)}
                 className="w-full flex items-center justify-between py-2 text-xs font-black text-slate-800 dark:text-slate-200 hover:text-teal-600 transition-colors cursor-pointer"
               >
-                <span>👁️ عرض تفاصيل التقييم الصحي للمحاور الخمسة</span>
+                <span>👁️ عرض ملخص التقييم الصحي الأخير</span>
                 {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
 
