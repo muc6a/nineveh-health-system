@@ -12,7 +12,7 @@ import { NotificationBell } from '../components/NotificationBell';
 import { CriticalAlertModal } from '../components/CriticalAlertModal';
 import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
-import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3 } from 'lucide-react';
+import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map } from 'lucide-react';
 
 export const ExecutivePortal = () => {
   const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal } = useContext(AppContext);
@@ -253,15 +253,15 @@ export const ExecutivePortal = () => {
             {/* General Overview Button */}
             {hasPerm('showMainDashboard') && (
               <button
-                onClick={() => { setExecutiveTab('dashboard'); setSelectedTeamId('all'); }}
+                onClick={() => { setExecutiveTab('dashboard'); setSelectedTeamId('all'); setActiveTab('strategic'); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  executiveTab === 'dashboard' && selectedTeamId === 'all'
+                  executiveTab === 'dashboard' && selectedTeamId === 'all' && activeTab === 'strategic'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <TrendingUp className="w-4.5 h-4.5" />
-                <span>📊 الملخص الإحصائي العام للمحافظة</span>
+                <span>اللوحة الرئيسية (الاستراتيجية)</span>
               </button>
             )}
 
@@ -269,9 +269,9 @@ export const ExecutivePortal = () => {
             {hasPerm('showReportsPage') && !isDirectorGeneral && allowedTeams.map((t) => (
               <button
                 key={t.id}
-                onClick={() => { setExecutiveTab('dashboard'); setSelectedTeamId(t.id); }}
+                onClick={() => { setExecutiveTab('dashboard'); setSelectedTeamId(t.id); setActiveTab('strategic'); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  executiveTab === 'dashboard' && selectedTeamId === t.id
+                  executiveTab === 'dashboard' && selectedTeamId === t.id && activeTab === 'strategic'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
@@ -281,18 +281,93 @@ export const ExecutivePortal = () => {
               </button>
             ))}
 
+            {/* Operations Room */}
+            {user?.role === 'central_director' && (
+              <button
+                onClick={() => { setExecutiveTab('dashboard'); setActiveTab('operations_room'); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  executiveTab === 'dashboard' && activeTab === 'operations_room'
+                    ? 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <ShieldAlert className="w-4.5 h-4.5 text-fuchsia-500" />
+                <span>غرفة العمليات المركزية</span>
+              </button>
+            )}
+
+            {/* Geographic Map */}
+            {hasPerm('showReportsPage') && !isDirectorGeneral && (
+              <button
+                onClick={() => { setExecutiveTab('dashboard'); setActiveTab('geographic'); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  executiveTab === 'dashboard' && activeTab === 'geographic'
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Map className="w-4.5 h-4.5 text-emerald-500" />
+                <span>التقارير الجغرافية</span>
+              </button>
+            )}
+
+            {/* Directives */}
+            {hasPerm('showDirectivesPage') && (
+              <button
+                onClick={() => { setExecutiveTab('dashboard'); setActiveTab('directives'); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  executiveTab === 'dashboard' && activeTab === 'directives'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Mail className="w-4.5 h-4.5 text-amber-500" />
+                <span>التبليغات والتوجيهات</span>
+              </button>
+            )}
+
+            {/* Complaints */}
+            {hasPerm('showPublicEvalsPage') && (
+              <button
+                onClick={() => { setExecutiveTab('dashboard'); setActiveTab('complaints'); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  executiveTab === 'dashboard' && activeTab === 'complaints'
+                    ? 'bg-red-600 text-white shadow-md shadow-red-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <ShieldAlert className="w-4.5 h-4.5 text-red-500" />
+                <span>التقييمات العامة (الشكاوى)</span>
+              </button>
+            )}
+
             {/* Establishments Manager Tab */}
             {hasPerm('manageEstablishments') && (
               <button
                 onClick={() => { setExecutiveTab('establishments'); setSelectedTeamId(''); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   executiveTab === 'establishments'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Building className="w-4.5 h-4.5 text-blue-500" />
+                <span>إدارة المنشآت</span>
+              </button>
+            )}
+
+            {/* Delivery Tab */}
+            {hasPerm('showDeliveryPage') && (
+              <button
+                onClick={() => { setExecutiveTab('dashboard'); setActiveTab('delivery'); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  executiveTab === 'dashboard' && activeTab === 'delivery'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
-                <Building className="w-4.5 h-4.5" />
-                <span>🏢 إدارة المنشآت</span>
+                <Package className="w-4.5 h-4.5" />
+                <span>خدمة التوصيل</span>
               </button>
             )}
           </div>
@@ -340,26 +415,48 @@ export const ExecutivePortal = () => {
         </div>
 
         <div className="md:hidden mb-6">
-          <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-2 mr-1">اللجنة أو القسم</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-2 mr-1">القائمة السريعة</label>
           <select
-            value={executiveTab === 'establishments' ? 'establishments' : selectedTeamId}
+            value={executiveTab === 'establishments' ? 'establishments' : (activeTab === 'strategic' ? selectedTeamId : activeTab)}
             onChange={(e) => {
-              if (e.target.value === 'establishments') {
+              const val = e.target.value;
+              if (val === 'establishments') {
                 setExecutiveTab('establishments');
+              } else if (val === 'operations_room' || val === 'geographic' || val === 'directives' || val === 'complaints' || val === 'delivery') {
+                setExecutiveTab('dashboard');
+                setActiveTab(val);
               } else {
                 setExecutiveTab('dashboard');
-                setSelectedTeamId(e.target.value);
+                setSelectedTeamId(val);
+                setActiveTab('strategic');
               }
             }}
             className="w-full p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
           >
             {hasPerm('showMainDashboard') && (
-              <option value="all">📊 الملخص الإحصائي العام للمحافظة</option>
+              <option value="all">📊 اللوحة الرئيسية (الاستراتيجية)</option>
             )}
-            <option value="establishments">🏢 إدارة المنشآت</option>
             {hasPerm('showReportsPage') && !isDirectorGeneral && allowedTeams.map(t => (
               <option key={t.id} value={t.id}>👥 {t.name}</option>
             ))}
+            {user?.role === 'central_director' && (
+              <option value="operations_room">🚨 غرفة العمليات المركزية</option>
+            )}
+            {hasPerm('showReportsPage') && !isDirectorGeneral && (
+              <option value="geographic">🗺️ التقارير الجغرافية</option>
+            )}
+            {hasPerm('showDirectivesPage') && (
+              <option value="directives">📢 التبليغات والتوجيهات</option>
+            )}
+            {hasPerm('showPublicEvalsPage') && (
+              <option value="complaints">⚠️ التقييمات العامة (الشكاوى)</option>
+            )}
+            {hasPerm('manageEstablishments') && (
+              <option value="establishments">🏢 إدارة المنشآت</option>
+            )}
+            {hasPerm('showDeliveryPage') && (
+              <option value="delivery">📦 خدمة التوصيل</option>
+            )}
           </select>
         </div>
 
@@ -397,73 +494,7 @@ export const ExecutivePortal = () => {
           </div>
         </div>
 
-        {/* Executive Sub-tabs / Page Splitting */}
-        <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
-          {hasPerm('showMainDashboard') && (
-            <button
-              onClick={() => { setActiveTab('strategic'); setExecutiveTab('dashboard'); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'strategic' && executiveTab !== 'establishments'
-                  ? 'bg-teal-600 text-white font-black'
-                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              📊 مؤشرات الامتثال والسلامة الاستراتيجية
-            </button>
-          )}
 
-          {user?.role === 'central_director' && (
-            <button
-              onClick={() => { setActiveTab('operations_room'); setExecutiveTab('dashboard'); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'operations_room' && executiveTab !== 'establishments'
-                  ? 'bg-fuchsia-600 text-white font-black'
-                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              🚨 غرفة العمليات المركزية
-            </button>
-          )}
-
-          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && (
-            <button
-              onClick={() => { setActiveTab('unified_inbox'); setExecutiveTab('dashboard'); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'unified_inbox' && executiveTab !== 'establishments' 
-                  ? 'bg-amber-600 text-white font-black' 
-                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              📨 مركز البلاغات والشكاوى
-            </button>
-          )}
-
-          {hasPerm('showReportsPage') && !isDirectorGeneral && (
-            <button
-              onClick={() => { setActiveTab('geographic'); setExecutiveTab('dashboard'); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'geographic' && executiveTab !== 'establishments'
-                  ? 'bg-teal-600 text-white font-black'
-                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              🗺️ خارطة الكثافة والتوزيع الجغرافي
-            </button>
-          )}
-
-          {hasPerm('showDeliveryPage') && (
-            <button
-              onClick={() => { setActiveTab('delivery'); setExecutiveTab('dashboard'); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'delivery' && executiveTab !== 'establishments'
-                  ? 'bg-teal-600 text-white font-black' 
-                  : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              📦 خدمة التوصيل
-            </button>
-          )}
-        </div>
 
         {/* Tab Content Rendering */}
         {executiveTab === 'establishments' ? (
@@ -649,10 +680,10 @@ export const ExecutivePortal = () => {
               />
             </div>
           </div>
-        ) : activeTab === 'unified_inbox' && (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) ? (
+        ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Direct Command Directive Form */}
-            {hasPerm('showDirectivesPage') && (!isDirectorGeneral && user?.permissions?.sendDirectives) && (
+            {(!isDirectorGeneral && user?.permissions?.sendDirectives) && (
               <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl sticky top-6">
                 <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
                   <ShieldAlert className="w-5 h-5 text-amber-500" />
@@ -718,48 +749,53 @@ export const ExecutivePortal = () => {
                 )}
               </div>
             )}
-
+            
+            {/* Directives Inbox/Outbox List could go here instead of sharing space with complaints */}
+            <div className="glassmorphic-card p-5 border border-amber-500/20 bg-slate-900 rounded-3xl">
+               <div className="text-center p-8 text-slate-500 font-bold text-xs">قائمة التبليغات الخاصة بك ستظهر هنا قريباً</div>
+            </div>
+          </div>
+        ) : activeTab === 'complaints' && hasPerm('showPublicEvalsPage') ? (
+          <div className="grid grid-cols-1 gap-6 items-start">
             {/* Public Evals / Complaints List */}
-            {hasPerm('showPublicEvalsPage') && (
-              <div className="glassmorphic-card p-5 border border-slate-700/60 bg-slate-900 rounded-3xl">
-                <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
-                  <h3 className="text-sm font-black text-red-400 flex items-center gap-2">
-                    <ShieldAlert className="w-5 h-5" />
-                    سجل شكاوى المواطنين وبلاغاتهم
-                  </h3>
-                </div>
-
-                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1 text-right">
-                  {(reports || []).filter(r => !r.isDelivery).length > 0 ? (
-                    (reports || []).filter(r => !r.isDelivery).map((comp, idx) => (
-                      <div key={idx} className="bg-slate-800 p-4 rounded-2xl border border-red-500/20 shadow-lg relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h4 className="text-sm font-black text-white">{comp.establishmentName}</h4>
-                            <span className="text-[10px] text-slate-400">القطاع: {comp.sector}</span>
-                          </div>
-                          <span className="bg-red-500/10 text-red-400 text-[10px] font-bold px-2 py-1 rounded-full border border-red-500/20">
-                            {comp.date || 'تاريخ غير محدد'}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-300 font-bold bg-slate-900 p-3 rounded-xl border border-slate-700 mt-2">
-                          {comp.details}
-                        </p>
-                        {comp.evidenceImage && (
-                          <div className="mt-3 flex items-center gap-2 text-[10px] text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg w-fit border border-emerald-500/20">
-                            <Camera className="w-3.5 h-3.5" />
-                            مرفق صورة إثبات المخالفة ({comp.evidenceImage})
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center p-8 text-slate-500 font-bold text-xs">لا توجد شكاوى مسجلة حالياً</div>
-                  )}
-                </div>
+            <div className="glassmorphic-card p-5 border border-slate-700/60 bg-slate-900 rounded-3xl">
+              <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
+                <h3 className="text-sm font-black text-red-400 flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5" />
+                  سجل شكاوى المواطنين وبلاغاتهم
+                </h3>
               </div>
-            )}
+
+              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1 text-right">
+                {(reports || []).filter(r => !r.isDelivery).length > 0 ? (
+                  (reports || []).filter(r => !r.isDelivery).map((comp, idx) => (
+                    <div key={idx} className="bg-slate-800 p-4 rounded-2xl border border-red-500/20 shadow-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="text-sm font-black text-white">{comp.establishmentName}</h4>
+                          <span className="text-[10px] text-slate-400">القطاع: {comp.sector}</span>
+                        </div>
+                        <span className="bg-red-500/10 text-red-400 text-[10px] font-bold px-2 py-1 rounded-full border border-red-500/20">
+                          {comp.date || 'تاريخ غير محدد'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 font-bold bg-slate-900 p-3 rounded-xl border border-slate-700 mt-2">
+                        {comp.details}
+                      </p>
+                      {comp.evidenceImage && (
+                        <div className="mt-3 flex items-center gap-2 text-[10px] text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg w-fit border border-emerald-500/20">
+                          <Camera className="w-3.5 h-3.5" />
+                          مرفق صورة إثبات المخالفة ({comp.evidenceImage})
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center p-8 text-slate-500 font-bold text-xs">لا توجد شكاوى مسجلة حالياً</div>
+                )}
+              </div>
+            </div>
           </div>
         ) : activeTab === 'delivery' && hasPerm('showDeliveryPage') ? (
           <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
