@@ -386,7 +386,7 @@ export const ExecutivePortal = () => {
             <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
               <WeatherWidget variant="full" />
             </div>
-            {isDirectorGeneral && (
+            {isDirectorGeneral && hasPerm('exportData') && (
               <button 
                 onClick={() => window.print()}
                 className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
@@ -398,9 +398,8 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Executive Sub-tabs / Page Splitting */}
-        {user?.role !== 'director' && (
-          <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
-            {hasPerm('showMainDashboard') && user?.role !== 'director' && (
+        <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
+          {hasPerm('showMainDashboard') && (
             <button
               onClick={() => { setActiveTab('strategic'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -426,7 +425,7 @@ export const ExecutivePortal = () => {
             </button>
           )}
 
-          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && user?.role !== 'director' && (
+          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && (
             <button
               onClick={() => { setActiveTab('unified_inbox'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -452,7 +451,7 @@ export const ExecutivePortal = () => {
             </button>
           )}
 
-          {hasPerm('showDeliveryPage') && user?.role !== 'director' && (
+          {hasPerm('showDeliveryPage') && (
             <button
               onClick={() => { setActiveTab('delivery'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -465,7 +464,6 @@ export const ExecutivePortal = () => {
             </button>
           )}
         </div>
-        )}
 
         {/* Tab Content Rendering */}
         {executiveTab === 'establishments' ? (
