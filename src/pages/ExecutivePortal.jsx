@@ -312,7 +312,7 @@ export const ExecutivePortal = () => {
                 }`}
               >
                 <Map className="w-4.5 h-4.5 text-emerald-500" />
-                <span>التقارير الجغرافية</span>
+                <span>الخريطة الجغرافية</span>
               </button>
             )}
 
@@ -448,7 +448,7 @@ export const ExecutivePortal = () => {
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
             {hasPerm('showReportsPage') && (
-              <option value="geographic">🗺️ التقارير الجغرافية</option>
+              <option value="geographic">🗺️ الخريطة الجغرافية</option>
             )}
             {hasPerm('showDirectivesPage') && (
               <option value="directives">📢 التبليغات والتوجيهات</option>
@@ -660,7 +660,7 @@ export const ExecutivePortal = () => {
             <div className="grid grid-cols-1 gap-6">
               {/* Interactive map */}
               <div className="glassmorphic-card p-5 flex flex-col min-h-[600px]">
-                <h3 className="text-xs font-black text-slate-800 dark:text-white mb-3 text-right">🗺️ الخارطة التفاعلية لتوزيع القطاعات لعموم نينوى</h3>
+
                 <div className="flex-1 w-full h-full min-h-[500px] bg-slate-100/50 dark:bg-slate-950/40 rounded-2xl border border-slate-200/25">
                   <NinevehMap
                     establishments={establishments}
