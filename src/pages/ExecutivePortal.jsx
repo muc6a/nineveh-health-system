@@ -266,7 +266,7 @@ export const ExecutivePortal = () => {
             )}
 
             {/* Teams Roster list for sidebar */}
-            {hasPerm('showReportsPage') && allowedTeams.map((t) => (
+            {hasPerm('showFieldTeamsStats') && allowedTeams.map((t) => (
               <button
                 key={t.id}
                 onClick={() => { setExecutiveTab('dashboard'); setSelectedTeamId(t.id); setActiveTab('strategic'); }}
@@ -436,7 +436,7 @@ export const ExecutivePortal = () => {
             {hasPerm('showMainDashboard') && (
               <option value="all">📊 اللوحة الرئيسية (الاستراتيجية)</option>
             )}
-            {hasPerm('showReportsPage') && allowedTeams.map(t => (
+            {hasPerm('showFieldTeamsStats') && allowedTeams.map(t => (
               <option key={t.id} value={t.id}>👥 {t.name}</option>
             ))}
             {hasPerm('showOperationsRoom') && (
