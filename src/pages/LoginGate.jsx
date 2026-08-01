@@ -278,7 +278,7 @@ export const LoginGate = () => {
         </form>
 
         {/* Demo Fast Login Toggles */}
-        <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-slate-800/50 text-center">
+        <div className="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 text-center">
           
           <div className="flex flex-col gap-3 mb-6">
             <button

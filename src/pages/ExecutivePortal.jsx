@@ -398,8 +398,9 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Executive Sub-tabs / Page Splitting */}
-        <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
-          {hasPerm('showMainDashboard') && (
+        {user?.role !== 'director_general' && (
+          <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
+            {hasPerm('showMainDashboard') && user?.role !== 'director_general' && (
             <button
               onClick={() => { setActiveTab('strategic'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -464,6 +465,7 @@ export const ExecutivePortal = () => {
             </button>
           )}
         </div>
+        )}
 
         {/* Tab Content Rendering */}
         {executiveTab === 'establishments' ? (
