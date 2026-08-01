@@ -398,9 +398,9 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Executive Sub-tabs / Page Splitting */}
-        {user?.role !== 'director_general' && (
+        {user?.role !== 'director' && (
           <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
-            {hasPerm('showMainDashboard') && user?.role !== 'director_general' && (
+            {hasPerm('showMainDashboard') && user?.role !== 'director' && (
             <button
               onClick={() => { setActiveTab('strategic'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -426,7 +426,7 @@ export const ExecutivePortal = () => {
             </button>
           )}
 
-          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && user?.role !== 'director_general' && (
+          {(hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) && user?.role !== 'director' && (
             <button
               onClick={() => { setActiveTab('unified_inbox'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -452,7 +452,7 @@ export const ExecutivePortal = () => {
             </button>
           )}
 
-          {hasPerm('showDeliveryPage') && user?.role !== 'director_general' && (
+          {hasPerm('showDeliveryPage') && user?.role !== 'director' && (
             <button
               onClick={() => { setActiveTab('delivery'); setExecutiveTab('dashboard'); }}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
