@@ -650,11 +650,11 @@ export const ExecutivePortal = () => {
           </div>
         ) : activeTab === 'geographic' && hasPerm('showReportsPage') ? (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Interactive map */}
-              <div className="glassmorphic-card p-5 flex flex-col lg:col-span-2 min-h-[320px]">
+              <div className="glassmorphic-card p-5 flex flex-col min-h-[600px]">
                 <h3 className="text-xs font-black text-slate-800 dark:text-white mb-3 text-right">🗺️ الخارطة التفاعلية لتوزيع القطاعات لعموم نينوى</h3>
-                <div className="flex-1 min-h-[260px] bg-slate-100/50 dark:bg-slate-950/40 rounded-2xl border border-slate-200/25">
+                <div className="flex-1 w-full h-full min-h-[500px] bg-slate-100/50 dark:bg-slate-950/40 rounded-2xl border border-slate-200/25">
                   <NinevehMap
                     establishments={establishments}
                     selectedSector={targetSector}
@@ -662,22 +662,6 @@ export const ExecutivePortal = () => {
                   />
                 </div>
               </div>
-
-              {/* Geographic density pie chart */}
-              <div className="glassmorphic-card p-5 flex flex-col min-h-[320px]">
-                <ThreeDPieChart
-                  title="خارطة الكثافة وتوزيع المحلات والمنشآت"
-                  data={chart2Data.length > 0 ? chart2Data : [{ label: 'لا توجد محلات', value: 0, color: '#94A3B8' }]}
-                />
-              </div>
-            </div>
-
-            {/* Non-Compliant by Sector Bar Chart */}
-            <div className="glassmorphic-card p-5 flex flex-col min-h-[320px] mt-6">
-              <ThreeDBarChart
-                title="تحليل جودة القطاعات: المنشآت المخالفة حسب الرقعة الجغرافية"
-                data={chart4Data.length > 0 ? chart4Data : [{ label: 'لا توجد مخالفات', value: 0, color: '#94A3B8' }]}
-              />
             </div>
           </div>
         ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
