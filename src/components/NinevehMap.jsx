@@ -138,7 +138,7 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
   }).filter(Boolean);
 
   return (
-    <div className="flex flex-col h-full justify-between text-right">
+    <div className="flex flex-col flex-1 w-full h-full justify-between text-right">
       <div className="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
         <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400">
           <MapPin className="w-5 h-5 animate-bounce" />
