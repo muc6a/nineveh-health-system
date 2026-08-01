@@ -31,7 +31,7 @@ export const ExecutivePortal = () => {
 
   const getInitialExecutiveTab = () => {
     if (hasPerm('showMainDashboard')) return 'strategic';
-    if (user?.role === 'central_director') return 'operations_room';
+    if (hasPerm('showOperationsRoom')) return 'operations_room';
     if (hasPerm('manageEstablishments')) return 'establishments';
     if (hasPerm('showReportsPage')) return 'geographic';
     if (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) return 'unified_inbox';
@@ -282,7 +282,7 @@ export const ExecutivePortal = () => {
             ))}
 
             {/* Operations Room */}
-            {user?.role === 'central_director' && (
+            {hasPerm('showOperationsRoom') && (
               <button
                 onClick={() => { setExecutiveTab('dashboard'); setActiveTab('operations_room'); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
@@ -439,7 +439,7 @@ export const ExecutivePortal = () => {
             {hasPerm('showReportsPage') && allowedTeams.map(t => (
               <option key={t.id} value={t.id}>👥 {t.name}</option>
             ))}
-            {user?.role === 'central_director' && (
+            {hasPerm('showOperationsRoom') && (
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
             {hasPerm('showReportsPage') && (

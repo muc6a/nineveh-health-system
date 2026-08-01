@@ -218,6 +218,8 @@ const DEFAULT_PERMISSIONS = {
   canSendSOS: true,
   showSectorMap: true,
   showSmartTasks: true,
+  showOperationsRoom: false,
+  showDeliveryPage: false,
   notify_closures: true,
   notify_inspections: true,
   notify_directives: true
