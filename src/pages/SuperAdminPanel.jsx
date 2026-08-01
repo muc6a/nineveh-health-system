@@ -2791,9 +2791,9 @@ export const SuperAdminPanel = () => {
       {showPermissionsModal && selectedPermissionsAccount && (() => {
         const PERMISSIONS_TABS = [
           { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
-          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDirectivesPage', 'showDeliveryPage', 'showPublicEvalsPage'] },
+          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDeliveryPage', 'showPublicEvalsPage'] },
           { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['showSectorMap', 'showSmartTasks', 'canSendSOS'] },
-          { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
+          { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
           { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
         ];
@@ -2882,6 +2882,8 @@ export const SuperAdminPanel = () => {
                     if (tab.id === 'establishments' && (selectedPermissionsAccount?.role === 'director' || selectedPermissionsAccount?.role === 'central_director')) {
                       return false;
                     }
+                    if (tab.id === 'penalties' && selectedPermissionsAccount?.role === 'director') return false;
+                    if (tab.id === 'team_features' && selectedPermissionsAccount?.role === 'director') return false;
                     return true;
                   }).map(tab => (
                     <button
