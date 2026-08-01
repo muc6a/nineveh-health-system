@@ -660,19 +660,12 @@ export const ExecutivePortal = () => {
 
           </div>
         ) : activeTab === 'geographic' && hasPerm('showReportsPage') ? (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-6">
-              {/* Interactive map */}
-              <div className="glassmorphic-card p-5 flex flex-col min-h-[80vh]">
-                <div className="flex-1 w-full h-full min-h-[75vh] bg-slate-100/50 dark:bg-slate-950/40 rounded-2xl border border-slate-200/25 overflow-hidden">
-                  <NinevehMap
-                    establishments={establishments}
-                    selectedSector={targetSector}
-                    onSectorSelect={handleMapSectorSelect}
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="w-full h-[85vh] min-h-[800px] rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/20 relative z-10 bg-slate-50 dark:bg-slate-900">
+            <NinevehMap
+              establishments={establishments}
+              selectedSector={targetSector}
+              onSectorSelect={handleMapSectorSelect}
+            />
           </div>
         ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
