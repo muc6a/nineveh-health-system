@@ -124,7 +124,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md text-right" dir="rtl">
-      <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)] relative overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-2xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)] relative overflow-hidden flex flex-col max-h-[90vh]" dir="rtl">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/50 dark:bg-slate-900/40 sticky top-0 z-20 backdrop-blur-sm shrink-0">

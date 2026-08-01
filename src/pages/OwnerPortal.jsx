@@ -127,7 +127,7 @@ export const OwnerPortal = () => {
           </button>
         </div>
 
-        <div className="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10">
+        <div className="w-full max-w-md bg-slate-900/80 dark:bg-white/80 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10">
           <AnimatedLogo variant="login" className="mb-8" />
           
           <div className="text-center mb-8">
@@ -796,7 +796,7 @@ export const OwnerPortal = () => {
         {/* Task Details Modal */}
         {selectedTask && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 rounded-[2rem] w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col scale-100 animate-in zoom-in-95 duration-200">
+            <div className="bg-slate-900 dark:bg-white rounded-[2rem] w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col scale-100 animate-in zoom-in-95 duration-200">
               <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
                 <h3 className="font-black text-lg text-slate-800 dark:text-white">تفاصيل المخالفة والإجراء المطلوب</h3>
                 <button onClick={() => setSelectedTask(null)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500">

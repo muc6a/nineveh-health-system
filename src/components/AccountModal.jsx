@@ -281,7 +281,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-      <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative text-right max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div className="w-full max-w-2xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative text-right max-h-[90vh] overflow-y-auto custom-scrollbar">
         
         <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/50 dark:bg-slate-900/40 sticky top-0 z-20 backdrop-blur-sm">
           <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-3 drop-shadow-md">

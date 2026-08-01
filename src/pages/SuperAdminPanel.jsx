@@ -1667,7 +1667,7 @@ export const SuperAdminPanel = () => {
               {/* Audit Log Details Modal */}
               {selectedAuditLog && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all text-right">
-                  <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                  <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                       <h3 className="text-base font-black text-teal-600 flex items-center gap-2">
                         🔍 تفاصيل حركة السجل
@@ -2702,7 +2702,7 @@ export const SuperAdminPanel = () => {
       {/* QR Code and Restaurant Details Modal */}
       {selectedEstDetails && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
-          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
               <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
@@ -2855,7 +2855,7 @@ export const SuperAdminPanel = () => {
 
         return (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right h-[90vh] md:h-[85vh]">
+            <div className="w-full max-w-4xl bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right h-[90vh] md:h-[85vh]">
               
               {/* Right Sidebar: Tabs & Stats */}
               <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">

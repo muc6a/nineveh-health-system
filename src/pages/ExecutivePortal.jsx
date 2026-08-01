@@ -811,7 +811,7 @@ export const ExecutivePortal = () => {
       {/* Pop modal for Category breakdown details */}
       {showCategoryBreakdownModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative text-right">
+          <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-400">📊 تفاصيل وإحصائيات المنشآت حسب التصنيف</h3>
               <button 
@@ -848,7 +848,7 @@ export const ExecutivePortal = () => {
       {/* Central Stats Modal (Grouped by Sector) */}
       {showStatsModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[85vh] overflow-y-auto text-right">
+          <div className="w-full max-w-3xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative max-h-[85vh] overflow-y-auto text-right">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
               <div>
                 <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
@@ -943,7 +943,7 @@ export const ExecutivePortal = () => {
       {/* Uninspected Locations Modal */}
       {showUninspectedModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl p-6 border border-red-500/20 dark:border-red-500/20 shadow-2xl shadow-red-500/10 rounded-3xl relative overflow-hidden">
+          <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/95 backdrop-blur-2xl p-6 border border-red-500/20 dark:border-red-500/20 shadow-2xl shadow-red-500/10 rounded-3xl relative overflow-hidden">
             <div className="flex items-center justify-between pb-4 border-b border-red-500/10 dark:border-red-500/20 mb-4">
               <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <AlertTriangle className="w-5 h-5" />
@@ -978,7 +978,7 @@ export const ExecutivePortal = () => {
       {/* Chart Details Modal */}
       {chartModalState.isOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative text-right">
+          <div className="w-full max-w-md bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-400 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
@@ -1023,7 +1023,7 @@ export const ExecutivePortal = () => {
       {/* Complaints List Modal */}
       {showComplaintsModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md transition-all">
-          <div className="w-full max-w-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative text-right">
+          <div className="w-full max-w-3xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative text-right">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-red-500 dark:text-red-400 flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5" />

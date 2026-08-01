@@ -220,7 +220,7 @@ export const TeamDashboard = () => {
       {/* Urgent Dispatch Modal */}
       {myPendingDispatch && (
         <div className="fixed inset-0 bg-red-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-lg w-full text-center border-4 border-red-500 shadow-2xl shadow-red-500/20 animate-pulse-slow">
+          <div className="bg-slate-900 dark:bg-white rounded-3xl p-8 max-w-lg w-full text-center border-4 border-red-500 shadow-2xl shadow-red-500/20 animate-pulse-slow">
             <div className="w-20 h-20 bg-red-500 rounded-full mx-auto flex items-center justify-center mb-6 animate-bounce">
               <AlertCircle className="w-10 h-10 text-white" />
             </div>
@@ -246,7 +246,7 @@ export const TeamDashboard = () => {
       {/* Unread Directive Alert Modal */}
       {unreadDirective && (
         <div className="fixed inset-0 bg-amber-900/80 backdrop-blur-md z-[90] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-lg w-full text-center border-4 border-amber-500 shadow-2xl shadow-amber-500/20 animate-pulse-slow">
+          <div className="bg-slate-900 dark:bg-white rounded-3xl p-8 max-w-lg w-full text-center border-4 border-amber-500 shadow-2xl shadow-amber-500/20 animate-pulse-slow">
             <div className="w-20 h-20 bg-amber-500 rounded-full mx-auto flex items-center justify-center mb-6 animate-bounce">
               <ShieldAlert className="w-10 h-10 text-white" />
             </div>
@@ -275,7 +275,7 @@ export const TeamDashboard = () => {
       {/* Monthly Stats Modal */}
       {showMonthlyStatsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
+          <div className="w-full max-w-lg bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-white dark:text-slate-800 shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
               <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
                 {monthlyStatsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
@@ -1057,7 +1057,7 @@ export const TeamDashboard = () => {
       {/* Metric details popup modal */}
       {showMetricModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-slate-900 dark:bg-white border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-sm font-black text-teal-600 dark:text-teal-600 dark:text-teal-400">
                 {metricModalType === 'all' && '🍽️ قائمة كافة منشآت القطاع المعينة'}
@@ -1163,7 +1163,7 @@ export const TeamDashboard = () => {
       {/* QR Code and Restaurant Details Modal */}
       {selectedEstDetails && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
-          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="w-full max-w-md bg-slate-900/95 dark:bg-white/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-white dark:text-slate-800 shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
               <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
