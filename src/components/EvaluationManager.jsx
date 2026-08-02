@@ -15,6 +15,10 @@ export const EvaluationManager = () => {
   const [newSectionNameFor, setNewSectionNameFor] = useState(null); // holds activity key
   const [newSectionName, setNewSectionName] = useState('');
   
+  // Edit states
+  const [editingActivity, setEditingActivity] = useState({ oldKey: null, newKey: '' });
+  const [editingSection, setEditingSection] = useState({ activityKey: null, oldName: null, newName: '' });
+  
   // Calculate total points for an activity
   const getTotalPoints = (activityKey) => {
     const items = inspectionTemplates[activityKey] || [];
@@ -54,6 +58,47 @@ export const EvaluationManager = () => {
       if (expandedActivity === activityKey) setExpandedActivity(null);
       notify('تم حذف النشاط', 'success');
     }
+  };
+
+  const handleSaveActivityName = (oldKey) => {
+    const newKey = editingActivity.newKey.trim();
+    if (!newKey || oldKey === newKey) {
+      setEditingActivity({ oldKey: null, newKey: '' });
+      return;
+    }
+    if (inspectionTemplates[newKey]) {
+      notify('هذا الاسم موجود مسبقاً', 'error');
+      return;
+    }
+    setInspectionTemplates(prev => {
+      const copy = { ...prev };
+      copy[newKey] = copy[oldKey];
+      delete copy[oldKey];
+      return copy;
+    });
+    if (expandedActivity === oldKey) setExpandedActivity(newKey);
+    setEditingActivity({ oldKey: null, newKey: '' });
+    notify('تم تعديل اسم النشاط بنجاح', 'success');
+  };
+
+  const handleSaveSectionName = (activityKey, oldName) => {
+    const newName = editingSection.newName.trim();
+    if (!newName || oldName === newName) {
+      setEditingSection({ activityKey: null, oldName: null, newName: '' });
+      return;
+    }
+    setInspectionTemplates(prev => {
+      const items = prev[activityKey] || [];
+      const updatedItems = items.map(item => {
+        if (item.sectionName === oldName || item.section === oldName) {
+          return { ...item, sectionName: newName, section: newName };
+        }
+        return item;
+      });
+      return { ...prev, [activityKey]: updatedItems };
+    });
+    setEditingSection({ activityKey: null, oldName: null, newName: '' });
+    notify('تم تعديل اسم القسم بنجاح', 'success');
   };
 
   const handleAddSection = (activityKey) => {
@@ -212,20 +257,49 @@ export const EvaluationManager = () => {
                     {isPerfect ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
                   </div>
                   <div>
-                    <h3 className="text-sm font-black text-slate-800 dark:text-slate-100">{activityKey}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isPerfect ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20' : 'bg-red-50 text-red-600 dark:bg-red-900/20 animate-pulse'}`}>
-                        المجموع: {totalPoints} / 100
-                      </span>
-                      {!isPerfect && (
-                        <span className="text-[10px] text-red-500 font-bold">
-                          (لا يمكن تفعيل النموذج إلا بضبط المجموع إلى 100)
-                        </span>
-                      )}
-                    </div>
+                    {editingActivity.oldKey === activityKey ? (
+                      <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                        <input
+                          type="text"
+                          value={editingActivity.newKey}
+                          onChange={e => setEditingActivity({ ...editingActivity, newKey: e.target.value })}
+                          className="p-1.5 text-xs rounded-lg border border-teal-300 dark:border-teal-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white"
+                          autoFocus
+                          onKeyDown={e => e.key === 'Enter' && handleSaveActivityName(activityKey)}
+                        />
+                        <button onClick={() => handleSaveActivityName(activityKey)} className="text-teal-600 bg-teal-50 p-1.5 rounded-lg font-bold text-[10px]">حفظ</button>
+                        <button onClick={() => setEditingActivity({ oldKey: null, newKey: '' })} className="text-slate-500 bg-slate-100 p-1.5 rounded-lg font-bold text-[10px]">إلغاء</button>
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-slate-100">{activityKey}</h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isPerfect ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20' : 'bg-red-50 text-red-600 dark:bg-red-900/20 animate-pulse'}`}>
+                            المجموع: {totalPoints} / 100
+                          </span>
+                          {!isPerfect && (
+                            <span className="text-[10px] text-red-500 font-bold">
+                              (لا يمكن تفعيل النموذج إلا بضبط المجموع إلى 100)
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  {!editingActivity.oldKey && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingActivity({ oldKey: activityKey, newKey: activityKey });
+                      }}
+                      className="p-2 rounded-lg text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors"
+                      title="تعديل اسم النشاط"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -275,14 +349,38 @@ export const EvaluationManager = () => {
                               {/* Section Header (Level 2) */}
                               <div className="bg-slate-100/50 dark:bg-slate-900/50 p-4 flex justify-between items-center border-b border-slate-200 dark:border-slate-800">
                                 <div className="flex items-center gap-2">
-                                  <span className="w-6 h-6 rounded-md bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-400 flex items-center justify-center text-[10px] font-black">
+                                  <span className="w-6 h-6 rounded-md bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-400 flex items-center justify-center text-[10px] font-black shrink-0">
                                     {sIdx + 1}
                                   </span>
-                                  <h4 className="text-xs font-black text-slate-700 dark:text-slate-200">
-                                    {sectionName} <span className="text-teal-600 font-bold ml-1">({sectionTotal} درجة)</span>
-                                  </h4>
+                                  {editingSection.activityKey === activityKey && editingSection.oldName === sectionName ? (
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        type="text"
+                                        value={editingSection.newName}
+                                        onChange={e => setEditingSection({ ...editingSection, newName: e.target.value })}
+                                        className="p-1 text-xs rounded border border-teal-300 dark:border-teal-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white"
+                                        autoFocus
+                                        onKeyDown={e => e.key === 'Enter' && handleSaveSectionName(activityKey, sectionName)}
+                                      />
+                                      <button onClick={() => handleSaveSectionName(activityKey, sectionName)} className="text-teal-600 bg-teal-50 px-2 py-1 rounded font-bold text-[9px]">حفظ</button>
+                                      <button onClick={() => setEditingSection({ activityKey: null, oldName: null, newName: '' })} className="text-slate-500 bg-slate-100 px-2 py-1 rounded font-bold text-[9px]">إلغاء</button>
+                                    </div>
+                                  ) : (
+                                    <h4 className="text-xs font-black text-slate-700 dark:text-slate-200">
+                                      {sectionName} <span className="text-teal-600 font-bold ml-1">({sectionTotal} درجة)</span>
+                                    </h4>
+                                  )}
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 shrink-0">
+                                  {(!editingSection.activityKey || editingSection.oldName !== sectionName) && (
+                                    <button
+                                      onClick={() => setEditingSection({ activityKey, oldName: sectionName, newName: sectionName })}
+                                      className="p-1.5 rounded-lg text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors"
+                                      title="تعديل اسم القسم"
+                                    >
+                                      <Edit className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
                                   <button
                                     onClick={() => handleAddItem(activityKey, sectionName)}
                                     className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-500 text-teal-600 text-[10px] font-bold flex items-center gap-1 transition-colors"
