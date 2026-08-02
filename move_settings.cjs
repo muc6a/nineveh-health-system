@@ -1,65 +1,94 @@
 const fs = require('fs');
-const path = require('path');
+let code = fs.readFileSync('src/pages/SuperAdminPanel.jsx', 'utf8');
 
-const filePath = path.join(__dirname, 'src', 'pages', 'SuperAdminPanel.jsx');
-let content = fs.readFileSync(filePath, 'utf8');
-
-// 1. Rename tab button
-content = content.replace(
-  '💾 النسخ الاحتياطي للبيانات',
-  '💾 البيانات'
+// 1. Rename 'settings' tab button to 'database_settings' and change its label
+code = code.replace(
+  "onClick={() => setActiveTab('settings')}",
+  "onClick={() => setActiveTab('database_settings')}"
+);
+code = code.replace(
+  "activeTab === 'settings'",
+  "activeTab === 'database_settings'"
+);
+code = code.replace(
+  "<span>الضبط والإعدادات العامة</span>",
+  "<span>إدارة قواعد البيانات والتخزين</span>"
 );
 
-// 2. Remove display_prefs tab button
-const displayPrefsTabRegex = /<button[\s\S]*?onClick=\{\(\) => setSubSettingsTab\('display_prefs'\)\}[\s\S]*?<\/button>/g;
-content = content.replace(displayPrefsTabRegex, '');
+// 2. Add the new 'general_settings' tab button before it
+const newTabButton = `
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('general_settings')}
+            className={\`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer \${
+              activeTab === 'general_settings'
+                ? 'bg-teal-600 text-white shadow-md'
+                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+            }\`}
+          >
+            <Settings className="w-4.5 h-4.5" />
+            <span>الضبط والإعدادات العامة</span>
+          </button>
+        )}
+`;
+code = code.replace(
+  "{user?.role === 'admin' && (\n          <button\n            onClick={() => setActiveTab('database_settings')}",
+  newTabButton + "\n        {user?.role === 'admin' && (\n          <button\n            onClick={() => setActiveTab('database_settings')}"
+);
+code = code.replace(
+  '<Settings className="w-4.5 h-4.5" />\n            <span>إدارة قواعد البيانات والتخزين</span>',
+  '<Database className="w-4.5 h-4.5" />\n            <span>إدارة قواعد البيانات والتخزين</span>'
+);
 
-// 3. Extract display_prefs content block
-const displayPrefsBlockRegex = /\{subSettingsTab === 'display_prefs' && \([\s\S]*?\}\)[\s]*\}/;
-const displayPrefsMatch = content.match(displayPrefsBlockRegex);
-let displayPrefsContent = '';
-if (displayPrefsMatch) {
-  displayPrefsContent = displayPrefsMatch[0];
-  // Remove the block from its current location
-  content = content.replace(displayPrefsBlockRegex, '');
+// 3. Rename the rendering condition for settings
+code = code.replace(
+  "activeTab === 'settings' && user?.role === 'admin' ? (",
+  "activeTab === 'database_settings' && user?.role === 'admin' ? ("
+);
+code = code.replace(
+  "النسخ الاحتياطي وإدارة بيانات النظام",
+  "النسخ الاحتياطي وإدارة التخزين"
+);
+
+// 4. Extract the Branding Header Input
+const headerInputSectionRegex = /<div className="space-y-1\.5">[\s\S]*?<label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات<\/label>[\s\S]*?<\/div>/;
+const headerInputMatch = code.match(headerInputSectionRegex);
+
+if (headerInputMatch) {
+  // Remove it from database settings
+  code = code.replace(headerInputMatch[0], "");
   
-  // Extract just the inner content (remove the condition wrapper)
-  displayPrefsContent = displayPrefsContent.replace(/\{subSettingsTab === 'display_prefs' && \(\s*<div className="glassmorphic-card p-6 space-y-6">([\s\S]*?)<\/div>\s*\)\s*\}/, '$1');
+  // Create the new general_settings tab content
+  const newTabContent = `
+        ) : activeTab === 'general_settings' && user?.role === 'admin' ? (
+          <div className="animate-fade-in-up space-y-6">
+            <div className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm text-right">
+              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
+                <Settings className="w-5 h-5 text-teal-600" />
+                <span>هوية المنظومة والواجهات (System Branding)</span>
+              </h2>
+              
+              <div className="max-w-xl">
+                \${headerInputMatch[0]}
+                <p className="text-[10px] text-slate-400 mt-2">
+                  هذا هو العنوان الرئيسي الذي سيظهر في أعلى الشاشة في بوابة المالك والمواطن وبعض الواجهات الرئيسية للنظام.
+                </p>
+                
+                <button
+                  onClick={saveZeroCodeConfig}
+                  className="mt-6 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer"
+                >
+                  حفظ وتطبيق التغييرات
+                </button>
+              </div>
+            </div>
+          </div>
+`;
+  code = code.replace(
+    ") : activeTab === 'establishments' ? (",
+    newTabContent + "\n        ) : activeTab === 'establishments' ? ("
+  );
 }
 
-// 4. Extract "تحديد مهلة حذف الصور التلقائي" block
-const autoDeleteRegex = /<div className="space-y-4 pt-4 border-t border-slate-200\/50 dark:border-slate-800\/50">[\s]*<div className="space-y-1\.5">[\s]*<label className="text-xs font-bold text-slate-500 block">تحديد مهلة حذف الصور التلقائي<\/label>[\s\S]*?<\/div>[\s]*<div className="flex gap-2 justify-between flex-wrap">/;
-const autoDeleteMatch = content.match(autoDeleteRegex);
-let autoDeleteContent = '';
-if (autoDeleteMatch) {
-  autoDeleteContent = autoDeleteMatch[0].replace('<div className="flex gap-2 justify-between flex-wrap">', ''); // get just the block
-  // Remove it from its current location (but leave the buttons block intact)
-  content = content.replace(autoDeleteRegex, '<div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">\n\n                <div className="flex gap-2 justify-between flex-wrap">');
-}
-
-// 5. Insert displayPrefsContent into appearance tab
-const appearanceTabRegex = /(\{subSettingsTab === 'appearance' && \([\s\S]*?)(\n\s*<div className="space-y-4 pt-4 border-t border-slate-200\/50 dark:border-slate-800\/50">)/;
-if (displayPrefsContent) {
-  content = content.replace(appearanceTabRegex, `$1\n\n                {/* Typography and Display Settings Moved Here */}\n                ${displayPrefsContent}\n$2`);
-}
-
-// 6. Insert autoDeleteContent into database tab and rename title
-const databaseTabRegex = /\{subSettingsTab === 'database' && \([\s\S]*?<Database className="w-5 h-5 text-teal-600 animate-pulse" \/>[\s]*<span>إدارة النسخ الاحتياطي واستعادة البيانات<\/span>/;
-content = content.replace(
-  databaseTabRegex,
-  `{subSettingsTab === 'database' && (
-                <div className="glassmorphic-card p-6 space-y-6">
-                  {/* Backup and Restore Database Panel */}
-              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Database className="w-5 h-5 text-teal-600 animate-pulse" />
-                <span>البيانات</span>`
-);
-
-// Append autoDeleteContent to the database tab
-const databaseActionsRegex = /(📥 عمل نسخة احتياطية[\s\S]*?📤 رفع واستعادة[\s\S]*?<\/label>[\s]*<\/div>[\s]*<\/div>)/;
-if (autoDeleteContent) {
-  content = content.replace(databaseActionsRegex, `$1\n\n              <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50 mt-4">\n                ${autoDeleteContent}\n              </div>`);
-}
-
-fs.writeFileSync(filePath, content, 'utf8');
-console.log('Modifications completed successfully.');
+fs.writeFileSync('src/pages/SuperAdminPanel.jsx', code);
+console.log('Successfully refactored settings tab');

@@ -712,6 +712,20 @@ export const SuperAdminPanel = () => {
 
         {user?.role === 'admin' && (
           <button
+            onClick={() => setActiveTab('general_settings')}
+            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'general_settings'
+                ? 'bg-teal-600 text-white shadow-md'
+                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            <Settings className="w-4.5 h-4.5" />
+            <span>هوية المنظومة والواجهات</span>
+          </button>
+        )}
+
+        {user?.role === 'admin' && (
+          <button
             onClick={() => setActiveTab('settings')}
             className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'settings'
@@ -719,8 +733,8 @@ export const SuperAdminPanel = () => {
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Settings className="w-4.5 h-4.5" />
-            <span>الضبط والإعدادات العامة</span>
+            <Database className="w-4.5 h-4.5" />
+            <span>قواعد البيانات والتخزين</span>
           </button>
         )}
 
@@ -1141,6 +1155,38 @@ export const SuperAdminPanel = () => {
           </section>
         )}
 
+        {/* Tab 1.5: General Branding & Settings */}
+        {activeTab === 'general_settings' && (
+          <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
+            <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
+              <Settings className="w-5 h-5 text-teal-600" />
+              <span>هوية المنظومة والواجهات</span>
+            </h2>
+            
+            <div className="max-w-xl space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
+                <input
+                  type="text"
+                  value={headerInput}
+                  onChange={(e) => setHeaderInput(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                />
+                <p className="text-[10px] text-slate-400 mt-2">
+                  هذا هو العنوان الرئيسي الذي سيظهر في أعلى الشاشة في كافة أرجاء المنظومة.
+                </p>
+              </div>
+
+              <button
+                onClick={saveZeroCodeConfig}
+                className="mt-6 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer block"
+              >
+                حفظ وتطبيق التغييرات
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* Tab 2: Settings & Parameters */}
         {activeTab === 'settings' && (
           <section className="glassmorphic-card p-6">
@@ -1393,16 +1439,6 @@ export const SuperAdminPanel = () => {
                 <Settings className="w-5 h-5 text-teal-600" />
                 <span>أولاً: محرك التهيئة البصرية والتحكم بمستودعات الصور</span>
               </h2>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
-                <input
-                  type="text"
-                  value={headerInput}
-                  onChange={(e) => setHeaderInput(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                />
-              </div>
 
               <div className="space-y-4 pt-2">
                 <label className="flex items-center justify-between cursor-pointer select-none">
