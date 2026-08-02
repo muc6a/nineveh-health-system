@@ -611,6 +611,16 @@ export const SuperAdminPanel = () => {
     }
   };
 
+  const toggleFreezeTeam = (id) => {
+    setTeams(prev => prev.map(t => t.id === id ? { ...t, active: !t.active } : t));
+    triggerAlert('تم تغيير حالة الحساب بنجاح.');
+  };
+
+  const toggleFreezeDirector = (id) => {
+    setDirectors(prev => prev.map(d => d.id === id ? { ...d, active: !d.active } : d));
+    triggerAlert('تم تغيير حالة الحساب بنجاح.');
+  };
+
   const handleBackupExport = () => {
     const dataStr = JSON.stringify({
       establishments,
