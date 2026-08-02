@@ -48,6 +48,17 @@ export const TeamDashboard = () => {
       if (newTab) setActiveTab(newTab);
     }
   }, [user?.permissions]);
+
+  // Listen for navigation events from NotificationBell
+  React.useEffect(() => {
+    const handleNavDirectives = () => {
+      if (hasPerm('showDirectivesPage')) {
+        setActiveTab('directives');
+      }
+    };
+    window.addEventListener('navToDirectives', handleNavDirectives);
+    return () => window.removeEventListener('navToDirectives', handleNavDirectives);
+  }, [user?.permissions]);
   
   // Mobile Sidebar Toggle
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

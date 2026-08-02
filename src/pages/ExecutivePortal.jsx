@@ -804,8 +804,8 @@ export const ExecutivePortal = () => {
               </div>
               <div className="space-y-4 text-right pr-1">
                 {(directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).length > 0 ? (
-                  (directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).reverse().map((dir, idx) => (
-                    <div key={idx} className="bg-slate-800 p-4 rounded-2xl border border-slate-700/60 shadow-md">
+                  (directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).map((dir, idx) => (
+                    <div key={idx} className={`${dir.text.startsWith('رد على تبليغ:') ? 'bg-emerald-900/30 border-emerald-700/60' : 'bg-slate-800 border-slate-700/60'} p-4 rounded-2xl border shadow-md transition-all`}>
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h4 className="text-xs font-black text-white">من: {dir.sender}</h4>
