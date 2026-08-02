@@ -12,7 +12,7 @@ import { EstablishmentModal } from '../components/EstablishmentModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = () => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -52,13 +52,25 @@ export const TeamDashboard = () => {
   // Listen for navigation events from NotificationBell
   React.useEffect(() => {
     const handleNavDirectives = () => {
-      if (hasPerm('showDirectivesPage')) {
-        setActiveTab('directives');
+      if (hasPerm('showDirectivesPage') || hasPerm('showReportsPage')) {
+        setActiveTab('reports');
       }
     };
     window.addEventListener('navToDirectives', handleNavDirectives);
     return () => window.removeEventListener('navToDirectives', handleNavDirectives);
   }, [user?.permissions]);
+
+  // Auto clear directive notifications when in reports/directives tab
+  React.useEffect(() => {
+    if (activeTab === 'reports' && systemNotifications?.length > 0) {
+      const hasUnread = systemNotifications.some(n => !n.isRead && (n.title.includes('تبليغ') || n.title.includes('توجيه') || n.title.includes('رد') || n.title.includes('تفتيش')));
+      if (hasUnread) {
+        setSystemNotifications(prev => prev.map(n => 
+          (n.title.includes('تبليغ') || n.title.includes('توجيه') || n.title.includes('رد') || n.title.includes('تفتيش')) ? { ...n, isRead: true } : n
+        ));
+      }
+    }
+  }, [activeTab, systemNotifications, setSystemNotifications]);
   
   // Mobile Sidebar Toggle
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -547,10 +559,10 @@ export const TeamDashboard = () => {
               </button>
             </div>
 
-            {myDirectives.length > 0 && (
-              <div className="space-y-3 cursor-pointer" onClick={() => setActiveTab('reports')}>
-                {myDirectives.map((dir) => (
-                  <div key={dir.id} className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 text-right relative overflow-hidden hover:scale-[1.01] transition-all">
+            {myDirectives.filter(d => !d.isRead).length > 0 && (
+              <div className="space-y-3">
+                {myDirectives.filter(d => !d.isRead).map((dir) => (
+                  <div key={dir.id} className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 text-right relative overflow-hidden hover:scale-[1.01] transition-all cursor-pointer" onClick={() => setActiveTab('reports')}>
                     <div className="absolute top-0 right-0 h-full w-1.5 bg-amber-500"></div>
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">
@@ -561,6 +573,18 @@ export const TeamDashboard = () => {
                     <p className="text-xs font-black text-amber-900 dark:text-amber-200 mt-1.5 leading-relaxed">
                       {dir.text}
                     </p>
+                    <div className="mt-3 flex justify-end">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markDirectiveRead(dir.id);
+                          notify('تم إخفاء التوجيه من الشاشة الرئيسية وحفظه في الصندوق', 'success');
+                        }}
+                        className="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[10px] font-black transition-all shadow-sm"
+                      >
+                        تم الاستلام (إخفاء) ✔️
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
