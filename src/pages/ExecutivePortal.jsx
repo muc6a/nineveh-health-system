@@ -15,7 +15,7 @@ import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map } from 'lucide-react';
 
 export const ExecutivePortal = () => {
-  const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
@@ -760,9 +760,36 @@ export const ExecutivePortal = () => {
               </div>
             )}
             
-            {/* Directives Inbox/Outbox List could go here instead of sharing space with complaints */}
-            <div className="glassmorphic-card p-5 border border-amber-500/20 bg-slate-900 rounded-3xl">
-               <div className="text-center p-8 text-slate-500 font-bold text-xs">قائمة التبليغات الخاصة بك ستظهر هنا قريباً</div>
+            {/* Directives Inbox/Outbox List */}
+            <div className="glassmorphic-card p-5 border border-amber-500/20 bg-slate-900 rounded-3xl max-h-[600px] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
+                <h3 className="text-sm font-black text-amber-500 flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  صندوق التبليغات والتوجيهات
+                </h3>
+              </div>
+              <div className="space-y-4 text-right pr-1">
+                {(directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).length > 0 ? (
+                  (directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).reverse().map((dir, idx) => (
+                    <div key={idx} className="bg-slate-800 p-4 rounded-2xl border border-slate-700/60 shadow-md">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="text-xs font-black text-white">من: {dir.sender}</h4>
+                          <span className="text-[10px] text-slate-400">إلى: {dir.teamId === 'all' ? 'جميع الجهات والفرق' : (teams.find(t => t.id === dir.teamId)?.name || directors.find(d => d.id === dir.teamId)?.title || dir.teamId)}</span>
+                        </div>
+                        <span className="bg-slate-900 text-slate-300 text-[9px] font-bold px-2 py-1 rounded-md border border-slate-700/50">
+                          {dir.date || 'تاريخ غير محدد'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 font-bold bg-slate-900/50 p-3 rounded-xl border border-slate-700 mt-2">
+                        {dir.text}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center p-8 text-slate-500 font-bold text-xs">لا توجد تبليغات مسجلة حالياً</div>
+                )}
+              </div>
             </div>
           </div>
         ) : activeTab === 'complaints' && hasPerm('showPublicEvalsPage') ? (
