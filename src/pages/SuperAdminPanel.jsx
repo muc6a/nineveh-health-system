@@ -1386,7 +1386,6 @@ export const SuperAdminPanel = () => {
         {/* Tab 2: Settings & Parameters */}
         {activeTab === 'settings' && (
           <section className="glassmorphic-card p-6">
-{subSettingsTab === 'database' && (
                 <div className="glassmorphic-card p-6 space-y-6">
                   {/* Backup and Restore Database Panel */}
               <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -1488,9 +1487,7 @@ export const SuperAdminPanel = () => {
                 </div>
               </div>
             </div>
-            )}
 
-              
           </section>
         )}
 {/* Tab 4: Establishments Directory & QR Codes */}
