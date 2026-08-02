@@ -776,7 +776,7 @@ export const TeamDashboard = () => {
                   <thead>
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                       <th className="p-4 font-bold w-[20%]">اسم المنشأة</th>
-                      <th className="p-4 font-bold w-[15%]">نوع النشاط</th>
+                      <th className="p-4 font-bold w-[15%]">صنف النشاط</th>
                       <th className="p-4 font-bold text-center w-[10%]">كود QR</th>
                       <th className="p-4 font-bold w-[10%]">تاريخ آخر زيارة</th>
                       <th className="p-4 font-bold text-center w-[10%]">التقييم الحالي</th>

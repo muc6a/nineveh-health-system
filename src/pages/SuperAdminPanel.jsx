@@ -1559,7 +1559,7 @@ export const SuperAdminPanel = () => {
                   <thead>
                     <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                       <th className="p-3.5 font-bold">اسم المنشأة / الرخصة</th>
-                      <th className="p-3.5 font-bold">نوع النشاط</th>
+                      <th className="p-3.5 font-bold">صنف النشاط</th>
                       <th className="p-3.5 font-bold text-center">كود QR</th>
                       <th className="p-3.5 font-bold">القطاع</th>
                       
@@ -1622,9 +1622,8 @@ export const SuperAdminPanel = () => {
                           </td>
                           <td className="p-3.5">
                             <div className="flex flex-col">
-                              <span className="text-slate-500 font-bold">{est.sector}</span>
-                              <span className="text-[9px] text-teal-600 dark:text-teal-600 dark:text-teal-400 mt-1 font-black">
-                                القاطع: {est.district || est.sector}
+                              <span className="text-slate-500 font-bold">
+                                {est.sector.replace(/^قاطع\s+/i, '')}
                               </span>
                             </div>
                           </td>
