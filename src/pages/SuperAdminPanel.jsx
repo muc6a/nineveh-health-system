@@ -145,6 +145,7 @@ export const SuperAdminPanel = () => {
   const [qrTabMode, setQrTabMode] = useState('dining');
   const [estSearchTerm, setEstSearchTerm] = useState('');
   const [estStatusFilter, setEstStatusFilter] = useState('all');
+  const [estTeamFilter, setEstTeamFilter] = useState('all');
 
   // Success messages alerts
   const [alertMsg, setAlertMsg] = useState('');
@@ -1532,9 +1533,22 @@ export const SuperAdminPanel = () => {
                 onChange={(e) => setEstStatusFilter(e.target.value)}
                 className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
               >
-                <option value="all">كل المنشآت</option>
+                <option value="all">كل الحالات</option>
                 <option value="closed">المطاعم المغلقة 🔒</option>
                 <option value="fined">المطاعم المغرمة 💰</option>
+              </select>
+
+              <select
+                value={estTeamFilter}
+                onChange={(e) => setEstTeamFilter(e.target.value)}
+                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
+              >
+                <option value="all">كل الفرق (القطاعات)</option>
+                {teams.map(team => (
+                  <option key={team.id} value={team.sector}>
+                    {team.name} ({team.sector})
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -1564,7 +1578,13 @@ export const SuperAdminPanel = () => {
                         } else if (estStatusFilter === 'fined') {
                           matchesStatus = (penaltyRequests || []).some(req => req.estId === e.id && req.type === 'fine' && req.status === 'approved');
                         }
-                        return matchesSearch && matchesStatus;
+                        
+                        let matchesTeam = true;
+                        if (estTeamFilter !== 'all') {
+                          matchesTeam = (e.sector || '').includes(estTeamFilter) || (e.district || '').includes(estTeamFilter);
+                        }
+                        
+                        return matchesSearch && matchesStatus && matchesTeam;
                       })
                       .map(est => (
                         <tr key={est.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
