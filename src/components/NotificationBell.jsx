@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { Bell, Check, Trash2 } from 'lucide-react';
 
 export const NotificationBell = () => {
-  const { user, systemNotifications, setSystemNotifications } = useContext(AppContext);
+  const { user, systemNotifications, setSystemNotifications, playBeep } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const dropdownRef = useRef(null);
@@ -47,6 +47,14 @@ export const NotificationBell = () => {
   });
 
   const unreadCount = myNotifications.filter(n => !n.isRead).length;
+
+  const prevUnreadCountRef = useRef(unreadCount);
+  useEffect(() => {
+    if (unreadCount > prevUnreadCountRef.current) {
+      if (playBeep) playBeep('info'); // Play sound on new notification
+    }
+    prevUnreadCountRef.current = unreadCount;
+  }, [unreadCount, playBeep]);
 
   const markAsRead = (id) => {
     setSystemNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));

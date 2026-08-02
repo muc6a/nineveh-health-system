@@ -1149,15 +1149,23 @@ export const AppProvider = ({ children }) => {
     ];
   });
 
-  const addDirective = (teamId, text, senderName = 'مدير الصحة') => {
+  const addDirective = (teamId, text, senderName = 'مدير الصحة', senderId = 'admin') => {
     const newDir = {
       id: 'dir_' + Date.now(),
       date: new Date().toISOString().replace('T', ' ').substring(0, 16),
       teamId,
       text,
-      sender: senderName
+      sender: senderName,
+      senderId
     };
     setDirectives(prev => [newDir, ...prev]);
+    
+    // Trigger system notification to the recipient
+    addSystemNotification(
+      `تبليغ جديد من: ${senderName}`,
+      text,
+      teamId
+    );
   };
 
   const markDirectiveRead = (dirId) => {
@@ -1238,6 +1246,7 @@ export const AppProvider = ({ children }) => {
       setGlobalBroadcast,
       notification,
       notify,
+      playBeep,
       // --- NEW: Smart Tasks ---
       tasks,
       setTasks,

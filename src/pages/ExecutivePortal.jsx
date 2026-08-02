@@ -23,6 +23,8 @@ export const ExecutivePortal = () => {
   const [showCategoryBreakdownModal, setShowCategoryBreakdownModal] = useState(false);
   const [showComplaintsModal, setShowComplaintsModal] = useState(false);
   const [chartModalState, setChartModalState] = useState({ isOpen: false, title: '', data: [] });
+  const [replyingTo, setReplyingTo] = useState(null); // ID of the directive being replied to
+  const [replyText, setReplyText] = useState('');
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
     if (user?.role === 'admin') return true;
@@ -103,7 +105,7 @@ export const ExecutivePortal = () => {
       : `إدارة الصحة العامة (${user?.name || 'المدير العام'})`;
 
     // Send directive to target recipient
-    addDirective(targetRecipient, directiveText, senderName);
+    addDirective(targetRecipient, directiveText, senderName, user?.id || user?.role);
     notify('تم إرسال الأمر الإداري إلى اللجان المعنية بنجاح', 'success');
     setDirectiveSuccessMsg('✔️ تم إرسال الأمر الإداري والتبليغ فوراً إلى الجهة المعنية.');
     setDirectiveText('');
@@ -784,6 +786,50 @@ export const ExecutivePortal = () => {
                       <p className="text-xs text-slate-300 font-bold bg-slate-900/50 p-3 rounded-xl border border-slate-700 mt-2">
                         {dir.text}
                       </p>
+                      
+                      {/* Reply button for received directives */}
+                      {dir.senderId !== user?.id && dir.senderId !== user?.role && (
+                        <div className="mt-3">
+                          {replyingTo === dir.id ? (
+                            <div className="flex gap-2 items-center bg-slate-900 p-2 rounded-xl border border-slate-700/50">
+                              <input 
+                                type="text"
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="اكتب ردك هنا..."
+                                className="flex-1 bg-transparent border-none outline-none text-xs text-slate-200"
+                              />
+                              <button 
+                                onClick={() => {
+                                  if (replyText.trim()) {
+                                    const senderName = user?.role === 'director' ? `المدير العام (${user?.name})` : `الإدارة (${user?.name})`;
+                                    addDirective(dir.senderId || 'admin', `رد على تبليغ: ${replyText}`, senderName, user?.id || user?.role);
+                                    setReplyingTo(null);
+                                    setReplyText('');
+                                    notify('تم إرسال الرد بنجاح', 'success');
+                                  }
+                                }}
+                                className="p-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg shadow cursor-pointer transition-all"
+                              >
+                                <Send className="w-3 h-3" />
+                              </button>
+                              <button 
+                                onClick={() => { setReplyingTo(null); setReplyText(''); }}
+                                className="p-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg cursor-pointer transition-all"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button 
+                              onClick={() => { setReplyingTo(dir.id); setReplyText(''); }}
+                              className="text-[10px] font-bold text-amber-500 hover:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-1.5 rounded-lg transition-all cursor-pointer border border-amber-500/20"
+                            >
+                              رد / تأكيد استلام
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
