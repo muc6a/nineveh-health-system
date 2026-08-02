@@ -13,7 +13,7 @@ import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { QRCodeSVG } from 'qrcode.react';
 
 export const OwnerPortal = () => {
-  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionItems, fines } = useContext(AppContext);
+  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, fines } = useContext(AppContext);
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);
@@ -291,7 +291,7 @@ export const OwnerPortal = () => {
       '18': { reason: 'الإجازة الصحية منتهية الصلاحية أو غير متوفرة.', solution: 'الإسراع في تجديد الإجازة الصحية من الدائرة المعنية لتجنب الإغلاق.' }
     };
     
-    const item = inspectionItems?.find(i => String(i.id) === String(id));
+    const item = Object.values(inspectionTemplates || {}).flat().find(i => String(i.id) === String(id));
     const criteriaName = item ? item.text : `معيار رقابي رقم ${id}`;
     
     if (details[id]) {

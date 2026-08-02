@@ -615,7 +615,7 @@ export const SuperAdminPanel = () => {
       establishments,
       reports,
       teams,
-      inspectionItems,
+      inspectionTemplates,
       directors,
       directives,
       config
@@ -638,7 +638,7 @@ export const SuperAdminPanel = () => {
           const parsed = JSON.parse(event.target.result);
           if (parsed.establishments) setEstablishments(parsed.establishments);
           if (parsed.teams) setTeams(parsed.teams);
-          if (parsed.inspectionItems) setInspectionItems(parsed.inspectionItems);
+          if (parsed.inspectionTemplates) setInspectionTemplates(parsed.inspectionTemplates);
           if (parsed.directors) setDirectors(parsed.directors);
           if (parsed.reports) setReports(parsed.reports);
           if (parsed.directives) setDirectives(parsed.directives);
