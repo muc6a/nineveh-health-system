@@ -172,10 +172,11 @@ export const NotificationBell = () => {
                         else window.location.hash = '/admin/control';
                         setTimeout(() => window.dispatchEvent(new CustomEvent('navToPenalties')), 100);
                       }
-                    } else if (notif.title?.includes('تفتيش')) {
-                      if (user.role === 'team') {
-                        setTimeout(() => window.dispatchEvent(new CustomEvent('navToDirectives')), 100);
+                    } else if (notif.title?.includes('تبليغ') || notif.title?.includes('قرار') || notif.title?.includes('توجيه') || notif.title?.includes('رد') || notif.title?.includes('تفتيش')) {
+                      if (user.role === 'director' || user.role === 'central_director') {
+                        window.location.hash = '/dashboard/director';
                       }
+                      setTimeout(() => window.dispatchEvent(new CustomEvent('navToDirectives')), 100);
                     }
                   }}
                   className="flex-1 py-3.5 rounded-xl bg-gradient-to-l from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black text-sm transition-all shadow-lg flex justify-center items-center gap-2 cursor-pointer"

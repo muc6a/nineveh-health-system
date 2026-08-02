@@ -15,7 +15,7 @@ import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map } from 'lucide-react';
 
 export const ExecutivePortal = () => {
-  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
@@ -61,13 +61,45 @@ export const ExecutivePortal = () => {
     }
   }, [user?.permissions, activeTab, executiveTab]);
 
+  // Auto clear directive notifications when in directives tab
+  useEffect(() => {
+    if (activeTab === 'directives' && systemNotifications?.length > 0) {
+      const hasUnread = systemNotifications.some(n => {
+        const isMine = n.targetRole === 'all' || n.targetRole === user?.role || n.targetRole === user?.id;
+        if (!isMine || n.isRead) return false;
+        const t = n.title || '';
+        return t.includes('قرار') || t.includes('تبليغ') || t.includes('توجيه') || t.includes('SOS') || t.includes('استغاثة');
+      });
+
+      if (hasUnread) {
+        setSystemNotifications(prev => prev.map(n => {
+          const isMine = n.targetRole === 'all' || n.targetRole === user?.role || n.targetRole === user?.id;
+          const t = n.title || '';
+          const isDirective = t.includes('قرار') || t.includes('تبليغ') || t.includes('توجيه') || t.includes('SOS') || t.includes('استغاثة');
+          if (isMine && isDirective && !n.isRead) {
+            return { ...n, isRead: true };
+          }
+          return n;
+        }));
+      }
+    }
+  }, [activeTab, systemNotifications, user, setSystemNotifications]);
+
   // Listen for navigation events from NotificationBell
   React.useEffect(() => {
     const handleNav = () => {
       setActiveTab('operations_room');
     };
+    const handleNavDirectives = () => {
+      setExecutiveTab('dashboard');
+      setActiveTab('directives');
+    };
     window.addEventListener('navToPenalties', handleNav);
-    return () => window.removeEventListener('navToPenalties', handleNav);
+    window.addEventListener('navToDirectives', handleNavDirectives);
+    return () => {
+      window.removeEventListener('navToPenalties', handleNav);
+      window.removeEventListener('navToDirectives', handleNavDirectives);
+    };
   }, []);
 
   // Send directives form states
@@ -788,7 +820,7 @@ export const ExecutivePortal = () => {
                       </p>
                       
                       {/* Reply button for received directives */}
-                      {dir.senderId !== user?.id && dir.senderId !== user?.role && (
+                      {dir.senderId !== user?.id && dir.senderId !== user?.role && hasPerm('replyDirective') && (
                         <div className="mt-3">
                           {replyingTo === dir.id ? (
                             <div className="flex gap-2 items-center bg-slate-900 p-2 rounded-xl border border-slate-700/50">
