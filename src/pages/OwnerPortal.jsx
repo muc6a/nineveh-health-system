@@ -109,6 +109,38 @@ export const OwnerPortal = () => {
   };
 
   // --- Login View ---
+  if (config.allowOwnerPortal === false) {
+    return (
+      <div className="min-h-screen bg-slatebg-light dark:bg-slatebg-dark flex items-center justify-center p-4 transition-colors duration-300 relative overflow-hidden text-center">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div className="absolute top-4 left-4 z-50">
+          <ThemeToggle />
+        </div>
+        <div className="absolute top-4 right-4 z-50">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> العودة للرئيسية
+          </button>
+        </div>
+
+        <div className="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10">
+          <ShieldAlert className="w-20 h-20 text-red-500 mx-auto mb-6" />
+          <h1 className="text-2xl font-black text-slate-800 dark:text-white mb-4">البوابة مغلقة مؤقتاً</h1>
+          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
+            بوابة أصحاب المنشآت قيد الصيانة أو معطلة حالياً بقرار من إدارة المنظومة. يرجى المحاولة لاحقاً.
+          </p>
+          <button onClick={() => navigate('/')} className="w-full py-4 rounded-2xl bg-slate-800 hover:bg-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-black text-sm transition-all flex items-center justify-center gap-2">
+            العودة للصفحة الرئيسية
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!ownerEst) {
     return (
       <div className="min-h-screen bg-slatebg-light dark:bg-slatebg-dark flex items-center justify-center p-4 transition-colors duration-300 relative overflow-hidden">

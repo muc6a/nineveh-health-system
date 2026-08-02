@@ -505,6 +505,7 @@ export const AppProvider = ({ children }) => {
       headerText: 'منظومة الرقابة الصحية الرقمية - محافظة نينوى',
       allowImageUpload: true,
       allowExternalReports: true,
+      allowOwnerPortal: true,
       imageRetention: '6 Months',
       reportRetentionDays: 30,
       uiScale: 'normal', // small, normal, large

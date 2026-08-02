@@ -153,6 +153,7 @@ export const SuperAdminPanel = () => {
   const [headerInput, setHeaderInput] = useState(config.headerText);
   const [allowUploadToggle, setAllowUploadToggle] = useState(config.allowImageUpload);
   const [allowExternalToggle, setAllowExternalToggle] = useState(config.allowExternalReports);
+  const [allowOwnerPortalToggle, setAllowOwnerPortalToggle] = useState(config.allowOwnerPortal ?? true);
   const [retentionDropdown, setRetentionDropdown] = useState(config.imageRetention);
   const [scaleSelector, setScaleSelector] = useState(config.uiScale);
 
@@ -538,6 +539,7 @@ export const SuperAdminPanel = () => {
       headerText: headerInput,
       allowImageUpload: allowUploadToggle,
       allowExternalReports: allowExternalToggle,
+      allowOwnerPortal: allowOwnerPortalToggle,
       imageRetention: retentionDropdown,
       uiScale: scaleSelector
     }));
@@ -1364,6 +1366,20 @@ export const SuperAdminPanel = () => {
                         <div className="space-y-1.5">
                           <label className="text-xs font-bold text-slate-500 block">تنبيه عاجل لأصحاب المنشآت</label>
                           <input type="text" value={ownerCMS?.announcement || ''} onChange={(e) => setOwnerCMS({...ownerCMS, announcement: e.target.value})} placeholder="مثال: يرجى تجديد الشهادات الصحية قبل نهاية الشهر..." className="w-full bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-red-500 transition-all text-red-700 dark:text-red-500" />
+                        </div>
+                        <div className="pt-2 border-t border-slate-200/50 dark:border-slate-800/50 mt-4">
+                          <label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
+                            <div className="flex flex-col text-right">
+                              <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل بوابة أصحاب المنشآت</span>
+                              <span className="text-[9px] text-slate-400 font-medium">إغلاق هذه البوابة يمنع أصحاب المنشآت من الاستعلام عن منشآتهم</span>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={allowOwnerPortalToggle}
+                              onChange={() => setAllowOwnerPortalToggle(!allowOwnerPortalToggle)}
+                              className="w-10 h-5 accent-teal-600 cursor-pointer"
+                            />
+                          </label>
                         </div>
                       </div>
                     )}
