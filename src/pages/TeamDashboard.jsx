@@ -724,7 +724,7 @@ export const TeamDashboard = () => {
             </div>
 
             {/* Filter Search Box and License Expiry Filter Button */}
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center max-w-2xl">
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
               <div className="relative flex-1">
                 <input
                   type="text"

@@ -18,7 +18,7 @@ const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_1',
     name: 'مطعم لاماسو (Lamassu Restaurant)',
-    type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+    type: 'المطاعم، الكافيهات، والمقاهي',
     owner: 'شركة لاماسو للخدمات السياحية',
     phone: '07700001111',
     accessCode: 'LAMA-99',
@@ -39,7 +39,7 @@ const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_2',
     name: 'شاورما لاند (Shawarma Land)',
-    type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+    type: 'المطاعم، الكافيهات، والمقاهي',
     owner: 'إدارة شاورما لاند',
     phone: '07501112233',
     accessCode: 'SHAW-88',
@@ -61,7 +61,7 @@ const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_3',
     name: 'مطاعم الجندول',
-    type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+    type: 'المطاعم، الكافيهات، والمقاهي',
     owner: 'إدارة مطاعم الجندول',
     phone: '07718882233',
     accessCode: 'JAND-77',
@@ -82,7 +82,7 @@ const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_4',
     name: 'صالون سحر الشرق للسيدات',
-    type: '🪒 صالون حلاقة وتجميل',
+    type: 'صالونات الحلاقة ومراكز التجميل',
     owner: 'سحر عبد الرحمن',
     phone: '07705554433',
     accessCode: 'SAHR-66',
@@ -103,7 +103,7 @@ const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_5',
     name: 'مشويات أبو رائد',
-    type: '🍽️ إعداد وتحضير وتقديم الأطعمة والمشروبات',
+    type: 'المطاعم، الكافيهات، والمقاهي',
     owner: 'أبو رائد الحيالي',
     phone: '07702223344',
     accessCode: 'RAED-55',
@@ -125,7 +125,7 @@ const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_6',
     name: 'حلاقة الأناقة الرجالي',
-    type: '🪒 صالون حلاقة وتجميل',
+    type: 'صالونات الحلاقة ومراكز التجميل',
     owner: 'محمد سالم',
     phone: '07709998877',
     licenseNumber: 'LIC-2026-H22',
@@ -165,7 +165,7 @@ const INITIAL_ESTABLISHMENTS = [
   {
     id: 'est_new_8',
     name: 'مقهى وكافيه البستان',
-    type: '☕ مقهى وكافيه',
+    type: 'المطاعم، الكافيهات، والمقاهي',
     owner: 'عمر هاشم',
     phone: '07718889900',
     licenseNumber: 'LIC-2026-C88',
@@ -177,6 +177,60 @@ const INITIAL_ESTABLISHMENTS = [
     facebook: 'https://instagram.com/albustan_cafe',
     latitude: '36.3900',
     longitude: '43.1200',
+    history: []
+  },
+  {
+    id: 'est_new_9',
+    name: 'مخبز الأمانة',
+    type: 'المخابز، الأفران، ومعجنات الحلويات',
+    owner: 'حسين علي',
+    phone: '07721112233',
+    licenseNumber: 'LIC-2026-X12',
+    propertyNumber: '14ج/5533/02',
+    sector: 'تلعفر',
+    neighborhood: 'حي السعد',
+    lastInspection: '2026-07-10',
+    score: 92,
+    status: 'compliant',
+    facebook: '',
+    latitude: '36.3750',
+    longitude: '42.4500',
+    history: []
+  },
+  {
+    id: 'est_new_10',
+    name: 'أسواق بركات تلعفر',
+    type: 'الأسواق، السوبرماركت، ومخازن المواد الغذائية',
+    owner: 'أحمد محمود',
+    phone: '07504445566',
+    licenseNumber: 'LIC-2026-Y45',
+    propertyNumber: '9أ/4422/01',
+    sector: 'تلعفر',
+    neighborhood: 'مركز القضاء',
+    lastInspection: '2026-06-20',
+    score: 75,
+    status: 'monitoring',
+    facebook: '',
+    latitude: '36.3800',
+    longitude: '42.4600',
+    history: []
+  },
+  {
+    id: 'est_new_11',
+    name: 'صيدلية الشفاء المركزية',
+    type: 'الصيدليات ومذاخر الأدوية',
+    owner: 'د. سيف الدين',
+    phone: '07703332211',
+    licenseNumber: 'LIC-2026-M88',
+    propertyNumber: '11ب/2233/05',
+    sector: 'الجانب الأيمن',
+    neighborhood: 'شارع الدواسة',
+    lastInspection: '2026-07-05',
+    score: 98,
+    status: 'compliant',
+    facebook: '',
+    latitude: '36.3400',
+    longitude: '43.1300',
     history: []
   }
 ];
@@ -220,7 +274,7 @@ const DEFAULT_PERMISSIONS = {
   showSmartTasks: true,
   showFieldTeamsStats: false,
   showOperationsRoom: false,
-  showDeliveryPage: false,
+
   notify_closures: true,
   notify_inspections: true,
   notify_directives: true
@@ -1083,7 +1137,7 @@ export const AppProvider = ({ children }) => {
       parsed = parsed.map(d => {
         if (d.id === 'dir_acc_2' && hasJassim) {
           needsMigration = true;
-          return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, showDeliveryPage: true, manageEstablishments: true } };
+          return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, manageEstablishments: true } };
         }
         if (d.id === 'dir_acc_1' && !d.permissions.sendDirectives) {
           needsMigration = true;

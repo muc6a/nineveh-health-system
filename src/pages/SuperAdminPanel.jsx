@@ -52,7 +52,7 @@ export const SuperAdminPanel = () => {
   const [editTechnicians, setEditTechnicians] = useState(['']);
 
   // Roster sub-tab: 'committees' or 'directors'
-  const [subRosterTab, setSubRosterTab] = useState(() => sessionStorage.getItem('superAdminSubRosterTab') || 'committees');
+  const [subRosterTab, setSubRosterTab] = useState(() => sessionStorage.getItem('superAdminSubRosterTab') || 'directors');
 
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
   const [subSettingsTab, setSubSettingsTab] = useState(() => sessionStorage.getItem('superAdminSubSettingsTab') || 'evaluations');
@@ -431,7 +431,7 @@ export const SuperAdminPanel = () => {
           showMainDashboard: false,
           showReportsPage: false,
           showDirectivesPage: false,
-          showDeliveryPage: false,
+
           showPublicEvalsPage: false,
           sendDirective: false,
           replyDirective: false
@@ -478,7 +478,7 @@ export const SuperAdminPanel = () => {
     showMainDashboard: false,
     showReportsPage: false,
     showDirectivesPage: false,
-    showDeliveryPage: false,
+
     showPublicEvalsPage: false,
     // Section C: Directives
     sendDirective: false,
@@ -798,16 +798,6 @@ export const SuperAdminPanel = () => {
             {/* Sub Roster Tabs Selection Bar */}
             <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
               <button
-                onClick={() => setSubRosterTab('committees')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'committees'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                👥 إدارة اللجان الميدانية
-              </button>
-              <button
                 onClick={() => setSubRosterTab('directors')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subRosterTab === 'directors'
@@ -816,6 +806,16 @@ export const SuperAdminPanel = () => {
                 }`}
               >
                 👑 إدارة المدراء والقيادات
+              </button>
+              <button
+                onClick={() => setSubRosterTab('committees')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subRosterTab === 'committees'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                👥 إدارة اللجان الميدانية
               </button>
               <button
                 onClick={() => setSubRosterTab('trackers')}
@@ -1516,7 +1516,7 @@ export const SuperAdminPanel = () => {
             </div>
 
             {/* Search Filter bar */}
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center max-w-2xl">
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
               <div className="relative flex-1">
                 <input
                   type="text"
@@ -1653,35 +1653,9 @@ export const SuperAdminPanel = () => {
         {/* Tab 5: Audit Trail & Tickets */}
         {activeTab === 'audit' && (
           <section className="glassmorphic-card p-6 text-right space-y-6">
-            {/* Sub Audit Tabs Selection Bar */}
-            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
-              <button
-                onClick={() => setSubAuditTab('trail')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subAuditTab === 'trail'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                🛡️ سجل التدقيق والأمان
-              </button>
-              <button
-                onClick={() => setSubAuditTab('tickets')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-                  subAuditTab === 'tickets'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                <span>الرد على بلاغات اللجان</span>
-                {tickets.filter(t => t.status !== 'resolved').length > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[9px]">{tickets.filter(t => t.status !== 'resolved').length}</span>
-                )}
-              </button>
-            </div>
 
-            {subAuditTab === 'trail' && (
-              <>
+
+
                 <div>
                   <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
                     <ShieldAlert className="w-5 h-5 text-teal-600" />
@@ -1829,84 +1803,6 @@ export const SuperAdminPanel = () => {
                 </div>
               )}
             </div>
-          </>
-        )}
-
-            {subAuditTab === 'tickets' && (
-              <>
-                <div>
-                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
-                    <ShieldAlert className="w-5 h-5 text-teal-600" />
-                    <span>مركز استقبال الدعم الفني وبلاغات اللجان (Tickets Center)</span>
-                  </h2>
-                  <p className="text-[11px] text-slate-500 mt-1">متابعة بلاغات الدعم الفني والمشاكل التقنية الواردة من اللجان والمدراء.</p>
-                </div>
-
-                <div className="space-y-4">
-                  {(!tickets || tickets.length === 0) ? (
-                    <div className="text-center py-6 text-slate-500 text-xs font-bold">
-                      📭 لا توجد تذاكر دعم فني أو بلاغات واردة حالياً.
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-right border-collapse text-xs">
-                        <thead>
-                          <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400">
-                            <th className="py-2 px-3">المرسل</th>
-                            <th className="py-2 px-3">النوع</th>
-                            <th className="py-2 px-3">نص الرسالة/المشكلة</th>
-                            <th className="py-2 px-3">الحالة</th>
-                            <th className="py-2 px-3">الإجراء</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tickets.map((ticket) => (
-                            <tr key={ticket.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                              <td className="py-2.5 px-3 font-extrabold text-slate-700 dark:text-slate-300">{ticket.sender}</td>
-                              <td className="py-2.5 px-3">
-                                <span className={`px-2 py-0.5 rounded text-[10px] ${
-                                  ticket.type === 'bug' ? 'bg-red-500/10 text-red-500' :
-                                  ticket.type === 'feature' ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'
-                                }`}>
-                                  {ticket.type === 'bug' ? '🐛 خلل فني' :
-                                   ticket.type === 'feature' ? '💡 مقترح ميزة' : '📊 إشكال تقارير'}
-                                </span>
-                              </td>
-                              <td className="py-2.5 px-3 text-slate-600 dark:text-slate-400 max-w-xs truncate" title={ticket.text}>
-                                {ticket.text}
-                              </td>
-                              <td className="py-2.5 px-3">
-                                <span className={`px-2 py-0.5 rounded text-[10px] ${
-                                  ticket.status === 'resolved' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-orange-500/10 text-orange-500 animate-pulse'
-                                }`}>
-                                  {ticket.status === 'resolved' ? '✓ تم الحل' : '⏳ قيد المعالجة'}
-                                </span>
-                              </td>
-                              <td className="py-2.5 px-3">
-                                {ticket.status !== 'resolved' ? (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, status: 'resolved' } : t));
-                                      triggerAlert('تم إغلاق ومعالجة تذكرة الدعم الفني بنجاح.');
-                                    }}
-                                    className="px-2.5 py-1 rounded bg-teal-650 hover:bg-teal-700 text-white font-extrabold text-[10px] transition-all cursor-pointer"
-                                  >
-                                    معالجة وإغلاق
-                                  </button>
-                                ) : (
-                                  <span className="text-slate-500 text-[10px]">مكتملة</span>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
 
           </section>
         )}
@@ -2857,12 +2753,12 @@ export const SuperAdminPanel = () => {
       {showPermissionsModal && selectedPermissionsAccount && (() => {
         const PERMISSIONS_TABS = [
           { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
-          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showOperationsRoom', 'showReportsPage', 'showPublicEvalsPage', 'showDeliveryPage'] },
+          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showOperationsRoom', 'showReportsPage', 'showPublicEvalsPage'] },
           { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['showSectorMap', 'showSmartTasks', 'canSendSOS', 'showFieldTeamsStats'] },
           { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
           { id: 'notifications', label: 'الإشعارات المخصصة', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
-          { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
+          { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
         ];
 
         const PERMISSION_DETAILS = {
@@ -2874,7 +2770,7 @@ export const SuperAdminPanel = () => {
           showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
           showOperationsRoom: { title: 'غرفة العمليات المركزية', desc: 'يسمح برؤية شاشة غرفة العمليات والتحكم المركزي المباشر.' },
           showReportsPage: { title: 'الخريطة الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
-          showDeliveryPage: { title: 'خدمة التوصيل', desc: 'يسمح للحساب بالوصول لصفحة إدارة ومتابعة عمال وخدمات التوصيل.' },
+
           showDirectivesPage: { title: 'التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
           showPublicEvalsPage: { title: 'التقييمات العامة (الشكاوى)', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
           sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
@@ -2889,7 +2785,7 @@ export const SuperAdminPanel = () => {
           notify_closures: { title: 'إشعارات الإغلاقات والعقوبات', desc: 'يسمح بوصول إشعارات المصادقة على الإغلاق أو إصدار الغرامات الميدانية (خاص بالفرق الميدانية والرقابة المركزية).' },
           notify_inspections: { title: 'إشعارات الكشوفات والمهام', desc: 'يسمح بوصول إشعارات إضافة كشف جديد أو طلبات إعادة الكشف.' },
           notify_directives: { title: 'إشعارات التبليغات الإدارية', desc: 'يسمح بوصول إشعارات القرارات الإدارية، اجتماعات المجلس، ونداءات الاستغاثة (مهم جداً للمدير العام).' },
-          manageComplaints: { title: 'إدارة الشكاوى العامة', desc: 'يتيح للحساب صلاحية الرد على شكاوى المواطنين وإغلاقها بعد معالجتها.' },
+
           exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المطاعم على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
           viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
           manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
@@ -2950,14 +2846,7 @@ export const SuperAdminPanel = () => {
                 </div>
 
                 <div className="flex-1 space-y-2">
-                  {PERMISSIONS_TABS.filter(tab => {
-                    if (tab.id === 'establishments' && (selectedPermissionsAccount?.role === 'director' || selectedPermissionsAccount?.role === 'central_director')) {
-                      return false;
-                    }
-                    if (tab.id === 'penalties' && selectedPermissionsAccount?.role === 'director') return false;
-                    if (tab.id === 'team_features' && selectedPermissionsAccount?.role === 'director') return false;
-                    return true;
-                  }).map(tab => (
+                  {PERMISSIONS_TABS.map(tab => (
                     <button
                       key={tab.id}
                       onClick={() => setActivePermissionsTab(tab.id)}

@@ -15,7 +15,7 @@ import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map } from 'lucide-react';
 
 export const ExecutivePortal = () => {
-  const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, addDirective, notify, reports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
@@ -35,7 +35,7 @@ export const ExecutivePortal = () => {
     if (hasPerm('manageEstablishments')) return 'establishments';
     if (hasPerm('showReportsPage')) return 'geographic';
     if (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) return 'unified_inbox';
-    if (hasPerm('showDeliveryPage')) return 'delivery';
+    if (hasPerm('showMainDashboard')) return 'strategic';
     return null;
   };
 
@@ -61,6 +61,26 @@ export const ExecutivePortal = () => {
   const [targetRecipient, setTargetRecipient] = useState('all');
   const [directiveText, setDirectiveText] = useState('');
   const [directiveSuccessMsg, setDirectiveSuccessMsg] = useState('');
+
+  const handleRedirectComplaint = (complaint) => {
+    const targetTeam = teams.find(t => t.sector?.includes(complaint.sector) || complaint.sector?.includes(t.sector)) || teams[0];
+    if (targetTeam) {
+      const newTask = {
+        id: 'task_comp_' + Date.now(),
+        title: `معالجة شكوى - ${complaint.establishmentName}`,
+        description: `ورد تبليغ من بوابة المواطن: "${complaint.details}". يرجى التوجه للمكان ومعالجة الأمر.`,
+        targetEstId: complaint.establishmentId || 'unknown',
+        assignedTo: 'all_team',
+        teamId: targetTeam.id,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+      setTasks(prev => [newTask, ...prev]);
+      notify(`تم إعادة توجيه الشكوى إلى فريق ${targetTeam.name} بنجاح وإضافتها لمهامهم`, 'success');
+    } else {
+      notify('لم يتم العثور على فريق مطابق لهذا القطاع', 'error');
+    }
+  };
 
   const handleSendDirective = (e) => {
     e.preventDefault();
@@ -361,20 +381,7 @@ export const ExecutivePortal = () => {
               </button>
             )}
 
-            {/* Delivery Tab */}
-            {hasPerm('showDeliveryPage') && (
-              <button
-                onClick={() => { setExecutiveTab('dashboard'); setActiveTab('delivery'); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  executiveTab === 'dashboard' && activeTab === 'delivery'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <Package className="w-4.5 h-4.5" />
-                <span>خدمة التوصيل</span>
-              </button>
-            )}
+
           </div>
         </div>
 
@@ -427,7 +434,7 @@ export const ExecutivePortal = () => {
               const val = e.target.value;
               if (val === 'establishments') {
                 setExecutiveTab('establishments');
-              } else if (val === 'operations_room' || val === 'geographic' || val === 'directives' || val === 'complaints' || val === 'delivery') {
+              } else if (val === 'operations_room' || val === 'geographic' || val === 'directives' || val === 'complaints') {
                 setExecutiveTab('dashboard');
                 setActiveTab(val);
               } else {
@@ -459,9 +466,7 @@ export const ExecutivePortal = () => {
             {hasPerm('manageEstablishments') && (
               <option value="establishments">🏢 إدارة المنشآت</option>
             )}
-            {hasPerm('showDeliveryPage') && (
-              <option value="delivery">📦 خدمة التوصيل</option>
-            )}
+
           </select>
         </div>
 
@@ -469,7 +474,7 @@ export const ExecutivePortal = () => {
         <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">
-              {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'delivery' ? '📦' : '💼'}
+              {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : '💼'}
             </span>
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">
@@ -477,7 +482,6 @@ export const ExecutivePortal = () => {
                  activeTab === 'directives' ? 'التبليغات والتوجيهات' : 
                  activeTab === 'complaints' ? 'التقييمات العامة (الشكاوى)' :
                  activeTab === 'geographic' ? 'الخريطة التفاعلية' :
-                 activeTab === 'delivery' ? 'خدمة التوصيل' :
                  (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`)}
               </h2>
               <p className="text-[10px] text-slate-400 mt-1">
@@ -485,7 +489,6 @@ export const ExecutivePortal = () => {
                  activeTab === 'directives' ? 'إرسال الأوامر والتعميمات للفرق الرقابية' :
                  activeTab === 'complaints' ? 'عرض شكاوى وملاحظات المواطنين الواردة من خلال مسح QR' :
                  activeTab === 'geographic' ? 'عرض المواقع الجغرافية للمنشآت حسب القطاع' :
-                 activeTab === 'delivery' ? 'إدارة مناديب التوصيل' :
                  'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة'}
               </p>
             </div>
@@ -523,7 +526,7 @@ export const ExecutivePortal = () => {
         {activeTab !== 'operations_room' && (
           <>
             {/* Welcome / No Permissions State */}
-        {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !hasPerm('showDirectivesPage') && !hasPerm('showDeliveryPage') && !hasPerm('showPublicEvalsPage') && (
+        {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !hasPerm('showDirectivesPage') && !hasPerm('showPublicEvalsPage') && (
           <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
             <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
               <ShieldAlert className="w-10 h-10 text-slate-400" />
@@ -609,7 +612,7 @@ export const ExecutivePortal = () => {
         </div>
 
 
-          {user?.role !== 'director' && (
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div 
               onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
@@ -631,7 +634,7 @@ export const ExecutivePortal = () => {
               <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
             </div>
           </div>
-          )}
+
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Compliance Bar Chart */}
@@ -698,9 +701,9 @@ export const ExecutivePortal = () => {
                       className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
                     >
                       <option value="all">📢 كافة شعب ولجان التفتيش بالمحافظة</option>
-                      <option value="public_health">🏢 مدير قسم الصحة العامة</option>
-                      <option value="left_bank">🗺️ شعبة الرقابة الصحية - الجانب الأيسر</option>
-                      <option value="right_bank">🗺️ شعبة الرقابة الصحية - الجانب الأيمن</option>
+                      {directors?.filter(d => d.id !== user?.id && d.active).map(d => (
+                        <option key={d.id} value={d.id}>👑 {d.title} ({d.name})</option>
+                      ))}
                       {allowedTeams.map(t => (
                         <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
                       ))}
@@ -785,6 +788,15 @@ export const ExecutivePortal = () => {
                           مرفق صورة إثبات المخالفة ({comp.evidenceImage})
                         </div>
                       )}
+                      <div className="mt-4 flex justify-end">
+                        <button
+                          onClick={() => handleRedirectComplaint(comp)}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 text-xs font-bold rounded-xl transition-all border border-blue-500/30"
+                        >
+                          <Send className="w-4 h-4" />
+                          إعادة توجيه للفريق
+                        </button>
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -792,14 +804,6 @@ export const ExecutivePortal = () => {
                 )}
               </div>
             </div>
-          </div>
-        ) : activeTab === 'delivery' && hasPerm('showDeliveryPage') ? (
-          <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
-              <Package className="w-10 h-10 text-teal-500" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">إدارة خدمة التوصيل</h2>
-            <p className="text-xs text-slate-500 max-w-sm">قريباً سيتم إدارة عمال التوصيل والمناديب المتعاقدين مع المنشآت وتدقيق هوياتهم الصحية من هنا.</p>
           </div>
         ) : null}
           </>
@@ -1060,6 +1064,15 @@ export const ExecutivePortal = () => {
                         مرفق صورة إثبات المخالفة ({comp.evidenceImage})
                       </div>
                     )}
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        onClick={() => handleRedirectComplaint(comp)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-600/20 hover:bg-blue-200 dark:hover:bg-blue-600/40 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-xl transition-all border border-blue-200 dark:border-blue-500/30"
+                      >
+                        <Send className="w-4 h-4" />
+                        إعادة توجيه للفريق
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
