@@ -2678,13 +2678,16 @@ export const SuperAdminPanel = () => {
 
               <div className="space-y-1">
                 <label className="text-slate-400">صنف النشاط</label>
-                <input
-                  type="text"
+                <select
                   required
                   value={editingEst.type}
                   onChange={(e) => setEditingEst({ ...editingEst, type: e.target.value })}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
-                />
+                >
+                  {activityTypes?.map(activity => (
+                    <option key={activity} value={activity}>{activity}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="space-y-1">
