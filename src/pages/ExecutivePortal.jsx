@@ -42,11 +42,22 @@ export const ExecutivePortal = () => {
   const [activeTab, setActiveTab] = usePersistentTab('execActiveTab', getInitialExecutiveTab() || 'strategic');
 
   React.useEffect(() => {
-    if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) {
+    let needsRedirect = false;
+    if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
+    if (activeTab === 'operations_room' && !hasPerm('showOperationsRoom')) needsRedirect = true;
+    if (activeTab === 'geographic' && !hasPerm('showReportsPage')) needsRedirect = true;
+    if (activeTab === 'directives' && !hasPerm('showDirectivesPage')) needsRedirect = true;
+    if (activeTab === 'complaints' && !hasPerm('showPublicEvalsPage')) needsRedirect = true;
+
+    if (needsRedirect) {
       const newTab = getInitialExecutiveTab();
-      if (newTab) setActiveTab(newTab);
+      setActiveTab(newTab || 'none');
     }
-  }, [user?.permissions]);
+
+    if (executiveTab === 'establishments' && !hasPerm('manageEstablishments')) {
+      setExecutiveTab('dashboard');
+    }
+  }, [user?.permissions, activeTab, executiveTab]);
 
   // Listen for navigation events from NotificationBell
   React.useEffect(() => {
@@ -482,14 +493,14 @@ export const ExecutivePortal = () => {
                  activeTab === 'directives' ? 'التبليغات والتوجيهات' : 
                  activeTab === 'complaints' ? 'التقييمات العامة (الشكاوى)' :
                  activeTab === 'geographic' ? 'الخريطة التفاعلية' :
-                 (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`)}
+                 (activeTab === 'none' ? 'بوابة المدير العام' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`))}
               </h2>
               <p className="text-[10px] text-slate-400 mt-1">
                 {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 
                  activeTab === 'directives' ? 'إرسال الأوامر والتعميمات للفرق الرقابية' :
                  activeTab === 'complaints' ? 'عرض شكاوى وملاحظات المواطنين الواردة من خلال مسح QR' :
                  activeTab === 'geographic' ? 'عرض المواقع الجغرافية للمنشآت حسب القطاع' :
-                 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة'}
+                 (activeTab === 'none' ? 'نظام إدارة الرقابة الصحية الموحد - محافظة نينوى' : 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة')}
               </p>
             </div>
           </div>
@@ -517,7 +528,7 @@ export const ExecutivePortal = () => {
 
 
         {/* Tab Content Rendering */}
-        {executiveTab === 'establishments' ? (
+        {executiveTab === 'establishments' && hasPerm('manageEstablishments') ? (
           <EstablishmentsManager />
         ) : (
           <>
@@ -682,7 +693,7 @@ export const ExecutivePortal = () => {
         ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Direct Command Directive Form */}
-            {hasPerm('sendDirectives') && (
+            {hasPerm('sendDirective') && (
               <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl sticky top-6">
                 <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
                   <ShieldAlert className="w-5 h-5 text-amber-500" />
