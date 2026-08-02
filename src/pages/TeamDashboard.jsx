@@ -425,11 +425,11 @@ export const TeamDashboard = () => {
                   <FileText className="w-4.5 h-4.5" />
                   <span>📑 صندوق البلاغات والتقارير</span>
                 </div>
-                {(teamReports.length > 0 || myDirectives.length > 0) && (
+                {(teamReports.filter(r => r.status === 'pending').length > 0 || myDirectives.filter(d => !d.isRead).length > 0) && (
                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
                     activeTab === 'reports' ? 'bg-white text-teal-700' : 'bg-red-500 text-white'
                   }`}>
-                    {teamReports.length + myDirectives.length}
+                    {teamReports.filter(r => r.status === 'pending').length + myDirectives.filter(d => !d.isRead).length}
                   </span>
                 )}
               </button>
