@@ -1430,42 +1430,35 @@ export const SuperAdminPanel = () => {
                     </select>
                   </div>
                 </div>
-              </div>
 
-              <div className="border-t border-slate-200 dark:border-slate-800 my-8"></div>
-                  
-              {/* Branding and Storage Toggles */}
-              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Settings className="w-5 h-5 text-teal-600" />
-                <span>أولاً: محرك التهيئة البصرية والتحكم بمستودعات الصور</span>
-              </h2>
+                {/* Toggles linked with Data Storage */}
+                <div className="pt-2 space-y-4 border-t border-slate-200/50 dark:border-slate-800/50 mt-4">
+                  <label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
+                    <div className="flex flex-col text-right">
+                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل ميزة رفع الصور بالاستمارة</span>
+                      <span className="text-[9px] text-slate-400 font-medium">إلغاء التفعيل يحول المنظومة كلياً لقاعدة بيانات نصية</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={allowUploadToggle}
+                      onChange={() => setAllowUploadToggle(!allowUploadToggle)}
+                      className="w-10 h-5 accent-teal-600 cursor-pointer"
+                    />
+                  </label>
 
-              <div className="space-y-4 pt-2">
-                <label className="flex items-center justify-between cursor-pointer select-none">
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل ميزة رفع الصور بالاستمارة</span>
-                    <span className="text-[10px] text-slate-400">إلغاء التفعيل يحول المنظومة كلياً لقاعدة بيانات نصية</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={allowUploadToggle}
-                    onChange={() => setAllowUploadToggle(!allowUploadToggle)}
-                    className="w-10 h-5 accent-teal-600 cursor-pointer"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between cursor-pointer select-none">
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل رابط البلاغات الخارجية والتوصيل المنزلي</span>
-                    <span className="text-[10px] text-slate-400">إغلاق الخدمة يوجه الزائرين لصفحة إغلاق الصيانة</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={allowExternalToggle}
-                    onChange={() => setAllowExternalToggle(!allowExternalToggle)}
-                    className="w-10 h-5 accent-teal-600 cursor-pointer"
-                  />
-                </label>
+                  <label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
+                    <div className="flex flex-col text-right">
+                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل رابط البلاغات الخارجية والتوصيل المنزلي</span>
+                      <span className="text-[9px] text-slate-400 font-medium">إغلاق الخدمة يوجه الزائرين لصفحة إغلاق الصيانة</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={allowExternalToggle}
+                      onChange={() => setAllowExternalToggle(!allowExternalToggle)}
+                      className="w-10 h-5 accent-teal-600 cursor-pointer"
+                    />
+                  </label>
+                </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
