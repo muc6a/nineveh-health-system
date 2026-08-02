@@ -33,11 +33,11 @@ export const ExecutivePortal = () => {
 
   const getInitialExecutiveTab = () => {
     if (hasPerm('showMainDashboard')) return 'strategic';
+    if (hasPerm('showFieldTeamsStats')) return 'team_reports';
     if (hasPerm('showOperationsRoom')) return 'operations_room';
     if (hasPerm('manageEstablishments')) return 'establishments';
     if (hasPerm('showReportsPage')) return 'geographic';
     if (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) return 'unified_inbox';
-    if (hasPerm('showMainDashboard')) return 'strategic';
     return null;
   };
 
@@ -46,6 +46,7 @@ export const ExecutivePortal = () => {
   React.useEffect(() => {
     let needsRedirect = false;
     if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
+    if (activeTab === 'team_reports' && !hasPerm('showFieldTeamsStats')) needsRedirect = true;
     if (activeTab === 'operations_room' && !hasPerm('showOperationsRoom')) needsRedirect = true;
     if (activeTab === 'geographic' && !hasPerm('showReportsPage')) needsRedirect = true;
     if (activeTab === 'directives' && !hasPerm('showDirectivesPage')) needsRedirect = true;
@@ -335,21 +336,26 @@ export const ExecutivePortal = () => {
               </button>
             )}
 
-            {/* Teams Roster list for sidebar */}
-            {hasPerm('showFieldTeamsStats') && allowedTeams.map((t) => (
+            {/* Field Teams Reports (Groups all teams) */}
+            {hasPerm('showFieldTeamsStats') && allowedTeams.length > 0 && (
               <button
-                key={t.id}
-                onClick={() => { setExecutiveTab('dashboard'); setSelectedTeamId(t.id); setActiveTab('strategic'); }}
+                onClick={() => { 
+                  setExecutiveTab('dashboard'); 
+                  setActiveTab('team_reports'); 
+                  if (!selectedTeamId || selectedTeamId === 'all') {
+                    setSelectedTeamId(allowedTeams[0]?.id);
+                  }
+                }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  executiveTab === 'dashboard' && selectedTeamId === t.id && activeTab === 'strategic'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                  executiveTab === 'dashboard' && activeTab === 'team_reports'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <Users className="w-4.5 h-4.5" />
-                <span>👥 {t.name}</span>
+                <span>تقارير الفرق الميدانية</span>
               </button>
-            ))}
+            )}
 
             {/* Operations Room */}
             {hasPerm('showOperationsRoom') && (
@@ -479,9 +485,12 @@ export const ExecutivePortal = () => {
               const val = e.target.value;
               if (val === 'establishments') {
                 setExecutiveTab('establishments');
-              } else if (val === 'operations_room' || val === 'geographic' || val === 'directives' || val === 'complaints') {
+              } else if (val === 'operations_room' || val === 'geographic' || val === 'directives' || val === 'complaints' || val === 'team_reports') {
                 setExecutiveTab('dashboard');
                 setActiveTab(val);
+                if (val === 'team_reports' && (!selectedTeamId || selectedTeamId === 'all')) {
+                  setSelectedTeamId(allowedTeams[0]?.id);
+                }
               } else {
                 setExecutiveTab('dashboard');
                 setSelectedTeamId(val);
@@ -493,9 +502,9 @@ export const ExecutivePortal = () => {
             {hasPerm('showMainDashboard') && (
               <option value="all">📊 اللوحة الرئيسية (الاستراتيجية)</option>
             )}
-            {hasPerm('showFieldTeamsStats') && allowedTeams.map(t => (
-              <option key={t.id} value={t.id}>👥 {t.name}</option>
-            ))}
+            {hasPerm('showFieldTeamsStats') && allowedTeams.length > 0 && (
+              <option value="team_reports">👥 تقارير الفرق الميدانية</option>
+            )}
             {hasPerm('showOperationsRoom') && (
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
@@ -527,6 +536,7 @@ export const ExecutivePortal = () => {
                  activeTab === 'directives' ? 'التبليغات والتوجيهات' : 
                  activeTab === 'complaints' ? 'التقييمات العامة (الشكاوى)' :
                  activeTab === 'geographic' ? 'الخريطة التفاعلية' :
+                 activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
                  (activeTab === 'none' ? 'بوابة المدير العام' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`))}
               </h2>
               <p className="text-[10px] text-slate-400 mt-1">
@@ -584,8 +594,27 @@ export const ExecutivePortal = () => {
         )}
 
         {/* Dynamic Tab Switching Content */}
-        {activeTab === 'strategic' && hasPerm('showMainDashboard') ? (
+        {(activeTab === 'strategic' && hasPerm('showMainDashboard')) || (activeTab === 'team_reports' && hasPerm('showFieldTeamsStats')) ? (
           <div className="space-y-6">
+            
+            {activeTab === 'team_reports' && (
+              <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar hide-scroll-indicator -mx-4 px-4 md:mx-0 md:px-0">
+                {allowedTeams.map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => setSelectedTeamId(t.id)}
+                    className={`shrink-0 px-5 py-3 rounded-xl text-xs font-black transition-all border ${
+                      selectedTeamId === t.id 
+                        ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/30' 
+                        : 'bg-white/60 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-700 hover:scale-[1.02]'
+                    }`}
+                  >
+                    👥 {t.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Summary Minimalist 3D Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Card 1: Total establishments */}
