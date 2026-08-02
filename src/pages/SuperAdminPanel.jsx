@@ -1155,7 +1155,7 @@ export const SuperAdminPanel = () => {
           </section>
         )}
 
-        {/* Tab 1.5: General Branding & Settings */}
+                {/* Tab 1.5: General Branding & Settings */}
         {activeTab === 'general_settings' && (
           <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
             <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
@@ -1163,70 +1163,65 @@ export const SuperAdminPanel = () => {
               <span>هوية المنظومة والواجهات</span>
             </h2>
             
-            <div className="max-w-xl space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
-                <input
-                  type="text"
-                  value={headerInput}
-                  onChange={(e) => setHeaderInput(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                />
-                <p className="text-[10px] text-slate-400 mt-2">
-                  هذا هو العنوان الرئيسي الذي سيظهر في أعلى الشاشة في كافة أرجاء المنظومة.
-                </p>
-              </div>
-
-              <button
-                onClick={saveZeroCodeConfig}
-                className="mt-6 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer block"
-              >
-                حفظ وتطبيق التغييرات
-              </button>
-            </div>
-          </section>
-        )}
-
-        {/* Tab 2: Settings & Parameters */}
-        {activeTab === 'settings' && (
-          <section className="glassmorphic-card p-6">
-            {/* Sub Settings Tabs Selection Bar */}
             <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 flex-wrap">
               <button
-                onClick={() => setSubSettingsTab('evaluations')}
+                onClick={() => setSubSettingsTab('identity')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'evaluations'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                  (subSettingsTab === 'identity' || subSettingsTab === 'database')
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                📝 إدارة النشاطات وبنود التقييم
+                🎨 الهوية والترويسة
               </button>
               <button
                 onClick={() => setSubSettingsTab('public_cms')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subSettingsTab === 'public_cms'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 📢 إدارة البوابات
               </button>
               <button
-                onClick={() => setSubSettingsTab('database')}
+                onClick={() => setSubSettingsTab('evaluations')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'database'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                  subSettingsTab === 'evaluations'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                💾 البيانات
+                📝 إدارة النشاطات وبنود التقييم
               </button>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
+              {(subSettingsTab === 'identity' || subSettingsTab === 'database') && (
+                <div className="max-w-xl space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
+                    <input
+                      type="text"
+                      value={headerInput}
+                      onChange={(e) => setHeaderInput(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-2">
+                      هذا هو العنوان الرئيسي الذي سيظهر في أعلى الشاشة في كافة أرجاء المنظومة.
+                    </p>
+                  </div>
 
-              {subSettingsTab === 'public_cms' && (
+                  <button
+                    onClick={saveZeroCodeConfig}
+                    className="mt-6 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer block"
+                  >
+                    حفظ وتطبيق التغييرات
+                  </button>
+                </div>
+              )}
+
+{subSettingsTab === 'public_cms' && (
                 <div className="glassmorphic-card p-6 space-y-6">
                   <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <Globe className="w-5 h-5 text-teal-600" />
@@ -1329,6 +1324,18 @@ export const SuperAdminPanel = () => {
                           <label className="text-xs font-bold text-slate-500 block">إعلان عاجل في بوابة المواطنين</label>
                           <input type="text" value={publicCMS?.announcement || ''} onChange={(e) => setPublicCMS({...publicCMS, announcement: e.target.value})} placeholder="مثال: يرجى الانتباه للتحذيرات الصحية الأخيرة..." className="w-full bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-amber-500 transition-all text-amber-700 dark:text-amber-500" />
                         </div>
+<label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
+                    <div className="flex flex-col text-right">
+                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل بوابة المواطن</span>
+                      <span className="text-[9px] text-slate-400 font-medium">تفعيل هذه البوابة يسمح للمواطنين بالاستعلام عن تقييم المطاعم وتقديم بلاغات التوصيل</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={allowExternalToggle}
+                      onChange={() => setAllowExternalToggle(!allowExternalToggle)}
+                      className="w-10 h-5 accent-teal-600 cursor-pointer"
+                    />
+                  </label>
                       </div>
                     )}
 
@@ -1367,6 +1374,18 @@ export const SuperAdminPanel = () => {
                 </div>
               )}
               
+
+{subSettingsTab === "evaluations" && (
+                <EvaluationManager />
+              )}
+            
+            </div>
+          </section>
+        )}
+
+        {/* Tab 2: Settings & Parameters */}
+        {activeTab === 'settings' && (
+          <section className="glassmorphic-card p-6">
 {subSettingsTab === 'database' && (
                 <div className="glassmorphic-card p-6 space-y-6">
                   {/* Backup and Restore Database Panel */}
@@ -1446,18 +1465,7 @@ export const SuperAdminPanel = () => {
                     />
                   </label>
 
-                  <label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
-                    <div className="flex flex-col text-right">
-                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل رابط البلاغات الخارجية والتوصيل المنزلي</span>
-                      <span className="text-[9px] text-slate-400 font-medium">إغلاق الخدمة يوجه الزائرين لصفحة إغلاق الصيانة</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={allowExternalToggle}
-                      onChange={() => setAllowExternalToggle(!allowExternalToggle)}
-                      className="w-10 h-5 accent-teal-600 cursor-pointer"
-                    />
-                  </label>
+                  
                 </div>
               </div>
 
@@ -1482,16 +1490,10 @@ export const SuperAdminPanel = () => {
             </div>
             )}
 
-              {subSettingsTab === "evaluations" && (
-                <EvaluationManager />
-              )}
-            </div>
+              
           </section>
         )}
-
-
-
-        {/* Tab 4: Establishments Directory & QR Codes */}
+{/* Tab 4: Establishments Directory & QR Codes */}
         {activeTab === 'establishments' && (
           <section className="glassmorphic-card p-6 text-right space-y-6">
             <div>

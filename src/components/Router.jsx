@@ -5,7 +5,7 @@ import { ExecutivePortal } from '../pages/ExecutivePortal';
 import { TeamDashboard } from '../pages/TeamDashboard';
 import { InspectionForm } from '../pages/InspectionForm';
 import { PublicQRScore } from '../pages/PublicQRScore';
-import { DeliveryReports } from '../pages/DeliveryReports';
+
 import { SuperAdminPanel } from '../pages/SuperAdminPanel';
 import { PublicSearch } from '../pages/PublicSearch';
 import { OwnerPortal } from '../pages/OwnerPortal';
@@ -38,9 +38,7 @@ export const Router = () => {
     case '/scan/:qr_id':
       return <PublicQRScore />;
     
-    case '/report':
-      return <DeliveryReports />;
-    
+
     case '/admin/control':
       return <SuperAdminPanel />;
       

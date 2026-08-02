@@ -105,12 +105,18 @@ export const PublicQRScore = () => {
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
     if (!feedbackText.trim()) return;
+    
+    // Enforce image proof
+    if (!feedbackPhoto) {
+      alert("إرفاق صورة الإثبات إلزامي لإرسال البلاغ لضمان الجدية والموثوقية.");
+      return;
+    }
 
     addReport({
       establishmentName: establishment.name,
       sector: establishment.sector,
       details: feedbackText,
-      evidenceImage: feedbackPhoto || 'camera_shot.jpg',
+      evidenceImage: feedbackPhoto,
       isDelivery: citizenMode === 'delivery'
     });
 
