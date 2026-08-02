@@ -996,13 +996,15 @@ export const TeamDashboard = () => {
 
                 <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
                   {myDirectives.map((dir) => (
-                    <div key={dir.id} className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 relative overflow-hidden transition-all hover:scale-[1.01]">
-                      <div className="absolute top-0 right-0 h-full w-1 bg-amber-500"></div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">توجيه عاجل</span>
-                        <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold">{dir.date}</span>
+                    <div key={dir.id} className={`p-4 rounded-2xl relative overflow-hidden transition-all hover:scale-[1.01] ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-900/40 border-2 border-teal-500 shadow-lg shadow-teal-500/20' : 'border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20'}`}>
+                      <div className={`absolute top-0 right-0 h-full ${dir.text.startsWith('رد على تبليغ:') ? 'w-2 bg-teal-500' : 'w-1 bg-amber-500'}`}></div>
+                      <div className="flex justify-between items-center mb-1 relative z-10">
+                        <span className={`text-[10px] text-white px-2 py-0.5 rounded-lg font-black ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-600' : 'bg-amber-500'}`}>
+                          {dir.text.startsWith('رد على تبليغ:') ? 'رد جديد 💬' : 'توجيه عاجل'}
+                        </span>
+                        <span className={`text-[9px] font-bold ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-400' : 'text-amber-600 dark:text-amber-400'}`}>{dir.date}</span>
                       </div>
-                      <p className="text-xs font-black text-amber-900 dark:text-amber-200 leading-relaxed mt-1.5">{dir.text}</p>
+                      <p className={`text-xs font-black leading-relaxed mt-1.5 relative z-10 ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-100' : 'text-amber-900 dark:text-amber-200'}`}>{dir.text}</p>
                       <span className="text-[9px] text-slate-400 block mt-2">الجهة المرسلة: {dir.sender}</span>
                     </div>
                   ))}

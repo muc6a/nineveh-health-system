@@ -805,8 +805,11 @@ export const ExecutivePortal = () => {
               <div className="space-y-4 text-right pr-1">
                 {(directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).length > 0 ? (
                   (directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).map((dir, idx) => (
-                    <div key={idx} className={`${dir.text.startsWith('رد على تبليغ:') ? 'bg-emerald-900/30 border-emerald-700/60' : 'bg-slate-800 border-slate-700/60'} p-4 rounded-2xl border shadow-md transition-all`}>
-                      <div className="flex justify-between items-start mb-2">
+                    <div key={idx} className={`${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-900/40 border-teal-500 border-2 shadow-teal-500/20' : 'bg-slate-800 border-slate-700/60'} p-4 rounded-2xl border shadow-md transition-all relative overflow-hidden`}>
+                      {dir.text.startsWith('رد على تبليغ:') && (
+                        <div className="absolute top-0 right-0 h-full w-1.5 bg-teal-500"></div>
+                      )}
+                      <div className="flex justify-between items-start mb-2 relative z-10">
                         <div>
                           <h4 className="text-xs font-black text-white">من: {dir.sender}</h4>
                           <span className="text-[10px] text-slate-400">إلى: {dir.teamId === 'all' ? 'جميع الجهات والفرق' : (teams.find(t => t.id === dir.teamId)?.name || directors.find(d => d.id === dir.teamId)?.title || dir.teamId)}</span>
@@ -815,7 +818,7 @@ export const ExecutivePortal = () => {
                           {dir.date || 'تاريخ غير محدد'}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300 font-bold bg-slate-900/50 p-3 rounded-xl border border-slate-700 mt-2">
+                      <p className={`text-xs font-bold p-3 rounded-xl border mt-2 ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-950/50 border-teal-800/50 text-teal-100' : 'bg-slate-900/50 border-slate-700 text-slate-300'}`}>
                         {dir.text}
                       </p>
                       
