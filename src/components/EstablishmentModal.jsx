@@ -4,7 +4,7 @@ import { NINEVEH_GEOGRAPHY } from '../utils/constants';
 import { AppContext } from '../context/AppContext';
 
 export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave }) => {
-  const { user, activityTypes } = useContext(AppContext);
+  const { user, activityTypes, reports } = useContext(AppContext);
   const isTeamMode = user?.role === 'team' || user?.isTeam;
   const teamSector = user?.sector || '';
 
@@ -20,7 +20,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
       parsedSub = sector.split(' - ')[1] || '';
     } else {
       NINEVEH_GEOGRAPHY.districts.forEach(d => {
-        if (sector.includes(d.label)) {
+        if (sector.includes(d.label.replace('قضاء ', '')) || d.label.includes(sector.replace('قضاء ', ''))) {
           parsedMain = d.id;
           parsedSub = sector.split(' - ')[1] || '';
         }
@@ -102,6 +102,11 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (isTeamMode && formData.manualAddress.trim() === '') {
+      alert('عذراً، يجب إدخال العنوان الدقيق يدوياً بشكل واضح.');
+      return;
+    }
     // Build the final sector string
     let finalSector = '';
     if (formData.geoMain === 'mosul_right') {
@@ -324,6 +329,23 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave 
                 هذه المنشأة توفر خدمة التوصيل (ديليفري)
               </label>
             </div>
+
+            {mode === 'edit' && reports?.filter(r => r.establishmentId === initialData?.id && r.forwarded).length > 0 && (
+                <div className="mt-4 p-4 rounded-xl bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                  <h4 className="text-xs font-black text-amber-500 mb-2 border-b border-slate-200 dark:border-slate-700 pb-2">أرشيف الشكاوى الموجهة للمنشأة</h4>
+                  <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
+                    {reports.filter(r => r.establishmentId === initialData?.id && r.forwarded).map(r => (
+                      <div key={r.id} className="p-2 bg-white dark:bg-slate-900 rounded-lg text-[10px] border border-slate-100 dark:border-slate-800">
+                        <div className="flex justify-between items-center text-slate-500 dark:text-slate-400 mb-1">
+                          <span>{new Date(r.timestamp).toLocaleDateString('ar-IQ')}</span>
+                          <span className="text-red-500 font-bold">{r.type}</span>
+                        </div>
+                        <p className="text-slate-600 dark:text-slate-300 font-medium">{r.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+            )}
 
           </form>
         </div>

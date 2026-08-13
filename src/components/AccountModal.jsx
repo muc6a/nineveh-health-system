@@ -51,7 +51,6 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
   // Team Smart Edit Settings
   const [editTimeWindow, setEditTimeWindow] = useState('open'); // 'open', '1h', '5h', '24h'
   const [editOneTimeOnly, setEditOneTimeOnly] = useState(false);
-  const [canViewMonthlyStats, setCanViewMonthlyStats] = useState(false);
 
   // Copy Permissions State
   const [copyPermissionsFrom, setCopyPermissionsFrom] = useState('');
@@ -72,9 +71,19 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             setDirectorScopeMode('all');
           } else {
             setDirectorScopeMode('sector');
-            // Parse logic for edit omitted for brevity, default to mosul right
-            setSectorType('mosul');
-            setMosulSide('right');
+            if (initialData.sector.includes('الجانب الأيمن')) {
+              setSectorType('mosul');
+              setMosulSide('right');
+            } else if (initialData.sector.includes('الجانب الأيسر')) {
+              setSectorType('mosul');
+              setMosulSide('left');
+            } else {
+              setSectorType('district');
+              const matchedDistrict = NINEVEH_GEOGRAPHY.districts.find(d => initialData.sector.includes(d.label.replace('قضاء ', '')));
+              if (matchedDistrict) {
+                setDistrictId(matchedDistrict.id);
+              }
+            }
           }
         }
 
@@ -86,13 +95,23 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           
           if (initialData.sector) {
              setSelectionMode('all');
+             if (initialData.sector.includes('الجانب الأيمن')) {
+               setSectorType('mosul');
+               setMosulSide('right');
+             } else if (initialData.sector.includes('الجانب الأيسر')) {
+               setSectorType('mosul');
+               setMosulSide('left');
+             } else {
+               setSectorType('district');
+               const matchedDistrict = NINEVEH_GEOGRAPHY.districts.find(d => initialData.sector.includes(d.label.replace('قضاء ', '')));
+               if (matchedDistrict) {
+                 setDistrictId(matchedDistrict.id);
+               }
+             }
           }
           if (initialData.editSettings) {
              setEditTimeWindow(initialData.editSettings.window || 'open');
              setEditOneTimeOnly(!!initialData.editSettings.oneTimeOnly);
-          }
-          if (initialData.canViewMonthlyStats !== undefined) {
-             setCanViewMonthlyStats(initialData.canViewMonthlyStats);
           }
         }
         
@@ -110,7 +129,6 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         setAssistants([{ name: '', title: 'ملاحظ فني / مدقق' }]);
         setEditTimeWindow('open');
         setEditOneTimeOnly(false);
-        setCanViewMonthlyStats(false);
         setLinkedTeamSector('');
         setCopyPermissionsFrom('');
       }
@@ -194,13 +212,43 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         window: editTimeWindow,
         oneTimeOnly: editOneTimeOnly
       };
-      result.canViewMonthlyStats = canViewMonthlyStats;
       
+      const defaultTeamPermissions = {
+        manageEstablishments: true,
+        createEst: false,
+        editEst: false,
+        deleteEst: false,
+        addEval: true,
+        showMainDashboard: true,
+        showReportsPage: true,
+        showDirectivesPage: true,
+        showPublicEvalsPage: true,
+        sendDirective: false,
+        replyDirective: true,
+        canSendSOS: true,
+        showSectorMap: true,
+        showSmartTasks: true,
+        showFieldTeamsStats: false,
+        showTeamMonthlyStats: false,
+        showOperationsRoom: false,
+        notify_closures: true,
+        notify_inspections: true,
+        notify_directives: true
+      };
+
       if (copyPermissionsFrom) {
-        const sourceTeam = teams.find(t => t.id === copyPermissionsFrom);
+        const sourceTeam = teams.find(t => String(t.id) === String(copyPermissionsFrom));
         if (sourceTeam && sourceTeam.permissions) {
           result.permissions = { ...sourceTeam.permissions };
+        } else {
+          result.permissions = mode === 'edit' && initialData.permissions 
+            ? { ...initialData.permissions } 
+            : { ...defaultTeamPermissions };
         }
+      } else {
+        result.permissions = mode === 'edit' && initialData.permissions 
+          ? { ...initialData.permissions } 
+          : { ...defaultTeamPermissions };
       }
     } else if (accountType === 'tracker') {
       result.role = 'tracker';
@@ -406,20 +454,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                 </div>
               </div>
 
-              {/* 5. Statistics Settings */}
+              {/* 5. Copy Permissions */}
               <div className="space-y-3 pt-6 border-t border-white/5">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><BarChart3 className="w-4 h-4"/> 5. إحصائيات الفريق</label>
-                <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5">
-                  <label className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 cursor-pointer hover:bg-slate-900/60 transition-colors">
-                    <input type="checkbox" checked={canViewMonthlyStats} onChange={(e) => setCanViewMonthlyStats(e.target.checked)} className="w-4 h-4 accent-indigo-500 rounded" />
-                    <span className="text-sm font-semibold text-slate-300">عرض الإحصائيات الشهرية (الإغلاقات والغرامات) في لوحة الفريق</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* 6. Copy Permissions */}
-              <div className="space-y-3 pt-6 border-t border-white/5">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Lock className="w-4 h-4"/> 6. استنساخ الأذونات وصلاحيات النظام</label>
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Lock className="w-4 h-4"/> 5. استنساخ الأذونات وصلاحيات النظام</label>
                 <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5">
                   <label className="text-slate-400 text-xs block font-semibold mb-2">استنساخ الأذونات من فريق ميداني آخر (اختياري)</label>
                   <select 

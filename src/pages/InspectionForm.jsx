@@ -144,14 +144,14 @@ export const InspectionForm = () => {
     setRatings(initialRatings);
   }, [establishments, inspectionTemplates]);
 
-  if (!establishment) {
-    return <div className="p-8 text-center text-xs font-bold text-slate-400">تحميل بيانات المنشأة...</div>;
-  }
-
   const activeItems = React.useMemo(() => {
     if (!establishment) return [];
     return inspectionTemplates[establishment.type] || inspectionTemplates['المطاعم، الكافيهات، والمقاهي'] || [];
   }, [establishment, inspectionTemplates]);
+
+  if (!establishment) {
+    return <div className="p-8 text-center text-xs font-bold text-slate-400">تحميل بيانات المنشأة...</div>;
+  }
 
   const sumScores = Math.round(Object.keys(ratings).reduce((acc, itemId) => {
     const item = activeItems.find(i => String(i.id) === String(itemId));
