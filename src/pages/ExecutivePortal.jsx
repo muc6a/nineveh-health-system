@@ -161,9 +161,17 @@ export const ExecutivePortal = () => {
   const defaultTargetSector = isDirectorGeneral ? null : user?.sector;
   const targetSector = selectedTeam ? selectedTeam.sector : defaultTargetSector;
 
+  // Match sector helper
+  const matchSector = (tSec, eSec) => {
+    if (!tSec || !eSec) return false;
+    const cleanT = tSec.replace(/^قضاء\s+/i, '').replace(/^قاطع\s+/i, '').trim();
+    const cleanE = eSec.replace(/^قضاء\s+/i, '').replace(/^قاطع\s+/i, '').trim();
+    return cleanT.includes(cleanE) || cleanE.includes(cleanT);
+  };
+
   // Filter establishments based on selected team sector
-  const filteredEsts = targetSector 
-    ? (establishments || []).filter(e => e.sector === targetSector)
+  const filteredEsts = targetSector && targetSector !== 'الكل'
+    ? (establishments || []).filter(e => matchSector(targetSector, e.sector))
     : (establishments || []);
 
   // Compute Chart 1 data (Inspected vs Uninspected)
@@ -235,9 +243,9 @@ export const ExecutivePortal = () => {
 
   // Filter penalty requests based on selected targetSector
   const filteredPenaltyRequests = (penaltyRequests || []).filter(req => {
-    if (!targetSector) return true;
+    if (!targetSector || targetSector === 'الكل') return true;
     const est = establishments.find(e => e.id === req.targetEstId);
-    return est && est.sector === targetSector;
+    return est && matchSector(targetSector, est.sector);
   });
 
   const currentMonth = new Date().getMonth();
@@ -519,7 +527,7 @@ export const ExecutivePortal = () => {
         </div>
 
         {/* Welcome Headers */}
-        <div className="relative z-[100] flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
+        <div className="relative z-40 flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">
               {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : '💼'}
