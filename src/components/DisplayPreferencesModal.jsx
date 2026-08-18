@@ -1,10 +1,30 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Eye, X } from 'lucide-react';
+import { Eye, X, ChevronUp, ChevronDown, ListOrdered } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
   const { uiPreferences, setUiPreferences, notify } = useContext(AppContext);
   const [draftUiPreferences, setDraftUiPreferences] = useState(uiPreferences);
+
+  const TAB_LABELS = {
+    strategic: 'اللوحة الرئيسية (الاستراتيجية)',
+    team_reports: 'تقارير الفرق الميدانية',
+    operations_room: 'غرفة العمليات المركزية',
+    geographic: 'الخريطة الجغرافية',
+    directives: 'التبليغات والتوجيهات',
+    complaints: 'التقييمات العامة (الشكاوى)',
+    establishments: 'إدارة المنشآت'
+  };
+
+  const moveTab = (index, direction) => {
+    const newOrder = [...(draftUiPreferences.tabOrder || Object.keys(TAB_LABELS))];
+    if (direction === 'up' && index > 0) {
+      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+    } else if (direction === 'down' && index < newOrder.length - 1) {
+      [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
+    }
+    setDraftUiPreferences({ ...draftUiPreferences, tabOrder: newOrder });
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -105,6 +125,36 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
                     onChange={(e) => setDraftUiPreferences({...draftUiPreferences, bodySize: e.target.value + 'px'})}
                     className="w-full accent-teal-600"
                   />
+                </div>
+              </div>
+              {/* Tab Reordering Control */}
+              <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <ListOrdered className="w-4 h-4 text-teal-600" />
+                  ترتيب القوائم الجانبية (Sidebar Tabs Order)
+                </label>
+                <div className="space-y-2 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                  {(draftUiPreferences?.tabOrder || Object.keys(TAB_LABELS)).map((tabKey, idx, arr) => (
+                    <div key={tabKey} className="flex items-center justify-between bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{TAB_LABELS[tabKey] || tabKey}</span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          disabled={idx === 0}
+                          onClick={() => moveTab(idx, 'up')}
+                          className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/30 disabled:opacity-30 transition-all cursor-pointer"
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </button>
+                        <button
+                          disabled={idx === arr.length - 1}
+                          onClick={() => moveTab(idx, 'down')}
+                          className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/30 disabled:opacity-30 transition-all cursor-pointer"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

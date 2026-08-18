@@ -174,7 +174,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
     } else {
       calculatedSector = sectorType === 'mosul' 
         ? (mosulSide === 'right' ? 'الجانب الأيمن' : 'الجانب الأيسر')
-        : (districtId ? NINEVEH_GEOGRAPHY.districts.find(d => d.id === districtId)?.label.replace('قضاء ', '') : '');
+        : (districtId ? NINEVEH_GEOGRAPHY.districts.find(d => d.id === districtId)?.label : '');
     }
 
     const neighborhoods = (accountType === 'team' && selectionMode === 'custom') ? selectedNeighborhoods : [];

@@ -501,7 +501,7 @@ export const SuperAdminPanel = () => {
       const newAccount = {
         ...accountData,
         id: accountData.role === 'tracker' ? 'tracker_' + Date.now() : (accountData.isTeam ? 'team_' + Date.now() : 'dir_acc_' + Date.now()),
-        permissions: { ...DEFAULT_PERMISSIONS }
+        permissions: accountData.permissions ? { ...accountData.permissions } : { ...DEFAULT_PERMISSIONS }
       };
       if (accountData.role === 'tracker') {
         setTrackers(prev => [...prev, newAccount]);
@@ -2764,7 +2764,7 @@ export const SuperAdminPanel = () => {
         const PERMISSIONS_TABS = [
           { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst'] },
           { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showOperationsRoom', 'showReportsPage', 'showPublicEvalsPage'] },
-          { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['addEval', 'showSectorMap', 'showSmartTasks', 'canSendSOS', 'showFieldTeamsStats'] },
+          { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['addEval', 'showSectorMap', 'showSmartTasks', 'canSendSOS', 'showFieldTeamsStats', 'showTeamMonthlyStats'] },
           { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
           { id: 'notifications', label: 'الإشعارات المخصصة', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
@@ -2789,6 +2789,7 @@ export const SuperAdminPanel = () => {
           showSectorMap: { title: 'خريطة القطاع', desc: 'يسمح للفريق برؤية خريطة المنشآت الخاصة بقطاعهم الميداني.' },
           showSmartTasks: { title: 'مهام اليوم (المهام الذكية)', desc: 'يسمح للفريق بالوصول لجدول المهام اليومية المخصصة لهم.' },
           showFieldTeamsStats: { title: 'تقارير الفرق الميدانية', desc: 'يسمح برؤية إحصائيات وأداء اللجان الميدانية بشكل فردي.' },
+          showTeamMonthlyStats: { title: 'إحصائيات الإغلاقات والغرامات', desc: 'يسمح للفريق برؤية إحصائيات المطاعم المغلقة والمُغرمة ضمن قطاعه الميداني شهرياً.' },
           issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
           closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
           reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
@@ -2807,7 +2808,7 @@ export const SuperAdminPanel = () => {
           manageEstablishments: 'management', createEst: 'management', editEst: 'management', deleteEst: 'management',
           addEval: 'team', showMainDashboard: 'management', showOperationsRoom: 'management', showReportsPage: 'management',
           showDirectivesPage: 'management', showPublicEvalsPage: 'management', sendDirective: 'management', replyDirective: 'team',
-          canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management',
+          canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management', showTeamMonthlyStats: 'team',
           issueFine: 'management', closeEst: 'management', reopenEst: 'management',
           notify_closures: 'all', notify_inspections: 'all', notify_directives: 'all',
           exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management'

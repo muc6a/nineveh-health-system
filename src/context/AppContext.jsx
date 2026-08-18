@@ -187,7 +187,7 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07721112233',
     licenseNumber: 'LIC-2026-X12',
     propertyNumber: '14ج/5533/02',
-    sector: 'تلعفر',
+    sector: 'قضاء تلعفر',
     neighborhood: 'حي السعد',
     lastInspection: '2026-07-10',
     score: 92,
@@ -205,7 +205,7 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07504445566',
     licenseNumber: 'LIC-2026-Y45',
     propertyNumber: '9أ/4422/01',
-    sector: 'تلعفر',
+    sector: 'قضاء تلعفر',
     neighborhood: 'مركز القضاء',
     lastInspection: '2026-06-20',
     score: 75,
@@ -273,6 +273,7 @@ const DEFAULT_PERMISSIONS = {
   showSectorMap: true,
   showSmartTasks: true,
   showFieldTeamsStats: false,
+  showTeamMonthlyStats: false,
   showOperationsRoom: false,
 
   notify_closures: true,
@@ -316,7 +317,7 @@ const INITIAL_TEAMS = [
   { 
     id: 'team_talafar', 
     name: 'اللجنة الرقابية الميدانية - قضاء تلعفر', 
-    sector: 'تلعفر', 
+    sector: 'قضاء تلعفر', 
     email: 'talafar@ninveh.health.gov.iq', 
     phone: '07700033344', 
     username: 'team_talafar',
@@ -446,17 +447,14 @@ export const AppProvider = ({ children }) => {
   // Core Databases
   const [establishments, setEstablishments] = useState(() => {
     const saved = localStorage.getItem('establishments');
-    const parsed = saved ? JSON.parse(saved) : [];
+    let parsed = saved ? JSON.parse(saved) : null;
     
-    // Merge new initial establishments if they don't exist in local storage yet
-    const existingIds = new Set(parsed.map(e => e.id));
-    INITIAL_ESTABLISHMENTS.forEach(initialEst => {
-      if (!existingIds.has(initialEst.id)) {
-        parsed.push(initialEst);
-      }
-    });
-
-    // Deduplicate by name (in case old local storage has different IDs for the same initial data)
+    // Only use INITIAL_ESTABLISHMENTS if there's no saved data at all
+    if (!parsed) {
+      parsed = [...INITIAL_ESTABLISHMENTS];
+    }
+    
+    // Deduplicate by name (in case old local storage has duplicates)
     const uniqueMap = new Map();
     parsed.forEach(est => {
       uniqueMap.set(est.name.trim(), est);
@@ -501,14 +499,12 @@ export const AppProvider = ({ children }) => {
 
   const [teams, setTeams] = useState(() => {
     const saved = localStorage.getItem('teams_v2');
-    const parsed = saved ? JSON.parse(saved) : [];
+    let parsed = saved ? JSON.parse(saved) : null;
     
-    const existingIds = new Set(parsed.map(t => t.id));
-    INITIAL_TEAMS.forEach(initialTeam => {
-      if (!existingIds.has(initialTeam.id)) {
-        parsed.push(initialTeam);
-      }
-    });
+    // Only use INITIAL_TEAMS if there's no saved data at all
+    if (!parsed) {
+      parsed = [...INITIAL_TEAMS];
+    }
     
     return parsed.map(team => {
       let currentSector = team.sector || '';
@@ -796,10 +792,12 @@ export const AppProvider = ({ children }) => {
   // User UI Preferences (Density & Typography)
   const [uiPreferences, setUiPreferences] = useState(() => {
     const saved = localStorage.getItem('uiPreferences');
-    return saved ? JSON.parse(saved) : {
-      headingSize: '18px', // Default
-      bodySize: '12px',    // Default (text-xs)
-      density: 'comfortable', // comfortable | compact
+    const savedPrefs = saved ? JSON.parse(saved) : {};
+    return {
+      headingSize: savedPrefs.headingSize || '18px',
+      bodySize: savedPrefs.bodySize || '12px',
+      density: savedPrefs.density || 'comfortable',
+      tabOrder: savedPrefs.tabOrder || ['strategic', 'team_reports', 'operations_room', 'geographic', 'directives', 'complaints', 'establishments']
     };
   });
 
