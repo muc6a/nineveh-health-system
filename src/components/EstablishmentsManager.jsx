@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { Search, X, ShieldAlert, Send } from 'lucide-react';
 
 export const EstablishmentsManager = () => {
-  const { establishments, setEstablishments, teams, user, addDirective, notify, penaltyRequests, activityTypes } = useContext(AppContext);
+  const { establishments, setEstablishments, teams, user, addDirective, notify, penaltyRequests, activityTypes, reports } = useContext(AppContext);
   const [estSearchTerm, setEstSearchTerm] = useState('');
   const [sectorFilter, setSectorFilter] = useState('all');
   const [smartFilter, setSmartFilter] = useState('all');
@@ -13,6 +13,13 @@ export const EstablishmentsManager = () => {
   const [correctiveText, setCorrectiveText] = useState('');
 
   const uniqueSectors = [...new Set(establishments.map(e => e.sector))].filter(Boolean);
+
+  const matchSector = (teamSector, estSector) => {
+    if (!teamSector || !estSector) return false;
+    const cleanT = teamSector.replace(/^قضاء\s+/i, '').replace(/^قاطع\s+/i, '').trim();
+    const cleanE = estSector.replace(/^قضاء\s+/i, '').replace(/^قاطع\s+/i, '').trim();
+    return cleanT.includes(cleanE) || cleanE.includes(cleanT);
+  };
 
   const handleSendCorrective = (e) => {
     e.preventDefault();
@@ -125,8 +132,8 @@ export const EstablishmentsManager = () => {
                       <div className="flex flex-col">
                         <span className="text-slate-500 font-bold">{est.sector.replace(/^قاطع\s+/i, '')}</span>
                         <span className="text-[9px] text-teal-600 dark:text-teal-400 mt-1 font-black">
-                          {teams.find(t => t.sector === est.sector) 
-                            ? `مسؤولية: ${teams.find(t => t.sector === est.sector).name}`
+                          {teams.find(t => matchSector(t.sector, est.sector)) 
+                            ? `مسؤولية: ${teams.find(t => matchSector(t.sector, est.sector)).name}`
                             : '⚠️ غير مخصص لفريق'}
                         </span>
                       </div>
@@ -255,6 +262,22 @@ export const EstablishmentsManager = () => {
                 <a href={`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(`${window.location.origin}/scan/${selectedEstDetails.id}`)}`} target="_blank" rel="noreferrer" className="py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-center font-black">تحميل الصورة</a>
                 <button type="button" onClick={() => window.print()} className="py-2.5 rounded-xl bg-slate-800 text-center font-black">طباعة ملصق الباركود</button>
               </div>
+              {reports?.filter(r => r.establishmentId === selectedEstDetails.id && r.forwarded).length > 0 && (
+                <div className="mt-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+                  <h4 className="text-xs font-black text-amber-400 mb-2 border-b border-slate-700 pb-2">أرشيف الشكاوى الموجهة للمنشأة</h4>
+                  <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
+                    {reports.filter(r => r.establishmentId === selectedEstDetails.id && r.forwarded).map(r => (
+                      <div key={r.id} className="p-2 bg-slate-900 rounded-lg text-[10px]">
+                        <div className="flex justify-between items-center text-slate-400 mb-1">
+                          <span>{new Date(r.timestamp).toLocaleDateString('ar-IQ')}</span>
+                          <span className="text-red-400 font-bold">{r.type}</span>
+                        </div>
+                        <p className="text-slate-300 font-medium">{r.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

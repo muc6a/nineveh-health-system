@@ -100,8 +100,15 @@ export const TeamDashboard = () => {
   // User's assigned sector (default to 'الجانب الأيمن' if user isn't logged in correctly)
   const userSector = activeTeam?.sector || (activeTeam?.name?.includes('الأيسر') ? 'الجانب الأيسر' : 'الجانب الأيمن');
 
+  const matchSector = (teamSector, estSector) => {
+    if (!teamSector || !estSector) return false;
+    const cleanT = teamSector.replace(/^قضاء\s+/i, '').replace(/^قاطع\s+/i, '').trim();
+    const cleanE = estSector.replace(/^قضاء\s+/i, '').replace(/^قاطع\s+/i, '').trim();
+    return cleanT.includes(cleanE) || cleanE.includes(cleanT);
+  };
+
   // Filter establishments based on team's sector
-  const teamEstablishments = (establishments || []).filter(e => e.sector.includes(userSector));
+  const teamEstablishments = (establishments || []).filter(e => matchSector(userSector, e.sector));
 
   // Dynamic list of establishments matching selected metric category modal
   const modalEstList = teamEstablishments.filter(e => {
@@ -141,13 +148,13 @@ export const TeamDashboard = () => {
   });
 
   // Filter reports submitted to team's sector
-  const teamReports = (reports || []).filter(r => r.sector && r.sector.includes(userSector));
+  const teamReports = (reports || []).filter(r => r.sector && matchSector(userSector, r.sector));
 
   // Filter directives directed to this team's sector or teamId
   const myDirectives = (directives || []).filter(d => {
     if (user?.id && d.teamId === user.id) return true;
     const targetTeam = teams.find(t => t.id === d.teamId);
-    return targetTeam?.sector && targetTeam.sector.includes(userSector);
+    return targetTeam?.sector && matchSector(userSector, targetTeam.sector);
   });
 
   const handleSaveEstablishment = (data) => {
@@ -193,7 +200,7 @@ export const TeamDashboard = () => {
     setShowQRScanner(false);
     const est = establishments.find(e => e.accessCode === decodedText);
     if (est) {
-      if (!est.sector.includes(userSector) && user?.role !== 'admin') {
+      if (!matchSector(userSector, est.sector) && user?.role !== 'admin') {
         notify('عفواً، هذه المنشأة لا تتبع لقاطع مسؤوليتك.', 'error');
         return;
       }
@@ -219,12 +226,12 @@ export const TeamDashboard = () => {
   const currentYear = new Date().getFullYear();
 
   const monthlyClosures = (penaltyRequests || []).filter(req => 
-    req.type === 'closure' && req.status === 'approved' && req.sector === userSector && 
+    req.type === 'closure' && req.status === 'approved' && matchSector(userSector, req.sector) && 
     new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
   );
 
   const monthlyFines = (penaltyRequests || []).filter(req => 
-    req.type === 'fine' && req.status === 'approved' && req.sector === userSector && 
+    req.type === 'fine' && req.status === 'approved' && matchSector(userSector, req.sector) && 
     new Date(req.date).getMonth() === currentMonth && new Date(req.date).getFullYear() === currentYear
   );
 
@@ -618,42 +625,44 @@ export const TeamDashboard = () => {
             </div>
 
             {/* Team Analytics Chart */}
-            <div className="glassmorphic-card p-6 mt-6">
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-teal-600" /> إحصائيات الإنجاز الرقابي (هذا الأسبوع)
-              </h3>
-              <div className="h-64 w-full" dir="ltr">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={[
-                    { name: 'السبت', زيارات: 12, غرامات: 2 },
-                    { name: 'الأحد', زيارات: 19, غرامات: 5 },
-                    { name: 'الإثنين', زيارات: 15, غرامات: 1 },
-                    { name: 'الثلاثاء', زيارات: 22, غرامات: 3 },
-                    { name: 'الأربعاء', زيارات: 18, غرامات: 2 },
-                    { name: 'الخميس', زيارات: 25, غرامات: 4 },
-                    { name: 'الجمعة', زيارات: 5, غرامات: 0 },
-                  ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                    <Tooltip 
-                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)', textAlign: 'right', direction: 'rtl' }}
-                      itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
-                    />
-                    <Bar dataKey="زيارات" fill="#0d9488" radius={[4, 4, 0, 0]} barSize={12} />
-                    <Bar dataKey="غرامات" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={12} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex justify-center gap-6 mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
-                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
-                  <span className="w-3 h-3 rounded-full bg-teal-600"></span> الجولات التفتيشية
+            {hasPerm('showTeamMonthlyStats') && (
+              <div className="glassmorphic-card p-6 mt-6">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-teal-600" /> إحصائيات الإنجاز الرقابي (هذا الأسبوع)
+                </h3>
+                <div className="h-64 w-full" dir="ltr">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { name: 'السبت', زيارات: 12, غرامات: 2 },
+                      { name: 'الأحد', زيارات: 19, غرامات: 5 },
+                      { name: 'الإثنين', زيارات: 15, غرامات: 1 },
+                      { name: 'الثلاثاء', زيارات: 22, غرامات: 3 },
+                      { name: 'الأربعاء', زيارات: 18, غرامات: 2 },
+                      { name: 'الخميس', زيارات: 25, غرامات: 4 },
+                      { name: 'الجمعة', زيارات: 5, غرامات: 0 },
+                    ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)', textAlign: 'right', direction: 'rtl' }}
+                        itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                      />
+                      <Bar dataKey="زيارات" fill="#0d9488" radius={[4, 4, 0, 0]} barSize={12} />
+                      <Bar dataKey="غرامات" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={12} />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
-                  <span className="w-3 h-3 rounded-full bg-amber-500"></span> الغرامات الفورية
+                <div className="flex justify-center gap-6 mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                    <span className="w-3 h-3 rounded-full bg-teal-600"></span> الجولات التفتيشية
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                    <span className="w-3 h-3 rounded-full bg-amber-500"></span> الغرامات الفورية
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
 
           </div>
