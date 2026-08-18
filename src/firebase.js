@@ -4,6 +4,7 @@ import { getDatabase } from "firebase/database";
 const firebaseConfig = {
   apiKey: "AIzaSyBQmCciaNSDdCQ6vA6PgcjUThPFtx7TMSE",
   authDomain: "nineveh-health.firebaseapp.com",
+  databaseURL: "https://nineveh-health-default-rtdb.firebaseio.com",
   projectId: "nineveh-health",
   storageBucket: "nineveh-health.firebasestorage.app",
   messagingSenderId: "352779322862",
