@@ -108,9 +108,11 @@ export const InspectionForm = () => {
   };
 
   const clearSignature = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     setSignatureData(null);
   };
 
@@ -583,15 +585,7 @@ export const InspectionForm = () => {
             </div>
             
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-[11px] sm:text-xs shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border border-slate-200 dark:border-slate-700"
-              >
-                <Printer className="w-4 h-4" />
-                <span className="hidden sm:inline">طباعة</span>
-              </button>
-              
+
               <button
                 type="submit"
                 disabled={isSubmitting}

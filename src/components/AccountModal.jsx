@@ -113,6 +113,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
              setEditTimeWindow(initialData.editSettings.window || 'open');
              setEditOneTimeOnly(!!initialData.editSettings.oneTimeOnly);
           }
+          if (initialData.clonedFrom) {
+             setCopyPermissionsFrom(initialData.clonedFrom);
+          }
         }
         
         if (accountType === 'tracker') {
@@ -237,6 +240,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
       };
 
       if (copyPermissionsFrom) {
+        result.clonedFrom = copyPermissionsFrom;
         const sourceTeam = teams.find(t => String(t.id) === String(copyPermissionsFrom));
         if (sourceTeam && sourceTeam.permissions) {
           result.permissions = { ...sourceTeam.permissions };
@@ -246,6 +250,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             : { ...defaultTeamPermissions };
         }
       } else {
+        result.clonedFrom = '';
         result.permissions = mode === 'edit' && initialData.permissions 
           ? { ...initialData.permissions } 
           : { ...defaultTeamPermissions };

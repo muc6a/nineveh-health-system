@@ -390,7 +390,7 @@ export const TeamDashboard = () => {
                 }`}
               >
                 <Database className="w-4.5 h-4.5" />
-                <span>🍽️ إدارة المنشآت</span>
+                <span>إدارة المنشآت</span>
               </button>
             )}
 
@@ -404,7 +404,7 @@ export const TeamDashboard = () => {
                 }`}
               >
                 <Map className="w-4.5 h-4.5" />
-                <span>🗺️ خريطة القطاع</span>
+                <span>خريطة القطاع</span>
               </button>
             )}
 
@@ -418,7 +418,7 @@ export const TeamDashboard = () => {
                 }`}
               >
                 <CheckSquare className="w-4.5 h-4.5" />
-                <span>📅 مهام اليوم</span>
+                <span>مهام اليوم</span>
               </button>
             )}
 
