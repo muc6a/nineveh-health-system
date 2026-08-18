@@ -98,7 +98,10 @@ export const TeamDashboard = () => {
   // Get the most up-to-date user from the teams array, falling back to local user object
   const activeTeam = (teams || []).find(t => t.id === user?.id) || user;
   // User's assigned sector (default to 'الجانب الأيمن' if user isn't logged in correctly)
-  const userSector = activeTeam?.sector || (activeTeam?.name?.includes('الأيسر') ? 'الجانب الأيسر' : 'الجانب الأيمن');
+  let userSectorRaw = activeTeam?.sector || (activeTeam?.name?.includes('الأيسر') ? 'الجانب الأيسر' : 'الجانب الأيمن');
+  const userSector = (userSectorRaw && !userSectorRaw.includes('قضاء') && !userSectorRaw.includes('الجانب') && !userSectorRaw.includes('قاطع')) 
+    ? 'قضاء ' + userSectorRaw 
+    : userSectorRaw;
 
   const matchSector = (teamSector, estSector) => {
     if (!teamSector || !estSector) return false;
@@ -466,7 +469,7 @@ export const TeamDashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col text-right">
               <span className="text-xs font-black text-slate-700 dark:text-slate-300">{user?.name || 'مفتش الرقابة الميداني'}</span>
-              <span className="text-[10px] text-teal-600 dark:text-teal-600 dark:text-teal-400 font-bold">قطاع: {userSector}</span>
+              <span className="text-[10px] text-teal-600 dark:text-teal-400 font-bold">{userSector}</span>
             </div>
             <div className="flex items-center gap-2">
               <button 
@@ -498,7 +501,7 @@ export const TeamDashboard = () => {
             <span className="text-xl">👥</span>
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
-              <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم قطاع: {userSector}</p>
+              <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم {userSector}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
@@ -555,7 +558,7 @@ export const TeamDashboard = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لقطاع {userSector}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لـ {userSector}</p>
               </div>
               <button 
                 onClick={() => setShowQRScanner(true)}
@@ -673,7 +676,7 @@ export const TeamDashboard = () => {
           <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
             <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
               <Map className="text-teal-600" />
-              خريطة قطاع ({userSector})
+              خريطة ({userSector})
             </h2>
             <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white" style={{ borderRadius: '0' }}>
               <NinevehMap 
@@ -752,7 +755,7 @@ export const TeamDashboard = () => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">إدارة منشآت قطاع {userSector}</h2>
+                <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">إدارة منشآت {userSector}</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">إضافة، تعديل، وتقييم منشآت الخدمات الغذائية والمقاهي بالمنطقة</p>
               </div>
 
@@ -1013,7 +1016,7 @@ export const TeamDashboard = () => {
           <div className="space-y-6">
             <div>
               <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">صندوق البلاغات والتوجيهات الميدانية للقطاع</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التوجيهات الرسمية الصادرة من مدير الصحة وشكاوى المواطنين والمستهلكين لقطاع {userSector}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التوجيهات الرسمية الصادرة من مدير الصحة وشكاوى المواطنين والمستهلكين لـ {userSector}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1098,6 +1101,7 @@ export const TeamDashboard = () => {
         initialData={establishmentModalState.data}
         onClose={() => setEstablishmentModalState({ isOpen: false, mode: 'add', data: null })}
         onSave={handleSaveEstablishment}
+        teamSectorProp={userSector}
       />
 
       {/* Metric details popup modal */}

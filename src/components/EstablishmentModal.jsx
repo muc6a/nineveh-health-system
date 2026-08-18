@@ -3,10 +3,10 @@ import { X, MapPin, Store, User, Hash, Phone, FileBadge } from 'lucide-react';
 import { NINEVEH_GEOGRAPHY } from '../utils/constants';
 import { AppContext } from '../context/AppContext';
 
-export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave }) => {
+export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave, teamSectorProp }) => {
   const { user, activityTypes, reports } = useContext(AppContext);
   const isTeamMode = user?.role === 'team' || user?.isTeam;
-  const teamSector = user?.sector || '';
+  const teamSector = teamSectorProp || user?.sector || '';
 
   const parseSector = (sector) => {
     let parsedMain = 'mosul_right';
