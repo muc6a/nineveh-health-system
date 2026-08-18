@@ -249,8 +249,8 @@ const INITIAL_REPORTS = [
   {
     id: 'rep_2',
     date: '2026-06-30 21:15',
-    establishmentName: 'مطعم وتكة فالح أبو العمبة',
-    sector: 'الغزلاني',
+    establishmentName: 'مطاعم الجندول',
+    sector: 'الجانب الأيسر',
     details: 'المطعم مزدحم جداً ولا توجد تهوية كافية مما يسبب ضيق تنفس للزبائن.',
     evidenceImage: null,
     isDelivery: false,

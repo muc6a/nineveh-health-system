@@ -1251,6 +1251,18 @@ export const TeamDashboard = () => {
                   alt="Restaurant QR Code"
                   className="w-48 h-48 block rounded-xl shadow-lg mix-blend-multiply"
                 />
+                <input type="text" list="sector-list" required value={newEst.sector} onChange={(e) => setNewEst({...newEst, sector: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none font-bold" />
+                <datalist id="sector-list">
+                  <option value="الجانب الأيمن" />
+                  <option value="الجانب الأيسر" />
+                  <option value="قضاء تلعفر" />
+                  <option value="قضاء الحمدانية" />
+                  <option value="قضاء تلكيف" />
+                  <option value="قضاء سنجار" />
+                  <option value="قضاء مخمور" />
+                  <option value="قضاء الحضر" />
+                  <option value="قضاء البعاج" />
+                </datalist>
                 <span className="text-[10px] text-slate-500 font-extrabold mt-4 text-center block max-w-[200px] leading-relaxed">
                   كود QR الموحد للمنشأة (يعرض التقييم الصحي ويمكن المواطن من الإبلاغ)
                 </span>

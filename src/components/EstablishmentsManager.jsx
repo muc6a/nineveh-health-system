@@ -227,7 +227,18 @@ export const EstablishmentsManager = () => {
               </div>
               <div>
                 <label className="text-slate-300 block mb-1">القطاع</label>
-                <input type="text" required value={editingEst.sector} onChange={(e) => setEditingEst({...editingEst, sector: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none" />
+                <input type="text" list="sector-list" required value={editingEst.sector} onChange={(e) => setEditingEst({...editingEst, sector: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none" />
+                <datalist id="sector-list">
+                  <option value="الجانب الأيمن" />
+                  <option value="الجانب الأيسر" />
+                  <option value="قضاء تلعفر" />
+                  <option value="قضاء الحمدانية" />
+                  <option value="قضاء تلكيف" />
+                  <option value="قضاء سنجار" />
+                  <option value="قضاء مخمور" />
+                  <option value="قضاء الحضر" />
+                  <option value="قضاء البعاج" />
+                </datalist>
               </div>
               <button type="submit" className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs transition-all mt-4">حفظ التعديلات</button>
             </form>
