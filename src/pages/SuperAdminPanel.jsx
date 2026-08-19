@@ -184,6 +184,24 @@ export const SuperAdminPanel = () => {
     }, 3000);
   };
 
+  const handleEditTeamSubmit = (e) => {
+    e.preventDefault();
+    if (!editingTeam) return;
+    setTeams(prev => prev.map(t => t.id === editingTeam.id ? { ...editingTeam } : t));
+    
+    // Also update any tracker assigned to this team
+    if (editingTeam.id) {
+      setTrackers(prev => prev.map(tr => tr.linkedTeam === editingTeam.id ? {
+        ...tr,
+        linkedTeamSector: editingTeam.sector
+      } : tr));
+    }
+    
+    setEditingTeam(null);
+    setShowEditTeamModal(false);
+    triggerAlert('✓ تم حفظ التعديلات على حساب اللجنة بنجاح.');
+  };
+
   const handleEditEstSubmit = (e) => {
     e.preventDefault();
     if (!editingEst) return;
@@ -408,11 +426,18 @@ export const SuperAdminPanel = () => {
       return;
     }
 
+      const formatNeighborhoods = (str) => {
+        if (!str) return '';
+        const parts = str.split(/[,،]| و /).filter(p => p.trim());
+        if (parts.length > 2) return 'محدد';
+        return str;
+      };
+
       let calculatedSector = '';
       if (generalScope === 'mosul') {
-        calculatedSector = `${mosulSide === 'left' ? 'مركز المحافظة - الجانب الأيسر' : 'مركز المحافظة - الجانب الأيمن'} - ${mosulNeighborhood}`;
+        calculatedSector = `${mosulSide === 'left' ? 'مركز المحافظة - الجانب الأيسر' : 'مركز المحافظة - الجانب الأيمن'} - ${formatNeighborhoods(mosulNeighborhood)}`;
       } else {
-        calculatedSector = `${districtName} - ${districtSubsector}`;
+        calculatedSector = `${districtName} - ${formatNeighborhoods(districtSubsector)}`;
       }
 
       const newTeamObj = {
