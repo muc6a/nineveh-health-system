@@ -12,10 +12,10 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave,
     let parsedMain = 'mosul_right';
     let parsedSub = '';
     if (!sector) return { parsedMain, parsedSub };
-    if (sector.includes('الجانب الأيمن')) {
+    if (sector.includes('مركز المحافظة - الجانب الأيمن')) {
       parsedMain = 'mosul_right';
       parsedSub = sector.split(' - ')[1] || '';
-    } else if (sector.includes('الجانب الأيسر')) {
+    } else if (sector.includes('مركز المحافظة - الجانب الأيسر')) {
       parsedMain = 'mosul_left';
       parsedSub = sector.split(' - ')[1] || '';
     } else {
@@ -110,9 +110,9 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave,
     // Build the final sector string
     let finalSector = '';
     if (formData.geoMain === 'mosul_right') {
-      finalSector = `الجانب الأيمن - ${formData.geoSub || subOptions[0]}`;
+      finalSector = `مركز المحافظة - الجانب الأيمن - ${formData.geoSub || subOptions[0]}`;
     } else if (formData.geoMain === 'mosul_left') {
-      finalSector = `الجانب الأيسر - ${formData.geoSub || subOptions[0]}`;
+      finalSector = `مركز المحافظة - الجانب الأيسر - ${formData.geoSub || subOptions[0]}`;
     } else {
       const dist = NINEVEH_GEOGRAPHY.districts.find(d => d.id === formData.geoMain);
       finalSector = `${dist?.label || ''} - ${formData.geoSub || subOptions[0]}`;
@@ -277,8 +277,8 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave,
                     className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner font-bold text-xs"
                   >
                     <optgroup label="مركز محافظة نينوى">
-                      <option value="mosul_right">الجانب الأيمن</option>
-                      <option value="mosul_left">الجانب الأيسر</option>
+                      <option value="mosul_left">مركز المحافظة - الجانب الأيسر</option>
+                      <option value="mosul_right">مركز المحافظة - الجانب الأيمن</option>
                     </optgroup>
                     <optgroup label="الأقضية والنواحي">
                       {NINEVEH_GEOGRAPHY.districts.map(d => (

@@ -200,7 +200,7 @@ export const SuperAdminPanel = () => {
         owner: 'الحاج أبو جميل الجبوري',
         licenseNumber: 'LIC-NIN-9082',
         type: 'مطعم',
-        sector: 'الجانب الأيمن - الموصل القديمة',
+        sector: 'مركز المحافظة - الجانب الأيمن - الموصل القديمة',
         neighborhood: 'الموصل القديمة',
         latitude: '36.3421',
         longitude: '43.1256',
@@ -209,7 +209,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 94,
         lastInspection: '2026-06-25',
-        history: [{ date: '2026-06-25', score: 94, notes: 'الالتزام بالنظافة والشروط الصحية والزي الموحد ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - الجانب الأيمن' }]
+        history: [{ date: '2026-06-25', score: 94, notes: 'الالتزام بالنظافة والشروط الصحية والزي الموحد ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - مركز المحافظة - الجانب الأيمن' }]
       },
       {
         id: 'est_2',
@@ -217,7 +217,7 @@ export const SuperAdminPanel = () => {
         owner: 'مروان غانم يونس',
         licenseNumber: 'LIC-NIN-1092',
         type: 'كوفيشوب',
-        sector: 'الجانب الأيسر - الزهور',
+        sector: 'مركز المحافظة - الجانب الأيسر - الزهور',
         neighborhood: 'الزهور',
         latitude: '36.3712',
         longitude: '43.1610',
@@ -226,7 +226,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 91,
         lastInspection: '2026-07-02',
-        history: [{ date: '2026-07-02', score: 91, notes: 'المطبخ نظيف والشهادات الصحية للعمال مجددة بالكامل.', inspectorName: 'اللجنة الرقابية الأولى - الجانب الأيسر' }]
+        history: [{ date: '2026-07-02', score: 91, notes: 'المطبخ نظيف والشهادات الصحية للعمال مجددة بالكامل.', inspectorName: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر' }]
       },
       {
         id: 'est_3',
@@ -234,7 +234,7 @@ export const SuperAdminPanel = () => {
         owner: 'عمر ثامر الحيالي',
         licenseNumber: 'LIC-NIN-4432',
         type: 'قاعة أعراس',
-        sector: 'الجانب الأيسر - حي المصارف',
+        sector: 'مركز المحافظة - الجانب الأيسر - حي المصارف',
         neighborhood: 'المصارف',
         latitude: '36.3688',
         longitude: '43.1554',
@@ -243,7 +243,7 @@ export const SuperAdminPanel = () => {
         status: 'monitoring',
         score: 78,
         lastInspection: '2026-06-28',
-        history: [{ date: '2026-06-28', score: 78, notes: 'تنبيه بشأن أنظمة التهوية وتصريف المياه الفوري في القاعة.', inspectorName: 'اللجنة الرقابية الأولى - الجانب الأيسر' }]
+        history: [{ date: '2026-06-28', score: 78, notes: 'تنبيه بشأن أنظمة التهوية وتصريف المياه الفوري في القاعة.', inspectorName: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر' }]
       },
       {
         id: 'est_4',
@@ -285,7 +285,7 @@ export const SuperAdminPanel = () => {
         owner: 'أنس جاسم محمد',
         licenseNumber: 'LIC-NIN-9921',
         type: 'كوفيشوب',
-        sector: 'الجانب الأيسر - المجموعة الثقافية',
+        sector: 'مركز المحافظة - الجانب الأيسر - المجموعة الثقافية',
         neighborhood: 'المجموعة الثقافية',
         latitude: '36.3811',
         longitude: '43.1490',
@@ -294,7 +294,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 90,
         lastInspection: '2026-06-29',
-        history: [{ date: '2026-06-29', score: 90, notes: 'النظافة العامة جيدة، ويتم الالتزام بجدول تنظيف وتعقيم الأدوات.', inspectorName: 'اللجنة الرقابية الأولى - الجانب الأيسر' }]
+        history: [{ date: '2026-06-29', score: 90, notes: 'النظافة العامة جيدة، ويتم الالتزام بجدول تنظيف وتعقيم الأدوات.', inspectorName: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر' }]
       },
       {
         id: 'est_7',
@@ -302,7 +302,7 @@ export const SuperAdminPanel = () => {
         owner: 'رياض ذنون السنجري',
         licenseNumber: 'LIC-NIN-4091',
         type: 'مطعم',
-        sector: 'الجانب الأيمن - الدواسة',
+        sector: 'مركز المحافظة - الجانب الأيمن - الدواسة',
         neighborhood: 'الدواسة',
         latitude: '36.3385',
         longitude: '43.1311',
@@ -311,7 +311,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 93,
         lastInspection: '2026-07-01',
-        history: [{ date: '2026-07-01', score: 93, notes: 'أواني الوجبات نظيفة والالتزام بالزي الصحي الرسمي ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - الجانب الأيمن' }]
+        history: [{ date: '2026-07-01', score: 93, notes: 'أواني الوجبات نظيفة والالتزام بالزي الصحي الرسمي ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - مركز المحافظة - الجانب الأيمن' }]
       },
       {
         id: 'est_8',
@@ -410,7 +410,7 @@ export const SuperAdminPanel = () => {
 
       let calculatedSector = '';
       if (generalScope === 'mosul') {
-        calculatedSector = `${mosulSide === 'left' ? 'الجانب الأيسر' : 'الجانب الأيمن'} - ${mosulNeighborhood}`;
+        calculatedSector = `${mosulSide === 'left' ? 'مركز المحافظة - الجانب الأيسر' : 'مركز المحافظة - الجانب الأيمن'} - ${mosulNeighborhood}`;
       } else {
         calculatedSector = `${districtName} - ${districtSubsector}`;
       }
@@ -1965,8 +1965,8 @@ export const SuperAdminPanel = () => {
                           onChange={(e) => setMosulSide(e.target.value)}
                           className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
                         >
-                          <option value="left">الجانب الأيسر</option>
-                          <option value="right">الجانب الأيمن</option>
+                          <option value="left">مركز المحافظة - الجانب الأيسر</option>
+                          <option value="right">مركز المحافظة - الجانب الأيمن</option>
                         </select>
                       </div>
                       <div>
@@ -2205,7 +2205,7 @@ export const SuperAdminPanel = () => {
                   <option value="الزهور">قطاع الزهور</option>
                   <option value="المصارف">قطاع المصارف</option>
                   <option value="الغزلاني">قطاع الغزلاني</option>
-                  <option value="الجانب الأيمن">قطاع الجانب الأيمن</option>
+                  <option value="مركز المحافظة - الجانب الأيمن">قطاع مركز المحافظة - الجانب الأيمن</option>
                 </select>
               </div>
 
@@ -2420,8 +2420,8 @@ export const SuperAdminPanel = () => {
                         onChange={(e) => setNewDirSide(e.target.value)}
                         className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                       >
-                        <option value="left">الجانب الأيسر</option>
-                        <option value="right">الجانب الأيمن</option>
+                        <option value="left">مركز المحافظة - الجانب الأيسر</option>
+                        <option value="right">مركز المحافظة - الجانب الأيمن</option>
                       </select>
                     </div>
                   </div>
@@ -3140,9 +3140,9 @@ export const SuperAdminPanel = () => {
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
-                  title="🚨 المطاعم الأكثر مخالفة (الجانب الأيسر)"
+                  title="🚨 المطاعم الأكثر مخالفة (مركز المحافظة - الجانب الأيسر)"
                   data={establishments
-                    .filter(e => e.sector === 'الجانب الأيسر' && e.lastInspection !== 'لم يزر بعد')
+                    .filter(e => e.sector === 'مركز المحافظة - الجانب الأيسر' && e.lastInspection !== 'لم يزر بعد')
                     .sort((a, b) => a.score - b.score)
                     .slice(0, 5)
                     .map(e => ({ label: e.name, value: e.score, color: e.score < (config.warningScore || 70) ? '#E11D48' : '#F59E0B' }))}
@@ -3150,9 +3150,9 @@ export const SuperAdminPanel = () => {
               </div>
               <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
-                  title="🚨 المطاعم الأكثر مخالفة (الجانب الأيمن)"
+                  title="🚨 المطاعم الأكثر مخالفة (مركز المحافظة - الجانب الأيمن)"
                   data={establishments
-                    .filter(e => e.sector === 'الجانب الأيمن' && e.lastInspection !== 'لم يزر بعد')
+                    .filter(e => e.sector === 'مركز المحافظة - الجانب الأيمن' && e.lastInspection !== 'لم يزر بعد')
                     .sort((a, b) => a.score - b.score)
                     .slice(0, 5)
                     .map(e => ({ label: e.name, value: e.score, color: e.score < (config.warningScore || 70) ? '#E11D48' : '#F59E0B' }))}

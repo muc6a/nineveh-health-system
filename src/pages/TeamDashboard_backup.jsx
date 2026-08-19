@@ -46,8 +46,8 @@ export const TeamDashboard = () => {
   const [editJustification, setEditJustification] = useState('');
   const [pendingEditData, setPendingEditData] = useState(null);
 
-  // User's assigned sector (default to 'الجانب الأيمن' if user isn't logged in correctly)
-  const userSector = user?.sector || 'الجانب الأيمن';
+  // User's assigned sector (default to 'مركز المحافظة - الجانب الأيمن' if user isn't logged in correctly)
+  const userSector = user?.sector || 'مركز المحافظة - الجانب الأيمن';
 
   // Filter establishments based on team's sector
   const teamEstablishments = establishments.filter(e => e.sector === userSector);

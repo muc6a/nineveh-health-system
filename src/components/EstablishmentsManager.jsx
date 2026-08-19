@@ -12,7 +12,15 @@ export const EstablishmentsManager = () => {
   const [correctiveEst, setCorrectiveEst] = useState(null);
   const [correctiveText, setCorrectiveText] = useState('');
 
-  const uniqueSectors = [...new Set(establishments.map(e => e.sector))].filter(Boolean);
+  const uniqueSectors = [...new Set(establishments.map(e => e.sector))].filter(Boolean).sort((a, b) => {
+    const order = ['مركز المحافظة - الجانب الأيسر', 'مركز المحافظة - الجانب الأيمن', 'قضاء تلعفر'];
+    const idxA = order.indexOf(a);
+    const idxB = order.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b, 'ar');
+  });
 
   const matchSector = (teamSector, estSector) => {
     if (!teamSector || !estSector) return false;
@@ -229,8 +237,8 @@ export const EstablishmentsManager = () => {
                 <label className="text-slate-300 block mb-1">القطاع</label>
                 <input type="text" list="sector-list" required value={editingEst.sector} onChange={(e) => setEditingEst({...editingEst, sector: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none" />
                 <datalist id="sector-list">
-                  <option value="الجانب الأيمن" />
-                  <option value="الجانب الأيسر" />
+                  <option value="مركز المحافظة - الجانب الأيسر" />
+                  <option value="مركز المحافظة - الجانب الأيمن" />
                   <option value="قضاء تلعفر" />
                   <option value="قضاء الحمدانية" />
                   <option value="قضاء تلكيف" />

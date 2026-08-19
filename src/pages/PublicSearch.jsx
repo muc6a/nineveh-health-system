@@ -249,7 +249,7 @@ export const PublicSearch = () => {
                       required
                       value={reportEstAddress}
                       onChange={(e) => setReportEstAddress(e.target.value)}
-                      placeholder="مثال: الجانب الأيسر - حي الزهور - قرب التقاطع"
+                      placeholder="مثال: مركز المحافظة - الجانب الأيسر - حي الزهور - قرب التقاطع"
                       className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold focus:border-amber-500 outline-none text-slate-800 dark:text-white"
                     />
                   </div>

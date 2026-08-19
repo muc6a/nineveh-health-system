@@ -71,10 +71,10 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             setDirectorScopeMode('all');
           } else {
             setDirectorScopeMode('sector');
-            if (initialData.sector.includes('الجانب الأيمن')) {
+            if (initialData.sector.includes('مركز المحافظة - الجانب الأيمن')) {
               setSectorType('mosul');
               setMosulSide('right');
-            } else if (initialData.sector.includes('الجانب الأيسر')) {
+            } else if (initialData.sector.includes('مركز المحافظة - الجانب الأيسر')) {
               setSectorType('mosul');
               setMosulSide('left');
             } else {
@@ -95,10 +95,10 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           
           if (initialData.sector) {
              setSelectionMode('all');
-             if (initialData.sector.includes('الجانب الأيمن')) {
+             if (initialData.sector.includes('مركز المحافظة - الجانب الأيمن')) {
                setSectorType('mosul');
                setMosulSide('right');
-             } else if (initialData.sector.includes('الجانب الأيسر')) {
+             } else if (initialData.sector.includes('مركز المحافظة - الجانب الأيسر')) {
                setSectorType('mosul');
                setMosulSide('left');
              } else {
@@ -176,7 +176,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
       calculatedSector = 'الكل'; // Full Province Access
     } else {
       calculatedSector = sectorType === 'mosul' 
-        ? (mosulSide === 'right' ? 'الجانب الأيمن' : 'الجانب الأيسر')
+        ? (mosulSide === 'right' ? 'مركز المحافظة - الجانب الأيمن' : 'مركز المحافظة - الجانب الأيسر')
         : (districtId ? NINEVEH_GEOGRAPHY.districts.find(d => d.id === districtId)?.label : '');
     }
 
@@ -310,8 +310,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
         {sectorType === 'mosul' ? (
           <select value={mosulSide} onChange={(e) => { setMosulSide(e.target.value); setSelectedNeighborhoods([]); }} className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner">
-            <option value="right">الجانب الأيمن</option>
-            <option value="left">الجانب الأيسر</option>
+            <option value="left">مركز المحافظة - الجانب الأيسر</option>
+            <option value="right">مركز المحافظة - الجانب الأيمن</option>
           </select>
         ) : (
           <select value={districtId} onChange={(e) => { setDistrictId(e.target.value); setSelectedNeighborhoods([]); }} required className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner">

@@ -97,8 +97,8 @@ export const TeamDashboard = () => {
 
   // Get the most up-to-date user from the teams array, falling back to local user object
   const activeTeam = (teams || []).find(t => t.id === user?.id) || user;
-  // User's assigned sector (default to 'الجانب الأيمن' if user isn't logged in correctly)
-  let userSectorRaw = activeTeam?.sector || (activeTeam?.name?.includes('الأيسر') ? 'الجانب الأيسر' : 'الجانب الأيمن');
+  // User's assigned sector (default to 'مركز المحافظة - الجانب الأيمن' if user isn't logged in correctly)
+  let userSectorRaw = activeTeam?.sector || (activeTeam?.name?.includes('الأيسر') ? 'مركز المحافظة - الجانب الأيسر' : 'مركز المحافظة - الجانب الأيمن');
   const userSector = (userSectorRaw && !userSectorRaw.includes('قضاء') && !userSectorRaw.includes('الجانب') && !userSectorRaw.includes('قاطع')) 
     ? 'قضاء ' + userSectorRaw 
     : userSectorRaw;
@@ -1253,8 +1253,8 @@ export const TeamDashboard = () => {
                 />
                 <input type="text" list="sector-list" required value={newEst.sector} onChange={(e) => setNewEst({...newEst, sector: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none font-bold" />
                 <datalist id="sector-list">
-                  <option value="الجانب الأيمن" />
-                  <option value="الجانب الأيسر" />
+                  <option value="مركز المحافظة - الجانب الأيسر" />
+                  <option value="مركز المحافظة - الجانب الأيمن" />
                   <option value="قضاء تلعفر" />
                   <option value="قضاء الحمدانية" />
                   <option value="قضاء تلكيف" />

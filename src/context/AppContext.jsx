@@ -24,7 +24,7 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'LAMA-99',
     licenseNumber: 'LIC-2026-N90',
     propertyNumber: '2م/2167/44',
-    sector: 'الجانب الأيسر',
+    sector: 'مركز المحافظة - الجانب الأيسر',
     neighborhood: 'المجموعة الثقافية',
     lastInspection: '2026-06-25',
     score: 98,
@@ -45,7 +45,7 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'SHAW-88',
     licenseNumber: 'LIC-2026-Z10',
     propertyNumber: '3أ/9082/11',
-    sector: 'الجانب الأيسر',
+    sector: 'مركز المحافظة - الجانب الأيسر',
     neighborhood: 'حي الزهور',
     lastInspection: '2026-07-02',
     score: 0,
@@ -67,7 +67,7 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'JAND-77',
     licenseNumber: 'LIC-2026-C44',
     propertyNumber: '12ب/4431/09',
-    sector: 'الجانب الأيسر',
+    sector: 'مركز المحافظة - الجانب الأيسر',
     neighborhood: 'حي المهندسين',
     lastInspection: '2026-06-28',
     score: 95,
@@ -88,7 +88,7 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'SAHR-66',
     licenseNumber: 'LIC-2026-B88',
     propertyNumber: '4ج/7721/01',
-    sector: 'الجانب الأيسر',
+    sector: 'مركز المحافظة - الجانب الأيسر',
     neighborhood: 'حي النور',
     lastInspection: '2026-07-04',
     score: 82,
@@ -109,7 +109,7 @@ const INITIAL_ESTABLISHMENTS = [
     accessCode: 'RAED-55',
     licenseNumber: 'LIC-2026-M11',
     propertyNumber: '11أ/1122/04',
-    sector: 'الجانب الأيمن',
+    sector: 'مركز المحافظة - الجانب الأيمن',
     neighborhood: 'الموصل القديمة',
     lastInspection: '2026-07-01',
     score: 65,
@@ -130,7 +130,7 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07709998877',
     licenseNumber: 'LIC-2026-H22',
     propertyNumber: '5م/8877/02',
-    sector: 'الجانب الأيسر',
+    sector: 'مركز المحافظة - الجانب الأيسر',
     neighborhood: 'حي الجامعة',
     lastInspection: '2026-07-05',
     score: 88,
@@ -150,7 +150,7 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07504443322',
     licenseNumber: 'LIC-2026-F14',
     propertyNumber: '29م/1100/10',
-    sector: 'الجانب الأيسر',
+    sector: 'مركز المحافظة - الجانب الأيسر',
     neighborhood: 'الكرامة',
     lastInspection: '2026-07-06',
     score: 95,
@@ -170,7 +170,7 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07718889900',
     licenseNumber: 'LIC-2026-C88',
     propertyNumber: '7أ/5543/08',
-    sector: 'الجانب الأيسر - الغابات',
+    sector: 'مركز المحافظة - الجانب الأيسر - الغابات',
     lastInspection: 'لم يزر بعد',
     score: 100,
     status: 'compliant',
@@ -223,7 +223,7 @@ const INITIAL_ESTABLISHMENTS = [
     phone: '07703332211',
     licenseNumber: 'LIC-2026-M88',
     propertyNumber: '11ب/2233/05',
-    sector: 'الجانب الأيمن',
+    sector: 'مركز المحافظة - الجانب الأيمن',
     neighborhood: 'شارع الدواسة',
     lastInspection: '2026-07-05',
     score: 98,
@@ -250,7 +250,7 @@ const INITIAL_REPORTS = [
     id: 'rep_2',
     date: '2026-06-30 21:15',
     establishmentName: 'مطاعم الجندول',
-    sector: 'الجانب الأيسر',
+    sector: 'مركز المحافظة - الجانب الأيسر',
     details: 'المطعم مزدحم جداً ولا توجد تهوية كافية مما يسبب ضيق تنفس للزبائن.',
     evidenceImage: null,
     isDelivery: false,
@@ -285,7 +285,7 @@ const INITIAL_TEAMS = [
   { 
     id: 'team_left', 
     name: 'اللجنة الرقابية لمركز المحافظة - الجانب الأيسر', 
-    sector: 'الجانب الأيسر', 
+    sector: 'مركز المحافظة - الجانب الأيسر', 
     email: 'left@ninveh.health.gov.iq', 
     phone: '07700011122', 
     username: 'team_left',
@@ -301,7 +301,7 @@ const INITIAL_TEAMS = [
   { 
     id: 'team_right', 
     name: 'اللجنة الرقابية لمركز المحافظة - الجانب الأيمن', 
-    sector: 'الجانب الأيمن', 
+    sector: 'مركز المحافظة - الجانب الأيمن', 
     email: 'right@ninveh.health.gov.iq', 
     phone: '07700022233', 
     username: 'team_right',
@@ -461,13 +461,18 @@ export const AppProvider = ({ children }) => {
     });
     
     return Array.from(uniqueMap.values()).map(est => {
-      // Migrate sector strings to standardize them (e.g. "الجانب الأيسر - حي الزهور" -> "الجانب الأيسر")
+      // Migrate sector strings to standardize them (e.g. "مركز المحافظة - الجانب الأيسر - حي الزهور" -> "مركز المحافظة - الجانب الأيسر")
       let currentSector = est.sector || '';
       let currentNeighborhood = est.neighborhood || '';
       if (currentSector.includes(' - ')) {
         const parts = currentSector.split(' - ');
-        currentSector = parts[0].trim();
-        if (!currentNeighborhood) currentNeighborhood = parts[1].trim();
+        if (parts[0].trim() === 'مركز المحافظة' && parts.length > 1) {
+          currentSector = parts[0].trim() + ' - ' + parts[1].trim();
+          if (parts.length > 2 && !currentNeighborhood) currentNeighborhood = parts.slice(2).join(' - ').trim();
+        } else {
+          currentSector = parts[0].trim();
+          if (parts.length > 1 && !currentNeighborhood) currentNeighborhood = parts.slice(1).join(' - ').trim();
+        }
       }
 
       return {
@@ -511,8 +516,13 @@ export const AppProvider = ({ children }) => {
       let currentNeighborhoods = team.assignedNeighborhoods || [];
       if (currentSector.includes(' - ')) {
         const parts = currentSector.split(' - ');
-        currentSector = parts[0].trim();
-        if (currentNeighborhoods.length === 0) currentNeighborhoods = parts[1].split('،').map(s => s.trim());
+        if (parts[0].trim() === 'مركز المحافظة' && parts.length > 1) {
+          currentSector = parts[0].trim() + ' - ' + parts[1].trim();
+          if (parts.length > 2 && currentNeighborhoods.length === 0) currentNeighborhoods = parts.slice(2).join(' - ').split('،').map(s => s.trim());
+        } else {
+          currentSector = parts[0].trim();
+          if (parts.length > 1 && currentNeighborhoods.length === 0) currentNeighborhoods = parts.slice(1).join(' - ').split('،').map(s => s.trim());
+        }
       }
       return { ...team, sector: currentSector, assignedNeighborhoods: currentNeighborhoods };
     });
@@ -527,8 +537,13 @@ export const AppProvider = ({ children }) => {
       let currentNeighborhoods = tracker.assignedNeighborhoods || [];
       if (currentSector.includes(' - ')) {
         const parts = currentSector.split(' - ');
-        currentSector = parts[0].trim();
-        if (currentNeighborhoods.length === 0) currentNeighborhoods = parts[1].split('،').map(s => s.trim());
+        if (parts[0].trim() === 'مركز المحافظة' && parts.length > 1) {
+          currentSector = parts[0].trim() + ' - ' + parts[1].trim();
+          if (parts.length > 2 && currentNeighborhoods.length === 0) currentNeighborhoods = parts.slice(2).join(' - ').split('،').map(s => s.trim());
+        } else {
+          currentSector = parts[0].trim();
+          if (parts.length > 1 && currentNeighborhoods.length === 0) currentNeighborhoods = parts.slice(1).join(' - ').split('،').map(s => s.trim());
+        }
       }
       return { ...tracker, linkedTeamSector: currentSector, sector: currentSector, assignedNeighborhoods: currentNeighborhoods };
     });

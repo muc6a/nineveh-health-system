@@ -59,8 +59,8 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
       // Base coordinates for different sectors
       const baseCoords = {
         'الموصل': [36.3400, 43.1300],
-        'الجانب الأيمن': [36.3400, 43.1100],
-        'الجانب الأيسر': [36.3600, 43.1500],
+        'مركز المحافظة - الجانب الأيمن': [36.3400, 43.1100],
+        'مركز المحافظة - الجانب الأيسر': [36.3600, 43.1500],
         'الزهور': [36.3600, 43.1500],
         'المصارف': [36.3800, 43.1400],
         'تلعفر': [36.3758, 42.4542],
@@ -107,7 +107,7 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
 
   // Strict filtering based on sector
   const filteredEsts = selectedSector && selectedSector !== 'all' 
-    ? estWithCoords.filter(e => e.sector === selectedSector || (selectedSector === 'الموصل' && ['الزهور','المصارف','الجانب الأيمن', 'الجانب الأيسر'].includes(e.sector)))
+    ? estWithCoords.filter(e => e.sector === selectedSector || (selectedSector === 'الموصل' && ['الزهور','المصارف','مركز المحافظة - الجانب الأيمن', 'مركز المحافظة - الجانب الأيسر'].includes(e.sector)))
     : (isTeamView && activeSectorKey && activeSectorKey !== 'الكل' ? estWithCoords.filter(e => e.sector === activeSectorKey) : estWithCoords);
 
   // Calculate live team locations based on their most recent inspection or report

@@ -142,7 +142,7 @@ export const LoginGate = () => {
       notify('تم تسجيل الدخول كمدير شعبة الرقابة المركزية', 'success', true);
       navigate('/dashboard/director');
     } else if (input.includes('team') || input === 'team' || input.includes('فريق') || input.includes('لجنة')) {
-      setUser({ role: 'team', name: 'اللجنة الرقابية الأولى - الجانب الأيسر', sector: 'الجانب الأيسر', email: 'team@ninveh.health.gov.iq', permissions: { ...DEFAULT_PERMISSIONS } });
+      setUser({ role: 'team', name: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر', sector: 'مركز المحافظة - الجانب الأيسر', email: 'team@ninveh.health.gov.iq', permissions: { ...DEFAULT_PERMISSIONS } });
       notify('تم تسجيل الدخول بنجاح', 'success', true);
       navigate('/dashboard/team');
     } else {

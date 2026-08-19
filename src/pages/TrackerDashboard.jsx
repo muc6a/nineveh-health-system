@@ -41,7 +41,7 @@ export const TrackerDashboard = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  const trackerSector = user?.linkedTeamSector || user?.sector || 'الجانب الأيسر';
+  const trackerSector = user?.linkedTeamSector || user?.sector || 'مركز المحافظة - الجانب الأيسر';
   
   const isMatchSector = (estSec) => {
     const t = trackerSector.trim().replace(/[أإآ]/g, 'ا');
