@@ -259,8 +259,8 @@ const INITIAL_REPORTS = [
 ];
 const DEFAULT_PERMISSIONS = {
   manageEstablishments: true,
-  createEst: false,
-  editEst: false,
+  createEst: true,
+  editEst: true,
   deleteEst: false,
   addEval: true,
   showMainDashboard: true,
@@ -485,17 +485,21 @@ export const AppProvider = ({ children }) => {
   });
 
   // --- NEW: Smart Tasks for Trackers ---
-  const [tasks, setTasks] = useState([
+  const INITIAL_TASKS = [
     {
       id: 'task_1',
       title: 'شكوى تسمم - مطعم كرز',
       description: 'يرجى التوجه فوراً للتأكد من نظافة المطعم بناءً على شكوى وردت لغرفة العمليات.',
-      targetEstId: 'est_2', // Assuming est_2 is a restaurant
-      assignedTo: 'tracker_1', // Specifically assigned to a tracker
-      status: 'pending', // pending, completed
+      targetEstId: 'est_2',
+      assignedTo: 'tracker_1',
+      status: 'pending',
       createdAt: new Date(Date.now() - 3600000).toISOString()
     }
-  ]);
+  ];
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem('trackerTasks_v1');
+    return saved ? JSON.parse(saved) : INITIAL_TASKS;
+  });
 
   const [reports, setReports] = useState(() => {
     const saved = localStorage.getItem('reports');
@@ -528,9 +532,21 @@ export const AppProvider = ({ children }) => {
     });
   });
 
+  const INITIAL_TRACKERS = [
+    {
+      id: 'tracker_1',
+      name: 'المتابع السري الأول',
+      username: 'tracker_left',
+      password: 'password123',
+      linkedTeamSector: 'مركز المحافظة - الجانب الأيسر',
+      sector: 'مركز المحافظة - الجانب الأيسر',
+      active: true
+    }
+  ];
+
   const [trackers, setTrackers] = useState(() => {
     const saved = localStorage.getItem('trackers_v1');
-    const parsed = saved ? JSON.parse(saved) : [];
+    const parsed = saved ? JSON.parse(saved) : INITIAL_TRACKERS;
     
     return parsed.map(tracker => {
       let currentSector = tracker.linkedTeamSector || tracker.sector || '';
@@ -691,6 +707,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
       setupFirebaseSync('globalBroadcast', setGlobalBroadcast, globalBroadcast);
       setupFirebaseSync('systemTickets', setTickets, tickets);
+      setupFirebaseSync('trackerTasks_v1', setTasks, tasks);
       setupFirebaseSync('sysNotifs', setSystemNotifications, systemNotifications);
       setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
       setupFirebaseSync('loginCMS', setLoginCMS, loginCMS);
@@ -935,6 +952,7 @@ export const AppProvider = ({ children }) => {
   const isMountedConf = React.useRef(false);
   const isMountedTick = React.useRef(false);
   const isMountedNotif = React.useRef(false);
+  const isMountedTasks = React.useRef(false);
   const isMountedSos = React.useRef(false);
   const isMountedDir = React.useRef(false);
   const isMountedDirst = React.useRef(false);
@@ -1118,6 +1136,14 @@ export const AppProvider = ({ children }) => {
       status: 'pending'
     };
     setReports(prev => [newReport, ...prev]);
+
+    // Notify ops_room automatically for every new citizen complaint
+    const deliveryLabel = reportData.isDelivery ? '(بلاغ خاص بخدمة التوصيل)' : '(بلاغ عن صالة المطعم)';
+    addSystemNotification(
+      `⚠️ بلاغ مدني جديد ${deliveryLabel}`,
+      `ورد بلاغ سري جديد بشأن منشأة "${reportData.establishmentName}" (${reportData.sector || 'غير محدد القطاع'}). يرجى مراجعة البلاغات الواردة في لوحة الشكاوى.`,
+      'ops_room'
+    );
   };
 
   const [directives, setDirectives] = useState(() => {
@@ -1195,6 +1221,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
   useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
   useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
+  useEffect(() => { if (isMountedTasks.current) syncToCloud('trackerTasks_v1', tasks); else isMountedTasks.current = true; }, [tasks]);
   useEffect(() => { if (isMountedSos.current) syncToCloud('sosAlerts', sosAlerts); else isMountedSos.current = true; }, [sosAlerts]);
   useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
   useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);

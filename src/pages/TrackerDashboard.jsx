@@ -18,6 +18,7 @@ export const TrackerDashboard = () => {
   const [cameraMode, setCameraMode] = useState('verification');
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTaskId, setActiveTaskId] = useState(null);
   
   // Location States
   const [locationLog, setLocationLog] = useState('');
@@ -96,9 +97,10 @@ export const TrackerDashboard = () => {
     }
   };
 
-  const startCamera = async (mode = 'verification', est = null) => {
+  const startCamera = async (mode = 'verification', est = null, taskId = null) => {
     setCameraMode(mode);
     setSelectedEst(est);
+    setActiveTaskId(taskId);
     setIsCameraOpen(true);
     
     try {
@@ -138,6 +140,7 @@ export const TrackerDashboard = () => {
     setIsCameraOpen(false);
     setSelectedEst(null);
     setCapturedPhoto(null);
+    setActiveTaskId(null);
   };
 
   // Handlers for submission
@@ -164,6 +167,19 @@ export const TrackerDashboard = () => {
       setDailyStats(prev => ({ ...prev, verified: prev.verified + 1 }));
       notify('تم إرسال تقرير التوثيق بنجاح!', 'success', true);
       
+      if (addSystemNotification) {
+        addSystemNotification(
+          '📸 تقرير توثيق ميداني جديد',
+          `قام المتابع ${user.name} برفع توثيق ميداني للإغلاق بشأن "${selectedEst.name}".`,
+          'ops_room'
+        );
+      }
+
+      if (activeTaskId) {
+        setTasks(tasks.map(t => t.id === activeTaskId ? {...t, status: 'completed'} : t));
+        setActiveTaskId(null);
+      }
+
       setIsSubmitting(false);
       cancelCamera();
     }, 1500);
@@ -194,10 +210,15 @@ export const TrackerDashboard = () => {
         addSystemNotification(
           '🚨 رصد منشأة جديدة غير مسجلة',
           `تم رصد مطعم جديد باسم "${newEstName}" في قطاع ${trackerSector} من قبل المتابع ${user.name}. يرجى توجيه لجنة لتفتيشه.`,
-          'central_director'
+          'ops_room'
         );
       }
       
+      if (activeTaskId) {
+        setTasks(tasks.map(t => t.id === activeTaskId ? {...t, status: 'completed'} : t));
+        setActiveTaskId(null);
+      }
+
       setIsSubmitting(false);
       setNewEstName('');
       setNewEstAddress('');
@@ -239,7 +260,7 @@ export const TrackerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-cairo dir-rtl pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-cairo dir-rtl pb-28">
       {/* Top Navigation */}
       <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
@@ -253,7 +274,7 @@ export const TrackerDashboard = () => {
             </div>
           </div>
           
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400">
               <span>{new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <span className="text-slate-300 dark:text-slate-600">|</span>
@@ -262,18 +283,11 @@ export const TrackerDashboard = () => {
             <NotificationBell />
             <ThemeToggle />
             <button 
-              onClick={() => setShowDisplayPrefsModal(true)}
-              className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"
-            >
-              <Settings className="w-5 h-5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline text-xs font-bold">تخصيص العرض</span>
-            </button>
-            <button 
               onClick={() => navigate('/login')}
-              className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-slate-600 dark:text-slate-400 hover:text-rose-600 transition-colors"
+              className="flex items-center gap-2 p-2 rounded-xl bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-500 dark:text-rose-400 transition-colors"
+              title="تسجيل خروج"
             >
-              <LogOut className="w-5 h-5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline text-xs font-bold">تسجيل خروج</span>
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -297,51 +311,8 @@ export const TrackerDashboard = () => {
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Main Content Area */}
       <div className="container mx-auto px-4 max-w-2xl mt-6">
-        <div className="flex flex-wrap p-1 bg-slate-200 dark:bg-slate-800 rounded-2xl mb-6 gap-1">
-          <button
-            onClick={() => setActiveTab('daily_tasks')}
-            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all relative ${
-              activeTab === 'daily_tasks' ? 'bg-white dark:bg-slate-700 shadow-md text-purple-600 dark:text-purple-400' : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            <div className="flex items-center justify-center gap-1.5">
-              <ClipboardList className="w-3.5 h-3.5" />
-              مهام موجهة
-              {pendingTasks.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] flex items-center justify-center shadow-md animate-pulse">
-                  {pendingTasks.length}
-                </span>
-              )}
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveTab('verifications')}
-            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all ${
-              activeTab === 'verifications' ? 'bg-white dark:bg-slate-700 shadow-md text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            التحقق للإغلاقات
-          </button>
-          <button
-            onClick={() => { setActiveTab('add_new'); setIsAddingNew(false); setNewEstName(''); }}
-            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all ${
-              activeTab === 'add_new' ? 'bg-white dark:bg-slate-700 shadow-md text-emerald-600 dark:text-emerald-400' : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            رصد جديد
-          </button>
-          <button
-            onClick={() => setActiveTab('update_location')}
-            className={`flex-1 min-w-[100px] py-2.5 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1 ${
-              activeTab === 'update_location' ? 'bg-white dark:bg-slate-700 shadow-md text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            <Radar className="w-3 h-3" />
-            تحديث مواقع
-          </button>
-        </div>
         
         {/* Tab 0: Daily Tasks */}
         {activeTab === 'daily_tasks' && (
@@ -395,9 +366,9 @@ export const TrackerDashboard = () => {
                         <button
                           onClick={() => {
                             if (targetEst) {
-                              startCamera('verification', targetEst);
+                              startCamera('verification', targetEst, task.id);
                             } else {
-                              startCamera('add_new');
+                              startCamera('add_new', null, task.id);
                             }
                           }}
                           className="flex-1 py-3 text-white rounded-xl text-xs font-black transition-all shadow-md active:scale-95 bg-purple-600 hover:bg-purple-700 shadow-purple-500/20 flex items-center justify-center gap-2"
@@ -805,6 +776,113 @@ export const TrackerDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* ===== Fixed Bottom Navigation Bar ===== */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-[0_-4px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_30px_rgba(0,0,0,0.3)]">
+        <div className="max-w-2xl mx-auto flex items-stretch h-[68px]">
+
+          {/* Tab 1: المهام الموجهة */}
+          <button
+            onClick={() => setActiveTab('daily_tasks')}
+            className={`relative flex-1 flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 ${
+              activeTab === 'daily_tasks' ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'
+            }`}
+          >
+            {activeTab === 'daily_tasks' && (
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 rounded-full bg-purple-500" />
+            )}
+            <div className={`relative p-1.5 rounded-2xl transition-all duration-200 ${
+              activeTab === 'daily_tasks' ? 'bg-purple-100 dark:bg-purple-900/40' : ''
+            }`}>
+              <ClipboardList className="w-5 h-5" />
+              {pendingTasks.length > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 bg-red-500 text-white rounded-full text-[9px] font-black flex items-center justify-center shadow-md animate-pulse">
+                  {pendingTasks.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[9px] font-black tracking-tight">مهام موجهة</span>
+          </button>
+
+          {/* Tab 2: التحقق للإغلاقات */}
+          <button
+            onClick={() => setActiveTab('verifications')}
+            className={`relative flex-1 flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 ${
+              activeTab === 'verifications' ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400 dark:text-slate-500'
+            }`}
+          >
+            {activeTab === 'verifications' && (
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 rounded-full bg-rose-500" />
+            )}
+            <div className={`relative p-1.5 rounded-2xl transition-all duration-200 ${
+              activeTab === 'verifications' ? 'bg-rose-100 dark:bg-rose-900/40' : ''
+            }`}>
+              <ShieldAlert className="w-5 h-5" />
+              {pendingVerifications.length > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 bg-rose-500 text-white rounded-full text-[9px] font-black flex items-center justify-center shadow-md">
+                  {pendingVerifications.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[9px] font-black tracking-tight">التحقق</span>
+          </button>
+
+          {/* Tab 3: رصد جديد — FAB style center button */}
+          <button
+            onClick={() => { setActiveTab('add_new'); setIsAddingNew(false); setNewEstName(''); }}
+            className="relative flex-1 flex flex-col items-center justify-center gap-1 -mt-5 transition-all duration-200 active:scale-95"
+          >
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl transition-all duration-200 ${
+              activeTab === 'add_new'
+                ? 'bg-emerald-500 shadow-emerald-500/40 scale-105'
+                : 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/30'
+            }`}>
+              <Target className="w-6 h-6 text-white" />
+            </div>
+            <span className={`text-[9px] font-black tracking-tight mt-0.5 ${
+              activeTab === 'add_new' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'
+            }`}>رصد جديد</span>
+          </button>
+
+          {/* Tab 4: تحديث مواقع */}
+          <button
+            onClick={() => setActiveTab('update_location')}
+            className={`relative flex-1 flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 ${
+              activeTab === 'update_location' ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400 dark:text-slate-500'
+            }`}
+          >
+            {activeTab === 'update_location' && (
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 rounded-full bg-amber-500" />
+            )}
+            <div className={`relative p-1.5 rounded-2xl transition-all duration-200 ${
+              activeTab === 'update_location' ? 'bg-amber-100 dark:bg-amber-900/40' : ''
+            }`}>
+              <Radar className="w-5 h-5" />
+              {establishmentsNeedsLocation.length > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 bg-amber-500 text-white rounded-full text-[9px] font-black flex items-center justify-center shadow-md">
+                  {establishmentsNeedsLocation.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[9px] font-black tracking-tight">مواقع</span>
+          </button>
+
+          {/* Tab 5: الإعدادات */}
+          <button
+            onClick={() => setShowDisplayPrefsModal(true)}
+            className="relative flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 transition-all duration-200 active:scale-95"
+          >
+            <div className="p-1.5 rounded-2xl">
+              <Settings className="w-5 h-5" />
+            </div>
+            <span className="text-[9px] font-black tracking-tight">إعدادات</span>
+          </button>
+
+        </div>
+
+        {/* Safe area padding for iOS home bar */}
+        <div className="h-safe-area-inset-bottom bg-white/90 dark:bg-slate-900/95" style={{height: 'env(safe-area-inset-bottom)'}} />
+      </nav>
     </div>
   );
 };
