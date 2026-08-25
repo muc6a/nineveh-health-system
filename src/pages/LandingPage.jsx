@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { Search, Building2, ShieldCheck, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
 export const LandingPage = () => {
-  const { navigate } = useContext(AppContext);
+  const { navigate, config } = useContext(AppContext);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] text-slate-800 dark:text-slate-200 transition-colors duration-300 relative overflow-hidden flex flex-col">
@@ -61,11 +61,11 @@ export const LandingPage = () => {
             </div>
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-tight tracking-tight drop-shadow-sm">
-            مرحباً بكم في
-            <span className="text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-500 block mt-3 md:mt-5 pb-2">منظومة الرقابة الصحية</span>
+            {config?.landingGreeting || "مرحباً بكم في"}
+            <span className="text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-500 block mt-3 md:mt-5 pb-2">{config?.landingTitle || "منظومة الرقابة الصحية"}</span>
           </h1>
           <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 font-bold max-w-2xl mx-auto leading-relaxed">
-            نافذتكم الموثوقة لضمان بيئة صحية آمنة. اختر البوابة المناسبة لك للوصول إلى الخدمات الرقمية بكل سهولة وسرعة.
+            {config?.landingSubtitle || "نافذتكم الموثوقة لضمان بيئة صحية آمنة. اختر البوابة المناسبة لك للوصول إلى الخدمات الرقمية بكل سهولة وسرعة."}
           </p>
         </div>
 
@@ -81,13 +81,13 @@ export const LandingPage = () => {
                 <Search className="w-8 h-8" />
               </div>
               <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-3 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                بوابة المواطنين
+                {config?.citizensPortalTitle || "بوابة المواطنين"}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed mb-8 flex-1">
-                للبحث عن المنشآت، الاطلاع على تقييماتها الصحية، وتقديم الشكاوى والبلاغات إلكترونياً.
+                {config?.citizensPortalDesc || "للبحث عن المنشآت، الاطلاع على تقييماتها الصحية، وتقديم الشكاوى والبلاغات إلكترونياً."}
               </p>
               <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-black text-sm">
-                الدخول للبحث والإبلاغ <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                {config?.citizensPortalBtn || "الدخول للبحث والإبلاغ"} <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </button>
@@ -103,13 +103,13 @@ export const LandingPage = () => {
                 <Building2 className="w-8 h-8" />
               </div>
               <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                بوابة أصحاب المنشآت
+                {config?.ownersPortalTitle || "بوابة أصحاب المنشآت"}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed mb-8 flex-1">
-                دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم.
+                {config?.ownersPortalDesc || "دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم."}
               </p>
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-sm">
-                الدخول كصاحب منشأة <ArrowDownLeft className="w-4 h-4 group-hover:translate-y-1 group-hover:-translate-x-1 transition-transform" />
+                {config?.ownersPortalBtn || "الدخول كصاحب منشأة"} <ArrowDownLeft className="w-4 h-4 group-hover:translate-y-1 group-hover:-translate-x-1 transition-transform" />
               </div>
             </div>
           </button>

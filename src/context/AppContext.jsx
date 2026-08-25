@@ -593,7 +593,16 @@ export const AppProvider = ({ children }) => {
       brandingVideo: '/logo-animated.mp4',
       passingScore: 90,
       warningScore: 70,
-      maintenanceMode: false
+      maintenanceMode: false,
+      landingGreeting: "مرحباً بكم في",
+      landingTitle: "منظومة الرقابة الصحية",
+      landingSubtitle: "نافذتكم الموثوقة لضمان بيئة صحية آمنة. اختر البوابة المناسبة لك للوصول إلى الخدمات الرقمية بكل سهولة وسرعة.",
+      citizensPortalTitle: "بوابة المواطنين",
+      citizensPortalDesc: "للبحث عن المنشآت، الاطلاع على تقييماتها الصحية، وتقديم الشكاوى والبلاغات إلكترونياً.",
+      citizensPortalBtn: "الدخول للبحث والإبلاغ",
+      ownersPortalTitle: "بوابة أصحاب المنشآت",
+      ownersPortalDesc: "دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم.",
+      ownersPortalBtn: "الدخول كصاحب منشأة"
     };
   });
 
