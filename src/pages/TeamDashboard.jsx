@@ -12,7 +12,7 @@ import { EstablishmentModal } from '../components/EstablishmentModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = () => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -155,6 +155,7 @@ export const TeamDashboard = () => {
 
   // Filter directives directed to this team's sector or teamId
   const myDirectives = (directives || []).filter(d => {
+    if (d.teamId === 'all') return true;
     if (user?.id && d.teamId === user.id) return true;
     const targetTeam = teams.find(t => t.id === d.teamId);
     return targetTeam?.sector && matchSector(userSector, targetTeam.sector);
@@ -178,6 +179,17 @@ export const TeamDashboard = () => {
       notify('تم تحديث بيانات المنشأة بنجاح!', 'success', true);
     }
     setEstablishmentModalState({ isOpen: false, mode: 'add', data: null });
+  };
+
+  const confirmEditWithJustification = (e) => {
+    e.preventDefault();
+    if (!editJustification.trim() || !pendingEditData) return;
+    logAudit('تعديل بيانات منشأة (مع سبب)', pendingEditData.id, null, pendingEditData, editJustification, user);
+    updateEstablishment(pendingEditData.id, pendingEditData);
+    notify('تم حفظ التعديلات بنجاح مع توثيق السبب', 'success', true);
+    setShowJustificationModal(false);
+    setPendingEditData(null);
+    setEditJustification('');
   };
 
   const handleLogout = () => {
@@ -432,7 +444,6 @@ export const TeamDashboard = () => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <FileText className="w-4.5 h-4.5" />
                   <span>📑 صندوق البلاغات والتقارير</span>
                 </div>
                 {(teamReports.filter(r => r.status === 'pending').length > 0 || myDirectives.filter(d => !d.isRead).length > 0) && (
@@ -606,7 +617,7 @@ export const TeamDashboard = () => {
                 className="glassmorphic-card p-5 border border-teal-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 cursor-pointer select-none"
               >
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">إجمالي المنشآت المخصصة للجنة</span>
-                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-600 dark:text-teal-400 mt-3">{totalShops}</p>
+                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mt-3">{totalShops}</p>
                 <span className="text-[10px] text-teal-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
               </div>
               <div 
@@ -927,11 +938,11 @@ export const TeamDashboard = () => {
                                     status: 'pending',
                                     date: new Date().toISOString()
                                   }]);
-                                  addSystemNotification(
-                                    'طلب غرامة مالية جديد',
-                                    `قام الفريق (${user?.name}) برفع طلب غرامة لمنشأة ${est.name} للسبب: ${reason}`,
-                                    'central_director'
-                                  );
+                                    addSystemNotification(
+                                      'طلب غرامة مالية جديد',
+                                      `قام الفريق (${user?.name}) برفع طلب غرامة لمنشأة ${est.name} للسبب: ${reason}`,
+                                      'ops_room'
+                                    );
                                   notify('تم رفع طلب الغرامة بنجاح', 'success', true);
                                 }
                               }}
@@ -959,7 +970,7 @@ export const TeamDashboard = () => {
                                   addSystemNotification(
                                     'طلب إغلاق وتشميع جديد',
                                     `قام الفريق (${user?.name}) برفع طلب إغلاق لمنشأة ${est.name} للسبب: ${reason}`,
-                                    'central_director'
+                                    'ops_room'
                                   );
                                   notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
                                 }
@@ -1055,7 +1066,7 @@ export const TeamDashboard = () => {
               {/* Left Side: Citizen Reports */}
               <div className="glassmorphic-card p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-teal-500/20 pb-2">
-                  <h3 className="text-xs font-black text-teal-700 dark:text-teal-600 dark:text-teal-400 flex items-center gap-1.5">
+                  <h3 className="text-xs font-black text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
                     <span>📩 بلاغات وشكاوى المواطنين والمستهلكين</span>
                   </h3>
                   <span className="text-[10px] bg-teal-500 text-white px-2 py-0.5 rounded-lg font-black">{teamReports.length} شكوى</span>
@@ -1109,7 +1120,7 @@ export const TeamDashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
           <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl relative text-right max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 mb-4">
-              <h3 className="text-sm font-black text-teal-600 dark:text-teal-600 dark:text-teal-400">
+              <h3 className="text-sm font-black text-teal-600 dark:text-teal-400">
                 {metricModalType === 'all' && '🍽️ قائمة كافة منشآت القطاع المعينة'}
                 {metricModalType === 'inspected' && '🟢 المنشآت التي تم زيارتها وتقييمها هذا الشهر'}
                 {metricModalType === 'uninspected' && '🔴 منشآت متأخرة تنتظر الزيارة الفورية'}
@@ -1251,18 +1262,6 @@ export const TeamDashboard = () => {
                   alt="Restaurant QR Code"
                   className="w-48 h-48 block rounded-xl shadow-lg mix-blend-multiply"
                 />
-                <input type="text" list="sector-list" required value={newEst.sector} onChange={(e) => setNewEst({...newEst, sector: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none font-bold" />
-                <datalist id="sector-list">
-                  <option value="مركز المحافظة - الجانب الأيسر" />
-                  <option value="مركز المحافظة - الجانب الأيمن" />
-                  <option value="قضاء تلعفر" />
-                  <option value="قضاء الحمدانية" />
-                  <option value="قضاء تلكيف" />
-                  <option value="قضاء سنجار" />
-                  <option value="قضاء مخمور" />
-                  <option value="قضاء الحضر" />
-                  <option value="قضاء البعاج" />
-                </datalist>
                 <span className="text-[10px] text-slate-500 font-extrabold mt-4 text-center block max-w-[200px] leading-relaxed">
                   كود QR الموحد للمنشأة (يعرض التقييم الصحي ويمكن المواطن من الإبلاغ)
                 </span>
@@ -1383,11 +1382,10 @@ export const TeamDashboard = () => {
                 onClick={() => {
                   if (chatMessage.trim()) {
                     setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    if (addDirective) {
+                      addDirective('director', chatMessage, user?.name || 'فريق', user?.id || 'team');
+                    }
                     setChatMessage('');
-                    // Mock auto-reply
-                    setTimeout(() => {
-                      setChatHistory(prev => [...prev, { id: Date.now()+1, sender: 'admin', text: 'تم استلام بلاغك. جاري المتابعة.', time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
-                    }, 1500);
                   }
                 }}
                 className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 hover:bg-teal-700 transition-colors"
@@ -1401,10 +1399,10 @@ export const TeamDashboard = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && chatMessage.trim()) {
                     setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
+                    if (addDirective) {
+                      addDirective('director', chatMessage, user?.name || 'فريق', user?.id || 'team');
+                    }
                     setChatMessage('');
-                    setTimeout(() => {
-                      setChatHistory(prev => [...prev, { id: Date.now()+1, sender: 'admin', text: 'تم استلام بلاغك. جاري المتابعة.', time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
-                    }, 1500);
                   }
                 }}
                 placeholder="اكتب رسالتك لغرفة العمليات..."
