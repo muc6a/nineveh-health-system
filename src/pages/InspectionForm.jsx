@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { ShieldCheck, Camera, AlertOctagon, MapPin, Search, Star, Edit, Save, ArrowRight, Activity, Plus, Trash2, Cpu, FileText, WifiOff, Printer, ClipboardCheck, Siren } from 'lucide-react';
+import { ShieldCheck, Camera, AlertOctagon, MapPin, Search, Star, Edit, Save, ArrowRight, Activity, Plus, Trash2, Cpu, FileText, WifiOff, Printer, ClipboardCheck, Siren, X } from 'lucide-react';
 
 export const InspectionForm = () => {
   const { navigate, establishments, inspectionTemplates, addInspection, config, user, logAudit, notify: triggerAlert, triggerSOSAlert } = useContext(AppContext);
@@ -290,6 +290,14 @@ export const InspectionForm = () => {
       setIsSubmitting(false);
       navigate(`/scan/${establishment.id}`);
     }, 1200);
+  };
+
+  const confirmEditWithJustification = (e) => {
+    e.preventDefault();
+    if (!editJustification.trim()) return;
+    setShowJustificationModal(false);
+    processSubmission(true, editJustification);
+    setEditJustification('');
   };
 
   const uniqueSections = Array.from(new Set(activeItems.map(item => item.section || 'A')));
