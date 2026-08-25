@@ -2,8 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { Search, MapPin, Building, Star, ArrowLeft, AlertCircle, X, Camera, Upload, Map as MapIcon } from 'lucide-react';
-import { NinevehMap } from '../components/NinevehMap';
+import { Search, MapPin, Building, Star, ArrowLeft, AlertCircle, X, Camera } from 'lucide-react';
 
 export const PublicSearch = () => {
   const { establishments, navigate, publicCMS, addReport } = useContext(AppContext);

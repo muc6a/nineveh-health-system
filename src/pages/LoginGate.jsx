@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { Eye, EyeOff, Lock, User, Phone, CheckSquare, Square, ShieldAlert } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, CheckSquare, Square, ShieldAlert } from 'lucide-react';
 
 export const LoginGate = () => {
   const { navigate, setUser, config, teams, directors, trackers, notify, loginCMS } = useContext(AppContext);

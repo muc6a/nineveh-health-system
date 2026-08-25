@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { Search, Building2, ShieldCheck, ArrowUpRight, ArrowDownLeft, LogIn } from 'lucide-react';
+import { Search, Building2, ShieldCheck, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
 export const LandingPage = () => {
   const { navigate } = useContext(AppContext);
