@@ -111,6 +111,11 @@ export const SuperAdminPanel = () => {
   const [editingDirector, setEditingDirector] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   
+  // Permissions Modal States
+  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+  const [permissionsTarget, setPermissionsTarget] = useState(null);
+  const [editingPermissions, setEditingPermissions] = useState({});
+  
   // Establishments management states
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
   const [editingEst, setEditingEst] = useState(null);
@@ -169,9 +174,30 @@ export const SuperAdminPanel = () => {
       } : tr));
     }
     
-    setEditingTeam(null);
     setShowEditTeamModal(false);
+    setEditingTeam(null);
+    logAudit('تعديل فريق ميداني', editingTeam.id, null, editingTeam, 'تعديل بيانات الحساب', user);
     triggerAlert('✓ تم حفظ التعديلات على حساب اللجنة بنجاح.');
+  };
+
+  const handleOpenPermissions = (target) => {
+    setPermissionsTarget(target);
+    setEditingPermissions(target.permissions || {});
+    setShowPermissionsModal(true);
+  };
+
+  const handleSavePermissions = () => {
+    if (!permissionsTarget) return;
+    const updatedTarget = { ...permissionsTarget, permissions: editingPermissions };
+    if (permissionsTarget.isTeam) {
+      setTeams(prev => prev.map(t => t.id === permissionsTarget.id ? updatedTarget : t));
+    } else {
+      setDirectors(prev => prev.map(d => d.id === permissionsTarget.id ? updatedTarget : d));
+    }
+    logAudit('تعديل صلاحيات حساب', permissionsTarget.id, permissionsTarget.permissions, editingPermissions, 'تعديل الصلاحيات الإدارية', user);
+    setShowPermissionsModal(false);
+    setPermissionsTarget(null);
+    triggerAlert('✓ تم تحديث الأذونات والصلاحيات بنجاح.');
   };
 
   const handleEditEstSubmit = (e) => {
@@ -664,6 +690,33 @@ export const SuperAdminPanel = () => {
     navigate('/');
   };
 
+  const handleCreateDirector = (e) => {
+    e.preventDefault();
+    const newDir = {
+      id: 'dir_' + Date.now(),
+      name: newDirName,
+      title: newDirTitle,
+      email: newDirEmail,
+      phone: newDirPhone,
+      password: newDirPass,
+      role: newDirRole,
+      status: 'active',
+      active: true,
+      scope: newDirRole === 'director_committee' ? { scope: newDirScope, side: newDirSide } : null
+    };
+    setDirectors(prev => [...prev, newDir]);
+    setShowAddDirectorModal(false);
+    triggerAlert('تم إضافة حساب المدير بنجاح.');
+  };
+
+  const handleEditDirectorSubmit = (e) => {
+    e.preventDefault();
+    setDirectors(prev => prev.map(d => d.id === editingDirector.id ? editingDirector : d));
+    setShowEditDirectorModal(false);
+    setEditingDirector(null);
+    triggerAlert('تم تعديل بيانات المدير بنجاح.');
+  };
+
   return (
     <div className="min-h-screen bg-slatebg-light dark:bg-slatebg-dark p-4 md:p-8 transition-colors duration-300">
       
@@ -910,8 +963,15 @@ export const SuperAdminPanel = () => {
                           <td className="p-4">
                             <div className="flex justify-center gap-2">
                               <button
+                                onClick={() => handleOpenPermissions({ ...t, isTeam: true })}
+                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 text-[10px] transition-all cursor-pointer flex items-center gap-1 font-bold"
+                              >
+                                <Lock className="w-3.5 h-3.5" />
+                                <span>الأذونات</span>
+                              </button>
+                              <button
                                 onClick={() => handleOpenEditAccount({ ...t, isTeam: true })}
-                                className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-[10px] transition-all cursor-pointer flex items-center gap-1"
+                                className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-[10px] transition-all cursor-pointer flex items-center gap-1 font-bold"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                                 <span>تعديل</span>
@@ -1003,6 +1063,13 @@ export const SuperAdminPanel = () => {
                           </td>
                           <td className="p-4">
                             <div className="flex justify-center gap-2">
+                              <button
+                                onClick={() => handleOpenPermissions({ ...d, isTeam: false })}
+                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 text-[10px] transition-all cursor-pointer flex items-center gap-1 font-bold"
+                              >
+                                <Lock className="w-3.5 h-3.5" />
+                                <span>الأذونات</span>
+                              </button>
                               <button
                                 onClick={() => handleOpenEditAccount(d, 'director')}
                                 className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-[10px] transition-all cursor-pointer flex items-center gap-1"
@@ -1561,12 +1628,12 @@ export const SuperAdminPanel = () => {
                         if (estStatusFilter === 'closed') {
                           matchesStatus = e.status === 'closed';
                         } else if (estStatusFilter === 'fined') {
-                          matchesStatus = (penaltyRequests || []).some(req => req.estId === e.id && req.type === 'fine' && req.status === 'approved');
+                          matchesStatus = (e.penalties || []).length > 0;
                         }
                         
                         let matchesTeam = true;
                         if (estTeamFilter !== 'all') {
-                          matchesTeam = (e.sector || '').includes(estTeamFilter) || (e.district || '').includes(estTeamFilter);
+                          matchesTeam = (e.sector || '').includes(estTeamFilter);
                         }
                         
                         return matchesSearch && matchesStatus && matchesTeam;
@@ -1881,8 +1948,170 @@ export const SuperAdminPanel = () => {
           </div>
         </div>
       )}
-      {/* Legacy modals removed - now handled by AccountModal */}
-      {editingEst && (
+
+      {/* QR Code and Restaurant Details Modal */}
+      {selectedEstDetails && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
+          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
+              <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
+              <button 
+                onClick={() => setSelectedEstDetails(null)} 
+                className="flex p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5"
+              >
+                <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+
+            <div className="space-y-5 text-xs">
+              <div className="p-5 rounded-2xl bg-slate-100/40 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
+                <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
+                <h4 className="text-base font-black text-slate-800 dark:text-white">{selectedEstDetails.name}</h4>
+                <div className="grid grid-cols-1 gap-2 pt-1">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">النشاط: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.type}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">المالك: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.owner}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">رقم الهاتف: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.phone}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
+                </div>
+                <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl relative overflow-hidden">
+                  <div className="absolute -left-4 -top-4 w-12 h-12 bg-teal-500/20 blur-xl rounded-full"></div>
+                  <p className="text-xs text-teal-600 dark:text-teal-400 font-bold text-center">🔑 كود بوابة المالك:</p>
+                  <p className="text-2xl font-black text-slate-900 dark:text-white tracking-widest text-center mt-1 dir-ltr drop-shadow-[0_2px_10px_rgba(45,212,191,0.5)]">{selectedEstDetails.accessCode}</p>
+                </div>
+              </div>
+
+              {/* QR Preview Box */}
+              <div className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border-4 border-slate-200 dark:border-slate-900 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.1)] relative">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${window.location.origin}/scan/${selectedEstDetails.id}`)}`}
+                  alt="Restaurant QR Code"
+                  className="w-48 h-48 block rounded-xl shadow-lg mix-blend-multiply"
+                />
+                <span className="text-[10px] text-slate-500 font-extrabold mt-4 text-center block max-w-[200px] leading-relaxed">
+                  كود QR الموحد للمنشأة (يعرض التقييم الصحي ويمكن المواطن من الإبلاغ)
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <a
+                  href={`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(`${window.location.origin}/scan/${selectedEstDetails.id}`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="py-3 rounded-2xl bg-gradient-to-l from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white text-center font-black block transition-all shadow-[0_5px_15px_-3px_rgba(20,184,166,0.4)] hover:shadow-[0_8px_20px_-3px_rgba(20,184,166,0.5)]"
+                >
+                  📥 تحميل الصورة
+                </a>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-center font-black block transition-all shadow-inner"
+                >
+                  🖨️ طباعة ملصق
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedEstDetails(null)}
+                className="mt-2 w-full py-3 rounded-2xl bg-transparent hover:bg-white/5 text-slate-600 dark:text-slate-400 font-extrabold transition-all border border-transparent hover:border-slate-300 dark:hover:border-white/10"
+              >
+                إغلاق النافذة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PERMISSIONS MODAL */}
+      {showPermissionsModal && permissionsTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
+          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800 mb-4">
+              <h3 className="text-sm font-black text-purple-600 flex items-center gap-2">
+                <Lock className="w-5 h-5" /> إدارة الأذونات والصلاحيات - {permissionsTarget.name}
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowPermissionsModal(false);
+                  setPermissionsTarget(null);
+                }} 
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 cursor-pointer"
+              >
+                <X className="w-4.5 h-4.5" />
+              </button>
+            </div>
+
+            <div className="space-y-6 text-sm">
+              <p className="text-xs text-slate-500 mb-4 font-bold">
+                قم بتحديد الصلاحيات المسموح بها لهذا الحساب. التغييرات ستُطبّق فوراً وسيتم تسجيلها في سجل النظام.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { key: 'showMainDashboard', label: 'لوحة التقارير والإحصائيات 📊' },
+                  { key: 'manageEstablishments', label: 'إدارة المنشآت (العرض والإضافة) 🏢' },
+                  { key: 'createEst', label: 'إضافة منشأة جديدة ➕' },
+                  { key: 'editEst', label: 'تعديل بيانات المنشآت 📝' },
+                  { key: 'deleteEst', label: 'حذف المنشآت نهائياً ❌ (صلاحية خطرة)' },
+                  { key: 'addEval', label: 'إجراء تقييم وتفتيش ميداني ✅' },
+                  { key: 'showReportsPage', label: 'صندوق البلاغات والشكاوى 📑' },
+                  { key: 'showDirectivesPage', label: 'الأوامر الإدارية 📢' },
+                  { key: 'sendDirective', label: 'إرسال أوامر وتوجيهات للجان ✉️' },
+                  { key: 'replyDirective', label: 'الرد على الأوامر الإدارية 💬' },
+                  { key: 'canSendSOS', label: 'إرسال نداء استغاثة (SOS) 🚨' },
+                  { key: 'showSectorMap', label: 'عرض خريطة القطاع الجغرافي 🗺️' },
+                  { key: 'showSmartTasks', label: 'المهام الذكية الميدانية 🧠' }
+                ].map(perm => (
+                  <label key={perm.key} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span className="font-bold text-xs text-slate-700 dark:text-slate-300">{perm.label}</span>
+                    <input 
+                      type="checkbox" 
+                      className="w-4 h-4 accent-purple-600 rounded"
+                      checked={editingPermissions[perm.key] || false}
+                      onChange={(e) => setEditingPermissions(prev => ({ ...prev, [perm.key]: e.target.checked }))}
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleSavePermissions}
+                  className="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black transition-all shadow-lg shadow-purple-500/20 active:scale-95 cursor-pointer"
+                >
+                  حفظ الصلاحيات والأذونات
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPermissionsModal(false)}
+                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {accountModalState.isOpen && (
+        <AccountModal
+          isOpen={accountModalState.isOpen}
+          mode={accountModalState.mode}
+          accountType={accountModalState.accountType}
+          initialData={accountModalState.data}
+          teams={teams}
+          onClose={() => setAccountModalState({ isOpen: false, mode: 'add', data: null, accountType: 'team' })}
+          onSave={handleSaveAccount}
+        />
+      )}
+      
+      {showAddTeamModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
             
