@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Eye, EyeOff, Trash2, Plus, Users, MapPin, Briefcase, Mail, Phone, Lock, User, Edit3, CheckSquare, Square, Clock, PenLine, BarChart3 } from 'lucide-react';
-import { ROLES_DICTIONARY, NINEVEH_GEOGRAPHY } from '../utils/constants';
+import { X, Eye, EyeOff, Trash2, Plus, Users, MapPin, Briefcase, Mail, Phone, Lock, Unlock, User, Edit3, CheckSquare, Square, Clock, PenLine, BarChart3, Building, Compass, Activity, ShieldAlert, Bell, Settings } from 'lucide-react';
+import { ROLES_DICTIONARY, NINEVEH_GEOGRAPHY, DEFAULT_PERMISSIONS, PERMISSIONS_TABS, PERMISSION_DETAILS, PERMISSION_ROLES } from '../utils/constants';
 
 export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add', accountType = 'team', teams = [] }) => {
   // Common State
@@ -14,23 +14,16 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
   // Director Specific State
   const [directorTitle, setDirectorTitle] = useState('');
   const [directorScopeMode, setDirectorScopeMode] = useState('all'); // 'all' or 'sector'
-  const [directorPermissions, setDirectorPermissions] = useState({
-    showMainDashboard: true,
-    showReportsPage: true,
-    manageEstablishments: true,
-    showDirectivesPage: true,
-    sendDirective: true,
-    showPublicEvalsPage: true
-  });
-  
-  const AVAILABLE_PERMISSIONS = [
-    { id: 'showMainDashboard', label: 'لوحة القياس الرئيسية (الاستراتيجية)' },
-    { id: 'showReportsPage', label: 'التقارير والإحصائيات الجغرافية' },
-    { id: 'manageEstablishments', label: 'إدارة المنشآت والمطاعم' },
-    { id: 'showDirectivesPage', label: 'صندوق التوجيهات' },
-    { id: 'sendDirective', label: 'إرسال التوجيهات للفرق' },
-    { id: 'showPublicEvalsPage', label: 'تقييمات وشكاوى المواطنين' }
-  ];
+  // Unified Permissions State
+  const [permissions, setPermissions] = useState(DEFAULT_PERMISSIONS);
+  const [activePermissionsTab, setActivePermissionsTab] = useState('establishments');
+
+  const togglePermission = (permId) => {
+    setPermissions(prev => ({
+      ...prev,
+      [permId]: !prev[permId]
+    }));
+  };
   
   // Sector Selection State (For both Team and Director Geo-Scope)
   const [sectorType, setSectorType] = useState('mosul'); // 'mosul' or 'district'
@@ -47,6 +40,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
   // Team Members State (Object array: { name, title })
   const [doctors, setDoctors] = useState([{ name: '', title: 'الطبيب / المفتش المسؤول' }]);
   const [assistants, setAssistants] = useState([{ name: '', title: 'ملاحظ فني / مدقق' }]);
+  const [technicians, setTechnicians] = useState([{ name: '', title: 'ملاحظ فني' }]);
 
   // Team Smart Edit Settings
   const [editTimeWindow, setEditTimeWindow] = useState('open'); // 'open', '1h', '5h', '24h'
@@ -66,7 +60,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         
         if (accountType === 'director') {
           setDirectorTitle(initialData.title || '');
-          if (initialData.permissions) setDirectorPermissions(initialData.permissions);
+          if (initialData.permissions) setPermissions(initialData.permissions);
           if (initialData.sector === 'الكل' || !initialData.sector) {
             setDirectorScopeMode('all');
           } else {
@@ -87,14 +81,40 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           }
         }
 
-        if (accountType === 'team' && initialData.members) {
+        if (accountType === 'team') {
+          if (initialData.permissions) setPermissions(initialData.permissions);
           // If old data is array of strings, convert to objects
           const mapToObj = (arr, defaultTitle) => arr?.length ? (typeof arr[0] === 'string' ? arr.map(a => ({ name: a, title: defaultTitle })) : arr) : [{ name: '', title: defaultTitle }];
-          setDoctors(mapToObj(initialData.members.doctors, 'الطبيب / المفتش المسؤول'));
-          setAssistants(mapToObj(initialData.members.assistants, 'ملاحظ فني / مدقق'));
+          
+          if (initialData.members) {
+            setDoctors(mapToObj(initialData.members.doctors, 'الطبيب / المفتش المسؤول'));
+            setAssistants(mapToObj(initialData.members.assistants, 'ملاحظ فني / مدقق'));
+            setTechnicians(mapToObj(initialData.members.technicians, 'ملاحظ فني'));
+          } else {
+            setDoctors([{ name: '', title: 'الطبيب / المفتش المسؤول' }]);
+            setAssistants([{ name: '', title: 'ملاحظ فني / مدقق' }]);
+            setTechnicians([{ name: '', title: 'ملاحظ فني' }]);
+          }
           
           if (initialData.sector) {
-             setSelectionMode('all');
+             let extractedNeighborhoods = initialData.assignedNeighborhoods || [];
+             if (initialData.sector.includes(' - ') && extractedNeighborhoods.length === 0) {
+               const parts = initialData.sector.split(' - ');
+               if (parts[0].trim() === 'مركز المحافظة' && parts.length > 2) {
+                 extractedNeighborhoods = parts.slice(2).join(' - ').split('،').map(s => s.trim());
+               } else if (parts[0].trim() !== 'مركز المحافظة' && parts.length > 1) {
+                 extractedNeighborhoods = parts.slice(1).join(' - ').split('،').map(s => s.trim());
+               }
+             }
+             
+             if (extractedNeighborhoods.length > 0) {
+               setSelectionMode('custom');
+               setSelectedNeighborhoods(extractedNeighborhoods);
+             } else {
+               setSelectionMode('all');
+               setSelectedNeighborhoods([]);
+             }
+
              if (initialData.sector.includes('مركز المحافظة - الجانب الأيمن')) {
                setSectorType('mosul');
                setMosulSide('right');
@@ -108,6 +128,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                  setDistrictId(matchedDistrict.id);
                }
              }
+          } else {
+             setSelectionMode('all');
+             setSelectedNeighborhoods([]);
           }
           if (initialData.editSettings) {
              setEditTimeWindow(initialData.editSettings.window || 'open');
@@ -115,6 +138,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           }
           if (initialData.clonedFrom) {
              setCopyPermissionsFrom(initialData.clonedFrom);
+          } else {
+             setCopyPermissionsFrom('');
           }
         }
         
@@ -126,10 +151,13 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         setName(''); setEmail(''); setPhone(''); setUsername(''); setPassword('');
         setDirectorTitle('');
         setDirectorScopeMode('all');
+        setPermissions(DEFAULT_PERMISSIONS);
+        setActivePermissionsTab('establishments');
         setSectorType('mosul'); setMosulSide('right'); setDistrictId('');
         setSelectionMode('all'); setSelectedNeighborhoods([]);
         setDoctors([{ name: '', title: 'الطبيب / المفتش المسؤول' }]);
         setAssistants([{ name: '', title: 'ملاحظ فني / مدقق' }]);
+        setTechnicians([{ name: '', title: 'ملاحظ فني' }]);
         setEditTimeWindow('open');
         setEditOneTimeOnly(false);
         setLinkedTeamSector('');
@@ -201,59 +229,35 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
       result.role = matchedRole ? matchedRole.id : 'director_custom';
       result.isDirector = true;
       result.isTeam = false;
-      result.permissions = directorPermissions;
+      result.permissions = permissions;
     } else if (accountType === 'team') {
       result.title = 'فريق رقابي ميداني';
       result.role = 'field_team';
       result.isTeam = true;
       result.isDirector = false;
       result.members = {
-        doctors: doctors.filter(d => d.name.trim() !== ''),
-        assistants: assistants.filter(a => a.name.trim() !== '')
+        doctors: doctors.filter(d => (d.name || '').trim() !== ''),
+        assistants: assistants.filter(a => (a.name || '').trim() !== ''),
+        technicians: technicians.filter(t => (t.name || '').trim() !== '')
       };
       result.editSettings = {
         window: editTimeWindow,
         oneTimeOnly: editOneTimeOnly
       };
       
-      const defaultTeamPermissions = {
-        manageEstablishments: true,
-        createEst: false,
-        editEst: false,
-        deleteEst: false,
-        addEval: true,
-        showMainDashboard: true,
-        showReportsPage: true,
-        showDirectivesPage: true,
-        showPublicEvalsPage: true,
-        sendDirective: false,
-        replyDirective: true,
-        canSendSOS: true,
-        showSectorMap: true,
-        showSmartTasks: true,
-        showFieldTeamsStats: false,
-        showTeamMonthlyStats: false,
-        showOperationsRoom: false,
-        notify_closures: true,
-        notify_inspections: true,
-        notify_directives: true
-      };
+      const defaultTeamPermissions = { ...DEFAULT_PERMISSIONS };
 
       if (copyPermissionsFrom) {
         result.clonedFrom = copyPermissionsFrom;
         const sourceTeam = teams.find(t => String(t.id) === String(copyPermissionsFrom));
         if (sourceTeam && sourceTeam.permissions) {
-          result.permissions = { ...sourceTeam.permissions };
+          result.permissions = { ...defaultTeamPermissions, ...sourceTeam.permissions };
         } else {
-          result.permissions = mode === 'edit' && initialData.permissions 
-            ? { ...initialData.permissions } 
-            : { ...defaultTeamPermissions };
+          result.permissions = permissions;
         }
       } else {
         result.clonedFrom = '';
-        result.permissions = mode === 'edit' && initialData.permissions 
-          ? { ...initialData.permissions } 
-          : { ...defaultTeamPermissions };
+        result.permissions = permissions;
       }
     } else if (accountType === 'tracker') {
       result.role = 'tracker';
@@ -294,52 +298,123 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
     );
   };
 
-  const renderGeoSelection = () => (
-    <div className="space-y-5 bg-slate-100/40 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
-      <div className="flex flex-wrap gap-4 mb-2">
-        <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer font-bold hover:text-slate-900 dark:hover:text-white transition-colors">
-          <input type="radio" name="sectorType" value="mosul" checked={sectorType === 'mosul'} onChange={(e) => { setSectorType('mosul'); setSelectedNeighborhoods([]); }} className="accent-indigo-500 w-4 h-4" />
-          قضاء الموصل (المركز)
-        </label>
-        <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer font-bold hover:text-slate-900 dark:hover:text-white transition-colors">
-          <input type="radio" name="sectorType" value="district" checked={sectorType === 'district'} onChange={(e) => { setSectorType('district'); setSelectedNeighborhoods([]); }} className="accent-indigo-500 w-4 h-4" />
-          الأقضية والنواحي
-        </label>
-      </div>
+  const accountRole = (accountType === 'team' || accountType === 'tracker') ? 'team' : 'management';
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-        {sectorType === 'mosul' ? (
-          <select value={mosulSide} onChange={(e) => { setMosulSide(e.target.value); setSelectedNeighborhoods([]); }} className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner">
-            <option value="left">مركز المحافظة - الجانب الأيسر</option>
-            <option value="right">مركز المحافظة - الجانب الأيمن</option>
-          </select>
-        ) : (
-          <select value={districtId} onChange={(e) => { setDistrictId(e.target.value); setSelectedNeighborhoods([]); }} required className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner">
-            <option value="">اختر القضاء</option>
-            {NINEVEH_GEOGRAPHY.districts.map(d => (
-              <option key={d.id} value={d.id}>{d.label}</option>
+  const handleGrantAll = () => {
+    const allPerms = { ...permissions };
+    Object.keys(PERMISSION_DETAILS).forEach(key => {
+      const targetRole = PERMISSION_ROLES[key] || 'all';
+      const isOutofRole = accountRole !== 'management' && targetRole !== 'all' && targetRole !== accountRole;
+      if (!isOutofRole) {
+        allPerms[key] = true;
+      }
+    });
+    setPermissions(allPerms);
+  };
+
+  const handleRevokeAll = () => {
+    const noPerms = { ...permissions };
+    Object.keys(PERMISSION_DETAILS).forEach(key => {
+      const targetRole = PERMISSION_ROLES[key] || 'all';
+      const isOutofRole = accountRole !== 'management' && targetRole !== 'all' && targetRole !== accountRole;
+      if (!isOutofRole) {
+        noPerms[key] = false;
+      }
+    });
+    setPermissions(noPerms);
+  };
+
+  const renderPermissionsTabsUI = () => {
+    const activeTabObj = PERMISSIONS_TABS.find(t => t.id === activePermissionsTab);
+    return (
+      <div className="bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col md:flex-row h-[420px] overflow-hidden">
+        {/* Tabs Sidebar */}
+        <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-800/50 border-l border-slate-200 dark:border-white/5 p-4 flex flex-col">
+          <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
+            {PERMISSIONS_TABS.map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActivePermissionsTab(tab.id)}
+                className={`w-full flex items-center gap-2 p-3 rounded-xl transition-all duration-300 text-xs font-black relative overflow-hidden ${activePermissionsTab === tab.id ? 'bg-gradient-to-l from-purple-600/20 to-indigo-600/20 text-purple-600 dark:text-purple-400 border border-purple-500/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5'}`}
+              >
+                <div className={`p-1 rounded-lg ${activePermissionsTab === tab.id ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'}`}>
+                  {tab.icon}
+                </div>
+                {tab.label}
+                {activePermissionsTab === tab.id && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-indigo-500"></div>
+                )}
+              </button>
             ))}
-          </select>
-        )}
-      </div>
-
-      {accountType === 'team' && (
-        <div className="mt-4 pt-5 border-t border-white/5">
-          <div className="flex flex-wrap gap-4 mb-2">
-            <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer text-xs font-bold hover:text-slate-900 dark:hover:text-white transition-colors">
-              <input type="radio" name="selectionMode" value="all" checked={selectionMode === 'all'} onChange={(e) => setSelectionMode('all')} className="accent-indigo-500 w-4 h-4" />
-              اختيار الكل (كامل النطاق)
-            </label>
-            <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer text-xs font-bold hover:text-slate-900 dark:hover:text-white transition-colors">
-              <input type="radio" name="selectionMode" value="custom" checked={selectionMode === 'custom'} onChange={(e) => setSelectionMode('custom')} className="accent-indigo-500 w-4 h-4" />
-              تحديد مخصص (اختيار أحياء محددة)
-            </label>
           </div>
-          {selectionMode === 'custom' && renderNeighborhoodCheckboxes()}
+          
+          {/* Global Actions */}
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 space-y-2">
+            <button
+              onClick={handleGrantAll}
+              type="button"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-500/20 transition-colors text-xs font-bold"
+            >
+              <CheckSquare className="w-4 h-4" />
+              <span>منح كافة الصلاحيات المتاحة</span>
+            </button>
+            <button
+              onClick={handleRevokeAll}
+              type="button"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-500/20 transition-colors text-xs font-bold"
+            >
+              <Square className="w-4 h-4" />
+              <span>سحب كافة الصلاحيات</span>
+            </button>
+          </div>
         </div>
-      )}
-    </div>
-  );
+        {/* Toggle Switches Area */}
+        <div className="w-full md:w-2/3 p-5 overflow-y-auto custom-scrollbar">
+          <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200 dark:border-white/5">
+             <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+               {activeTabObj?.icon}
+             </div>
+             <h4 className="text-sm font-black text-slate-800 dark:text-white">{activeTabObj?.label}</h4>
+          </div>
+          <div className="space-y-3">
+            {activeTabObj?.keys.map(key => {
+              const detail = PERMISSION_DETAILS[key];
+              const isGranted = !!permissions[key];
+              const targetRole = PERMISSION_ROLES[key] || 'all';
+              const isOutofRole = accountRole !== 'management' && targetRole !== 'all' && targetRole !== accountRole;
+              
+              if (isOutofRole && !isGranted) {
+                return (
+                  <div key={key} onClick={() => togglePermission(key)} className="group flex items-center justify-between p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <div className="flex flex-col ml-3">
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{detail?.title}</span>
+                      <span className="text-[10px] text-rose-500 mt-1">غير مخصص لهذا الحساب (انقر لكسر القفل ومنح الصلاحية)</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-400 group-hover:text-rose-500 transition-colors">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-3 rounded-xl border transition-all duration-300 cursor-pointer ${isGranted ? (isOutofRole ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-500/40' : 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-500/40') : 'bg-slate-100/50 dark:bg-slate-800/20 border-dashed border-slate-300 dark:border-slate-700'}`}>
+                  <div className="flex flex-col ml-3">
+                    <span className={`text-xs font-black ${isGranted ? (isOutofRole ? 'text-amber-700 dark:text-amber-400' : 'text-purple-700 dark:text-purple-300') : 'text-slate-500 dark:text-slate-400'}`}>{detail?.title}</span>
+                    <span className="text-[10px] text-slate-400 mt-1">{detail?.desc}</span>
+                  </div>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${isGranted ? (isOutofRole ? 'bg-amber-500 text-white border-amber-400' : 'bg-purple-500 text-white border-purple-400') : 'bg-slate-200 text-slate-400 border-slate-300 dark:bg-slate-800 dark:border-slate-700'}`}>
+                    {isGranted ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
@@ -435,6 +510,33 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                       <Plus className="w-3 h-3" /> إضافة عضو آخر
                     </button>
                   </div>
+
+                  <div className="pt-4 border-t border-white/5">
+                    <label className="text-slate-400 block mb-3 text-xs font-semibold">الملاحظين الفنيين</label>
+                    {technicians.map((tech, idx) => (
+                      <div key={idx} className="flex flex-col md:flex-row gap-3 mb-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 relative group">
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[10px] text-slate-500">اسم العضو</label>
+                          <input type="text" placeholder="الاسم الرباعي" value={tech.name} onChange={(e) => { const newTech = [...technicians]; newTech[idx].name = e.target.value; setTechnicians(newTech); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner" />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[10px] text-slate-500">المسمى الوظيفي المخصص</label>
+                          <div className="relative">
+                            <input type="text" placeholder="مثال: ملاحظ فني" value={tech.title} onChange={(e) => { const newTech = [...technicians]; newTech[idx].title = e.target.value; setTechnicians(newTech); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner pr-8" />
+                            <PenLine className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-3.5" />
+                          </div>
+                        </div>
+                        {technicians.length > 1 && (
+                          <button type="button" onClick={() => setTechnicians(technicians.filter((_, i) => i !== idx))} className="md:absolute md:left-2 md:-top-2 p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-full transition-colors self-end md:self-auto border border-red-500/20 opacity-0 group-hover:opacity-100">
+                            <X className="w-4 h-4"/>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => setTechnicians([...technicians, { name: '', title: 'ملاحظ فني' }])} className="text-indigo-600 dark:text-indigo-400 text-xs font-black hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                      <Plus className="w-3 h-3" /> إضافة عضو آخر
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -478,6 +580,13 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                     هذا الخيار يتيح لك نسخ جميع الصلاحيات والأذونات (بما فيها الاستثناءات الممنوحة) من فريق آخر وتطبيقها فوراً على هذا الفريق لتوفير الوقت.
                   </p>
                 </div>
+              </div>
+
+              {/* 6. Advanced Permissions (The Locks) */}
+              <div className="space-y-3 pt-6 border-t border-white/5">
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Lock className="w-4 h-4"/> 6. الصلاحيات المتقدمة (الأقفال)</label>
+                <div className="text-[10px] text-slate-500 font-bold mb-2">يمكنك ضبط صلاحيات الوصول والميزات الدقيقة للفريق هنا. الاستنساخ (أعلاه) سيقوم بملء هذه الصلاحيات تلقائياً.</div>
+                {renderPermissionsTabsUI()}
               </div>
             </>
           )}
@@ -529,6 +638,11 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
                 {directorScopeMode === 'sector' && renderGeoSelection()}
               </div>
               
+              {/* 4. Permissions (Locks) */}
+              <div className="space-y-3 pt-4 border-t border-slate-800">
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Lock className="w-4 h-4"/> 4. إدارة صلاحيات القراءة والوصول (الأقفال)</label>
+                {renderPermissionsTabsUI()}
+              </div>
 
             </>
           )}

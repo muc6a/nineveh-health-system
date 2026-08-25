@@ -181,9 +181,7 @@ export const SuperAdminPanel = () => {
   };
 
   const handleOpenPermissions = (target) => {
-    setPermissionsTarget(target);
-    setEditingPermissions(target.permissions || {});
-    setShowPermissionsModal(true);
+    handleOpenEditAccount(target, target.isTeam ? 'team' : 'director');
   };
 
   const handleSavePermissions = () => {
@@ -2906,6 +2904,13 @@ export const SuperAdminPanel = () => {
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
+                  
+                  {selectedEstDetails.history && selectedEstDetails.history[0] && selectedEstDetails.history[0].notes && (
+                    <div className="mt-2 p-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 rounded-xl">
+                      <span className="text-[10px] text-amber-700 dark:text-amber-500 font-bold block mb-1">📝 ملاحظات التفتيش:</span>
+                      <p className="text-[11px] text-slate-700 dark:text-slate-300 font-bold leading-relaxed">{selectedEstDetails.history[0].notes}</p>
+                    </div>
+                  )}
                   
                   {selectedEstDetails.history && selectedEstDetails.history[0] && selectedEstDetails.history[0].photo && (
                     <div className="mt-3 p-2 bg-slate-200/50 dark:bg-slate-900/50 rounded-xl">

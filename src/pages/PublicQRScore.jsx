@@ -350,6 +350,15 @@ export const PublicQRScore = () => {
                       <span className="font-extrabold text-teal-600">{sec.earned}/{sec.max} نقطة</span>
                     </div>
                   ))}
+
+                  {establishment.remarks && (
+                    <div className="mt-3 p-3 rounded-xl bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-white/5 text-right">
+                      <span className="text-[10px] text-slate-400 block mb-1">ملاحظات التفتيش:</span>
+                      <p className="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed font-bold">
+                        {establishment.remarks}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
