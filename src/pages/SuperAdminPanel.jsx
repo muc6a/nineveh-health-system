@@ -2064,7 +2064,11 @@ export const SuperAdminPanel = () => {
                   { key: 'replyDirective', label: 'الرد على الأوامر الإدارية 💬' },
                   { key: 'canSendSOS', label: 'إرسال نداء استغاثة (SOS) 🚨' },
                   { key: 'showSectorMap', label: 'عرض خريطة القطاع الجغرافي 🗺️' },
-                  { key: 'showSmartTasks', label: 'المهام الذكية الميدانية 🧠' }
+                  { key: 'showSmartTasks', label: 'المهام الذكية الميدانية 🧠' },
+                  { key: 'showOperationsRoom', label: 'الوصول لغرفة العمليات المركزية 🏢' },
+                  { key: 'showFieldTeamsStats', label: 'عرض إحصائيات الفرق الميدانية 📈' },
+                  { key: 'showTeamMonthlyStats', label: 'عرض إحصائيات الإنجاز الشهري للجنة 📊' },
+                  { key: 'showPublicEvalsPage', label: 'الاطلاع على تقييمات الجمهور (QR) 🌟' }
                 ].map(perm => (
                   <label key={perm.key} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <span className="font-bold text-xs text-slate-700 dark:text-slate-300">{perm.label}</span>
