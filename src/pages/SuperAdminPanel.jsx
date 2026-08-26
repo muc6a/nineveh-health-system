@@ -11,7 +11,7 @@ import { EvaluationManager } from '../components/EvaluationManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
@@ -587,7 +587,8 @@ export const SuperAdminPanel = () => {
       allowExternalReports: allowExternalToggle,
       allowOwnerPortal: allowOwnerPortalToggle,
       imageRetention: retentionDropdown,
-      uiScale: scaleSelector
+      uiScale: scaleSelector,
+      ...landingSettings
     }));
     setPublicCMS({
       heroTitle: cmsHeroTitle,
