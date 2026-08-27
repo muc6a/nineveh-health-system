@@ -1245,7 +1245,7 @@ export const SuperAdminPanel = () => {
               <>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
-                    <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول فريق متابعة الإغلاق</h2>
+                    <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول الكوادر المالية - المحاسبون المسؤولون عن الجباية وإيصالات القبض</h2>
                     <p className="text-[10px] font-bold text-slate-500 mt-1">إدارة كافة الحسابات المالية للمنظومة</p>
                   </div>
                   <button
@@ -1254,7 +1254,7 @@ export const SuperAdminPanel = () => {
                     }}
                     className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs transition-all cursor-pointer"
                   >
-                    ➕ إضافة حساب متابع جديد
+                    ➕ إضافة حساب محاسب جديد
                   </button>
                 </div>
 
