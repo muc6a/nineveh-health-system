@@ -11,14 +11,13 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
   if (variant === 'login') {
     return (
       <div className={`relative flex flex-col items-center justify-center ${className}`}>
-        <div className="absolute w-64 h-64 bg-teal-500/10 dark:bg-teal-500/5 rounded-full blur-3xl animate-pulse-slow"></div>
         <video
           src={baseVideoPath}
           autoPlay
           loop
           muted
           playsInline
-          className="w-48 h-48 md:w-56 md:h-56 object-cover z-10 drop-shadow-[0_15px_15px_rgba(13,148,136,0.2)] transition-transform duration-500 hover:scale-105 invert mix-blend-multiply dark:invert-0 dark:mix-blend-screen rounded-full border-none outline-none bg-transparent"
+          className="w-48 h-48 md:w-56 md:h-56 object-cover z-10 transition-transform duration-500 hover:scale-105 invert mix-blend-multiply dark:invert-0 dark:mix-blend-screen rounded-2xl border-none outline-none bg-transparent"
         />
       </div>
     );
