@@ -544,7 +544,12 @@ export const SuperAdminPanel = () => {
     viewAuditLogs: false,
     manageAccounts: false,
     manageSettings: false,
-    backupData: false
+    backupData: false,
+    // Section F: Financial
+    confirmReceipt: false,
+    enterReceiptNumber: false,
+    printReceiptA4: false,
+    viewFinancialReports: false
   };
 
   const handleSaveAccount = (accountData) => {

@@ -15,7 +15,6 @@ export const AccountantPanel = () => {
   const [paymentMethod, setPaymentMethod] = useState('cash'); // 'cash' or 'pos'
   const [receiptNumber, setReceiptNumber] = useState('');
 
-  const [showReconciliationModal, setShowReconciliationModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const targetSector = user?.linkedTeamSector || user?.sector || 'الكل';
@@ -87,10 +86,10 @@ export const AccountantPanel = () => {
   const handleCloseRegister = (status) => {
     if (status === 'confirm') {
       notify('تم تأكيد صحة الجرد وإغلاق الصندوق بنجاح', 'success');
+      setActiveTab('dashboard');
     } else {
       notify('تم تسجيل وجود خطأ وتم رفع طلب مراجعة للتدقيق', 'warning');
     }
-    setShowReconciliationModal(false);
   };
 
   return (
@@ -134,9 +133,9 @@ export const AccountantPanel = () => {
               <span>الرئيسية وقائمة الغرامات</span>
             </button>
             
-            {hasPerm('financialReports') && (
+            {hasPerm('viewFinancialReports') && (
               <button
-                onClick={() => { setActiveTab('reconciliation'); setShowReconciliationModal(true); setIsSidebarOpen(false); }}
+                onClick={() => { setActiveTab('reconciliation'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'reconciliation'
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
@@ -226,65 +225,115 @@ export const AccountantPanel = () => {
         </div>
 
         {/* Dashboard Content */}
-        <div className="space-y-6 animate-fade-in-up">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-amber-500" />
-              قائمة الغرامات المعلقة للقطاع
-            </h2>
-            <div className="px-2.5 py-1 bg-red-500 text-white rounded-lg text-[10px] font-black shadow-sm shadow-red-500/20">
-              {pendingFines.length} غرامة معلقة
+        {activeTab === 'dashboard' && (
+          <div className="space-y-6 animate-fade-in-up">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-amber-500" />
+                قائمة الغرامات المعلقة للقطاع
+              </h2>
+              <div className="px-2.5 py-1 bg-red-500 text-white rounded-lg text-[10px] font-black shadow-sm shadow-red-500/20">
+                {pendingFines.length} غرامة معلقة
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+              {pendingFines.length === 0 ? (
+                <div className="p-12 text-center">
+                  <CheckCircle2 className="w-16 h-16 text-emerald-500/20 mx-auto mb-4" />
+                  <h3 className="text-lg font-black text-slate-800 dark:text-slate-200 mb-2">لا توجد غرامات معلقة!</h3>
+                  <p className="text-slate-500 text-sm">جميع غرامات قطاعك تم تسديدها أو لا توجد مخالفات مسجلة.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-right border-collapse text-xs font-bold">
+                    <thead>
+                      <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-slate-500">
+                        <th className="p-4">المنشأة المخالفة</th>
+                        <th className="p-4">القطاع</th>
+                        <th className="p-4">نوع المخالفة</th>
+                        <th className="p-4">المبلغ (د.ع)</th>
+                        <th className="p-4">تاريخ الغرامة</th>
+                        <th className="p-4 text-center">الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+                      {pendingFines.map(fine => (
+                        <tr key={fine.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+                          <td className="p-4 text-slate-800 dark:text-slate-200">{fine.establishmentName}</td>
+                          <td className="p-4 text-teal-600 dark:text-teal-400">{getEstablishmentSector(fine.establishmentId)}</td>
+                          <td className="p-4 text-slate-600 dark:text-slate-400">{fine.reason}</td>
+                          <td className="p-4 text-red-600 font-black">{fine.amount?.toLocaleString()}</td>
+                          <td className="p-4 text-slate-500 dir-ltr text-right">{new Date(fine.date).toLocaleDateString('en-GB')}</td>
+                          <td className="p-4 text-center">
+                            {hasPerm('confirmReceipt') ? (
+                              <button
+                                onClick={() => handleOpenPayment(fine)}
+                                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black transition-colors shadow-sm shadow-emerald-500/20"
+                              >
+                                قبض وتسديد
+                              </button>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 font-bold">لا تملك صلاحية تأكيد القبض</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
+        )}
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-            {pendingFines.length === 0 ? (
-              <div className="p-12 text-center">
-                <CheckCircle2 className="w-16 h-16 text-emerald-500/20 mx-auto mb-4" />
-                <h3 className="text-lg font-black text-slate-800 dark:text-slate-200 mb-2">لا توجد غرامات معلقة!</h3>
-                <p className="text-slate-500 text-sm">جميع غرامات قطاعك تم تسديدها أو لا توجد مخالفات مسجلة.</p>
+        {/* Reconciliation Content */}
+        {activeTab === 'reconciliation' && hasPerm('viewFinancialReports') && (
+          <div className="space-y-6 animate-fade-in-up">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm">
+              <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+                <ClipboardList className="w-7 h-7 text-indigo-500" />
+                جرد اليومية والمطابقة للصندوق
+              </h3>
+              <p className="text-xs md:text-sm text-slate-500 font-bold mb-8">ملخص الإيرادات المالية لهذا اليوم لمطابقتها مع الصندوق الفعلي قبل الإغلاق.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-6 rounded-2xl text-center">
+                  <span className="block text-xs font-bold text-emerald-600 dark:text-emerald-500 mb-2">إجمالي المبالغ النقدية المقبوضة اليوم</span>
+                  <span className="block text-3xl font-black text-emerald-700 dark:text-emerald-400">{cashCollected.toLocaleString()}</span>
+                  <span className="block text-xs text-emerald-600/70 mt-2">دينار عراقي</span>
+                </div>
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-6 rounded-2xl text-center">
+                  <span className="block text-xs font-bold text-indigo-600 dark:text-indigo-500 mb-2">إجمالي الدفع الإلكتروني (POS) اليوم</span>
+                  <span className="block text-3xl font-black text-indigo-700 dark:text-indigo-400">{posCollected.toLocaleString()}</span>
+                  <span className="block text-xs text-indigo-600/70 mt-2">دينار عراقي</span>
+                </div>
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-right border-collapse text-xs font-bold">
-                  <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-slate-500">
-                      <th className="p-4">المنشأة المخالفة</th>
-                      <th className="p-4">القطاع</th>
-                      <th className="p-4">نوع المخالفة</th>
-                      <th className="p-4">المبلغ (د.ع)</th>
-                      <th className="p-4">تاريخ الغرامة</th>
-                      <th className="p-4 text-center">الإجراءات</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
-                    {pendingFines.map(fine => (
-                      <tr key={fine.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
-                        <td className="p-4 text-slate-800 dark:text-slate-200">{fine.establishmentName}</td>
-                        <td className="p-4 text-teal-600 dark:text-teal-400">{getEstablishmentSector(fine.establishmentId)}</td>
-                        <td className="p-4 text-slate-600 dark:text-slate-400">{fine.reason}</td>
-                        <td className="p-4 text-red-600 font-black">{fine.amount?.toLocaleString()}</td>
-                        <td className="p-4 text-slate-500 dir-ltr text-right">{new Date(fine.date).toLocaleDateString('en-GB')}</td>
-                        <td className="p-4 text-center">
-                          {hasPerm('confirmPayment') ? (
-                            <button
-                              onClick={() => handleOpenPayment(fine)}
-                              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black transition-colors shadow-sm shadow-emerald-500/20"
-                            >
-                              قبض وتسديد
-                            </button>
-                          ) : (
-                            <span className="text-[10px] text-slate-400 font-bold">لا تملك صلاحية تأكيد القبض</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+              <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 p-6 rounded-2xl flex items-center justify-between mb-8">
+                <span className="text-base font-bold text-slate-600 dark:text-slate-300">إجمالي عدد وصولات القبض المصدرة اليوم:</span>
+                <span className="text-2xl font-black text-slate-800 dark:text-white bg-white dark:bg-slate-700 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm">{totalReceipts} وصولات</span>
               </div>
-            )}
+
+              <div className="space-y-4 md:space-y-0 md:flex gap-4">
+                <button
+                  onClick={() => handleCloseRegister('confirm')}
+                  className="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-base font-black transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-[0.98]"
+                >
+                  <CheckCircle2 className="w-6 h-6" />
+                  مطابق - تأكيد وإغلاق الصندوق
+                </button>
+                <button
+                  onClick={() => handleCloseRegister('error')}
+                  className="w-full md:w-auto px-8 py-4 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 rounded-2xl text-sm font-bold transition-all border border-red-200 dark:border-red-500/20 active:scale-[0.98]"
+                >
+                  يوجد خطأ بالمطابقة (طلب مراجعة)
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
       </main>
 
       {/* Payment Modal */}
@@ -333,7 +382,7 @@ export const AccountantPanel = () => {
                 </div>
               </div>
 
-              {hasPerm('requireReceiptNumber') && (
+              {hasPerm('enterReceiptNumber') && (
                 <div>
                   <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2">رقم الوصل (اختياري)</label>
                   <input
@@ -354,7 +403,7 @@ export const AccountantPanel = () => {
               >
                 تأكيد القبض والتسديد
               </button>
-              {hasPerm('printA4') && (
+              {hasPerm('printReceiptA4') && (
                 <button
                   onClick={() => notify('جاري التجهيز لطباعة الوصل A4...', 'info')}
                   className="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-black transition-colors shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
@@ -373,60 +422,6 @@ export const AccountantPanel = () => {
         </div>
       )}
 
-      {/* Reconciliation Modal */}
-      {showReconciliationModal && hasPerm('financialReports') && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl shadow-2xl relative text-right">
-            <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
-              <ClipboardList className="w-6 h-6 text-indigo-500" />
-              جرد اليومية والمطابقة
-            </h3>
-            <p className="text-xs text-slate-500 font-bold mb-6">ملخص الإيرادات المالية لهذا اليوم لمطابقتها مع الصندوق قبل الإغلاق.</p>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-4 rounded-2xl text-center">
-                <span className="block text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mb-1">إجمالي المبالغ النقدية</span>
-                <span className="block text-xl font-black text-emerald-700 dark:text-emerald-400">{cashCollected.toLocaleString()}</span>
-                <span className="block text-[10px] text-emerald-600/70 mt-1">دينار عراقي</span>
-              </div>
-              <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-4 rounded-2xl text-center">
-                <span className="block text-[10px] font-bold text-indigo-600 dark:text-indigo-500 mb-1">إجمالي الدفع الإلكتروني (POS)</span>
-                <span className="block text-xl font-black text-indigo-700 dark:text-indigo-400">{posCollected.toLocaleString()}</span>
-                <span className="block text-[10px] text-indigo-600/70 mt-1">دينار عراقي</span>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 p-4 rounded-2xl flex items-center justify-between mb-8">
-              <span className="text-sm font-bold text-slate-600 dark:text-slate-300">إجمالي عدد وصولات القبض المصدرة:</span>
-              <span className="text-lg font-black text-slate-800 dark:text-white bg-white dark:bg-slate-700 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm">{totalReceipts}</span>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => handleCloseRegister('confirm')}
-                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-black transition-colors shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2"
-              >
-                <CheckCircle2 className="w-5 h-5" />
-                تأكيد صحة الجرد وإغلاق الصندوق
-              </button>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => handleCloseRegister('error')}
-                  className="flex-1 py-3 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 rounded-xl text-xs font-bold transition-colors border border-red-200 dark:border-red-500/20"
-                >
-                  يوجد خطأ / طلب مراجعة وتعديل
-                </button>
-                <button
-                  onClick={() => setShowReconciliationModal(false)}
-                  className="px-6 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
-                >
-                  رجوع
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
