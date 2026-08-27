@@ -2375,7 +2375,8 @@ export const SuperAdminPanel = () => {
               </div>
 
               {/* Left Content Area: Toggle Switches */}
-              <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10">
+              <div className="w-full md:w-2/3 flex flex-col h-[70vh] md:h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10 min-h-0">
+                <div className="p-4 md:p-8 flex flex-col min-h-0 flex-1 overflow-hidden">
                 <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5 shrink-0">
                   <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
                     <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
@@ -2438,9 +2439,11 @@ export const SuperAdminPanel = () => {
                     </div>
                   )}
                 </div>
+                </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5 shrink-0">
-                  <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0">
+                {/* STICKY FOOTER OUTSIDE SCROLLING AREA */}
+                <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-slate-200 dark:border-white/5 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-xl z-20">
+                  <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] active:scale-[0.98]">
                     حفظ واعتماد صلاحيات الحساب
                   </button>
                 </div>

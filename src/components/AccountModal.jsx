@@ -363,8 +363,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
-          <form onSubmit={handleSubmit} className="space-y-8 text-sm font-bold text-right flex flex-col min-h-full">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0 text-sm font-bold text-right">
+          <div className="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-8">
           
           {/* TEAM FLOW */}
           {accountType === 'team' && (
@@ -593,12 +593,15 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
               </div>
             </div>
           </div>
-
-          <button type="submit" className="shrink-0 sticky bottom-0 z-10 mt-auto w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(99,102,241,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 active:translate-y-0 mt-8">
-            {mode === 'add' ? 'إنشاء الحساب وحفظ البيانات' : 'حفظ التعديلات'}
-          </button>
+          </div>
+          
+          <div className="shrink-0 p-4 md:p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-xl z-20 rounded-b-[2rem]">
+            <button type="submit" className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(99,102,241,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <Check className="w-5 h-5"/>
+              {mode === 'add' ? 'إنشاء الحساب' : 'حفظ التعديلات'}
+            </button>
+          </div>
         </form>
-        </div>
       </div>
     </div>
   );
