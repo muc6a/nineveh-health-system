@@ -6,7 +6,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
   // - 'sidebar': Top watermarked brand emblem.
   // - 'seal': Citizen QR Viewport header, pulsing 3D digital verification seal.
 
-  const baseVideoPath = '/logo-animated.mp4';
+  const baseVideoPath = '/logo-black.mp4';
 
   if (variant === 'login') {
     return (
@@ -18,8 +18,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
           loop
           muted
           playsInline
-          className="w-48 h-48 md:w-56 md:h-56 object-contain z-10 drop-shadow-[0_15px_15px_rgba(13,148,136,0.2)] transition-transform duration-500 hover:scale-105 mix-blend-multiply dark:invert dark:mix-blend-screen rounded-full"
-          style={{ clipPath: 'circle(49% at 50% 50%)' }}
+          className="w-48 h-48 md:w-56 md:h-56 object-cover z-10 drop-shadow-[0_15px_15px_rgba(13,148,136,0.2)] transition-transform duration-500 hover:scale-105 invert mix-blend-multiply dark:invert-0 dark:mix-blend-screen rounded-full border-none outline-none bg-transparent"
         />
       </div>
     );
@@ -35,7 +34,7 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover scale-110 mix-blend-multiply dark:invert dark:mix-blend-screen"
+            className="w-full h-full object-cover scale-110 invert mix-blend-multiply dark:invert-0 dark:mix-blend-screen rounded-xl border-none outline-none bg-transparent"
           />
         </div>
         <div className="flex flex-col">
