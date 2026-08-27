@@ -1499,7 +1499,12 @@ export const SuperAdminPanel = () => {
                     
                   </div>
 
-
+                  <button
+                    onClick={saveZeroCodeConfig}
+                    className="w-full py-4 mt-6 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(13,148,136,0.4)] hover:-translate-y-0.5"
+                  >
+                    حفظ وتطبيق التغييرات
+                  </button>
                 </div>
               )}
               
