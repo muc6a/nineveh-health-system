@@ -1257,6 +1257,14 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
   useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
 
+  // Persist new states to localStorage
+  useEffect(() => {
+    localStorage.setItem('nineveh_accountants', JSON.stringify(accountants));
+  }, [accountants]);
+
+  useEffect(() => {
+    localStorage.setItem('nineveh_fines_booklet', JSON.stringify(finesBooklet));
+  }, [finesBooklet]);
 
   return (
     <AppContext.Provider value={{
