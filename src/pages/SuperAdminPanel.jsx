@@ -2313,10 +2313,13 @@ export const SuperAdminPanel = () => {
 
         return (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative flex flex-col md:flex-row text-right max-h-[90vh] overflow-hidden">
+            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative flex flex-col text-right max-h-[90vh] overflow-hidden">
+              
+              {/* Main Scrollable Body */}
+              <div className="flex flex-col md:flex-row flex-1 overflow-y-auto md:overflow-hidden min-h-0">
               
               {/* Right Sidebar: Tabs & Stats */}
-              <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10">
+              <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10 shrink-0 md:overflow-y-auto custom-scrollbar">
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-2 drop-shadow-sm">
                     <Settings className="w-5 h-5 text-purple-400" /> مركز الأذونات
@@ -2375,8 +2378,8 @@ export const SuperAdminPanel = () => {
               </div>
 
               {/* Left Content Area: Toggle Switches */}
-              <div className="w-full md:w-2/3 flex flex-col h-[70vh] md:h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10 min-h-0">
-                <div className="p-4 md:p-8 flex flex-col min-h-0 flex-1 overflow-hidden">
+              <div className="w-full md:w-2/3 flex flex-col bg-slate-50/80 dark:bg-slate-900/40 relative z-10 shrink-0 md:shrink md:min-h-0">
+                <div className="p-4 md:p-8 flex flex-col min-h-0 flex-1 md:overflow-hidden">
                 <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5 shrink-0">
                   <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
                     <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
@@ -2389,7 +2392,7 @@ export const SuperAdminPanel = () => {
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto pr-3 pb-6 space-y-3 custom-scrollbar">
+                <div className="flex-1 md:overflow-y-auto pr-3 pb-6 space-y-3 custom-scrollbar">
                   {activeTabObj?.keys.map(key => {
                     const detail = PERMISSION_DETAILS[key];
                     const isGranted = !!selectedPermissionsAccount.permissions?.[key];
@@ -2440,13 +2443,15 @@ export const SuperAdminPanel = () => {
                   )}
                 </div>
                 </div>
+              </div>
+              </div>
+              {/* Close Main Scrollable Body */}
 
-                {/* STICKY FOOTER OUTSIDE SCROLLING AREA */}
-                <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-slate-200 dark:border-white/5 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-xl z-20">
-                  <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] active:scale-[0.98]">
-                    حفظ واعتماد صلاحيات الحساب
-                  </button>
-                </div>
+              {/* STICKY FOOTER OUTSIDE SCROLLING AREA */}
+              <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-slate-200 dark:border-white/5 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-xl z-20 w-full rounded-b-[2rem]">
+                <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] active:scale-[0.98]">
+                  حفظ واعتماد صلاحيات الحساب
+                </button>
               </div>
 
             </div>
