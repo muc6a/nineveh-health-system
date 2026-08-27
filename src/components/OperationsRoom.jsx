@@ -3,12 +3,15 @@ import { usePersistentTab } from '../hooks/usePersistentTab';
 import { AppContext } from '../context/AppContext';
 import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X } from 'lucide-react';
 import AccountModal from './AccountModal';
+import { FinancialReports } from './FinancialReports';
+import { Database } from 'lucide-react';
 
 export default function OperationsRoom() {
   const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts } = useContext(AppContext);
   const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'live_operations');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
+  const [showClosureArchive, setShowClosureArchive] = useState(false);
   
   const triggerAlert = (msg) => {
     if (notify) notify(msg, 'success', true);
@@ -162,6 +165,15 @@ export default function OperationsRoom() {
         >
           <AlertCircle className="w-4 h-4" />
           المصادقة على العقوبات
+        </button>
+        <button
+          onClick={() => setActiveTab('financials')}
+          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'financials' ? 'border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Database className="w-4 h-4" />
+          التقارير المالية للغرامات
         </button>
         <button
           onClick={() => setActiveTab('live_operations')}
@@ -398,6 +410,12 @@ export default function OperationsRoom() {
       )}
 
       
+      {activeTab === 'financials' && (
+        <div className="glassmorphic-card p-0 border border-emerald-500/20 overflow-hidden">
+          <FinancialReports />
+        </div>
+      )}
+
       {activeTab === 'live_operations' && (
         <div className="space-y-6">
           
@@ -444,11 +462,29 @@ export default function OperationsRoom() {
 
             {/* Closure Verifications */}
             <div className="glassmorphic-card p-4 border border-indigo-500/20 max-h-80 overflow-y-auto">
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                <Camera className="w-4 h-4 text-indigo-500" />
-                أدلة الإغلاق الواردة
-              </h3>
-              {closureVerifications && closureVerifications.length > 0 ? (
+              <div className="flex justify-between items-center mb-4 border-b border-indigo-500/10 pb-2">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <Camera className="w-4 h-4 text-indigo-500" />
+                  أدلة الإغلاق {showClosureArchive ? 'المؤرشفة' : 'الواردة'}
+                </h3>
+                <button
+                  onClick={() => setShowClosureArchive(!showClosureArchive)}
+                  className={`text-[10px] font-bold px-3 py-1 rounded-full transition-all ${
+                    showClosureArchive 
+                      ? 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                      : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                  }`}
+                >
+                  {showClosureArchive ? 'عرض الوارد الجديد' : 'عرض الأرشيف المغلق'}
+                </button>
+              </div>
+              {(() => {
+                const activeVerifications = closureVerifications?.filter(v => v.status === 'pending') || [];
+                const archivedVerifications = closureVerifications?.filter(v => v.status !== 'pending') || [];
+                const displayVerifications = showClosureArchive ? archivedVerifications : activeVerifications;
+                
+                return displayVerifications.length > 0 ? (
+                  displayVerifications
                 closureVerifications.map(ver => (
                   <div key={ver.id} className="mb-3 p-3 rounded-xl border border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-900/10 relative">
                     <div className="flex justify-between items-start mb-2">
@@ -479,9 +515,10 @@ export default function OperationsRoom() {
                     )}
                   </div>
                 ))
-              ) : (
-                <p className="text-center text-xs text-slate-500 py-4">لا توجد أدلة إغلاق معلقة.</p>
-              )}
+                ) : (
+                  <p className="text-center text-xs text-slate-500 py-4">لا توجد أدلة إغلاق {showClosureArchive ? 'مؤرشفة' : 'معلقة'}.</p>
+                );
+              })()}
             </div>
           </div>
 

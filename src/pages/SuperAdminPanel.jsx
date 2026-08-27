@@ -1328,7 +1328,7 @@ export const SuperAdminPanel = () => {
                               <button
                                 onClick={() => {
                                   const updated = accountants.map(tr => tr.id === t.id ? { ...tr, active: !(tr.active !== false) } : tr);
-                                  setTrackers(updated);
+                                  setAccountants(updated);
                                   triggerAlert(t.active !== false ? 'تم تجميد المحاسب' : 'تم تفعيل المحاسب');
                                 }}
                                 className={`px-2.5 py-1.5 rounded-xl text-[10px] transition-all cursor-pointer ${
@@ -1342,7 +1342,7 @@ export const SuperAdminPanel = () => {
                               <button
                                 onClick={() => {
                                   const updated = accountants.filter(tr => tr.id !== t.id);
-                                  setTrackers(updated);
+                                  setAccountants(updated);
                                   triggerAlert('تم حذف المحاسب بنجاح');
                                 }}
                                 className="px-2.5 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
@@ -2371,7 +2371,7 @@ export const SuperAdminPanel = () => {
 
               {/* Left Content Area: Toggle Switches */}
               <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10">
-                <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5">
+                <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5 shrink-0">
                   <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
                     <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
                       {activeTabObj?.icon}
@@ -2434,7 +2434,7 @@ export const SuperAdminPanel = () => {
                   )}
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5">
+                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5 shrink-0">
                   <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0">
                     حفظ واعتماد صلاحيات الحساب
                   </button>

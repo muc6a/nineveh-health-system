@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { Eye, EyeOff, Lock, User, CheckSquare, Square, ShieldAlert } from 'lucide-react';
 
 export const LoginGate = () => {
-  const { navigate, setUser, config, teams, directors, trackers, notify, loginCMS } = useContext(AppContext);
+  const { navigate, setUser, config, teams, directors, trackers, accountants, notify, loginCMS } = useContext(AppContext);
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -132,6 +132,23 @@ export const LoginGate = () => {
       }
     }
 
+    // 4. Check Accountants
+    const realAccountant = accountants?.find(a => 
+      a.email?.toLowerCase() === input || 
+      a.phone === input || 
+      a.username?.toLowerCase() === input
+    );
+    if (realAccountant) {
+      if (realAccountant.password === password) {
+        setUser({ ...realAccountant, role: 'accountant' });
+        navigate('/dashboard/accountant');
+        return;
+      } else {
+        setErrorMessage('كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.');
+        return;
+      }
+    }
+
     // Fallback logic
     if (input === 'director@ninveh.health.gov.iq' || input === 'director' || input.includes('مدير')) {
       setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, notify_closures: false, notify_inspections: false, notify_directives: true } });
@@ -175,7 +192,7 @@ export const LoginGate = () => {
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-lg glassmorphic-card p-6 md:p-8 relative overflow-hidden border border-white/35">
+      <div className="w-full max-w-lg glassmorphic-card p-6 md:p-8 relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -321,7 +338,7 @@ export const LoginGate = () => {
         {/* Developer Copyright Footer */}
         <div className="mt-6 pt-4 border-t border-slate-200/40 dark:border-slate-800/40 text-center">
           <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black">
-            جميع الحقوق محفوظة © 2026 - تم التصميم والتطوير بواسطة Dijla Tech LLC
+            جميع الحقوق محفوظة © 2026 - تم التصميم والتطوير بواسطة نعناع تك LLC
           </p>
         </div>
       </div>

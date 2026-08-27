@@ -350,10 +350,7 @@ const DEFAULT_INSPECTION_TEMPLATES = {
     { id: 14, section: 'D', sectionName: 'المطبخ والتحضير', text: 'نظافة المعدات والأدوات', points: 5 },
     { id: 15, section: 'D', sectionName: 'المطبخ والتحضير', text: 'درجات حرارة الحفظ والطهي', points: 5 },
     { id: 16, section: 'D', sectionName: 'المطبخ والتحضير', text: 'طريقة إعداد وتجهيز الطعام', points: 5 },
-    { id: 17, section: 'D', sectionName: 'المطبخ والتحضير', text: 'منع التلوث المتبادل', points: 5 },
-    { id: 18, section: 'E', sectionName: 'الوثائق والالتزام', text: 'الإجازة الصحية سارية', points: 5 },
-    { id: 19, section: 'E', sectionName: 'الوثائق والالتزام', text: 'الالتزام بملاحظات الرقابة السابقة', points: 5 },
-    { id: 20, section: 'E', sectionName: 'الوثائق والالتزام', text: 'وجود سجلات المتابعة', points: 5 }
+    { id: 17, section: 'D', sectionName: 'المطبخ والتحضير', text: 'منع التلوث المتبادل', points: 5 }
   ],
   'المخابز، الأفران، ومعجنات الحلويات': [
     { id: 1, section: 'A', sectionName: 'بيئة العمل والنظافة', text: 'نظافة منطقة العجن والخبز', points: 10 },
@@ -366,10 +363,7 @@ const DEFAULT_INSPECTION_TEMPLATES = {
     { id: 8, section: 'B', sectionName: 'سلامة المواد الأولية', text: 'حفظ الأجبان والألبان (للمعجنات) في مبردات', points: 5 },
     { id: 9, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'نظافة ونوعية الأحواض والقطاعات', points: 10 },
     { id: 10, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'نظافة صواني الخبز والرفوف', points: 10 },
-    { id: 11, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'الوقود المستخدم في الفرن آمن', points: 5 },
-    { id: 12, section: 'D', sectionName: 'العاملون والوثائق', text: 'النظافة الشخصية والملابس', points: 10 },
-    { id: 13, section: 'D', sectionName: 'العاملون والوثائق', text: 'وجود بطاقات صحية سارية المفعول', points: 10 },
-    { id: 14, section: 'D', sectionName: 'العاملون والوثائق', text: 'الإجازة الصحية للمخبز', points: 5 }
+    { id: 11, section: 'C', sectionName: 'أدوات الإنتاج والخبز', text: 'الوقود المستخدم في الفرن آمن', points: 5 }
   ],
   'الأسواق، السوبرماركت، ومخازن المواد الغذائية': [
     { id: 1, section: 'A', sectionName: 'صلاحية المواد المعروضة', text: 'خلو الأرفف من المواد منتهية الصلاحية', points: 20 },
@@ -380,9 +374,7 @@ const DEFAULT_INSPECTION_TEMPLATES = {
     { id: 6, section: 'B', sectionName: 'أجهزة التبريد والتجميد', text: 'عدم تكدس المواد فوق الحد المسموح به', points: 5 },
     { id: 7, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'ترتيب المواد على رفوف بعيداً عن الأرضية', points: 10 },
     { id: 8, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'نظافة المخازن الرئيسية', points: 5 },
-    { id: 9, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'نظافة الأرضيات العامة للسوق', points: 5 },
-    { id: 10, section: 'D', sectionName: 'الوثائق والشهادات', text: 'الإجازة الصحية للسوق', points: 5 },
-    { id: 11, section: 'D', sectionName: 'الوثائق والشهادات', text: 'شهادات صحية للعاملين', points: 5 }
+    { id: 9, section: 'C', sectionName: 'طرق الخزن والنظافة العامة', text: 'نظافة الأرضيات العامة للسوق', points: 5 }
   ],
   'صالونات الحلاقة ومراكز التجميل': [
     { id: 1, section: 'A', sectionName: 'التعقيم والأدوات', text: 'استخدام أجهزة تعقيم فعالة (UV/Autoclave)', points: 15 },
@@ -393,10 +385,7 @@ const DEFAULT_INSPECTION_TEMPLATES = {
     { id: 6, section: 'B', sectionName: 'النظافة العامة للبنية التحتية', text: 'تهوية المكان والإضاءة', points: 5 },
     { id: 7, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'تاريخ صلاحية المواد التجميلية (كريمات، أصباغ)', points: 10 },
     { id: 8, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'ظروف خزن المواد وسلامة العبوات', points: 5 },
-    { id: 9, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'وجود بطاقة بيان للمواد الكيميائية', points: 5 },
-    { id: 10, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'النظافة الشخصية والمظهر العام', points: 10 },
-    { id: 11, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'ارتداء ملابس عمل نظيفة (روب)', points: 5 },
-    { id: 12, section: 'D', sectionName: 'العاملون والشروط الصحية', text: 'وجود بطاقة صحية سارية المفعول', points: 5 }
+    { id: 9, section: 'C', sectionName: 'المستحضرات ومواد التجميل', text: 'وجود بطاقة بيان للمواد الكيميائية', points: 5 }
   ],
   'قاعات الأعراس والمناسبات': [
     { id: 1, section: 'A', sectionName: 'المطبخ والتحضير', text: 'نظافة مطبخ القاعة والشروط الصحية فيه', points: 15 },
@@ -406,10 +395,7 @@ const DEFAULT_INSPECTION_TEMPLATES = {
     { id: 5, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'فصل اللحوم عن الخضار', points: 5 },
     { id: 6, section: 'B', sectionName: 'سلامة الأغذية المقدمة', text: 'سلامة مياه الشرب والثلج', points: 10 },
     { id: 7, section: 'C', sectionName: 'الموقع والصحيات', text: 'نظافة القاعة العامة', points: 10 },
-    { id: 8, section: 'C', sectionName: 'الموقع والصحيات', text: 'نظافة وتعقيم الصحيات (دورات المياه)', points: 10 },
-    { id: 9, section: 'D', sectionName: 'الأمان والوثائق', text: 'مخارج الطوارئ ومطافئ الحريق', points: 10 },
-    { id: 10, section: 'D', sectionName: 'الأمان والوثائق', text: 'الإجازة الصحية للقاعة', points: 10 },
-    { id: 11, section: 'D', sectionName: 'الأمان والوثائق', text: 'بطاقات صحية للعاملين', points: 5 }
+    { id: 8, section: 'C', sectionName: 'الموقع والصحيات', text: 'نظافة وتعقيم الصحيات (دورات المياه)', points: 10 }
   ],
   'الصيدليات ومذاخر الأدوية': [
     { id: 1, section: 'A', sectionName: 'خزن الأدوية ودرجات الحرارة', text: 'سلامة عمل أجهزة التكييف والمولدات 24/7', points: 15 },
@@ -419,9 +405,7 @@ const DEFAULT_INSPECTION_TEMPLATES = {
     { id: 5, section: 'B', sectionName: 'صلاحية الأدوية', text: 'نظام فصل الأدوية القريبة من الانتهاء', points: 5 },
     { id: 6, section: 'B', sectionName: 'صلاحية الأدوية', text: 'سلامة الأدوية المخزنة من الرطوبة والحرارة', points: 5 },
     { id: 7, section: 'C', sectionName: 'التخلص من النفايات الطبية', text: 'وجود حاويات خاصة للأدوية التالفة والمنتهية', points: 10 },
-    { id: 8, section: 'C', sectionName: 'التخلص من النفايات الطبية', text: 'التعاقد مع شركة متخصصة للتخلص الآمن من النفايات', points: 10 },
-    { id: 9, section: 'D', sectionName: 'التراخيص والوثائق', text: 'إجازة فتح الصيدلية / المذخر', points: 5 },
-    { id: 10, section: 'D', sectionName: 'التراخيص والوثائق', text: 'وجود الصيدلي المسؤول', points: 5 }
+    { id: 8, section: 'C', sectionName: 'التخلص من النفايات الطبية', text: 'التعاقد مع شركة متخصصة للتخلص الآمن من النفايات', points: 10 }
   ]
 };
 

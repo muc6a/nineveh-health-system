@@ -346,9 +346,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-      <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative text-right max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative text-right max-h-[90dvh] flex flex-col">
         
-        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/50 dark:bg-slate-900/40 sticky top-0 z-20 backdrop-blur-sm">
+        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/50 dark:bg-slate-900/40 z-20 backdrop-blur-sm shrink-0">
           <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-3 drop-shadow-md">
             <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400 shadow-inner">
               {accountType === 'director' ? <Briefcase className="w-5 h-5"/> : <Users className="w-5 h-5"/>}
@@ -363,8 +363,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           </button>
         </div>
 
-        <div className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-8 text-sm font-bold text-right">
+        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+          <form onSubmit={handleSubmit} className="space-y-8 text-sm font-bold text-right flex flex-col min-h-full">
           
           {/* TEAM FLOW */}
           {accountType === 'team' && (
@@ -594,7 +594,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             </div>
           </div>
 
-          <button type="submit" className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(99,102,241,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 active:translate-y-0 mt-8">
+          <button type="submit" className="shrink-0 sticky bottom-0 z-10 mt-auto w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(99,102,241,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-0.5 active:translate-y-0 mt-8">
             {mode === 'add' ? 'إنشاء الحساب وحفظ البيانات' : 'حفظ التعديلات'}
           </button>
         </form>

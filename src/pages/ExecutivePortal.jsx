@@ -12,7 +12,8 @@ import { NotificationBell } from '../components/NotificationBell';
 import { CriticalAlertModal } from '../components/CriticalAlertModal';
 import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
-import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive } from 'lucide-react';
+import { FinancialReports } from '../components/FinancialReports';
+import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning } from 'lucide-react';
 
 export const ExecutivePortal = () => {
   const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences } = useContext(AppContext);
@@ -304,8 +305,8 @@ export const ExecutivePortal = () => {
         <CriticalAlertModal />
         
         {/* Fixed Sticky Left Sidebar */}
-        <aside className="w-80 shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between hidden md:flex sticky top-0 h-screen">
-          <div>
+        <aside className="w-80 shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col hidden md:flex sticky top-0 h-screen">
+          <div className="shrink-0">
             {/* Logo */}
             <AnimatedLogo variant="sidebar" className="mb-4" />
 
@@ -324,8 +325,9 @@ export const ExecutivePortal = () => {
               <ThemeToggle />
             </div>
           </div>
+          </div>
 
-          <div className="space-y-1 mb-6">
+          <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 mb-4 pr-1 pl-2">
             <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
               لوحة التحكم والفرز الإقليمي
             </span>
@@ -337,10 +339,10 @@ export const ExecutivePortal = () => {
                   label: 'اللوحة الرئيسية (الاستراتيجية)',
                   icon: TrendingUp,
                   iconColorClass: '',
-                  activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/10',
+                  activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20',
                   permission: 'showMainDashboard',
-                  onClick: () => { setExecutiveTab('dashboard'); setSelectedTeamId('all'); setActiveTab('strategic'); },
-                  isActive: executiveTab === 'dashboard' && selectedTeamId === 'all' && activeTab === 'strategic',
+                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('strategic'); },
+                  isActive: executiveTab === 'dashboard' && activeTab === 'strategic',
                   showCondition: true
                 },
                 team_reports: {
@@ -399,6 +401,16 @@ export const ExecutivePortal = () => {
                   isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
                   showCondition: true
                 },
+                financials: {
+                  label: 'التقارير المالية (الغرامات)',
+                  icon: Database,
+                  iconColorClass: 'text-emerald-500',
+                  activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
+                  permission: 'showMainDashboard', // Required to be director/admin anyway
+                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('financials'); },
+                  isActive: executiveTab === 'dashboard' && activeTab === 'financials',
+                  showCondition: ['director', 'central_director', 'admin'].includes(user?.role)
+                },
                 establishments: {
                   label: 'إدارة المنشآت',
                   icon: Building,
@@ -436,7 +448,6 @@ export const ExecutivePortal = () => {
 
 
           </div>
-        </div>
 
         {/* Logout at bottom - Sticky */}
         <div className="pt-4 mt-auto border-t border-slate-200/50 dark:border-slate-800/50 sticky bottom-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pb-6 -mb-6 space-y-2">
@@ -580,7 +591,10 @@ export const ExecutivePortal = () => {
           <>
         {activeTab === 'operations_room' && <OperationsRoom />}
 
-        {activeTab !== 'operations_room' && (
+        
+        {activeTab === 'financials' && <FinancialReports />}
+        
+        {activeTab !== 'operations_room' && activeTab !== 'financials' && (
           <>
             {/* Welcome / No Permissions State */}
         {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !hasPerm('showDirectivesPage') && !hasPerm('showPublicEvalsPage') && (

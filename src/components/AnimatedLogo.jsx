@@ -18,7 +18,8 @@ export const AnimatedLogo = ({ variant = 'default', className = '' }) => {
           loop
           muted
           playsInline
-          className="w-48 h-48 md:w-56 md:h-56 object-contain z-10 drop-shadow-[0_15px_15px_rgba(13,148,136,0.2)] transition-transform duration-500 hover:scale-105 mix-blend-multiply dark:invert dark:mix-blend-screen"
+          className="w-48 h-48 md:w-56 md:h-56 object-contain z-10 drop-shadow-[0_15px_15px_rgba(13,148,136,0.2)] transition-transform duration-500 hover:scale-105 mix-blend-multiply dark:invert dark:mix-blend-screen rounded-full"
+          style={{ clipPath: 'circle(49% at 50% 50%)' }}
         />
       </div>
     );

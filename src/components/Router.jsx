@@ -11,6 +11,7 @@ import { PublicSearch } from '../pages/PublicSearch';
 import { OwnerPortal } from '../pages/OwnerPortal';
 import { TrackerDashboard } from '../pages/TrackerDashboard';
 import { LandingPage } from '../pages/LandingPage';
+import { AccountantPanel } from '../pages/AccountantPanel';
 
 export const Router = () => {
   const { currentRoute } = useContext(AppContext);
@@ -31,6 +32,9 @@ export const Router = () => {
     
     case '/dashboard/tracker':
       return <TrackerDashboard />;
+      
+    case '/dashboard/accountant':
+      return <AccountantPanel />;
     
     case '/inspection/new':
       return <InspectionForm />;
