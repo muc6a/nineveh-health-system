@@ -464,21 +464,21 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
 
               {/* 5. Copy Permissions */}
               <div className="space-y-3 pt-6 border-t border-white/5">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Lock className="w-4 h-4"/> 5. استنساخ الأذونات وصلاحيات النظام</label>
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Lock className="w-4 h-4"/> 5. استنساخ الصلاحيات وصلاحيات النظام</label>
                 <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5">
-                  <label className="text-slate-400 text-xs block font-semibold mb-2">استنساخ الأذونات من فريق ميداني آخر (اختياري)</label>
+                  <label className="text-slate-400 text-xs block font-semibold mb-2">استنساخ الصلاحيات من فريق ميداني آخر (اختياري)</label>
                   <select 
                     value={copyPermissionsFrom} 
                     onChange={(e) => setCopyPermissionsFrom(e.target.value)} 
                     className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 shadow-inner"
                   >
-                    <option value="">لا يوجد استنساخ (استخدام الأذونات الافتراضية)</option>
+                    <option value="">لا يوجد استنساخ (استخدام الصلاحيات الافتراضية)</option>
                     {teams.map(t => (
-                      t.id !== initialData?.id && <option key={t.id} value={t.id}>نفس أذونات: {t.name}</option>
+                      t.id !== initialData?.id && <option key={t.id} value={t.id}>نفس صلاحيات: {t.name}</option>
                     ))}
                   </select>
                   <p className="text-[10px] text-slate-500 mt-2 font-bold leading-relaxed">
-                    هذا الخيار يتيح لك نسخ جميع الصلاحيات والأذونات (بما فيها الاستثناءات الممنوحة) من فريق آخر وتطبيقها فوراً على هذا الفريق لتوفير الوقت.
+                    هذا الخيار يتيح لك نسخ جميع الصلاحيات والصلاحيات (بما فيها الاستثناءات الممنوحة) من فريق آخر وتطبيقها فوراً على هذا الفريق لتوفير الوقت.
                   </p>
                 </div>
               </div>
