@@ -8,10 +8,11 @@ import { ThreeDBarChart } from '../components/ThreeDBarChart';
 import { Plus, Trash2, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity, Bell, Lock, Unlock } from 'lucide-react';
 import { AccountModal } from '../components/AccountModal';
 import { EvaluationManager } from '../components/EvaluationManager';
+import { FinesManager } from '../components/FinesManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
@@ -910,6 +911,16 @@ export const SuperAdminPanel = () => {
               >
                 🕵️‍♂️ إدارة المتابعين ({trackers?.length || 0})
               </button>
+              <button
+                onClick={() => setSubRosterTab('accountants')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subRosterTab === 'accountants'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                💼 إدارة المحاسبين ({accountants?.length || 0})
+              </button>
             </div>
 
             {subRosterTab === 'committees' && (
@@ -1377,6 +1388,16 @@ export const SuperAdminPanel = () => {
               >
                 📝 إدارة النشاطات وبنود التقييم
               </button>
+              <button
+                onClick={() => setSubSettingsTab('fines_booklet')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subSettingsTab === 'fines_booklet'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                💰 كراس الغرامات القانونية
+              </button>
             </div>
 
             <div className="grid grid-cols-1 gap-8">
@@ -1616,6 +1637,9 @@ export const SuperAdminPanel = () => {
 
 {subSettingsTab === "evaluations" && (
                 <EvaluationManager />
+              )}
+              {subSettingsTab === "fines_booklet" && (
+                <FinesManager />
               )}
             
             </div>
