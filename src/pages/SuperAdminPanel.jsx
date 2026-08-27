@@ -546,11 +546,13 @@ export const SuperAdminPanel = () => {
     if (accountModalState.mode === 'add') {
       const newAccount = {
         ...accountData,
-        id: accountData.role === 'tracker' ? 'tracker_' + Date.now() : (accountData.isTeam ? 'team_' + Date.now() : 'dir_acc_' + Date.now()),
+        id: accountData.role === 'tracker' ? 'tracker_' + Date.now() : (accountData.role === 'accountant' ? 'accountant_' + Date.now() : (accountData.isTeam ? 'team_' + Date.now() : 'dir_acc_' + Date.now())),
         permissions: accountData.permissions ? { ...accountData.permissions } : { ...DEFAULT_PERMISSIONS }
       };
       if (accountData.role === 'tracker') {
         setTrackers(prev => [...prev, newAccount]);
+      } else if (accountData.role === 'accountant') {
+        setAccountants(prev => [...prev, newAccount]);
       } else if (accountData.isTeam) {
         setTeams(prev => [...prev, newAccount]);
       } else {
@@ -560,6 +562,8 @@ export const SuperAdminPanel = () => {
     } else {
       if (accountData.role === 'tracker') {
         setTrackers(prev => prev.map(t => t.id === accountData.id ? accountData : t));
+      } else if (accountData.role === 'accountant' || accountData.id.startsWith('accountant_') || accountData.role === 'financial_accountant') {
+        setAccountants(prev => prev.map(t => t.id === accountData.id ? accountData : t));
       } else if (accountData.isTeam) {
         setTeams(prev => prev.map(t => t.id === accountData.id ? accountData : t));
       } else {
@@ -570,8 +574,12 @@ export const SuperAdminPanel = () => {
     setAccountModalState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
   };
 
-  const handleDeleteAccount = (id, isTeam) => {
-    if (isTeam) {
+  const handleDeleteAccount = (id, isTeam, isTracker = false, isAccountant = false) => {
+    if (isAccountant) {
+      setAccountants(prev => prev.filter(a => a.id !== id));
+    } else if (isTracker) {
+      setTrackers(prev => prev.filter(t => t.id !== id));
+    } else if (isTeam) {
       setTeams(prev => prev.filter(t => t.id !== id));
     } else {
       setDirectors(prev => prev.filter(d => d.id !== id));

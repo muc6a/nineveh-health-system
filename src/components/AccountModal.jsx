@@ -255,8 +255,11 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           ? { ...initialData.permissions } 
           : { ...defaultTeamPermissions };
       }
-    } else if (((accountType === 'tracker' || accountType === 'accountant') || accountType === 'accountant')) {
+    } else if (accountType === 'tracker') {
       result.role = 'tracker';
+      result.linkedTeamSector = linkedTeamSector;
+    } else if (accountType === 'accountant') {
+      result.role = 'accountant';
       result.linkedTeamSector = linkedTeamSector;
     }
 
