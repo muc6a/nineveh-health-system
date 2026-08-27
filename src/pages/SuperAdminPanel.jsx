@@ -201,8 +201,13 @@ export const SuperAdminPanel = () => {
   const handleSavePermissions = () => {
     if (!selectedPermissionsAccount) return;
     
-    if (selectedPermissionsAccount.role === 'team' || selectedPermissionsAccount.isTeam || !selectedPermissionsAccount.role) {
+    const role = selectedPermissionsAccount.role;
+    if (role === 'team' || selectedPermissionsAccount.isTeam || !role) {
       setTeams(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
+    } else if (role === 'accountant') {
+      setAccountants(prev => prev.map(a => a.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : a));
+    } else if (role === 'tracker') {
+      setTrackers(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
     } else {
       setDirectors(prev => prev.map(d => d.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : d));
     }
