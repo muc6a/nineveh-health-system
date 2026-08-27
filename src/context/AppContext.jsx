@@ -730,6 +730,9 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('penaltyRequests_v2', setPenaltyRequests, penaltyRequests);
       setupFirebaseSync('dispatches', setDispatches, dispatches);
       setupFirebaseSync('fines', setFines, fines);
+      setupFirebaseSync('nineveh_accountants', setAccountants, accountants);
+      setupFirebaseSync('nineveh_fines_booklet', setFinesBooklet, finesBooklet);
+      setupFirebaseSync('nineveh_fine_transactions', setFineTransactions, fineTransactions);
     } catch (err) {
       console.error("Firebase load error", err);
     }
@@ -955,6 +958,9 @@ export const AppProvider = ({ children }) => {
   };
 
   // Use refs to prevent initial mount sync from overwriting cloud data
+  const isMountedAcc = React.useRef(false);
+  const isMountedFinesBooklet = React.useRef(false);
+  const isMountedFineTrans = React.useRef(false);
   const isMountedEst = React.useRef(false);
   const isMountedRep = React.useRef(false);
   const isMountedTeam = React.useRef(false);
@@ -1241,14 +1247,10 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
   useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
 
-  // Persist new states to localStorage
-  useEffect(() => {
-    localStorage.setItem('nineveh_accountants', JSON.stringify(accountants));
-  }, [accountants]);
-
-  useEffect(() => {
-    localStorage.setItem('nineveh_fines_booklet', JSON.stringify(finesBooklet));
-  }, [finesBooklet]);
+  // Persist new states to Firebase Cloud
+  useEffect(() => { if (isMountedAcc.current) syncToCloud('nineveh_accountants', accountants); else isMountedAcc.current = true; }, [accountants]);
+  useEffect(() => { if (isMountedFinesBooklet.current) syncToCloud('nineveh_fines_booklet', finesBooklet); else isMountedFinesBooklet.current = true; }, [finesBooklet]);
+  useEffect(() => { if (isMountedFineTrans.current) syncToCloud('nineveh_fine_transactions', fineTransactions); else isMountedFineTrans.current = true; }, [fineTransactions]);
 
   return (
     <AppContext.Provider value={{
