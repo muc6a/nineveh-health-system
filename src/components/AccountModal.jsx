@@ -118,7 +118,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           }
         }
         
-        if (accountType === 'tracker') {
+        if (((accountType === 'tracker' || accountType === 'accountant') || accountType === 'accountant')) {
           setLinkedTeamSector(initialData.linkedTeamSector || initialData.sector || '');
         }
       } else {
@@ -255,7 +255,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           ? { ...initialData.permissions } 
           : { ...defaultTeamPermissions };
       }
-    } else if (accountType === 'tracker') {
+    } else if (((accountType === 'tracker' || accountType === 'accountant') || accountType === 'accountant')) {
       result.role = 'tracker';
       result.linkedTeamSector = linkedTeamSector;
     }
@@ -534,7 +534,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           )}
 
           {/* TRACKER FLOW */}
-          {accountType === 'tracker' && (
+          {((accountType === 'tracker' || accountType === 'accountant') || accountType === 'accountant') && (
             <>
               {/* 1. Name */}
               <div className="space-y-2">

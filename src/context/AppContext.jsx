@@ -506,6 +506,25 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : INITIAL_REPORTS;
   });
 
+  const [accountants, setAccountants] = useState(() => {
+    const saved = localStorage.getItem('nineveh_accountants');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [finesBooklet, setFinesBooklet] = useState(() => {
+    const saved = localStorage.getItem('nineveh_fines_booklet');
+    return saved ? JSON.parse(saved) : [
+      { id: 'f1', type: 'عدم وجود إجازة صحية', amount: 500000, requiresClosure: true },
+      { id: 'f2', type: 'سوء النظافة العامة', amount: 150000, requiresClosure: false },
+      { id: 'f3', type: 'وجود مواد منتهية الصلاحية', amount: 250000, requiresClosure: false }
+    ];
+  });
+
+  const [fineTransactions, setFineTransactions] = useState(() => {
+    const saved = localStorage.getItem('nineveh_fine_transactions');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [teams, setTeams] = useState(() => {
     const saved = localStorage.getItem('teams_v2');
     let parsed = saved ? JSON.parse(saved) : null;
@@ -1306,7 +1325,7 @@ export const AppProvider = ({ children }) => {
       showDisplayPrefsModal,
       setShowDisplayPrefsModal,
       activityTypes
-    }}>
+    , accountants, setAccountants, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions}}>
       {children}
     </AppContext.Provider>
   );

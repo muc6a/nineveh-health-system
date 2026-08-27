@@ -14,6 +14,7 @@ export const ROLES_DICTIONARY = [
   { id: 'field_team_member', label: 'عضو لجنة رقابية', category: 'الكوادر الفنية' },
   { id: 'specialized_health_inspector', label: 'مفتش صحي متخصص', category: 'الكوادر الفنية' },
   { id: 'food_quality_controller', label: 'مراقب جودة الأغذية', category: 'الكوادر الفنية' },
+  { id: 'financial_accountant', label: 'محاسب مالي / مسؤول صندوق', category: 'الكوادر الفنية' },
 ];
 
 export const NINEVEH_GEOGRAPHY = {

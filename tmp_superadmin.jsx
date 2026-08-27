@@ -1,23 +1,24 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
-import { Plus, Trash2, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity, Bell, Lock, Unlock } from 'lucide-react';
+import { Plus, Trash2, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing } from 'lucide-react';
 import { AccountModal } from '../components/AccountModal';
-import { EvaluationManager } from '../components/EvaluationManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionItems, setInspectionItems, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
-  const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
+  const [activeTab, setActiveTab] = useState('roster');
 
   // Modal views
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
+  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+  const [activePermissionsTab, setActivePermissionsTab] = useState('establishments');
+  const [selectedPermissionsAccount, setSelectedPermissionsAccount] = useState(null);
   const [selectedTeamDetails, setSelectedTeamDetails] = useState(null); // Click team details modal
   const [step, setStep] = useState(1); // 2-step setup container
   const [showAddTeamModal, setShowAddTeamModal] = useState(false);
@@ -49,42 +50,13 @@ export const SuperAdminPanel = () => {
   const [editTechnicians, setEditTechnicians] = useState(['']);
 
   // Roster sub-tab: 'committees' or 'directors'
-  const [subRosterTab, setSubRosterTab] = useState(() => sessionStorage.getItem('superAdminSubRosterTab') || 'directors');
+  const [subRosterTab, setSubRosterTab] = useState('committees');
 
   // Settings sub-tab: 'evaluations', 'appearance', 'public_cms', 'database'
-  const [subSettingsTab, setSubSettingsTab] = useState(() => sessionStorage.getItem('superAdminSubSettingsTab') || 'evaluations');
-  const defaultTemplateKey = Object.keys(inspectionTemplates)[0] || 'المطاعم، الكافيهات، والمقاهي';
-  const [activeTemplateKey, setActiveTemplateKey] = useState(defaultTemplateKey);
-  const [activeEvalSection, setActiveEvalSection] = useState('A');
-  const [newEvalSection, setNewEvalSection] = useState('');
-  const [newActivity, setNewActivity] = useState('');
-  const [editingActivityIndex, setEditingActivityIndex] = useState(null);
-  const [editingActivityText, setEditingActivityText] = useState('');
-  const [cmsTab, setCmsTab] = useState(() => sessionStorage.getItem('superAdminCmsTab') || 'public'); // public, login, owner
-  const [selectedAuditLog, setSelectedAuditLog] = useState(null);
+  const [subSettingsTab, setSubSettingsTab] = useState('evaluations');
 
   // Audit sub-tab: 'trail', 'tickets'
-  const [subAuditTab, setSubAuditTab] = useState(() => sessionStorage.getItem('superAdminSubAuditTab') || 'trail');
-
-  useEffect(() => {
-    sessionStorage.setItem('superAdminActiveTab', activeTab);
-  }, [activeTab]);
-
-  useEffect(() => {
-    sessionStorage.setItem('superAdminSubRosterTab', subRosterTab);
-  }, [subRosterTab]);
-
-  useEffect(() => {
-    sessionStorage.setItem('superAdminSubSettingsTab', subSettingsTab);
-  }, [subSettingsTab]);
-
-  useEffect(() => {
-    sessionStorage.setItem('superAdminCmsTab', cmsTab);
-  }, [cmsTab]);
-
-  useEffect(() => {
-    sessionStorage.setItem('superAdminSubAuditTab', subAuditTab);
-  }, [subAuditTab]);
+  const [subAuditTab, setSubAuditTab] = useState('trail');
 
   // Eye toggles for passwords
   const [showNewTeamPass, setShowNewTeamPass] = useState(false);
@@ -96,6 +68,31 @@ export const SuperAdminPanel = () => {
   const [permsEditEsts, setPermsEditEsts] = useState(true);
   const [permsReportViolations, setPermsReportViolations] = useState(true);
   const [permsViewCoverage, setPermsViewCoverage] = useState(true);
+
+  // Edit Permissions Handlers
+  const handleSavePermissions = () => {
+    if (!selectedPermissionsAccount) return;
+    
+    if (selectedPermissionsAccount.role === 'team' || selectedPermissionsAccount.isTeam || !selectedPermissionsAccount.role) {
+      setTeams(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
+    } else {
+      setDirectors(prev => prev.map(d => d.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : d));
+    }
+    
+    triggerAlert(`تم حفظ وتحديث الأذونات لحساب (${selectedPermissionsAccount.name}) بنجاح.`);
+    setShowPermissionsModal(false);
+  };
+
+  const togglePermission = (key) => {
+    if (!selectedPermissionsAccount) return;
+    setSelectedPermissionsAccount(prev => ({
+      ...prev,
+      permissions: {
+        ...(prev.permissions || {}),
+        [key]: prev.permissions ? !prev.permissions[key] : true
+      }
+    }));
+  };
 
   // Director Form States
   const [showAddDirectorModal, setShowAddDirectorModal] = useState(false);
@@ -109,47 +106,27 @@ export const SuperAdminPanel = () => {
   const [newDirScope, setNewDirScope] = useState('centre'); // centre, districts
   const [newDirSide, setNewDirSide] = useState('left'); // left, right
   const [editingDirector, setEditingDirector] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  
-  // Permissions Modal States
-  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
-  const [activePermissionsTab, setActivePermissionsTab] = useState('establishments');
-  const [selectedPermissionsAccount, setSelectedPermissionsAccount] = useState(null);
   
   // Establishments management states
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
   const [editingEst, setEditingEst] = useState(null);
   const [qrTabMode, setQrTabMode] = useState('dining');
   const [estSearchTerm, setEstSearchTerm] = useState('');
-  const [estStatusFilter, setEstStatusFilter] = useState('all');
-  const [estTeamFilter, setEstTeamFilter] = useState('all');
 
   // Success messages alerts
   const [alertMsg, setAlertMsg] = useState('');
 
   // Zero-Code Branding Configuration States
   const [headerInput, setHeaderInput] = useState(config.headerText);
-  const [landingSettings, setLandingSettings] = useState({
-    landingGreeting: config.landingGreeting || "مرحباً بكم في",
-    landingTitle: config.landingTitle || "منظومة الرقابة الصحية",
-    landingSubtitle: config.landingSubtitle || "نافذتكم الموثوقة لضمان بيئة صحية آمنة. اختر البوابة المناسبة لك للوصول إلى الخدمات الرقمية بكل سهولة وسرعة.",
-    citizensPortalTitle: config.citizensPortalTitle || "بوابة المواطنين",
-    citizensPortalDesc: config.citizensPortalDesc || "للبحث عن المنشآت، الاطلاع على تقييماتها الصحية، وتقديم الشكاوى والبلاغات إلكترونياً.",
-    citizensPortalBtn: config.citizensPortalBtn || "الدخول للبحث والإبلاغ",
-    ownersPortalTitle: config.ownersPortalTitle || "بوابة أصحاب المنشآت",
-    ownersPortalDesc: config.ownersPortalDesc || "دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم.",
-    ownersPortalBtn: config.ownersPortalBtn || "الدخول كصاحب منشأة"
-  });
   const [allowUploadToggle, setAllowUploadToggle] = useState(config.allowImageUpload);
   const [allowExternalToggle, setAllowExternalToggle] = useState(config.allowExternalReports);
-  const [allowOwnerPortalToggle, setAllowOwnerPortalToggle] = useState(config.allowOwnerPortal ?? true);
   const [retentionDropdown, setRetentionDropdown] = useState(config.imageRetention);
   const [scaleSelector, setScaleSelector] = useState(config.uiScale);
 
   // Public CMS States
-  const [cmsHeroTitle, setCmsHeroTitle] = useState(publicCMS?.heroTitle || "");
-  const [cmsHeroSubtext, setCmsHeroSubtext] = useState(publicCMS?.heroSubtext || "");
-  const [cmsAnnouncement, setCmsAnnouncement] = useState(publicCMS?.announcement || "");
+  const [cmsHeroTitle, setCmsHeroTitle] = useState(publicCMS.heroTitle);
+  const [cmsHeroSubtext, setCmsHeroSubtext] = useState(publicCMS.heroSubtext);
+  const [cmsAnnouncement, setCmsAnnouncement] = useState(publicCMS.announcement || '');
 
   const triggerAlert = (msg) => {
     notify(msg, 'success');
@@ -172,56 +149,6 @@ export const SuperAdminPanel = () => {
     }, 3000);
   };
 
-  const handleEditTeamSubmit = (e) => {
-    e.preventDefault();
-    if (!editingTeam) return;
-    setTeams(prev => prev.map(t => t.id === editingTeam.id ? { ...editingTeam } : t));
-    
-    // Also update any tracker assigned to this team
-    if (editingTeam.id) {
-      setTrackers(prev => prev.map(tr => tr.linkedTeam === editingTeam.id ? {
-        ...tr,
-        linkedTeamSector: editingTeam.sector
-      } : tr));
-    }
-    
-    setShowEditTeamModal(false);
-    setEditingTeam(null);
-    logAudit('تعديل فريق ميداني', editingTeam.id, null, editingTeam, 'تعديل بيانات الحساب', user);
-    triggerAlert('✓ تم حفظ التعديلات على حساب اللجنة بنجاح.');
-  };
-
-  const handleOpenPermissions = (target) => {
-    setSelectedPermissionsAccount(target);
-    setActivePermissionsTab('establishments');
-    setShowPermissionsModal(true);
-  };
-
-  const handleSavePermissions = () => {
-    if (!selectedPermissionsAccount) return;
-    
-    if (selectedPermissionsAccount.role === 'team' || selectedPermissionsAccount.isTeam || !selectedPermissionsAccount.role) {
-      setTeams(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
-    } else {
-      setDirectors(prev => prev.map(d => d.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : d));
-    }
-    
-    logAudit('تعديل صلاحيات حساب', selectedPermissionsAccount.id, null, selectedPermissionsAccount.permissions, 'تعديل الصلاحيات الإدارية', user);
-    triggerAlert(`تم حفظ وتحديث الأذونات لحساب (${selectedPermissionsAccount.name}) بنجاح.`);
-    setShowPermissionsModal(false);
-  };
-
-  const togglePermission = (key) => {
-    if (!selectedPermissionsAccount) return;
-    setSelectedPermissionsAccount(prev => ({
-      ...prev,
-      permissions: {
-        ...prev.permissions,
-        [key]: !prev.permissions?.[key]
-      }
-    }));
-  };
-
   const handleEditEstSubmit = (e) => {
     e.preventDefault();
     if (!editingEst) return;
@@ -238,7 +165,7 @@ export const SuperAdminPanel = () => {
         owner: 'الحاج أبو جميل الجبوري',
         licenseNumber: 'LIC-NIN-9082',
         type: 'مطعم',
-        sector: 'مركز المحافظة - الجانب الأيمن - الموصل القديمة',
+        sector: 'الجانب الأيمن - الموصل القديمة',
         neighborhood: 'الموصل القديمة',
         latitude: '36.3421',
         longitude: '43.1256',
@@ -247,7 +174,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 94,
         lastInspection: '2026-06-25',
-        history: [{ date: '2026-06-25', score: 94, notes: 'الالتزام بالنظافة والشروط الصحية والزي الموحد ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - مركز المحافظة - الجانب الأيمن' }]
+        history: [{ date: '2026-06-25', score: 94, notes: 'الالتزام بالنظافة والشروط الصحية والزي الموحد ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - الجانب الأيمن' }]
       },
       {
         id: 'est_2',
@@ -255,7 +182,7 @@ export const SuperAdminPanel = () => {
         owner: 'مروان غانم يونس',
         licenseNumber: 'LIC-NIN-1092',
         type: 'كوفيشوب',
-        sector: 'مركز المحافظة - الجانب الأيسر - الزهور',
+        sector: 'الجانب الأيسر - الزهور',
         neighborhood: 'الزهور',
         latitude: '36.3712',
         longitude: '43.1610',
@@ -264,7 +191,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 91,
         lastInspection: '2026-07-02',
-        history: [{ date: '2026-07-02', score: 91, notes: 'المطبخ نظيف والشهادات الصحية للعمال مجددة بالكامل.', inspectorName: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر' }]
+        history: [{ date: '2026-07-02', score: 91, notes: 'المطبخ نظيف والشهادات الصحية للعمال مجددة بالكامل.', inspectorName: 'اللجنة الرقابية الأولى - الجانب الأيسر' }]
       },
       {
         id: 'est_3',
@@ -272,7 +199,7 @@ export const SuperAdminPanel = () => {
         owner: 'عمر ثامر الحيالي',
         licenseNumber: 'LIC-NIN-4432',
         type: 'قاعة أعراس',
-        sector: 'مركز المحافظة - الجانب الأيسر - حي المصارف',
+        sector: 'الجانب الأيسر - حي المصارف',
         neighborhood: 'المصارف',
         latitude: '36.3688',
         longitude: '43.1554',
@@ -281,7 +208,7 @@ export const SuperAdminPanel = () => {
         status: 'monitoring',
         score: 78,
         lastInspection: '2026-06-28',
-        history: [{ date: '2026-06-28', score: 78, notes: 'تنبيه بشأن أنظمة التهوية وتصريف المياه الفوري في القاعة.', inspectorName: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر' }]
+        history: [{ date: '2026-06-28', score: 78, notes: 'تنبيه بشأن أنظمة التهوية وتصريف المياه الفوري في القاعة.', inspectorName: 'اللجنة الرقابية الأولى - الجانب الأيسر' }]
       },
       {
         id: 'est_4',
@@ -323,7 +250,7 @@ export const SuperAdminPanel = () => {
         owner: 'أنس جاسم محمد',
         licenseNumber: 'LIC-NIN-9921',
         type: 'كوفيشوب',
-        sector: 'مركز المحافظة - الجانب الأيسر - المجموعة الثقافية',
+        sector: 'الجانب الأيسر - المجموعة الثقافية',
         neighborhood: 'المجموعة الثقافية',
         latitude: '36.3811',
         longitude: '43.1490',
@@ -332,7 +259,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 90,
         lastInspection: '2026-06-29',
-        history: [{ date: '2026-06-29', score: 90, notes: 'النظافة العامة جيدة، ويتم الالتزام بجدول تنظيف وتعقيم الأدوات.', inspectorName: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر' }]
+        history: [{ date: '2026-06-29', score: 90, notes: 'النظافة العامة جيدة، ويتم الالتزام بجدول تنظيف وتعقيم الأدوات.', inspectorName: 'اللجنة الرقابية الأولى - الجانب الأيسر' }]
       },
       {
         id: 'est_7',
@@ -340,7 +267,7 @@ export const SuperAdminPanel = () => {
         owner: 'رياض ذنون السنجري',
         licenseNumber: 'LIC-NIN-4091',
         type: 'مطعم',
-        sector: 'مركز المحافظة - الجانب الأيمن - الدواسة',
+        sector: 'الجانب الأيمن - الدواسة',
         neighborhood: 'الدواسة',
         latitude: '36.3385',
         longitude: '43.1311',
@@ -349,7 +276,7 @@ export const SuperAdminPanel = () => {
         status: 'compliant',
         score: 93,
         lastInspection: '2026-07-01',
-        history: [{ date: '2026-07-01', score: 93, notes: 'أواني الوجبات نظيفة والالتزام بالزي الصحي الرسمي ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - مركز المحافظة - الجانب الأيمن' }]
+        history: [{ date: '2026-07-01', score: 93, notes: 'أواني الوجبات نظيفة والالتزام بالزي الصحي الرسمي ممتاز.', inspectorName: 'اللجنة الرقابية الثانية - الجانب الأيمن' }]
       },
       {
         id: 'est_8',
@@ -446,18 +373,11 @@ export const SuperAdminPanel = () => {
       return;
     }
 
-      const formatNeighborhoods = (str) => {
-        if (!str) return '';
-        const parts = str.split(/[,،]| و /).filter(p => p.trim());
-        if (parts.length > 2) return 'محدد';
-        return str;
-      };
-
       let calculatedSector = '';
       if (generalScope === 'mosul') {
-        calculatedSector = `${mosulSide === 'left' ? 'مركز المحافظة - الجانب الأيسر' : 'مركز المحافظة - الجانب الأيمن'} - ${formatNeighborhoods(mosulNeighborhood)}`;
+        calculatedSector = `${mosulSide === 'left' ? 'الجانب الأيسر' : 'الجانب الأيمن'} - ${mosulNeighborhood}`;
       } else {
-        calculatedSector = `${districtName} - ${formatNeighborhoods(districtSubsector)}`;
+        calculatedSector = `${districtName} - ${districtSubsector}`;
       }
 
       const newTeamObj = {
@@ -476,7 +396,7 @@ export const SuperAdminPanel = () => {
           showMainDashboard: false,
           showReportsPage: false,
           showDirectivesPage: false,
-
+          showDeliveryPage: false,
           showPublicEvalsPage: false,
           sendDirective: false,
           replyDirective: false
@@ -523,7 +443,7 @@ export const SuperAdminPanel = () => {
     showMainDashboard: false,
     showReportsPage: false,
     showDirectivesPage: false,
-
+    showDeliveryPage: false,
     showPublicEvalsPage: false,
     // Section C: Directives
     sendDirective: false,
@@ -546,7 +466,7 @@ export const SuperAdminPanel = () => {
       const newAccount = {
         ...accountData,
         id: accountData.role === 'tracker' ? 'tracker_' + Date.now() : (accountData.isTeam ? 'team_' + Date.now() : 'dir_acc_' + Date.now()),
-        permissions: accountData.permissions ? { ...accountData.permissions } : { ...DEFAULT_PERMISSIONS }
+        permissions: { ...DEFAULT_PERMISSIONS }
       };
       if (accountData.role === 'tracker') {
         setTrackers(prev => [...prev, newAccount]);
@@ -585,10 +505,8 @@ export const SuperAdminPanel = () => {
       headerText: headerInput,
       allowImageUpload: allowUploadToggle,
       allowExternalReports: allowExternalToggle,
-      allowOwnerPortal: allowOwnerPortalToggle,
       imageRetention: retentionDropdown,
-      uiScale: scaleSelector,
-      ...landingSettings
+      uiScale: scaleSelector
     }));
     setPublicCMS({
       heroTitle: cmsHeroTitle,
@@ -600,42 +518,27 @@ export const SuperAdminPanel = () => {
 
   // Checklist text editing
   const handleItemTextChange = (id, newText) => {
-    setInspectionTemplates(prev => {
-      const updatedTemplate = prev[activeTemplateKey].map(item => item.id === id ? { ...item, text: newText } : item);
-      return { ...prev, [activeTemplateKey]: updatedTemplate };
-    });
+    setInspectionItems(prev => prev.map(item => item.id === id ? { ...item, text: newText } : item));
   };
 
   const handleItemPointsChange = (id, newPoints) => {
-    setInspectionTemplates(prev => {
-      const updatedTemplate = prev[activeTemplateKey].map(item => item.id === id ? { ...item, points: parseInt(newPoints) || 0 } : item);
-      return { ...prev, [activeTemplateKey]: updatedTemplate };
-    });
+    setInspectionItems(prev => prev.map(item => item.id === id ? { ...item, points: parseInt(newPoints) || 0 } : item));
   };
 
-  const handleAddChecklistItem = (sectionKey = 'A') => {
-    const currentTemplate = inspectionTemplates[activeTemplateKey] || [];
-    const newId = currentTemplate.length > 0 ? Math.max(...currentTemplate.map(i => i.id)) + 1 : 1;
+  const handleAddChecklistItem = () => {
+    const newId = inspectionItems.length > 0 ? Math.max(...inspectionItems.map(i => i.id)) + 1 : 1;
     const newItem = {
       id: newId,
-      section: typeof sectionKey === 'string' ? sectionKey : 'A',
-      sectionName: typeof sectionKey === 'string' ? sectionKey : 'A', // Add sectionName for dynamic handling
+      section: 'A',
       text: 'بند فحص رقابي مضاف حديثاً - يرجى كتابة الاشتراط الصحي هنا.',
       points: 5
     };
-    
-    setInspectionTemplates(prev => {
-      const updatedTemplate = [...(prev[activeTemplateKey] || []), newItem];
-      return { ...prev, [activeTemplateKey]: updatedTemplate };
-    });
+    setInspectionItems(prev => [...prev, newItem]);
     triggerAlert('تم إضافة بند رقابي جديد لقائمة التقييم بقيمة 5 درجات.');
   };
 
   const handleDeleteChecklistItem = (id) => {
-    setInspectionTemplates(prev => {
-      const updatedTemplate = prev[activeTemplateKey].filter(item => item.id !== id);
-      return { ...prev, [activeTemplateKey]: updatedTemplate };
-    });
+    setInspectionItems(prev => prev.filter(item => item.id !== id));
     triggerAlert('تم حذف البند الرقابي بنجاح.');
   };
 
@@ -657,22 +560,12 @@ export const SuperAdminPanel = () => {
     }
   };
 
-  const toggleFreezeTeam = (id) => {
-    setTeams(prev => prev.map(t => t.id === id ? { ...t, active: !t.active } : t));
-    triggerAlert('تم تغيير حالة الحساب بنجاح.');
-  };
-
-  const toggleFreezeDirector = (id) => {
-    setDirectors(prev => prev.map(d => d.id === id ? { ...d, active: !d.active } : d));
-    triggerAlert('تم تغيير حالة الحساب بنجاح.');
-  };
-
   const handleBackupExport = () => {
     const dataStr = JSON.stringify({
       establishments,
       reports,
       teams,
-      inspectionTemplates,
+      inspectionItems,
       directors,
       directives,
       config
@@ -695,7 +588,7 @@ export const SuperAdminPanel = () => {
           const parsed = JSON.parse(event.target.result);
           if (parsed.establishments) setEstablishments(parsed.establishments);
           if (parsed.teams) setTeams(parsed.teams);
-          if (parsed.inspectionTemplates) setInspectionTemplates(parsed.inspectionTemplates);
+          if (parsed.inspectionItems) setInspectionItems(parsed.inspectionItems);
           if (parsed.directors) setDirectors(parsed.directors);
           if (parsed.reports) setReports(parsed.reports);
           if (parsed.directives) setDirectives(parsed.directives);
@@ -710,34 +603,7 @@ export const SuperAdminPanel = () => {
 
   const handleLogout = () => {
     setUser(null);
-    navigate('/');
-  };
-
-  const handleCreateDirector = (e) => {
-    e.preventDefault();
-    const newDir = {
-      id: 'dir_' + Date.now(),
-      name: newDirName,
-      title: newDirTitle,
-      email: newDirEmail,
-      phone: newDirPhone,
-      password: newDirPass,
-      role: newDirRole,
-      status: 'active',
-      active: true,
-      scope: newDirRole === 'director_committee' ? { scope: newDirScope, side: newDirSide } : null
-    };
-    setDirectors(prev => [...prev, newDir]);
-    setShowAddDirectorModal(false);
-    triggerAlert('تم إضافة حساب المدير بنجاح.');
-  };
-
-  const handleEditDirectorSubmit = (e) => {
-    e.preventDefault();
-    setDirectors(prev => prev.map(d => d.id === editingDirector.id ? editingDirector : d));
-    setShowEditDirectorModal(false);
-    setEditingDirector(null);
-    triggerAlert('تم تعديل بيانات المدير بنجاح.');
+    navigate('/login');
   };
 
   return (
@@ -754,23 +620,17 @@ export const SuperAdminPanel = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
+        <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-650 dark:text-slate-350">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-850 px-2.5 py-1 rounded-xl">
             <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             <span className="text-slate-300">|</span>
             <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
           <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-            <WeatherWidget variant="full" />
+            <span> Mosul الطقس في الموصل: 38°C مشمس ☀️</span>
           </div>
-          
+          <NotificationBell />
           <ThemeToggle />
-          <button
-            onClick={() => setShowDisplayPrefsModal(true)}
-            className="px-3 py-1.5 rounded-xl border border-teal-500/20 bg-teal-500/5 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer font-black"
-          >
-            🎨 تخصيص العرض
-          </button>
           <button
             onClick={handleLogout}
             className="px-3 py-1.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer font-black"
@@ -792,21 +652,7 @@ export const SuperAdminPanel = () => {
             }`}
           >
             <Users className="w-4.5 h-4.5" />
-            <span>إدارة الحسابات والصلاحيات</span>
-          </button>
-        )}
-
-        {user?.role === 'admin' && (
-          <button
-            onClick={() => setActiveTab('general_settings')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'general_settings'
-                ? 'bg-teal-600 text-white shadow-md'
-                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-            }`}
-          >
-            <Settings className="w-4.5 h-4.5" />
-            <span>هوية المنظومة والواجهات</span>
+            <span>👥 إدارة حسابات اللجان الميدانية</span>
           </button>
         )}
 
@@ -819,8 +665,8 @@ export const SuperAdminPanel = () => {
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Database className="w-4.5 h-4.5" />
-            <span>قواعد البيانات والتخزين</span>
+            <Settings className="w-4.5 h-4.5" />
+            <span>⚙️ الصفحات</span>
           </button>
         )}
 
@@ -833,7 +679,7 @@ export const SuperAdminPanel = () => {
           }`}
         >
           <Building className="w-4.5 h-4.5" />
-          <span>قاعدة بيانات المنشآت</span>
+          <span>🍽️ إدارة المنشأة</span>
         </button>
 
         {(user?.role === 'admin' || user?.role === 'central_director') && (
@@ -847,7 +693,7 @@ export const SuperAdminPanel = () => {
               }`}
             >
               <ShieldAlert className="w-4.5 h-4.5" />
-              <span>سجل المراقبة والتدقيق</span>
+              <span>🛡️ تعديلات</span>
             </button>
 
             <button
@@ -859,17 +705,27 @@ export const SuperAdminPanel = () => {
               }`}
             >
               <AlertTriangle className="w-4.5 h-4.5" />
-              <span>نظام التعميم والبث العاجل</span>
+              <span>📢 البث العاجل</span>
             </button>
 
-
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+                activeTab === 'analytics'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              }`}
+            >
+              <BarChart3 className="w-4.5 h-4.5" />
+              <span>📊 كفاءة الفرق</span>
+            </button>
           </>
         )}
       </div>
 
       <div className="max-w-7xl mx-auto">
         {alertMsg && (
-          <div className="mb-4 p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-400 text-xs font-bold text-center">
+          <div className="mb-4 p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-600 dark:text-teal-400 text-xs font-bold text-center">
             <span>{alertMsg}</span>
           </div>
         )}
@@ -881,31 +737,31 @@ export const SuperAdminPanel = () => {
             {/* Sub Roster Tabs Selection Bar */}
             <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
               <button
-                onClick={() => setSubRosterTab('directors')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'directors'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                👑 إدارة المدراء والقيادات
-              </button>
-              <button
                 onClick={() => setSubRosterTab('committees')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subRosterTab === 'committees'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
                 }`}
               >
-                👥 إدارة اللجان الميدانية
+                👥 إدارة حسابات اللجان الميدانية ({teams.length})
+              </button>
+              <button
+                onClick={() => setSubRosterTab('directors')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subRosterTab === 'directors'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                💼 إدارة حسابات المدراء ({directors?.length || 0})
               </button>
               <button
                 onClick={() => setSubRosterTab('trackers')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subRosterTab === 'trackers'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
                 }`}
               >
                 🕵️‍♂️ إدارة المتابعين ({trackers?.length || 0})
@@ -954,7 +810,7 @@ export const SuperAdminPanel = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-right border-collapse text-xs font-bold">
                     <thead>
-                      <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                      <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-850 text-slate-500">
                         <th className="p-4">اسم فريق التفتيش (انقر للتفاصيل)</th>
                         <th className="p-4">القطاع المكلف</th>
                         <th className="p-4">البريد الإلكتروني للوزارة</th>
@@ -973,7 +829,7 @@ export const SuperAdminPanel = () => {
                             <Info className="w-4 h-4 text-slate-400 shrink-0" />
                             <span className="underline decoration-dotted">{t.name}</span>
                           </td>
-                          <td className="p-4 text-teal-600 dark:text-teal-400">قطاع {t.sector}</td>
+                          <td className="p-4 text-teal-600 dark:text-teal-600 dark:text-teal-400">قطاع {t.sector}</td>
                           <td className="p-4 text-slate-500 font-normal dir-ltr">{t.email}</td>
                           <td className="p-4 text-slate-500">{t.phone}</td>
                           <td className="p-4">
@@ -986,18 +842,22 @@ export const SuperAdminPanel = () => {
                           <td className="p-4">
                             <div className="flex justify-center gap-2">
                               <button
-                                onClick={() => handleOpenPermissions({ ...t, isTeam: true })}
-                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 text-[10px] transition-all cursor-pointer flex items-center gap-1 font-bold"
-                              >
-                                <Lock className="w-3.5 h-3.5" />
-                                <span>الأذونات</span>
-                              </button>
-                              <button
                                 onClick={() => handleOpenEditAccount({ ...t, isTeam: true })}
-                                className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-[10px] transition-all cursor-pointer flex items-center gap-1 font-bold"
+                                className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-[10px] transition-all cursor-pointer flex items-center gap-1"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                                 <span>تعديل</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedPermissionsAccount({ ...t, role: 'team' });
+                                  setActivePermissionsTab('establishments');
+                                  setShowPermissionsModal(true);
+                                }}
+                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 text-[10px] transition-all cursor-pointer flex items-center gap-1"
+                              >
+                                <Settings className="w-3.5 h-3.5" />
+                                <span>الأذونات</span>
                               </button>
                               <button
                                 onClick={() => toggleFreezeTeam(t.id)}
@@ -1041,27 +901,11 @@ export const SuperAdminPanel = () => {
                   </button>
                 </div>
 
-                {/* Directors Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
-                    <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{directors?.length || 0}</span>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">إجمالي المدراء</p>
-                  </div>
-                  <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/30 text-center">
-                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{directors?.filter(d => d.status !== 'frozen').length || 0}</span>
-                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mt-1">المدراء النشطين</p>
-                  </div>
-                  <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border border-slate-300 dark:border-slate-700 text-center">
-                    <span className="text-2xl font-black text-slate-500 dark:text-slate-400">{directors?.filter(d => d.status === 'frozen').length || 0}</span>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">المدراء المجمدين</p>
-                  </div>
-                </div>
-
                 {/* Director roster table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-right border-collapse text-xs font-bold">
                     <thead>
-                      <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                      <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-850 text-slate-500">
                         <th className="p-4">الاسم الكامل للمدير</th>
                         <th className="p-4">المسمى الوظيفي / الصلاحية</th>
                         <th className="p-4">البريد الإلكتروني للوزارة</th>
@@ -1073,8 +917,8 @@ export const SuperAdminPanel = () => {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                       {(directors || []).map(d => (
                         <tr key={d.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
-                          <td className="p-4 text-slate-800 dark:text-slate-200">{d.name}</td>
-                          <td className="p-4 text-teal-600 dark:text-teal-400">{d.title}</td>
+                          <td className="p-4 text-slate-800 dark:text-slate-800 dark:text-slate-200">{d.name}</td>
+                          <td className="p-4 text-teal-600 dark:text-teal-600 dark:text-teal-400">{d.title}</td>
                           <td className="p-4 text-slate-500 font-normal dir-ltr">{d.email}</td>
                           <td className="p-4 text-slate-500">{d.phone}</td>
                           <td className="p-4">
@@ -1087,18 +931,22 @@ export const SuperAdminPanel = () => {
                           <td className="p-4">
                             <div className="flex justify-center gap-2">
                               <button
-                                onClick={() => handleOpenPermissions({ ...d, isTeam: false })}
-                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 text-[10px] transition-all cursor-pointer flex items-center gap-1 font-bold"
-                              >
-                                <Lock className="w-3.5 h-3.5" />
-                                <span>الأذونات</span>
-                              </button>
-                              <button
                                 onClick={() => handleOpenEditAccount(d, 'director')}
                                 className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 text-[10px] transition-all cursor-pointer flex items-center gap-1"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                                 <span>تعديل</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedPermissionsAccount(d);
+                                  setActivePermissionsTab('pages');
+                                  setShowPermissionsModal(true);
+                                }}
+                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 text-[10px] transition-all cursor-pointer flex items-center gap-1"
+                              >
+                                <Settings className="w-3.5 h-3.5" />
+                                <span>الأذونات</span>
                               </button>
                               <button
                                 onClick={() => toggleFreezeDirector(d.id)}
@@ -1143,32 +991,15 @@ export const SuperAdminPanel = () => {
                   </button>
                 </div>
 
-                {/* Trackers Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
-                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{trackers?.length || 0}</span>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">إجمالي المتابعين</p>
-                  </div>
-                  <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/30 text-center">
-                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{trackers?.filter(t => t.status !== 'frozen').length || 0}</span>
-                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mt-1">المتابعين النشطين</p>
-                  </div>
-                  <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border border-slate-300 dark:border-slate-700 text-center">
-                    <span className="text-2xl font-black text-slate-500 dark:text-slate-400">{trackers?.filter(t => t.status === 'frozen').length || 0}</span>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">المتابعين المجمدين</p>
-                  </div>
-                </div>
-
                 {/* Trackers roster table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-right border-collapse text-xs font-bold">
                     <thead>
-                      <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                      <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-850 text-slate-500">
                         <th className="p-4">اسم المتابع</th>
                         <th className="p-4">البريد/المعرف</th>
                         <th className="p-4">رقم الهاتف</th>
                         <th className="p-4">القطاع (الفريق المرتبط)</th>
-                        <th className="p-4">حالة الحساب</th>
                         <th className="p-4 text-center">الإجراءات</th>
                       </tr>
                     </thead>
@@ -1178,9 +1009,6 @@ export const SuperAdminPanel = () => {
                           <td className="p-4 font-black text-slate-800 dark:text-white">{t.name}</td>
                           <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.email || t.username}</td>
                           <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.phone}</td>
-                          <td className="p-4 font-bold text-teal-600 dark:text-teal-400">
-                            {t.linkedTeamSector || t.sector || 'غير محدد'}
-                          </td>
                           <td className="p-4">
                             {t.active !== false ? (
                               <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط</span>
@@ -1230,484 +1058,143 @@ export const SuperAdminPanel = () => {
               </>
             )}
 
-            {subRosterTab === 'accountants' && (
-              <>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <div>
-                    <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول فريق متابعة الإغلاق</h2>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">الكوادر المكلفة بالتحقق من الإغلاقات في الميدان</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'accountant' });
-                    }}
-                    className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs transition-all cursor-pointer"
-                  >
-                    ➕ إضافة حساب متابع جديد
-                  </button>
-                </div>
-
-                {/* Trackers Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
-                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{accountants?.length || 0}</span>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">إجمالي المحاسبين</p>
-                  </div>
-                  <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-800/30 text-center">
-                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{accountants?.filter(t => t.status !== 'frozen').length || 0}</span>
-                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 mt-1">المحاسبين النشطين</p>
-                  </div>
-                  <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border border-slate-300 dark:border-slate-700 text-center">
-                    <span className="text-2xl font-black text-slate-500 dark:text-slate-400">{accountants?.filter(t => t.status === 'frozen').length || 0}</span>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">المحاسبين المجمدين</p>
-                  </div>
-                </div>
-
-                {/* Trackers roster table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-right border-collapse text-xs font-bold">
-                    <thead>
-                      <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                        <th className="p-4">اسم المحاسب</th>
-                        <th className="p-4">البريد/المعرف</th>
-                        <th className="p-4">رقم الهاتف</th>
-                        <th className="p-4">القطاع (الفريق المرتبط)</th>
-                        <th className="p-4">حالة الحساب</th>
-                        <th className="p-4 text-center">الإجراءات</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
-                      {(accountants || []).map(t => (
-                        <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                          <td className="p-4 font-black text-slate-800 dark:text-white">{t.name}</td>
-                          <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.email || t.username}</td>
-                          <td className="p-4 text-slate-600 dark:text-slate-300 dir-ltr text-right">{t.phone}</td>
-                          <td className="p-4 font-bold text-teal-600 dark:text-teal-400">
-                            {t.linkedTeamSector || t.sector || 'غير محدد'}
-                          </td>
-                          <td className="p-4">
-                            {t.active !== false ? (
-                              <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط</span>
-                            ) : (
-                              <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-600 text-[10px]">مجمد</span>
-                            )}
-                          </td>
-                          <td className="p-4">
-                            <div className="flex gap-2 justify-center">
-                              <button
-                                onClick={() => handleOpenEditAccount(t, 'accountant')}
-                                className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
-                              >
-                                <Edit className="w-3.5 h-3.5" /> تعديل
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const updated = accountants.map(tr => tr.id === t.id ? { ...tr, active: !(tr.active !== false) } : tr);
-                                  setTrackers(updated);
-                                  triggerAlert(t.active !== false ? 'تم تجميد المحاسب' : 'تم تفعيل المحاسب');
-                                }}
-                                className={`px-2.5 py-1.5 rounded-xl text-[10px] transition-all cursor-pointer ${
-                                  t.active !== false
-                                    ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600'
-                                    : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600'
-                                }`}
-                              >
-                                {t.active !== false ? '⏸️ تجميد' : '▶️ تفعيل'}
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const updated = accountants.filter(tr => tr.id !== t.id);
-                                  setTrackers(updated);
-                                  triggerAlert('تم حذف المحاسب بنجاح');
-                                }}
-                                className="px-2.5 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" /> حذف
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-
-
-          </section>
-        )}
-
-                {/* Tab 1.5: General Branding & Settings */}
-        {activeTab === 'general_settings' && (
-          <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
-            <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
-              <Settings className="w-5 h-5 text-teal-600" />
-              <span>هوية المنظومة والواجهات</span>
-            </h2>
-            
-            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 flex-wrap">
-              <button
-                onClick={() => setSubSettingsTab('identity')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  (subSettingsTab === 'identity' || subSettingsTab === 'database')
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                🎨 الهوية والترويسة
-              </button>
-              <button
-                onClick={() => setSubSettingsTab('public_cms')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'public_cms'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                📢 إدارة البوابات
-              </button>
-              <button
-                onClick={() => setSubSettingsTab('evaluations')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'evaluations'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                📝 إدارة النشاطات وبنود التقييم
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-8">
-              {(subSettingsTab === 'identity' || subSettingsTab === 'database') && (
-                <div className="max-w-xl space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
-                    <input
-                      type="text"
-                      value={headerInput}
-                      onChange={(e) => setHeaderInput(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                    />
-                    <p className="text-[10px] text-slate-400 mt-2 mb-4">
-                      هذا هو العنوان الرئيسي الذي سيظهر في أعلى الشاشة في كافة أرجاء المنظومة.
-                    </p>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                    <h3 className="text-sm font-black text-slate-700 dark:text-white mb-4">نصوص واجهة الهبوط (الصفحة الرئيسية)</h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">رسالة الترحيب</label>
-                          <input type="text" value={landingSettings.landingGreeting} onChange={(e) => setLandingSettings({...landingSettings, landingGreeting: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">الاسم الرئيسي</label>
-                          <input type="text" value={landingSettings.landingTitle} onChange={(e) => setLandingSettings({...landingSettings, landingTitle: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500" />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-500 block">الوصف التفصيلي</label>
-                        <textarea value={landingSettings.landingSubtitle} onChange={(e) => setLandingSettings({...landingSettings, landingSubtitle: e.target.value})} className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 h-20 resize-none"></textarea>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                        <div className="space-y-3 p-4 bg-teal-50 dark:bg-teal-900/10 rounded-2xl border border-teal-100 dark:border-teal-800/30">
-                          <h4 className="text-xs font-black text-teal-600 dark:text-teal-400">بوابة المواطنين</h4>
-                          <input type="text" placeholder="العنوان" value={landingSettings.citizensPortalTitle} onChange={(e) => setLandingSettings({...landingSettings, citizensPortalTitle: e.target.value})} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-teal-200 dark:border-teal-800 text-xs font-bold outline-none" />
-                          <textarea placeholder="الوصف" value={landingSettings.citizensPortalDesc} onChange={(e) => setLandingSettings({...landingSettings, citizensPortalDesc: e.target.value})} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-teal-200 dark:border-teal-800 text-xs outline-none h-16 resize-none"></textarea>
-                          <input type="text" placeholder="نص الزر" value={landingSettings.citizensPortalBtn} onChange={(e) => setLandingSettings({...landingSettings, citizensPortalBtn: e.target.value})} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-teal-200 dark:border-teal-800 text-xs outline-none" />
-                        </div>
-
-                        <div className="space-y-3 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-800/30">
-                          <h4 className="text-xs font-black text-amber-600 dark:text-amber-400">بوابة المنشآت</h4>
-                          <input type="text" placeholder="العنوان" value={landingSettings.ownersPortalTitle} onChange={(e) => setLandingSettings({...landingSettings, ownersPortalTitle: e.target.value})} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-800 text-xs font-bold outline-none" />
-                          <textarea placeholder="الوصف" value={landingSettings.ownersPortalDesc} onChange={(e) => setLandingSettings({...landingSettings, ownersPortalDesc: e.target.value})} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-800 text-xs outline-none h-16 resize-none"></textarea>
-                          <input type="text" placeholder="نص الزر" value={landingSettings.ownersPortalBtn} onChange={(e) => setLandingSettings({...landingSettings, ownersPortalBtn: e.target.value})} className="w-full p-2 rounded-lg bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-800 text-xs outline-none" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={saveZeroCodeConfig}
-                    className="mt-6 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer block"
-                  >
-                    حفظ وتطبيق التغييرات
-                  </button>
-                </div>
-              )}
-
-{subSettingsTab === 'public_cms' && (
-                <div className="glassmorphic-card p-6 space-y-6">
-                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <Globe className="w-5 h-5 text-teal-600" />
-                    <span>إدارة البوابات (Portals CMS)</span>
-                  </h2>
-
-                  <p className="text-[10px] text-slate-400 leading-relaxed text-right">
-                    نظام مركزي للتحكم بجميع بوابات المنظومة (تسجيل الدخول، بوابة المواطن، وبوابة أصحاب المنشآت).
-                  </p>
-
-                  {/* CMS Tabs */}
-                  <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mt-4">
-                    <button
-                      onClick={() => setCmsTab('login')}
-                      className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                        cmsTab === 'login'
-                          ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                          : 'text-slate-400 hover:text-slate-600'
-                      }`}
-                    >
-                      تسجيل الدخول للموقع
-                    </button>
-                    <button
-                      onClick={() => setCmsTab('public')}
-                      className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                        cmsTab === 'public'
-                          ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                          : 'text-slate-400 hover:text-slate-600'
-                      }`}
-                    >
-                      بوابة المواطن (الاستعلام)
-                    </button>
-                    <button
-                      onClick={() => setCmsTab('owner')}
-                      className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                        cmsTab === 'owner'
-                          ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                          : 'text-slate-400 hover:text-slate-600'
-                      }`}
-                    >
-                      بوابة أصحاب المنشآت
-                    </button>
-                  </div>
-
-                  {/* CMS Content */}
-                  <div className="space-y-4 pt-4 text-right">
-                    
-                    {cmsTab === 'login' && (
-                      <div className="space-y-4 animate-fade-in">
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">الرابط المباشر للبوابة</label>
-                          <div className="flex gap-2">
-                            <input 
-                              type="text" 
-                              value={loginCMS?.customLink ?? (window.location.origin + '/login')} 
-                              onChange={(e) => setLoginCMS({...loginCMS, customLink: e.target.value})} 
-                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-left dir-ltr focus:outline-none focus:border-teal-500 transition-all text-indigo-600 dark:text-indigo-400 font-bold" 
-                            />
-                            <button onClick={() => { navigator.clipboard.writeText(loginCMS?.customLink || window.location.origin + '/login'); triggerAlert('تم النسخ!'); }} className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-bold transition-colors">نسخ</button>
-                          </div>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">العنوان الرئيسي للواجهة</label>
-                          <input type="text" value={loginCMS?.heroTitle || ''} onChange={(e) => setLoginCMS({...loginCMS, heroTitle: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all font-bold" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">النص الوصفي الفرعي</label>
-                          <textarea value={loginCMS?.heroSubtext || ''} onChange={(e) => setLoginCMS({...loginCMS, heroSubtext: e.target.value})} rows={2} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all resize-none"></textarea>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">رسالة تعميم للموظفين (تظهر أعلى الدخول)</label>
-                          <input type="text" value={loginCMS?.announcement || ''} onChange={(e) => setLoginCMS({...loginCMS, announcement: e.target.value})} placeholder="مثال: يرجى تحديث التطبيق إلى آخر إصدار..." className="w-full bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-amber-500 transition-all text-amber-700 dark:text-amber-500" />
-                        </div>
-                      </div>
-                    )}
-
-                    {cmsTab === 'public' && (
-                      <div className="space-y-4 animate-fade-in">
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">الرابط المباشر للبوابة</label>
-                          <div className="flex gap-2">
-                            <input 
-                              type="text" 
-                              value={publicCMS?.customLink ?? (window.location.origin + '/public-search')} 
-                              onChange={(e) => setPublicCMS({...publicCMS, customLink: e.target.value})} 
-                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-left dir-ltr focus:outline-none focus:border-teal-500 transition-all text-indigo-600 dark:text-indigo-400 font-bold" 
-                            />
-                            <button onClick={() => { navigator.clipboard.writeText(publicCMS?.customLink || window.location.origin + '/public-search'); triggerAlert('تم النسخ!'); }} className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-bold transition-colors">نسخ</button>
-                          </div>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">العنوان الترحيبي الرئيسي</label>
-                          <input type="text" value={publicCMS?.heroTitle || ''} onChange={(e) => setPublicCMS({...publicCMS, heroTitle: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all font-bold" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">النص الترحيبي الفرعي (الوصف)</label>
-                          <textarea value={publicCMS?.heroSubtext || ''} onChange={(e) => setPublicCMS({...publicCMS, heroSubtext: e.target.value})} rows={3} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all resize-none"></textarea>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">إعلان عاجل في بوابة المواطنين</label>
-                          <input type="text" value={publicCMS?.announcement || ''} onChange={(e) => setPublicCMS({...publicCMS, announcement: e.target.value})} placeholder="مثال: يرجى الانتباه للتحذيرات الصحية الأخيرة..." className="w-full bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-amber-500 transition-all text-amber-700 dark:text-amber-500" />
-                        </div>
-<label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
-                    <div className="flex flex-col text-right">
-                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل بوابة المواطن</span>
-                      <span className="text-[9px] text-slate-400 font-medium">تفعيل هذه البوابة يسمح للمواطنين بالاستعلام عن تقييم المطاعم وتقديم بلاغات التوصيل</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={allowExternalToggle}
-                      onChange={() => setAllowExternalToggle(!allowExternalToggle)}
-                      className="w-10 h-5 accent-teal-600 cursor-pointer"
-                    />
-                  </label>
-                      </div>
-                    )}
-
-                    {cmsTab === 'owner' && (
-                      <div className="space-y-4 animate-fade-in">
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">الرابط المباشر للبوابة</label>
-                          <div className="flex gap-2">
-                            <input 
-                              type="text" 
-                              value={ownerCMS?.customLink ?? (window.location.origin + '/owner')} 
-                              onChange={(e) => setOwnerCMS({...ownerCMS, customLink: e.target.value})} 
-                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-left dir-ltr focus:outline-none focus:border-teal-500 transition-all text-indigo-600 dark:text-indigo-400 font-bold" 
-                            />
-                            <button onClick={() => { navigator.clipboard.writeText(ownerCMS?.customLink || window.location.origin + '/owner'); triggerAlert('تم النسخ!'); }} className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-bold transition-colors">نسخ</button>
-                          </div>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">العنوان الترحيبي الرئيسي</label>
-                          <input type="text" value={ownerCMS?.heroTitle || ''} onChange={(e) => setOwnerCMS({...ownerCMS, heroTitle: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all font-bold" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">النص الوصفي الفرعي</label>
-                          <textarea value={ownerCMS?.heroSubtext || ''} onChange={(e) => setOwnerCMS({...ownerCMS, heroSubtext: e.target.value})} rows={3} className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-teal-500 transition-all resize-none"></textarea>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-slate-500 block">تنبيه عاجل لأصحاب المنشآت</label>
-                          <input type="text" value={ownerCMS?.announcement || ''} onChange={(e) => setOwnerCMS({...ownerCMS, announcement: e.target.value})} placeholder="مثال: يرجى تجديد الشهادات الصحية قبل نهاية الشهر..." className="w-full bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl px-4 py-3 text-sm text-right focus:outline-none focus:border-red-500 transition-all text-red-700 dark:text-red-500" />
-                        </div>
-                        <div className="pt-2 border-t border-slate-200/50 dark:border-slate-800/50 mt-4">
-                          <label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
-                            <div className="flex flex-col text-right">
-                              <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل بوابة أصحاب المنشآت</span>
-                              <span className="text-[9px] text-slate-400 font-medium">إغلاق هذه البوابة يمنع أصحاب المنشآت من الاستعلام عن منشآتهم</span>
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={allowOwnerPortalToggle}
-                              onChange={() => setAllowOwnerPortalToggle(!allowOwnerPortalToggle)}
-                              className="w-10 h-5 accent-teal-600 cursor-pointer"
-                            />
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                    
-                  </div>
-
-                  <button
-                    onClick={saveZeroCodeConfig}
-                    className="w-full py-4 mt-6 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(13,148,136,0.4)] hover:-translate-y-0.5"
-                  >
-                    حفظ وتطبيق التغييرات
-                  </button>
-                </div>
-              )}
-              
-
-{subSettingsTab === "evaluations" && (
-                <EvaluationManager />
-              )}
-            
-            </div>
           </section>
         )}
 
         {/* Tab 2: Settings & Parameters */}
         {activeTab === 'settings' && (
           <section className="glassmorphic-card p-6">
-                <div className="glassmorphic-card p-6 space-y-6">
-                  {/* Backup and Restore Database Panel */}
+            {/* Sub Settings Tabs Selection Bar */}
+            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto hide-scrollbar whitespace-nowrap">
+              <button
+                onClick={() => setSubSettingsTab('evaluations')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subSettingsTab === 'evaluations'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                📝 محرر بنود التقييم
+              </button>
+              <button
+                onClick={() => setSubSettingsTab('appearance')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subSettingsTab === 'appearance'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                🎨 تخصيص مظهر النظام
+              </button>
+              <button
+                onClick={() => setSubSettingsTab('public_cms')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subSettingsTab === 'public_cms'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                🌐 واجهة المواطن (CMS)
+              </button>
+              <button
+                onClick={() => setSubSettingsTab('database')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subSettingsTab === 'database'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                💾 النسخ الاحتياطي
+              </button>
+
+              <button
+                onClick={() => setSubSettingsTab('system_controls')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-1 ${
+                  subSettingsTab === 'system_controls'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                <ShieldAlert className="w-4 h-4" />
+                تحكم النظام ومعايير القياس
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8">
+              {subSettingsTab === 'appearance' && (
+            <div className="glassmorphic-card p-6 space-y-6">
+              {/* Branding and Storage Toggles */}
               <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Database className="w-5 h-5 text-teal-600 animate-pulse" />
-                <span>إدارة النسخ الاحتياطي واستعادة البيانات</span>
+                <Settings className="w-5 h-5 text-teal-600" />
+                <span>أولاً: محرك التهيئة البصرية والتحكم بمستودعات الصور</span>
               </h2>
 
-              <p className="text-[10px] text-slate-400 leading-relaxed text-right">
-                تتيح لك هذه الخدمة سحب نسخة احتياطية كاملة من قاعدة بيانات المنظومة بما تشمله من حسابات مدراء، لجان تفتيش، منشآت غذائية، بنود التقييم، وشكاوى، وتخزينها في ملف بصيغة JSON لاستعادتها أو دمجها بأي وقت.
-              </p>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
+                <input
+                  type="text"
+                  value={headerInput}
+                  onChange={(e) => setHeaderInput(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                />
+              </div>
 
-              <div className="space-y-4">
-                {/* Export Action */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 text-right">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-800 dark:text-slate-200">تصدير قاعدة البيانات (.JSON)</span>
-                    <span className="text-[9px] text-slate-400 font-medium">تحميل نسخة احتياطية كاملة وحفظها على حاسوبك</span>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 block">مقياس حجم الخط بالخطوط الرئيسية</label>
+                <select
+                  value={scaleSelector}
+                  onChange={(e) => setScaleSelector(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-800 dark:text-slate-200\"
+                >
+                  <option value="small">صغير (مضغوط لشاشات الجوال القديمة)</option>
+                  <option value="normal">عادي ومتوسط (افتراضي للمنظومة)</option>
+                  <option value="large">ضخم (لكبار السن وضعاف البصر)</option>
+                </select>
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <label className="flex items-center justify-between cursor-pointer select-none">
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل ميزة رفع الصور بالاستمارة</span>
+                    <span className="text-[10px] text-slate-400">إلغاء التفعيل يحول المنظومة كلياً لقاعدة بيانات نصية</span>
                   </div>
-                  <button
-                    onClick={handleBackupExport}
-                    className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    📥 عمل نسخة احتياطية
-                  </button>
-                </div>
+                  <input
+                    type="checkbox"
+                    checked={allowUploadToggle}
+                    onChange={() => setAllowUploadToggle(!allowUploadToggle)}
+                    className="w-10 h-5 accent-teal-600 cursor-pointer"
+                  />
+                </label>
 
-                {/* Import Action */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-right">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-800 dark:text-slate-200">استيراد ودمج البيانات</span>
-                    <span className="text-[9px] text-slate-400 font-medium font-bold">استرجاع البيانات من ملف نسخة احتياطية سابق</span>
+                <label className="flex items-center justify-between cursor-pointer select-none">
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">تفعيل رابط البلاغات الخارجية والتوصيل المنزلي</span>
+                    <span className="text-[10px] text-slate-400">إغلاق الخدمة يوجه الزائرين لصفحة إغلاق الصيانة</span>
                   </div>
-                  <label className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-650 text-white font-extrabold text-[11px] transition-all cursor-pointer text-center whitespace-nowrap">
-                    📤 رفع واستعادة
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleBackupImport}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-
-                {/* Auto Delete Images */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10 text-right mt-4">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-800 dark:text-slate-200">مهلة حذف الصور التلقائي</span>
-                    <span className="text-[9px] text-slate-400 font-medium">للتحكم بمساحة التخزين وحذف الصور القديمة</span>
-                  </div>
-                  <div className="w-1/2 md:w-1/3">
-                    <select
-                      value={retentionDropdown}
-                      onChange={(e) => setRetentionDropdown(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200"
-                    >
-                      <option value="3 Months">حذف تلقائي بعد 3 أشهر</option>
-                      <option value="6 Months">حذف تلقائي بعد 6 أشهر</option>
-                      <option value="12 Months">حذف تلقائي بعد سنة كاملة</option>
-                      <option value="Disable Auto-Delete">تعطيل الحذف التلقائي للمستودع</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Toggles linked with Data Storage */}
-                <div className="pt-2 space-y-4 border-t border-slate-200/50 dark:border-slate-800/50 mt-4">
-                  <label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
-                    <div className="flex flex-col text-right">
-                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل ميزة رفع الصور بالاستمارة</span>
-                      <span className="text-[9px] text-slate-400 font-medium">إلغاء التفعيل يحول المنظومة كلياً لقاعدة بيانات نصية</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={allowUploadToggle}
-                      onChange={() => setAllowUploadToggle(!allowUploadToggle)}
-                      className="w-10 h-5 accent-teal-600 cursor-pointer"
-                    />
-                  </label>
-
-                  
-                </div>
+                  <input
+                    type="checkbox"
+                    checked={allowExternalToggle}
+                    onChange={() => setAllowExternalToggle(!allowExternalToggle)}
+                    className="w-10 h-5 accent-teal-600 cursor-pointer"
+                  />
+                </label>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 block">تحديد مهلة حذف الصور التلقائي</label>
+                  <select
+                    value={retentionDropdown}
+                    onChange={(e) => setRetentionDropdown(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-800 dark:text-slate-200\"
+                  >
+                    <option value="3 Months">حذف تلقائي بعد 3 أشهر</option>
+                    <option value="6 Months">حذف تلقائي بعد 6 أشهر</option>
+                    <option value="12 Months">حذف تلقائي بعد سنة كاملة</option>
+                    <option value="Disable Auto-Delete">تعطيل الحذف التلقائي للمستودع</option>
+                  </select>
+                </div>
+
                 <div className="flex gap-2 justify-between flex-wrap">
                   <button
                     onClick={handleGarbageCollection}
@@ -1726,52 +1213,268 @@ export const SuperAdminPanel = () => {
                 </div>
               </div>
             </div>
+            )}
 
+              {subSettingsTab === 'public_cms' && (
+                <div className="glassmorphic-card p-6 space-y-6">
+                  {/* Public Page CMS Editor */}
+              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <Settings className="w-5 h-5 text-teal-600" />
+                <span>إدارة محتوى صفحة المواطن (Public Search CMS)</span>
+              </h2>
+
+              <p className="text-[10px] text-slate-400 leading-relaxed text-right">
+                من هنا يمكنك التحكم في النصوص والصور الترحيبية المعروضة للمواطنين في شاشة البحث العام (بوابة المواطن).
+              </p>
+
+              <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 text-right">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 block">العنوان الترحيبي الرئيسي</label>
+                  <input
+                    type="text"
+                    value={cmsHeroTitle}
+                    onChange={(e) => setCmsHeroTitle(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 block">الوصف أو الإرشادات للمواطنين</label>
+                  <textarea
+                    rows="3"
+                    value={cmsHeroSubtext}
+                    onChange={(e) => setCmsHeroSubtext(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 block">شريط الإعلانات العاجلة للمواطنين (اختياري)</label>
+                  <input
+                    type="text"
+                    placeholder="اكتب إعلاناً مهماً أو اتركه فارغاً"
+                    value={cmsAnnouncement}
+                    onChange={(e) => setCmsAnnouncement(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                  />
+                </div>
+
+                <div className="flex gap-2 justify-end mt-4">
+                  <button
+                    onClick={saveZeroCodeConfig}
+                    className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer"
+                  >
+                    حفظ ونشر التعديلات على صفحة المواطن
+                  </button>
+                </div>
+              </div>
+            </div>
+            )}
+
+              {subSettingsTab === 'database' && (
+                <div className="glassmorphic-card p-6 space-y-6">
+                  {/* Backup and Restore Database Panel */}
+              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <Database className="w-5 h-5 text-teal-600 animate-pulse" />
+                <span>إدارة النسخ الاحتياطي واستعادة البيانات</span>
+              </h2>
+
+              <p className="text-[10px] text-slate-400 leading-relaxed text-right">
+                تتيح لك هذه الخدمة سحب نسخة احتياطية كاملة من قاعدة بيانات المنظومة بما تشمله من حسابات مدراء، لجان تفتيش، منشآت غذائية، بنود التقييم، وشكاوى، وتخزينها في ملف بصيغة JSON لاستعادتها أو دمجها بأي وقت.
+              </p>
+
+              <div className="space-y-4">
+                {/* Export Action */}
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 text-right">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black text-slate-850 dark:text-slate-800 dark:text-slate-200">تصدير قاعدة البيانات (.JSON)</span>
+                    <span className="text-[9px] text-slate-400 font-medium">تحميل نسخة احتياطية كاملة وحفظها على حاسوبك</span>
+                  </div>
+                  <button
+                    onClick={handleBackupExport}
+                    className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    📥 عمل نسخة احتياطية
+                  </button>
+                </div>
+
+                {/* Import Action */}
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-right">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black text-slate-850 dark:text-slate-800 dark:text-slate-200">استيراد ودمج البيانات</span>
+                    <span className="text-[9px] text-slate-400 font-medium font-bold">استرجاع البيانات من ملف نسخة احتياطية سابق</span>
+                  </div>
+                  <label className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-650 text-white font-extrabold text-[11px] transition-all cursor-pointer text-center whitespace-nowrap">
+                    📤 رفع واستعادة
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={handleBackupImport}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+            )}
+
+              {subSettingsTab === 'system_controls' && (
+                <div className="glassmorphic-card p-6 space-y-6 text-right">
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <ShieldAlert className="w-5 h-5 text-red-500" />
+                    <span>ضوابط ومعايير النظام السيادية</span>
+                  </h2>
+
+                  {/* Maintenance Mode Toggle */}
+                  <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-black text-red-600 dark:text-red-400 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer" 
+                        checked={config.maintenanceMode || false}
+                        onChange={(e) => setConfig({ ...config, maintenanceMode: e.target.checked })}
+                      />
+                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-red-600"></div>
+                    </label>
+                  </div>
+
+                  {/* Dynamic Grading Thresholds */}
+                  <div className="space-y-6 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 mb-1">التحكم الديناميكي بمعايير التقييم</h3>
+                      <p className="text-xs text-slate-500 font-bold">حدد درجات النجاح والرسوب، والتي سينعكس تأثيرها فوراً على ألوان ونتائج جميع المطاعم في المحافظة.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {/* Passing Score Slider */}
+                      <div className="bg-teal-500/5 border border-teal-500/10 p-4 rounded-xl">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs font-black text-teal-700 dark:text-teal-600 dark:text-teal-400">الحد الأدنى للمنشأة "الملتزمة" (أخضر)</span>
+                          <span className="text-sm font-black text-teal-600">{config.passingScore || 90}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="50" max="100" 
+                          value={config.passingScore || 90} 
+                          onChange={(e) => setConfig({ ...config, passingScore: parseInt(e.target.value) })}
+                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-teal-600"
+                        />
+                      </div>
+
+                      {/* Warning Score Slider */}
+                      <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-xl">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs font-black text-amber-700 dark:text-amber-400">الحد الأدنى للمنشأة "تحت المراقبة" (أصفر)</span>
+                          <span className="text-sm font-black text-amber-600">{config.warningScore || 70}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="1" max="100" 
+                          value={config.warningScore || 70} 
+                          onChange={(e) => setConfig({ ...config, warningScore: parseInt(e.target.value) })}
+                          className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-amber-500"
+                        />
+                        <p className="text-[10px] text-slate-400 mt-2">ما دون هذه الدرجة سيُعتبر "مخالف" (أحمر).</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-4">
+                    <button
+                      onClick={() => {
+                        localStorage.setItem('systemConfig', JSON.stringify(config));
+                        notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
+                      }}
+                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
+                    >
+                      حفظ التغييرات
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {subSettingsTab === 'evaluations' && (
+                <div className="glassmorphic-card p-6 flex flex-col justify-between">
+                  {/* Compliance Text Checkpoint Editor */}
+                  <div>
+                <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+                  <Shield className="w-5 h-5 text-teal-600" />
+                  <span>ثانياً: محرر نصوص بنود التقييم العشرون</span>
+                </h2>
+
+                <p className="text-[10px] text-slate-400 mb-4 leading-relaxed">
+                  تعديل الصياغة اللغوية لأي بند من بنود التقييم العشرين أو حذفها وإضافتها وتحديثها فورياً على استمارات المفتشين بالميدان:
+                </p>
+
+                <div className="space-y-3.5 max-h-[360px] overflow-y-auto pr-1">
+                  {inspectionItems.map((item, idx) => (
+                    <div key={item.id} className="flex gap-2 items-start py-1.5 border-b border-slate-100 dark:border-slate-800/40">
+                      <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-400 shrink-0 mt-2">
+                        {idx + 1}
+                      </span>
+                      <textarea
+                        rows="2"
+                        value={item.text}
+                        onChange={(e) => handleItemTextChange(item.id, e.target.value)}
+                        className="flex-1 p-2 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-[11px] font-bold outline-none focus:border-teal-500 text-slate-700 dark:text-slate-300"
+                      />
+                      <div className="flex flex-col gap-1 shrink-0">
+                        <span className="text-[8px] text-slate-450 font-bold block text-center">الدرجة</span>
+                        <input
+                          type="number"
+                          value={item.points || 5}
+                          onChange={(e) => handleItemPointsChange(item.id, e.target.value)}
+                          className="w-12 p-1 rounded-xl bg-white/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-[11px] font-black text-center text-teal-600 dark:text-teal-600 dark:text-teal-400 outline-none focus:border-teal-500"
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleDeleteChecklistItem(item.id)}
+                        className="p-1 rounded-lg text-red-500 hover:bg-red-500/10 mt-3 cursor-pointer shrink-0"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={handleAddChecklistItem}
+                className="mt-4 w-full py-3 rounded-xl border border-dashed border-teal-500/30 hover:border-teal-500/60 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Plus className="w-4.5 h-4.5" />
+                <span>➕ إضافة بند رقابي جديد لقائمة التقييم</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </section>
         )}
-{/* Tab 4: Establishments Directory & QR Codes */}
+
+
+
+        {/* Tab 4: Establishments Directory & QR Codes */}
         {activeTab === 'establishments' && (
           <section className="glassmorphic-card p-6 text-right space-y-6">
             <div>
-              <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ إدارة المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
+              <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ دليل المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
               <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR المخصصة للصالة وخدمات الديليفري</p>
             </div>
 
             {/* Search Filter bar */}
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
-                  value={estSearchTerm}
-                  onChange={(e) => setEstSearchTerm(e.target.value)}
-                  className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
-                />
-                <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
-              </div>
-
-              <select
-                value={estStatusFilter}
-                onChange={(e) => setEstStatusFilter(e.target.value)}
-                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
-              >
-                <option value="all">كل الحالات</option>
-                <option value="closed">المطاعم المغلقة 🔒</option>
-                <option value="fined">المطاعم المغرمة 💰</option>
-              </select>
-
-              <select
-                value={estTeamFilter}
-                onChange={(e) => setEstTeamFilter(e.target.value)}
-                className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
-              >
-                <option value="all">كل الفرق (القطاعات)</option>
-                {teams.map(team => (
-                  <option key={team.id} value={team.sector}>
-                    {team.name} ({team.sector})
-                  </option>
-                ))}
-              </select>
+            <div className="relative max-w-md">
+              <input
+                type="text"
+                placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
+                value={estSearchTerm}
+                onChange={(e) => setEstSearchTerm(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-850 text-xs font-bold outline-none text-slate-850 dark:text-slate-200 focus:border-teal-500"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
             </div>
 
             {/* Directory Table */}
@@ -1779,79 +1482,72 @@ export const SuperAdminPanel = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-right border-collapse text-xs">
                   <thead>
-                    <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                    <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
                       <th className="p-3.5 font-bold">اسم المنشأة / الرخصة</th>
-                      <th className="p-3.5 font-bold">صنف النشاط</th>
-                      <th className="p-3.5 font-bold text-center">كود QR</th>
+                      <th className="p-3.5 font-bold">نوع النشاط</th>
+                      <th className="p-3.5 font-bold">المالك / الهاتف</th>
+                      <th className="p-3.5 font-bold text-center">كود البوابة</th>
                       <th className="p-3.5 font-bold">القطاع</th>
-                      
-                      <th className="p-3.5 font-bold text-center print:hidden">الإجراءات</th>
+                      <th className="p-3.5 font-bold">التقييم</th>
+                      <th className="p-3.5 font-bold text-center">الإجراءات</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                     {establishments
-                      .filter(e => {
-                        const matchesSearch = e.name.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
-                                              e.owner.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
-                                              e.type.toLowerCase().includes(estSearchTerm.toLowerCase());
-                        let matchesStatus = true;
-                        if (estStatusFilter === 'closed') {
-                          matchesStatus = e.status === 'closed';
-                        } else if (estStatusFilter === 'fined') {
-                          matchesStatus = (e.penalties || []).length > 0;
-                        }
-                        
-                        let matchesTeam = true;
-                        if (estTeamFilter !== 'all') {
-                          matchesTeam = (e.sector || '').includes(estTeamFilter);
-                        }
-                        
-                        return matchesSearch && matchesStatus && matchesTeam;
-                      })
+                      .filter(e => 
+                        e.name.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
+                        e.owner.toLowerCase().includes(estSearchTerm.toLowerCase()) ||
+                        e.type.toLowerCase().includes(estSearchTerm.toLowerCase())
+                      )
                       .map(est => (
                         <tr key={est.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
                           <td className="p-3.5">
-                            <div className="flex flex-col gap-1">
-                              <span className="font-black text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                {est.name}
-                                {est.status === 'closed' ? (
-                                  <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 text-[9px] font-black border border-red-500/20 flex items-center gap-1 w-fit">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
-                                    مغلق
-                                  </span>
-                                ) : (
-                                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-black border border-emerald-500/20 flex items-center gap-1 w-fit">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                                    مفتوح
-                                  </span>
-                                )}
-                              </span>
+                            <div className="flex flex-col">
+                              <span className="font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">{est.name}</span>
                               <span className="text-[10px] text-slate-400 font-medium">الرخصة: {est.licenseNumber}</span>
                             </div>
                           </td>
-                          <td className="p-3.5 font-bold text-slate-600 dark:text-slate-300">{est.type}</td>
-                          <td className="p-3.5 font-bold text-center">
-                            <div
-                              onClick={() => {
-                                setSelectedEstDetails(est);
-                                setQrTabMode('dining');
-                              }}
-                              className="px-3 py-1.5 flex flex-col md:flex-row items-center justify-center gap-2 rounded-lg bg-slate-500/10 hover:bg-slate-500/20 text-slate-700 dark:text-slate-300 transition-all active:scale-95 cursor-pointer font-bold text-[10px] mx-auto w-fit print:border print:border-slate-300 print:bg-transparent"
-                            >
-                              <span className="text-xs">🔗</span>
-                              <span className="text-xs font-black dir-ltr tracking-wider">{est.accessCode}</span>
+                          <td className="p-3.5 font-bold text-slate-600 dark:text-slate-350">{est.type}</td>
+                          <td className="p-3.5">
+                            <div className="flex flex-col">
+                              <span className="font-bold text-slate-700 dark:text-slate-300">{est.owner}</span>
+                              <span className="text-[10px] text-slate-400">{est.phone}</span>
                             </div>
+                          </td>
+                          <td className="p-3.5 font-bold text-center">
+                            <span className="px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 dir-ltr inline-block">
+                              {est.accessCode}
+                            </span>
                           </td>
                           <td className="p-3.5">
                             <div className="flex flex-col">
-                              <span className="text-slate-500 font-bold">
-                                {est.sector.replace(/^قاطع\s+/i, '')}
+                              <span className="text-slate-500 font-bold">{est.sector}</span>
+                              <span className="text-[9px] text-teal-600 dark:text-teal-600 dark:text-teal-400 mt-1 font-black">
+                                {teams.find(t => t.sector === est.sector) 
+                                  ? `مسؤولية: ${teams.find(t => t.sector === est.sector).name}`
+                                  : '⚠️ غير مخصص لفريق'}
                               </span>
                             </div>
                           </td>
-                          
+                          <td className="p-3.5">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
+                              est.score >= 90 ? 'bg-emerald-500/10 text-emerald-600' :
+                              est.score >= 70 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
+                            }`}>
+                              {est.lastInspection === 'لم يزر بعد' ? 'معلق ⏳' : `${est.score}%`}
+                            </span>
+                          </td>
                           <td className="p-3.5">
                             <div className="flex justify-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedEstDetails(est);
+                                  setQrTabMode('dining');
+                                }}
+                                className="px-2.5 py-1.5 rounded-xl bg-slate-550/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-bold cursor-pointer transition-all"
+                              >
+                                🔗 رمز الـ QR
+                              </button>
                               <button
                                 onClick={() => {
                                   setEditingEst(est);
@@ -1875,9 +1571,35 @@ export const SuperAdminPanel = () => {
         {/* Tab 5: Audit Trail & Tickets */}
         {activeTab === 'audit' && (
           <section className="glassmorphic-card p-6 text-right space-y-6">
+            {/* Sub Audit Tabs Selection Bar */}
+            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
+              <button
+                onClick={() => setSubAuditTab('trail')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subAuditTab === 'trail'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                🛡️ سجل التدقيق والأمان
+              </button>
+              <button
+                onClick={() => setSubAuditTab('tickets')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+                  subAuditTab === 'tickets'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-600 dark:text-teal-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-650'
+                }`}
+              >
+                <span>الرد على بلاغات اللجان</span>
+                {tickets.filter(t => t.status !== 'resolved').length > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[9px]">{tickets.filter(t => t.status !== 'resolved').length}</span>
+                )}
+              </button>
+            </div>
 
-
-
+            {subAuditTab === 'trail' && (
+              <>
                 <div>
                   <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
                     <ShieldAlert className="w-5 h-5 text-teal-600" />
@@ -1890,7 +1612,7 @@ export const SuperAdminPanel = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-right border-collapse text-xs">
                   <thead>
-                    <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                    <tr className="bg-slate-100/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
                       <th className="p-3.5 font-bold">تاريخ ووقت الحركة</th>
                       <th className="p-3.5 font-bold">اسم المستخدم (الصلاحية)</th>
                       <th className="p-3.5 font-bold">نوع الإجراء</th>
@@ -1900,13 +1622,13 @@ export const SuperAdminPanel = () => {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                     {auditLogs && auditLogs.length > 0 ? (
                       auditLogs.map(log => (
-                        <tr key={log.id} onClick={() => setSelectedAuditLog(log)} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer">
+                        <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
                           <td className="p-3.5 font-bold text-slate-700 dark:text-slate-300 dir-ltr text-right">{new Date(log.date).toLocaleString('ar-IQ')}</td>
                           <td className="p-3.5">
-                            <span className="font-black text-slate-800 dark:text-slate-200">{log.user}</span>
+                            <span className="font-black text-slate-800 dark:text-slate-800 dark:text-slate-200">{log.user}</span>
                             <span className="text-[10px] text-slate-400 block">{log.role === 'team' ? 'فريق ميداني' : 'إدارة عليا'}</span>
                           </td>
-                          <td className="p-3.5 font-bold text-teal-600 dark:text-teal-400">{log.action}</td>
+                          <td className="p-3.5 font-bold text-teal-600 dark:text-teal-600 dark:text-teal-400">{log.action}</td>
                           <td className="p-3.5 text-slate-600 dark:text-slate-400">
                             <span className="bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded-lg block italic">
                               "{log.justification}"
@@ -1922,109 +1644,85 @@ export const SuperAdminPanel = () => {
                   </tbody>
                 </table>
               </div>
-              
-              {/* Audit Log Details Modal */}
-              {selectedAuditLog && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-all text-right">
-                  <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
-                      <h3 className="text-base font-black text-teal-600 flex items-center gap-2">
-                        🔍 تفاصيل حركة السجل
-                      </h3>
-                      <button onClick={() => setSelectedAuditLog(null)} className="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                        <div>
-                          <p className="text-[10px] text-slate-400 font-bold mb-1">المستخدم المنفذ</p>
-                          <p className="text-sm font-black text-slate-800 dark:text-white">{selectedAuditLog.user}</p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">{selectedAuditLog.role === 'team' ? 'فريق ميداني' : 'إدارة عليا'}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-slate-400 font-bold mb-1">تاريخ الحركة</p>
-                          <p className="text-sm font-black text-slate-800 dark:text-white dir-ltr">{new Date(selectedAuditLog.date).toLocaleString('ar-IQ')}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-slate-400 font-bold mb-1">نوع الإجراء</p>
-                          <p className="text-sm font-bold text-teal-600">{selectedAuditLog.action}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-slate-400 font-bold mb-1">سبب التعديل</p>
-                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300 italic">"{selectedAuditLog.justification}"</p>
-                        </div>
-                      </div>
-
-                      {/* Differences Viewer */}
-                      {selectedAuditLog.oldData && selectedAuditLog.newData ? (
-                        <div className="space-y-2">
-                          <h4 className="text-xs font-black text-slate-700 dark:text-slate-300 mb-2">التغييرات التي طرأت:</h4>
-                          {(() => {
-                            const oldObj = selectedAuditLog.oldData;
-                            const newObj = selectedAuditLog.newData;
-                            const changes = [];
-                            
-                            const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
-                            allKeys.forEach(key => {
-                              if (key === 'history' || key === 'id') return; // Skip complex/internal fields
-                              if (JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key])) {
-                                changes.push({
-                                  key,
-                                  oldVal: oldObj[key],
-                                  newVal: newObj[key]
-                                });
-                              }
-                            });
-
-                            if (changes.length === 0) {
-                              return <p className="text-xs text-slate-500 text-center py-4">لم يتم العثور على تغييرات جوهرية في البيانات الأساسية.</p>;
-                            }
-
-                            const fieldNames = {
-                              name: 'اسم المنشأة',
-                              type: 'النشاط',
-                              owner: 'اسم المالك',
-                              phone: 'الهاتف',
-                              licenseNumber: 'رقم الترخيص',
-                              propertyNumber: 'رقم الملكية',
-                              sector: 'القطاع',
-                              neighborhood: 'الحي/المنطقة',
-                              status: 'حالة المنشأة',
-                              score: 'التقييم',
-                              lastInspection: 'تاريخ آخر زيارة',
-                              facebook: 'رابط الفيسبوك',
-                              latitude: 'خط العرض',
-                              longitude: 'خط الطول'
-                            };
-
-                            return changes.map((change, i) => (
-                              <div key={i} className="flex flex-col md:flex-row gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl items-center">
-                                <div className="w-full md:w-1/4 text-xs font-bold text-slate-500">{fieldNames[change.key] || change.key}</div>
-                                <div className="w-full md:w-3/4 flex items-center gap-2">
-                                  <div className="flex-1 p-2 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-xs text-red-600 dark:text-red-400 line-through">
-                                    {change.oldVal || 'فارغ'}
-                                  </div>
-                                  <span className="text-slate-400">➔</span>
-                                  <div className="flex-1 p-2 rounded-lg bg-teal-50 dark:bg-teal-500/10 border border-teal-100 dark:border-teal-500/20 text-xs font-bold text-teal-700 dark:text-teal-400">
-                                    {change.newVal || 'فارغ'}
-                                  </div>
-                                </div>
-                              </div>
-                            ));
-                          })()}
-                        </div>
-                      ) : (
-                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700 text-center text-xs text-slate-500">
-                          لا توجد تفاصيل مقارنة (قبل/بعد) لهذا الإجراء.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
+              </>
+            )}
+
+            {subAuditTab === 'tickets' && (
+              <>
+                <div>
+                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
+                    <ShieldAlert className="w-5 h-5 text-teal-600" />
+                    <span>مركز استقبال الدعم الفني وبلاغات اللجان (Tickets Center)</span>
+                  </h2>
+                  <p className="text-[11px] text-slate-500 mt-1">متابعة بلاغات الدعم الفني والمشاكل التقنية الواردة من اللجان والمدراء.</p>
+                </div>
+
+                <div className="space-y-4">
+                  {(!tickets || tickets.length === 0) ? (
+                    <div className="text-center py-6 text-slate-500 text-xs font-bold">
+                      📭 لا توجد تذاكر دعم فني أو بلاغات واردة حالياً.
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-right border-collapse text-xs">
+                        <thead>
+                          <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400">
+                            <th className="py-2 px-3">المرسل</th>
+                            <th className="py-2 px-3">النوع</th>
+                            <th className="py-2 px-3">نص الرسالة/المشكلة</th>
+                            <th className="py-2 px-3">الحالة</th>
+                            <th className="py-2 px-3">الإجراء</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tickets.map((ticket) => (
+                            <tr key={ticket.id} className="border-b border-slate-100 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                              <td className="py-2.5 px-3 font-extrabold text-slate-700 dark:text-slate-350">{ticket.sender}</td>
+                              <td className="py-2.5 px-3">
+                                <span className={`px-2 py-0.5 rounded text-[10px] ${
+                                  ticket.type === 'bug' ? 'bg-red-500/10 text-red-500' :
+                                  ticket.type === 'feature' ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'
+                                }`}>
+                                  {ticket.type === 'bug' ? '🐛 خلل فني' :
+                                   ticket.type === 'feature' ? '💡 مقترح ميزة' : '📊 إشكال تقارير'}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-600 dark:text-slate-400 max-w-xs truncate" title={ticket.text}>
+                                {ticket.text}
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <span className={`px-2 py-0.5 rounded text-[10px] ${
+                                  ticket.status === 'resolved' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-orange-500/10 text-orange-500 animate-pulse'
+                                }`}>
+                                  {ticket.status === 'resolved' ? '✓ تم الحل' : '⏳ قيد المعالجة'}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3">
+                                {ticket.status !== 'resolved' ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setTickets(prev => prev.map(t => t.id === ticket.id ? { ...t, status: 'resolved' } : t));
+                                      triggerAlert('تم إغلاق ومعالجة تذكرة الدعم الفني بنجاح.');
+                                    }}
+                                    className="px-2.5 py-1 rounded bg-teal-650 hover:bg-teal-700 text-white font-extrabold text-[10px] transition-all cursor-pointer"
+                                  >
+                                    معالجة وإغلاق
+                                  </button>
+                                ) : (
+                                  <span className="text-slate-500 text-[10px]">مكتملة</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
 
           </section>
         )}
@@ -2077,8 +1775,8 @@ export const SuperAdminPanel = () => {
                     <span className="text-[9px] text-slate-400 block mb-1">الأطباء المعتمدون (دكتور):</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.doctors?.map((doc, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-300 border border-teal-500/20 font-black">
-                          {typeof doc === 'object' ? doc.name : doc}
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-300 border border-teal-500/20 font-black">
+                          {doc}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد أطباء بعد</span>}
                     </div>
@@ -2088,8 +1786,8 @@ export const SuperAdminPanel = () => {
                     <span className="text-[9px] text-slate-400 block mb-1">مساعد دكتور:</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.assistants?.map((asst, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-300 border border-blue-500/20 font-black">
-                          {typeof asst === 'object' ? asst.name : asst}
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-300 border border-blue-500/20 font-black">
+                          {asst}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد مساعدين بعد</span>}
                     </div>
@@ -2099,8 +1797,8 @@ export const SuperAdminPanel = () => {
                     <span className="text-[9px] text-slate-400 block mb-1">الملاحظين الفنيين:</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedTeamDetails.members?.technicians?.map((tech, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20 font-black">
-                          {typeof tech === 'object' ? tech.name : tech}
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20 font-black">
+                          {tech}
                         </span>
                       )) || <span className="text-slate-500 text-[10px]">لم يتم تحديد ملاحظين فنيين بعد</span>}
                     </div>
@@ -2118,302 +1816,6 @@ export const SuperAdminPanel = () => {
           </div>
         </div>
       )}
-
-      {/* QR Code and Restaurant Details Modal */}
-      {selectedEstDetails && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md animate-fade-in text-right">
-          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(20,184,166,0.3)] relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
-              <h3 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-l from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">🔗 رمز الاستجابة السريعة QR وتفاصيل المنشأة</h3>
-              <button 
-                onClick={() => setSelectedEstDetails(null)} 
-                className="flex p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5"
-              >
-                <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
-              </button>
-            </div>
-
-            <div className="space-y-5 text-xs">
-              <div className="p-5 rounded-2xl bg-slate-100/40 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
-                <h4 className="text-base font-black text-slate-800 dark:text-white">{selectedEstDetails.name}</h4>
-                <div className="grid grid-cols-1 gap-2 pt-1">
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">النشاط: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.type}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">المالك: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.owner}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">رقم الهاتف: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.phone}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
-                </div>
-                <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl relative overflow-hidden">
-                  <div className="absolute -left-4 -top-4 w-12 h-12 bg-teal-500/20 blur-xl rounded-full"></div>
-                  <p className="text-xs text-teal-600 dark:text-teal-400 font-bold text-center">🔑 كود بوابة المالك:</p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white tracking-widest text-center mt-1 dir-ltr drop-shadow-[0_2px_10px_rgba(45,212,191,0.5)]">{selectedEstDetails.accessCode}</p>
-                </div>
-              </div>
-
-              {/* QR Preview Box */}
-              <div className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border-4 border-slate-200 dark:border-slate-900 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.1)] relative">
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${window.location.origin}/scan/${selectedEstDetails.id}`)}`}
-                  alt="Restaurant QR Code"
-                  className="w-48 h-48 block rounded-xl shadow-lg mix-blend-multiply"
-                />
-                <span className="text-[10px] text-slate-500 font-extrabold mt-4 text-center block max-w-[200px] leading-relaxed">
-                  كود QR الموحد للمنشأة (يعرض التقييم الصحي ويمكن المواطن من الإبلاغ)
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <a
-                  href={`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(`${window.location.origin}/scan/${selectedEstDetails.id}`)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="py-3 rounded-2xl bg-gradient-to-l from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white text-center font-black block transition-all shadow-[0_5px_15px_-3px_rgba(20,184,166,0.4)] hover:shadow-[0_8px_20px_-3px_rgba(20,184,166,0.5)]"
-                >
-                  📥 تحميل الصورة
-                </a>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-center font-black block transition-all shadow-inner"
-                >
-                  🖨️ طباعة ملصق
-                </button>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setSelectedEstDetails(null)}
-                className="mt-2 w-full py-3 rounded-2xl bg-transparent hover:bg-white/5 text-slate-600 dark:text-slate-400 font-extrabold transition-all border border-transparent hover:border-slate-300 dark:hover:border-white/10"
-              >
-                إغلاق النافذة
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
-      {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
-      {showPermissionsModal && selectedPermissionsAccount && (() => {
-        const PERMISSIONS_TABS = [
-          { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
-          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDirectivesPage', 'showDeliveryPage', 'showPublicEvalsPage'] },
-          { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
-          { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
-          { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
-        ];
-
-        const PERMISSION_DETAILS = {
-          manageEstablishments: { title: 'إدارة المنشآت (المفتاح الرئيسي)', desc: 'بإعطاء هذا الإذن، سيتمكن هذا الحساب من رؤية قسم المنشآت والمطاعم بالكامل والوصول إليه.' },
-          createEst: { title: 'إضافة منشأة جديدة', desc: 'هذا الإذن يتيح للحساب إمكانية تسجيل وإضافة مطاعم أو كافيهات أو منشآت جديدة إلى النظام.' },
-          editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي مطعم مسجل وتحديث معلوماته (كاسم المدير، رقم الهاتف، والتراخيص).' },
-          deleteEst: { title: 'حذف منشأة نهائياً', desc: 'إذن خطير: يسمح لهذا الحساب بشطب ومسح المنشأة نهائياً من قاعدة بيانات النظام.' },
-          addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
-          showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
-          showReportsPage: { title: 'التقارير الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
-          showDirectivesPage: { title: 'التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
-          showDeliveryPage: { title: 'خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
-          showPublicEvalsPage: { title: 'التقييمات العامة (الشكاوى)', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
-          sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
-          replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
-          issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
-          closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
-          reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
-          manageComplaints: { title: 'إدارة الشكاوى العامة', desc: 'يتيح للحساب صلاحية الرد على شكاوى المواطنين وإغلاقها بعد معالجتها.' },
-          exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المطاعم على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
-          viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
-          manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
-          manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
-          backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' }
-        };
-
-        const PERMISSION_ROLES = {
-          manageEstablishments: 'management', createEst: 'management', editEst: 'management', deleteEst: 'management',
-          addEval: 'team', showMainDashboard: 'management', showOperationsRoom: 'management', showReportsPage: 'management',
-          showDirectivesPage: 'management', showPublicEvalsPage: 'management', sendDirective: 'management', replyDirective: 'team',
-          canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management',
-          issueFine: 'management', closeEst: 'management', reopenEst: 'management',
-          notify_closures: 'all', notify_inspections: 'all', notify_directives: 'all',
-          exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management'
-        };
-
-        const totalPerms = Object.keys(DEFAULT_PERMISSIONS).length;
-        const grantedPerms = Object.keys(DEFAULT_PERMISSIONS).filter(k => selectedPermissionsAccount.permissions?.[k]).length;
-        const progressPercentage = Math.round((grantedPerms / totalPerms) * 100);
-
-        const handleGrantAll = () => {
-          setSelectedPermissionsAccount(prev => {
-            const allTrue = {};
-            Object.keys(DEFAULT_PERMISSIONS).forEach(k => allTrue[k] = true);
-            return { ...prev, permissions: allTrue };
-          });
-        };
-
-        const handleRevokeAll = () => {
-          setSelectedPermissionsAccount(prev => {
-            const allFalse = {};
-            Object.keys(DEFAULT_PERMISSIONS).forEach(k => allFalse[k] = false);
-            return { ...prev, permissions: allFalse };
-          });
-        };
-
-        const activeTabObj = PERMISSIONS_TABS.find(t => t.id === activePermissionsTab);
-
-        return (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right max-h-[85vh]">
-              
-              {/* Right Sidebar: Tabs & Stats */}
-              <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-2 drop-shadow-sm">
-                    <Settings className="w-5 h-5 text-purple-400" /> مركز الأذونات
-                  </h3>
-                  <button onClick={() => setShowPermissionsModal(false)} className="md:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="mb-6 p-4 rounded-2xl bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
-                  <p className="text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wider">الحساب المستهدف</p>
-                  <p className="text-base font-black text-slate-800 dark:text-white mb-5 truncate">{selectedPermissionsAccount.name}</p>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-[11px] font-black">
-                      <span className="text-teal-600 dark:text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]">ممنوح ({grantedPerms})</span>
-                      <span className="text-slate-500">من {totalPerms} إذن</span>
-                    </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-800/80 ring-1 ring-slate-300 dark:ring-white/5 rounded-full h-2 overflow-hidden shadow-inner">
-                      <div className="bg-gradient-to-l from-purple-500 via-indigo-500 to-teal-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ width: `${progressPercentage}%` }}></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex-1 space-y-2">
-                  {PERMISSIONS_TABS.filter(tab => {
-                    if (tab.id === 'establishments' && (selectedPermissionsAccount?.role === 'director' || selectedPermissionsAccount?.role === 'central_director')) {
-                      return false;
-                    }
-                    return true;
-                  }).map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActivePermissionsTab(tab.id)}
-                      className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-all duration-300 cursor-pointer text-xs font-black relative overflow-hidden ${activePermissionsTab === tab.id ? 'bg-gradient-to-l from-purple-600/20 to-indigo-600/20 text-purple-300 border border-purple-500/30 shadow-[inset_0_0_15px_rgba(168,85,247,0.15)] translate-x-1' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'}`}
-                    >
-                      <div className={`p-1.5 rounded-lg ${activePermissionsTab === tab.id ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'}`}>
-                        {tab.icon}
-                      </div>
-                      {tab.label}
-                      {activePermissionsTab === tab.id && (
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-indigo-500"></div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/5 space-y-3">
-                  <button onClick={handleGrantAll} className="w-full py-3 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 dark:text-teal-400 font-extrabold text-[11px] transition-all cursor-pointer border border-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_15px_rgba(45,212,191,0.2)]">
-                    + منح كافة الصلاحيات
-                  </button>
-                  <button onClick={handleRevokeAll} className="w-full py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 font-extrabold text-[11px] transition-all cursor-pointer border border-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_15px_rgba(248,113,113,0.2)]">
-                    - سحب كافة الصلاحيات
-                  </button>
-                </div>
-              </div>
-
-              {/* Left Content Area: Toggle Switches */}
-              <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10">
-                <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5">
-                  <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
-                    <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
-                      {activeTabObj?.icon}
-                    </div>
-                    {activeTabObj?.label}
-                  </h4>
-                  <button onClick={() => setShowPermissionsModal(false)} className="hidden md:flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group">
-                    <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                  </button>
-                </div>
-
-                <div className="flex-1 overflow-y-auto pr-3 space-y-3 custom-scrollbar">
-                  {activeTabObj?.keys.map(key => {
-                    const detail = PERMISSION_DETAILS[key];
-                    const isGranted = !!selectedPermissionsAccount.permissions?.[key];
-                    const accountRole = (selectedPermissionsAccount.id?.startsWith('team_') || selectedPermissionsAccount.id?.startsWith('tracker_')) ? 'team' : 'management';
-                    const targetRole = PERMISSION_ROLES[key] || 'all';
-                    const isOutofRole = targetRole !== 'all' && targetRole !== accountRole;
-
-                    return (
-                      <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${isGranted ? (isOutofRole ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-500/40 shadow-[0_0_20px_-5px_rgba(168,85,247,0.1)]') : (isOutofRole ? 'bg-slate-100/50 dark:bg-slate-800/20 border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40' : 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-white/10')}`}>
-                        {isGranted && <div className={`absolute right-0 top-0 bottom-0 w-1 shadow-md ${isOutofRole ? 'bg-amber-500 shadow-amber-500/50' : 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]'}`}></div>}
-                        
-                        <div className="flex flex-col pl-4 transition-transform duration-300 group-hover:-translate-x-1 w-full">
-                          <div className="flex items-center gap-2 mb-1.5">
-                            {isOutofRole && (
-                               isGranted ? <Unlock className="w-4 h-4 text-amber-500 shrink-0" /> : <Lock className="w-4 h-4 text-slate-400 shrink-0" />
-                            )}
-                            <span className={`text-sm font-black transition-colors ${isGranted ? (isOutofRole ? 'text-amber-700 dark:text-amber-400' : 'text-purple-700 dark:text-purple-300') : 'text-slate-700 dark:text-slate-200'}`}>{detail.title}</span>
-                            
-                            {isOutofRole && (
-                              <span className={`text-[9px] px-2 py-0.5 rounded border font-bold mr-auto shrink-0 ${isGranted ? 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700/50' : 'bg-slate-200 text-slate-500 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'}`}>
-                                {isGranted ? 'استثناء مفعّل' : (targetRole === 'management' ? 'خاص بالإدارة' : 'خاص بالميدان')}
-                              </span>
-                            )}
-                          </div>
-                          <span className={`text-[11px] leading-relaxed font-medium pr-6 ${isOutofRole && !isGranted ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>{detail.desc}</span>
-                        </div>
-                        
-                        {!isOutofRole ? (
-                          <div className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 border ${isGranted ? 'bg-purple-500 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-slate-300 dark:bg-slate-700/80 border-slate-400 dark:border-slate-600 shadow-inner'}`}>
-                            <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md ${isGranted ? 'left-1' : 'left-[26px]'}`}></div>
-                          </div>
-                        ) : (
-                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 border shadow-sm ${isGranted ? 'bg-amber-500 text-white border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:bg-amber-600' : 'bg-slate-200 text-slate-400 border-slate-300 dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-300 dark:hover:bg-slate-700/80'}`}>
-                             {isGranted ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
-                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                  
-                  {activePermissionsTab === 'directives' && (
-                    <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-start gap-3">
-                      <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                      <p className="text-[11px] text-amber-400/90 font-bold leading-relaxed">
-                        تنويه: إطفاء إذن الإرسال والرد يكتسب من خلاله الحساب "صلاحية المشاهدة فقط" للتبليغات الموجهة له دون إمكانية الرد عليها أو إرسال تبليغات جديدة.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5">
-                  <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0">
-                    حفظ واعتماد صلاحيات الحساب
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        );
-      })()}
-
-      {accountModalState.isOpen && (
-        <AccountModal
-          isOpen={accountModalState.isOpen}
-          mode={accountModalState.mode}
-          accountType={accountModalState.accountType}
-          initialData={accountModalState.data}
-          teams={teams}
-          onClose={() => setAccountModalState({ isOpen: false, mode: 'add', data: null, accountType: 'team' })}
-          onSave={handleSaveAccount}
-        />
-      )}
-      
       {showAddTeamModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-700/60 p-6 rounded-3xl text-white shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
@@ -2473,8 +1875,8 @@ export const SuperAdminPanel = () => {
                           onChange={(e) => setMosulSide(e.target.value)}
                           className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none text-xs font-bold focus:border-teal-500"
                         >
-                          <option value="left">مركز المحافظة - الجانب الأيسر</option>
-                          <option value="right">مركز المحافظة - الجانب الأيمن</option>
+                          <option value="left">الجانب الأيسر</option>
+                          <option value="right">الجانب الأيمن</option>
                         </select>
                       </div>
                       <div>
@@ -2713,7 +2115,7 @@ export const SuperAdminPanel = () => {
                   <option value="الزهور">قطاع الزهور</option>
                   <option value="المصارف">قطاع المصارف</option>
                   <option value="الغزلاني">قطاع الغزلاني</option>
-                  <option value="مركز المحافظة - الجانب الأيمن">قطاع مركز المحافظة - الجانب الأيمن</option>
+                  <option value="الجانب الأيمن">قطاع الجانب الأيمن</option>
                 </select>
               </div>
 
@@ -2888,8 +2290,6 @@ export const SuperAdminPanel = () => {
                       setNewDirTitle('مدير صحة نينوى');
                     } else if (e.target.value === 'public_health') {
                       setNewDirTitle('مدير قسم الصحة العامة');
-                    } else if (e.target.value === 'central_director') {
-                      setNewDirTitle('مدير الرقابة المركزية');
                     } else {
                       setNewDirTitle('مدير شعبة الرقابة الصحية');
                     }
@@ -2898,7 +2298,6 @@ export const SuperAdminPanel = () => {
                 >
                   <option value="director">مدير عام صحة نينوى (Director General)</option>
                   <option value="public_health">مدير قسم الصحة العامة (Public Health Director)</option>
-                  <option value="central_director">مدير الرقابة المركزية (Central Director)</option>
                   <option value="director_committee">مدير شعبة الرقابة الصحية (Sector Chief)</option>
                 </select>
               </div>
@@ -2928,8 +2327,8 @@ export const SuperAdminPanel = () => {
                         onChange={(e) => setNewDirSide(e.target.value)}
                         className="w-full p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
                       >
-                        <option value="left">مركز المحافظة - الجانب الأيسر</option>
-                        <option value="right">مركز المحافظة - الجانب الأيمن</option>
+                        <option value="left">الجانب الأيسر</option>
+                        <option value="right">الجانب الأيمن</option>
                       </select>
                     </div>
                   </div>
@@ -3025,7 +2424,6 @@ export const SuperAdminPanel = () => {
                 >
                   <option value="مدير عام صحة نينوى">مدير عام صحة نينوى (Director General)</option>
                   <option value="مدير قسم الصحة العامة">مدير قسم الصحة العامة (Public Health Director)</option>
-                  <option value="مدير الرقابة المركزية">مدير الرقابة المركزية (Central Director)</option>
                   <option value="مدير شعبة الرقابة الصحية">مدير شعبة الرقابة الصحية (Sector Chief)</option>
                   <option value="مدير ناحية">مدير ناحية</option>
                   <option value="الفرق الميدانية">الفرق الميدانية</option>
@@ -3111,16 +2509,13 @@ export const SuperAdminPanel = () => {
 
               <div className="space-y-1">
                 <label className="text-slate-400">صنف النشاط</label>
-                <select
+                <input
+                  type="text"
                   required
                   value={editingEst.type}
                   onChange={(e) => setEditingEst({ ...editingEst, type: e.target.value })}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none"
-                >
-                  {activityTypes?.map(activity => (
-                    <option key={activity} value={activity}>{activity}</option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div className="space-y-1">
@@ -3197,7 +2592,7 @@ export const SuperAdminPanel = () => {
             <div className="space-y-5 text-xs">
               <div className="p-5 rounded-2xl bg-slate-100/40 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] text-right space-y-2">
                 <span className="text-[10px] text-teal-600 dark:text-teal-400 block font-black uppercase mb-1">البيانات الرسمية للمنشأة</span>
-                <h4 className="text-base font-black text-slate-800 dark:text-white">{selectedEstDetails.name}</h4>
+                <h4 className="text-base font-black text-white">{selectedEstDetails.name}</h4>
                 <div className="grid grid-cols-1 gap-2 pt-1">
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">النشاط: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.type}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">المالك: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.owner}</strong></p>
@@ -3205,25 +2600,6 @@ export const SuperAdminPanel = () => {
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">الترخيص: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.licenseNumber}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">آخر زيارة تفتيش: <strong className="text-slate-800 dark:text-slate-200">{selectedEstDetails.lastInspection}</strong></p>
                   <p className="text-[11px] text-slate-600 dark:text-slate-400">التقييم: <strong className={selectedEstDetails.score >= 90 ? 'text-emerald-400' : 'text-amber-500'}>{selectedEstDetails.lastInspection === 'لم يزر بعد' ? 'معلق' : `${selectedEstDetails.score}%`}</strong></p>
-                  
-                  {selectedEstDetails.history && selectedEstDetails.history[0] && selectedEstDetails.history[0].notes && (
-                    <div className="mt-2 p-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 rounded-xl">
-                      <span className="text-[10px] text-amber-700 dark:text-amber-500 font-bold block mb-1">📝 ملاحظات التفتيش:</span>
-                      <p className="text-[11px] text-slate-700 dark:text-slate-300 font-bold leading-relaxed">{selectedEstDetails.history[0].notes}</p>
-                    </div>
-                  )}
-                  
-                  {selectedEstDetails.history && selectedEstDetails.history[0] && selectedEstDetails.history[0].photo && (
-                    <div className="mt-3 p-2 bg-slate-200/50 dark:bg-slate-900/50 rounded-xl">
-                      <span className="text-[10px] text-slate-500 block mb-2 font-bold">صورة توثيقية من آخر زيارة:</span>
-                      <img src={selectedEstDetails.history[0].photo} alt="توثيق الزيارة" className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity" onClick={() => window.open(selectedEstDetails.history[0].photo, '_blank')} />
-                    </div>
-                  )}
-                  {selectedEstDetails.latitude && selectedEstDetails.longitude && selectedEstDetails.latitude !== '36.3489' && (
-                    <p className="text-[10px] text-teal-600 dark:text-teal-400 mt-2 bg-teal-50 dark:bg-teal-900/20 p-2 rounded-lg flex items-center gap-1">
-                      📍 تم تأكيد التواجد الميداني: {selectedEstDetails.latitude}, {selectedEstDetails.longitude}
-                    </p>
-                  )}
                 </div>
                 <div className="mt-4 p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl relative overflow-hidden">
                   <div className="absolute -left-4 -top-4 w-12 h-12 bg-teal-500/20 blur-xl rounded-full"></div>
@@ -3256,7 +2632,7 @@ export const SuperAdminPanel = () => {
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-center font-black block transition-all shadow-inner"
+                  className="py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white border border-white/10 text-center font-black block transition-all shadow-inner"
                 >
                   🖨️ طباعة ملصق
                 </button>
@@ -3274,6 +2650,180 @@ export const SuperAdminPanel = () => {
         </div>
       )}
 
+      {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
+      {showPermissionsModal && selectedPermissionsAccount && (() => {
+        const PERMISSIONS_TABS = [
+          { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
+          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDirectivesPage', 'showDeliveryPage', 'showPublicEvalsPage'] },
+          { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
+          { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
+          { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
+        ];
+
+        const PERMISSION_DETAILS = {
+          manageEstablishments: { title: 'إدارة المنشآت (المفتاح الرئيسي)', desc: 'بإعطاء هذا الإذن، سيتمكن هذا الحساب من رؤية قسم المنشآت والمطاعم بالكامل والوصول إليه.' },
+          createEst: { title: 'إضافة منشأة جديدة', desc: 'هذا الإذن يتيح للحساب إمكانية تسجيل وإضافة مطاعم أو كافيهات أو منشآت جديدة إلى النظام.' },
+          editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي مطعم مسجل وتحديث معلوماته (كاسم المدير، رقم الهاتف، والتراخيص).' },
+          deleteEst: { title: 'حذف منشأة نهائياً', desc: 'إذن خطير: يسمح لهذا الحساب بشطب ومسح المنشأة نهائياً من قاعدة بيانات النظام.' },
+          addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
+          showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
+          showReportsPage: { title: 'التقارير الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
+          showDirectivesPage: { title: 'التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
+          showDeliveryPage: { title: 'خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
+          showPublicEvalsPage: { title: 'التقييمات العامة (الشكاوى)', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
+          sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
+          replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
+          issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
+          closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
+          reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
+          manageComplaints: { title: 'إدارة الشكاوى العامة', desc: 'يتيح للحساب صلاحية الرد على شكاوى المواطنين وإغلاقها بعد معالجتها.' },
+          exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المطاعم على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
+          viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
+          manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
+          manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
+          backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' }
+        };
+
+        const totalPerms = Object.keys(DEFAULT_PERMISSIONS).length;
+        const grantedPerms = Object.keys(DEFAULT_PERMISSIONS).filter(k => selectedPermissionsAccount.permissions?.[k]).length;
+        const progressPercentage = Math.round((grantedPerms / totalPerms) * 100);
+
+        const handleGrantAll = () => {
+          setSelectedPermissionsAccount(prev => {
+            const allTrue = {};
+            Object.keys(DEFAULT_PERMISSIONS).forEach(k => allTrue[k] = true);
+            return { ...prev, permissions: allTrue };
+          });
+        };
+
+        const handleRevokeAll = () => {
+          setSelectedPermissionsAccount(prev => {
+            const allFalse = {};
+            Object.keys(DEFAULT_PERMISSIONS).forEach(k => allFalse[k] = false);
+            return { ...prev, permissions: allFalse };
+          });
+        };
+
+        const activeTabObj = PERMISSIONS_TABS.find(t => t.id === activePermissionsTab);
+
+        return (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
+            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right max-h-[85vh]">
+              
+              {/* Right Sidebar: Tabs & Stats */}
+              <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 flex items-center gap-2 drop-shadow-sm">
+                    <Settings className="w-5 h-5 text-purple-400" /> مركز الأذونات
+                  </h3>
+                  <button onClick={() => setShowPermissionsModal(false)} className="md:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="mb-6 p-4 rounded-2xl bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
+                  <p className="text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wider">الحساب المستهدف</p>
+                  <p className="text-base font-black text-slate-800 dark:text-white mb-5 truncate">{selectedPermissionsAccount.name}</p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-[11px] font-black">
+                      <span className="text-teal-600 dark:text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]">ممنوح ({grantedPerms})</span>
+                      <span className="text-slate-500">من {totalPerms} إذن</span>
+                    </div>
+                    <div className="w-full bg-slate-200 dark:bg-slate-800/80 ring-1 ring-slate-300 dark:ring-white/5 rounded-full h-2 overflow-hidden shadow-inner">
+                      <div className="bg-gradient-to-l from-purple-500 via-indigo-500 to-teal-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ width: `${progressPercentage}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-2">
+                  {PERMISSIONS_TABS.filter(tab => {
+                    if (tab.id === 'establishments' && (selectedPermissionsAccount?.role === 'director' || selectedPermissionsAccount?.role === 'central_director')) {
+                      return false;
+                    }
+                    return true;
+                  }).map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActivePermissionsTab(tab.id)}
+                      className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-all duration-300 cursor-pointer text-xs font-black relative overflow-hidden ${activePermissionsTab === tab.id ? 'bg-gradient-to-l from-purple-600/20 to-indigo-600/20 text-purple-300 border border-purple-500/30 shadow-[inset_0_0_15px_rgba(168,85,247,0.15)] translate-x-1' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'}`}
+                    >
+                      <div className={`p-1.5 rounded-lg ${activePermissionsTab === tab.id ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'}`}>
+                        {tab.icon}
+                      </div>
+                      {tab.label}
+                      {activePermissionsTab === tab.id && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-indigo-500"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/5 space-y-3">
+                  <button onClick={handleGrantAll} className="w-full py-3 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 dark:text-teal-400 font-extrabold text-[11px] transition-all cursor-pointer border border-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_15px_rgba(45,212,191,0.2)]">
+                    + منح كافة الصلاحيات
+                  </button>
+                  <button onClick={handleRevokeAll} className="w-full py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 font-extrabold text-[11px] transition-all cursor-pointer border border-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_15px_rgba(248,113,113,0.2)]">
+                    - سحب كافة الصلاحيات
+                  </button>
+                </div>
+              </div>
+
+              {/* Left Content Area: Toggle Switches */}
+              <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10">
+                <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5">
+                  <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
+                    <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
+                      {activeTabObj?.icon}
+                    </div>
+                    {activeTabObj?.label}
+                  </h4>
+                  <button onClick={() => setShowPermissionsModal(false)} className="hidden md:flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group">
+                    <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto pr-3 space-y-3 custom-scrollbar">
+                  {activeTabObj?.keys.map(key => {
+                    const detail = PERMISSION_DETAILS[key];
+                    const isGranted = !!selectedPermissionsAccount.permissions?.[key];
+                    return (
+                      <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${isGranted ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-500/40 shadow-[0_0_20px_-5px_rgba(168,85,247,0.1)] dark:shadow-[0_0_20px_-5px_rgba(168,85,247,0.2)]' : 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-white/10'}`}>
+                        {isGranted && <div className="absolute right-0 top-0 bottom-0 w-1 bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]"></div>}
+                        
+                        <div className="flex flex-col pl-4 transition-transform duration-300 group-hover:-translate-x-1">
+                          <span className={`text-sm font-black mb-1.5 transition-colors ${isGranted ? 'text-purple-700 dark:text-purple-300' : 'text-slate-700 dark:text-slate-200'}`}>{detail.title}</span>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">{detail.desc}</span>
+                        </div>
+                        
+                        <div className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 border ${isGranted ? 'bg-purple-500 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-slate-300 dark:bg-slate-700/80 border-slate-400 dark:border-slate-600 shadow-inner'}`}>
+                          <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md ${isGranted ? 'left-1' : 'left-[26px]'}`}></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {activePermissionsTab === 'directives' && (
+                    <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-amber-400/90 font-bold leading-relaxed">
+                        تنويه: إطفاء إذن الإرسال والرد يكتسب من خلاله الحساب "صلاحية المشاهدة فقط" للتبليغات الموجهة له دون إمكانية الرد عليها أو إرسال تبليغات جديدة.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5">
+                  <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0">
+                    حفظ واعتماد صلاحيات الحساب
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
 
       {accountModalState.isOpen && (
         <AccountModal
@@ -3287,8 +2837,7 @@ export const SuperAdminPanel = () => {
         />
       )}
         {activeTab === 'broadcast' && (
-          <>
-            <div className="glassmorphic-card p-6 border border-red-500/20">
+          <div className="glassmorphic-card p-6 border border-red-500/20">
             <h2 className="text-xl font-black text-red-600 dark:text-red-500 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 animate-pulse" />
               <span>نظام البث العاجل (إنذار الطوارئ وإقفال الشاشات)</span>
@@ -3349,43 +2898,6 @@ export const SuperAdminPanel = () => {
               )}
             </div>
           </div>
-          
-          <div className="glassmorphic-card p-6 mt-6">
-                  <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <ShieldAlert className="w-5 h-5 text-red-500" />
-                    <span>ضوابط ومعايير النظام السيادية</span>
-                  </h2>
-
-                  {/* Maintenance Mode Toggle */}
-                  <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4 text-right mt-4">
-                    <div>
-                      <h3 className="text-sm font-black text-red-600 dark:text-red-400 mb-1">وضع الصيانة والإغلاق (Maintenance Mode)</h3>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">عند التفعيل، سيتم طرد ومنع جميع المستخدمين (لجان، مدراء) من الدخول باستثناء مدير الموقع.</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="sr-only peer" 
-                        checked={config.maintenanceMode || false}
-                        onChange={(e) => setConfig({ ...config, maintenanceMode: e.target.checked })}
-                      />
-                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-red-600"></div>
-                    </label>
-                  </div>
-                  
-                  <div className="flex justify-end pt-4">
-                    <button
-                      onClick={() => {
-                        localStorage.setItem('systemConfig', JSON.stringify(config));
-                        notify('تم حفظ الإعدادات السيادية وتطبيقها فوراً!', 'success');
-                      }}
-                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-extrabold text-xs transition-all shadow-md"
-                    >
-                      حفظ التغييرات
-                    </button>
-                  </div>
-          </div>
-        </>
         )}
 
         {activeTab === 'analytics' && (
@@ -3443,9 +2955,9 @@ export const SuperAdminPanel = () => {
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
-                  title="🚨 المطاعم الأكثر مخالفة (مركز المحافظة - الجانب الأيسر)"
+                  title="🚨 المطاعم الأكثر مخالفة (الجانب الأيسر)"
                   data={establishments
-                    .filter(e => e.sector === 'مركز المحافظة - الجانب الأيسر' && e.lastInspection !== 'لم يزر بعد')
+                    .filter(e => e.sector === 'الجانب الأيسر' && e.lastInspection !== 'لم يزر بعد')
                     .sort((a, b) => a.score - b.score)
                     .slice(0, 5)
                     .map(e => ({ label: e.name, value: e.score, color: e.score < (config.warningScore || 70) ? '#E11D48' : '#F59E0B' }))}
@@ -3453,9 +2965,9 @@ export const SuperAdminPanel = () => {
               </div>
               <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
-                  title="🚨 المطاعم الأكثر مخالفة (مركز المحافظة - الجانب الأيمن)"
+                  title="🚨 المطاعم الأكثر مخالفة (الجانب الأيمن)"
                   data={establishments
-                    .filter(e => e.sector === 'مركز المحافظة - الجانب الأيمن' && e.lastInspection !== 'لم يزر بعد')
+                    .filter(e => e.sector === 'الجانب الأيمن' && e.lastInspection !== 'لم يزر بعد')
                     .sort((a, b) => a.score - b.score)
                     .slice(0, 5)
                     .map(e => ({ label: e.name, value: e.score, color: e.score < (config.warningScore || 70) ? '#E11D48' : '#F59E0B' }))}
@@ -3559,8 +3071,6 @@ export const SuperAdminPanel = () => {
             </div>
           </>
         )}
-
-
     </div>
   );
 };
