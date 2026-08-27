@@ -1246,7 +1246,7 @@ export const SuperAdminPanel = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
                     <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول فريق متابعة الإغلاق</h2>
-                    <p className="text-[10px] font-bold text-slate-500 mt-1">الكوادر المكلفة بالتحقق من الإغلاقات في الميدان</p>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">إدارة كافة الحسابات المالية للمنظومة</p>
                   </div>
                   <button
                     onClick={() => {
@@ -1282,7 +1282,7 @@ export const SuperAdminPanel = () => {
                         <th className="p-4">اسم المحاسب</th>
                         <th className="p-4">البريد/المعرف</th>
                         <th className="p-4">رقم الهاتف</th>
-                        <th className="p-4">القطاع (الفريق المرتبط)</th>
+                        <th className="p-4">القطاع المالي المرتبط</th>
                         <th className="p-4">حالة الحساب</th>
                         <th className="p-4 text-center">الإجراءات</th>
                       </tr>
@@ -1305,6 +1305,12 @@ export const SuperAdminPanel = () => {
                           </td>
                           <td className="p-4">
                             <div className="flex gap-2 justify-center">
+                              <button
+                                onClick={() => handleOpenPermissions({ ...t, role: 'financial_accountant' })}
+                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
+                              >
+                                <Shield className="w-3.5 h-3.5" /> الصلاحيات
+                              </button>
                               <button
                                 onClick={() => handleOpenEditAccount(t, 'accountant')}
                                 className="px-2.5 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
@@ -2228,6 +2234,7 @@ export const SuperAdminPanel = () => {
           { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
           { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
+          { id: 'financials', label: 'الإدارة المالية / المحاسبين', icon: <DollarSign className="w-4 h-4 text-emerald-500"/>, keys: ['confirmReceipt', 'enterReceiptNumber', 'printReceiptA4', 'viewFinancialReports'] },
         ];
 
         const PERMISSION_DETAILS = {
@@ -2251,7 +2258,11 @@ export const SuperAdminPanel = () => {
           viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
           manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
           manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
-          backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' }
+          backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
+          confirmReceipt: { title: 'تأكيد القبض واستلام المبالغ', desc: 'يمنح المحاسب صلاحية النقر على تأكيد استلام مبالغ الغرامة من صاحب المنشأة وتوثيقها في النظام.' },
+          enterReceiptNumber: { title: 'إدخال رقم وصل القبض (الدفتر)', desc: 'يسمح بكتابة وربط رقم الوصل الورقي الرسمي (دفتر الوصولات) بالغرامة الإلكترونية.' },
+          printReceiptA4: { title: 'طباعة وصل القبض A4', desc: 'يتيح خيار إنشاء وطباعة وصل استلام رسمي من المنظومة بنسق A4 كأرشيف للإدارة.' },
+          viewFinancialReports: { title: 'عرض التقارير المالية للقطاع', desc: 'يسمح للحساب بمشاهدة ملخص الإيرادات والغرامات المستحصلة ضمن الرقعة الجغرافية المسؤولة عنها.' }
         };
 
         const PERMISSION_ROLES = {
@@ -2261,7 +2272,8 @@ export const SuperAdminPanel = () => {
           canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management',
           issueFine: 'management', closeEst: 'management', reopenEst: 'management',
           notify_closures: 'all', notify_inspections: 'all', notify_directives: 'all',
-          exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management'
+          exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management',
+          confirmReceipt: 'all', enterReceiptNumber: 'all', printReceiptA4: 'all', viewFinancialReports: 'all'
         };
 
         const totalPerms = Object.keys(DEFAULT_PERMISSIONS).length;
@@ -2288,7 +2300,7 @@ export const SuperAdminPanel = () => {
 
         return (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right max-h-[85vh]">
+            <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative flex flex-col md:flex-row text-right max-h-[90vh] overflow-hidden">
               
               {/* Right Sidebar: Tabs & Stats */}
               <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border-l border-slate-200 dark:border-white/5 p-6 flex flex-col relative z-10">
@@ -2363,7 +2375,7 @@ export const SuperAdminPanel = () => {
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto pr-3 space-y-3 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto pr-3 pb-6 space-y-3 custom-scrollbar">
                   {activeTabObj?.keys.map(key => {
                     const detail = PERMISSION_DETAILS[key];
                     const isGranted = !!selectedPermissionsAccount.permissions?.[key];

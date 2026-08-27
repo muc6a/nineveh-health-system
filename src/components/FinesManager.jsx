@@ -62,9 +62,16 @@ export const FinesManager = () => {
             <div className="space-y-1.5 text-right">
               <label className="text-xs font-bold text-slate-500">مبلغ الغرامة (دينار عراقي)</label>
               <input 
-                type="number" 
-                value={formData.amount}
-                onChange={e => setFormData({...formData, amount: Number(e.target.value)})}
+                type="text" 
+                value={formData.amount === 0 ? '' : formData.amount.toLocaleString()}
+                onChange={e => {
+                  const rawValue = e.target.value.replace(/,/g, '');
+                  if (!isNaN(rawValue) && rawValue !== '') {
+                    setFormData({...formData, amount: Number(rawValue)});
+                  } else if (rawValue === '') {
+                    setFormData({...formData, amount: 0});
+                  }
+                }}
                 className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm text-right focus:outline-none focus:border-red-500"
               />
             </div>
