@@ -484,8 +484,7 @@ export default function OperationsRoom() {
                 const displayVerifications = showClosureArchive ? archivedVerifications : activeVerifications;
                 
                 return displayVerifications.length > 0 ? (
-                  displayVerifications
-                closureVerifications.map(ver => (
+                  displayVerifications.map(ver => (
                   <div key={ver.id} className="mb-3 p-3 rounded-xl border border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-900/10 relative">
                     <div className="flex justify-between items-start mb-2">
                       <div>
