@@ -192,9 +192,7 @@ export const LoginGate = () => {
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-lg glassmorphic-card p-6 md:p-8 relative overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="w-full max-w-lg glassmorphism-card p-6 md:p-8 relative overflow-hidden">
 
         {/* Animated Brand Emblem Video Anchor */}
         <AnimatedLogo variant="login" className="mb-6" />
@@ -338,7 +336,7 @@ export const LoginGate = () => {
         {/* Developer Copyright Footer */}
         <div className="mt-6 pt-4 border-t border-slate-200/40 dark:border-slate-800/40 text-center">
           <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black">
-            جميع الحقوق محفوظة © 2026 - تم التصميم والتطوير بواسطة نعناع تك LLC
+            جميع الحقوق محفوظة © 2026 - تم التصميم والتطوير بواسطة Nana Tech
           </p>
         </div>
       </div>
