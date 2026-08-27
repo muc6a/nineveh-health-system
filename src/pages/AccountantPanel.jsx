@@ -1,11 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { LogOut, DollarSign, Activity, FileText, CheckCircle2, ShieldAlert, BadgeInfo, BellRing, Sun, Moon, Cloud, ChevronLeft, CreditCard, Banknote, Search, AlertCircle, Eye, ClipboardList } from 'lucide-react';
-import { NINEVEH_GEOGRAPHY } from '../utils/constants';
+import { WeatherWidget } from '../components/WeatherWidget';
+import { NotificationBell } from '../components/NotificationBell';
+import { AnimatedLogo } from '../components/AnimatedLogo';
+import { LogOut, DollarSign, Activity, FileText, CheckCircle2, ShieldAlert, BadgeInfo, BellRing, Sun, Moon, Cloud, ChevronLeft, CreditCard, Banknote, Search, AlertCircle, Eye, ClipboardList, Menu, LayoutDashboard, Printer } from 'lucide-react';
 
 export const AccountantPanel = () => {
-  const { user, setUser, navigate, notify, darkMode, penaltyRequests, setPenaltyRequests, establishments } = useContext(AppContext);
+  const { user, setUser, navigate, notify, darkMode, penaltyRequests, setPenaltyRequests, establishments, setShowDisplayPrefsModal, uiPreferences } = useContext(AppContext);
 
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'reconciliation'
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -14,8 +16,14 @@ export const AccountantPanel = () => {
   const [receiptNumber, setReceiptNumber] = useState('');
 
   const [showReconciliationModal, setShowReconciliationModal] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const targetSector = user?.linkedTeamSector || user?.sector || 'الكل';
+
+  const hasPerm = (permName) => {
+    if (user?.role === 'admin' || user?.role === 'financial_accountant') return true;
+    return user?.permissions?.[permName] === true;
+  };
 
   const handleLogout = () => {
     setUser(null);
@@ -71,7 +79,7 @@ export const AccountantPanel = () => {
       return req;
     }));
 
-    notify('تم قبض المبلغ وتسجيل التسديد بنجاح!', 'success');
+    notify('تم تأكيد القبض وتسجيل التسديد بنجاح!', 'success');
     setShowPaymentModal(false);
     setSelectedFine(null);
   };
@@ -86,86 +94,139 @@ export const AccountantPanel = () => {
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'} font-sans dir-rtl flex transition-colors duration-300`}>
-      {/* Sidebar */}
-      <aside className={`w-64 fixed inset-y-0 right-0 z-50 flex flex-col ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'} border-l transition-colors duration-300`}>
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-center gap-3">
-          <div className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
-            <DollarSign className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="font-black text-sm">منظومة الرقابة الصحية</h2>
-            <p className="text-[10px] text-teal-600 dark:text-teal-400 font-bold">بوابة الإدارة المالية</p>
+    <div 
+      className={`min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 ${uiPreferences?.density === 'compact' ? 'ui-compact' : 'ui-comfortable'}`}
+      style={{
+        '--ui-heading-size': uiPreferences?.headingSize || '18px',
+        '--ui-body-size': uiPreferences?.bodySize || '12px',
+      }}
+    >
+      
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Fixed Sticky Sidebar (Matches TeamDashboard exactly) */}
+      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
+        isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
+      } right-0`}>
+        <div>
+          <AnimatedLogo variant="sidebar" className="mb-6" />
+
+          <div className="space-y-1 mb-6">
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
+              لوحة تحكم الإدارة المالية
+            </span>
+            
+            <button
+              onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false); }}
+              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                activeTab === 'dashboard'
+                  ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              }`}
+            >
+              <LayoutDashboard className="w-4.5 h-4.5" />
+              <span>الرئيسية وقائمة الغرامات</span>
+            </button>
+            
+            {hasPerm('financialReports') && (
+              <button
+                onClick={() => { setActiveTab('reconciliation'); setShowReconciliationModal(true); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'reconciliation'
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <ClipboardList className="w-4.5 h-4.5" />
+                <span>إغلاق الصندوق / جرد اليومية</span>
+              </button>
+            )}
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'dashboard' 
-                ? 'bg-teal-500 text-white shadow-md shadow-teal-500/20' 
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            <Activity className="w-4 h-4" />
-            الرئيسية والغرامات
-          </button>
-          
-          <button
-            onClick={() => setShowReconciliationModal(true)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800`}
-          >
-            <ClipboardList className="w-4 h-4" />
-            إغلاق الصندوق / جرد اليومية
-          </button>
-        </nav>
-
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-center">
-          <div className="mb-3">
-            <span className="text-[10px] font-bold text-slate-500 block mb-1">القطاع المالي</span>
-            <span className="text-xs font-black text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 px-3 py-1.5 rounded-lg inline-block border border-teal-100 dark:border-teal-800/50">
-              محاسب {targetSector}
-            </span>
+        {/* User context footer */}
+        <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col text-right">
+              <span className="text-xs font-black text-slate-700 dark:text-slate-300">{user?.name || 'سيدي المحاسب'}</span>
+              <span className="text-[10px] text-teal-600 dark:text-teal-400 font-bold">محاسب {targetSector}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setShowDisplayPrefsModal(true)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group relative"
+                title="تخصيص العرض والمظهر"
+              >
+                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+                <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-slate-800 text-white text-[10px] py-1 px-2 rounded-lg whitespace-nowrap">تخصيص العرض</span>
+              </button>
+              <ThemeToggle />
+            </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 rounded-xl transition-colors cursor-pointer text-xs font-bold"
+            className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
-            تسجيل خروج
+            <span>تسجيل الخروج</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 mr-64">
-        {/* Header */}
-        <header className={`${darkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-white/80 border-slate-200'} border-b sticky top-0 z-40 backdrop-blur-md px-6 py-4 flex justify-between items-center transition-colors duration-300`}>
-          <div>
-            <h1 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-              الرئيسية 
-              <span className="text-sm font-bold text-slate-400 hidden md:inline">| لوحة التحكم المالي</span>
-            </h1>
-            <p className="text-xs text-slate-500 font-bold mt-1">مرحباً بك مجدداً، {user?.name}</p>
-          </div>
+      {/* Main Panel Canvas */}
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+        
+        {/* Welcome Headers with Date/Time and Mosul Weather (Matches TeamDashboard exactly) */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-              <Cloud className="w-4 h-4 text-slate-400" />
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">22° مشمس</span>
+            <span className="text-xl">💰</span>
+            <div>
+              <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي المحاسب 👋</h2>
+              <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن الإدارة المالية لـ {targetSector}</p>
             </div>
-            <button className="relative p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-              <BellRing className="w-4.5 h-4.5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-            <ThemeToggle />
           </div>
-        </header>
+          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+            <NotificationBell />
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
+              <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span className="text-slate-300">|</span>
+              <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
+              <WeatherWidget variant="full" />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navbar Header */}
+        <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <AnimatedLogo variant="sidebar" className="border-none p-0 scale-75 transform origin-center" />
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setShowDisplayPrefsModal(true)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
+                title="تخصيص العرض والمظهر"
+              >
+                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              </button>
+              <NotificationBell />
+              <ThemeToggle />
+          </div>
+        </div>
 
         {/* Dashboard Content */}
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
-          
+        <div className="space-y-6 animate-fade-in-up">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-amber-500" />
@@ -205,12 +266,16 @@ export const AccountantPanel = () => {
                         <td className="p-4 text-red-600 font-black">{fine.amount?.toLocaleString()}</td>
                         <td className="p-4 text-slate-500 dir-ltr text-right">{new Date(fine.date).toLocaleDateString('en-GB')}</td>
                         <td className="p-4 text-center">
-                          <button
-                            onClick={() => handleOpenPayment(fine)}
-                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black transition-colors shadow-sm shadow-emerald-500/20"
-                          >
-                            قبض وتسديد
-                          </button>
+                          {hasPerm('confirmPayment') ? (
+                            <button
+                              onClick={() => handleOpenPayment(fine)}
+                              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black transition-colors shadow-sm shadow-emerald-500/20"
+                            >
+                              قبض وتسديد
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-slate-400 font-bold">لا تملك صلاحية تأكيد القبض</span>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -224,7 +289,7 @@ export const AccountantPanel = () => {
 
       {/* Payment Modal */}
       {showPaymentModal && selectedFine && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm">
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl shadow-2xl relative text-right">
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
               <DollarSign className="w-5 h-5 text-emerald-500" />
@@ -268,28 +333,38 @@ export const AccountantPanel = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2">رقم الوصل (اختياري)</label>
-                <input
-                  type="text"
-                  value={receiptNumber}
-                  onChange={(e) => setReceiptNumber(e.target.value)}
-                  placeholder="أدخل رقم الوصل للتوثيق"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-xl text-sm font-bold focus:outline-none focus:border-teal-500 transition-colors"
-                />
-              </div>
+              {hasPerm('requireReceiptNumber') && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-2">رقم الوصل (اختياري)</label>
+                  <input
+                    type="text"
+                    value={receiptNumber}
+                    onChange={(e) => setReceiptNumber(e.target.value)}
+                    placeholder="أدخل رقم الوصل للتوثيق"
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-xl text-sm font-bold focus:outline-none focus:border-teal-500 transition-colors"
+                  />
+                </div>
+              )}
             </div>
 
-            <div className="mt-8 flex gap-3">
+            <div className="mt-8 flex gap-3 flex-wrap">
               <button
                 onClick={submitPayment}
                 className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black transition-colors shadow-lg shadow-emerald-500/20"
               >
-                قبض المبلغ وتسجيل التسديد
+                تأكيد القبض والتسديد
               </button>
+              {hasPerm('printA4') && (
+                <button
+                  onClick={() => notify('جاري التجهيز لطباعة الوصل A4...', 'info')}
+                  className="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-black transition-colors shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                >
+                  <Printer className="w-4 h-4" /> طباعة A4
+                </button>
+              )}
               <button
                 onClick={() => setShowPaymentModal(false)}
-                className="px-6 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
+                className="w-full md:w-auto px-6 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors"
               >
                 إلغاء
               </button>
@@ -299,8 +374,8 @@ export const AccountantPanel = () => {
       )}
 
       {/* Reconciliation Modal */}
-      {showReconciliationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm">
+      {showReconciliationModal && hasPerm('financialReports') && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 p-6 rounded-3xl shadow-2xl relative text-right">
             <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
               <ClipboardList className="w-6 h-6 text-indigo-500" />
