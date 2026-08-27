@@ -204,7 +204,7 @@ export const SuperAdminPanel = () => {
     const role = selectedPermissionsAccount.role;
     if (role === 'team' || selectedPermissionsAccount.isTeam || !role) {
       setTeams(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
-    } else if (role === 'accountant') {
+    } else if (role === 'accountant' || role === 'financial_accountant') {
       setAccountants(prev => prev.map(a => a.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : a));
     } else if (role === 'tracker') {
       setTrackers(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
@@ -1319,7 +1319,7 @@ export const SuperAdminPanel = () => {
                           <td className="p-4">
                             <div className="flex gap-2 justify-center">
                               <button
-                                onClick={() => handleOpenPermissions({ ...t, role: 'financial_accountant' })}
+                                onClick={() => handleOpenPermissions({ ...t, role: 'accountant' })}
                                 className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
                               >
                                 <Shield className="w-3.5 h-3.5" /> الصلاحيات
