@@ -779,9 +779,7 @@ export const InspectionForm = () => {
         </div>
       )}
 
-    </div>
-  );
-};
+
 
 
       {/* Smart Trigger Closure Modal */}
@@ -825,4 +823,6 @@ export const InspectionForm = () => {
         </div>
       )}
 
-export default InspectionForm;
+    </div>
+  );
+};export default InspectionForm;
