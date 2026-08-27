@@ -917,7 +917,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                🕵️‍♂️ إدارة المتابعين ({trackers?.length || 0})
+                🕵️‍♂️ إدارة المتابعين
               </button>
               <button
                 onClick={() => setSubRosterTab('accountants')}
@@ -927,7 +927,7 @@ export const SuperAdminPanel = () => {
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                💼 إدارة المحاسبين ({accountants?.length || 0})
+                💼 إدارة المحاسبين
               </button>
             </div>
 

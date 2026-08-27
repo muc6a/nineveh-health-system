@@ -354,8 +354,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
               {accountType === 'director' ? <Briefcase className="w-5 h-5"/> : <Users className="w-5 h-5"/>}
             </div>
             {mode === 'add' 
-              ? (accountType === 'director' ? 'إضافة حساب مدير/قيادة' : 'إضافة حساب ميداني') 
-              : 'تعديل بيانات الحساب'
+              ? (accountType === 'director' ? 'إضافة حساب مدير/قيادة' : (accountType === 'accountant' ? 'إضافة حساب محاسب' : 'إضافة حساب ميداني')) 
+              : (accountType === 'director' ? 'تعديل بيانات القيادة' : (accountType === 'accountant' ? 'تعديل بيانات المحاسب' : 'تعديل بيانات الحساب'))
             }
           </h3>
           <button onClick={onClose} className="flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5">
@@ -540,28 +540,28 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
           {((accountType === 'tracker' || accountType === 'accountant') || accountType === 'accountant') && (
             <>
               {/* 1. Name */}
-              <div className="space-y-2">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><User className="w-4 h-4"/> 1. اسم المتابع الميداني</label>
+              <div className="space-y-4">
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><User className="w-4 h-4"/> 1. {accountType === 'accountant' ? 'اسم المحاسب' : 'اسم المتابع الميداني'}</label>
                 <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: أحمد خليل" className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500" />
               </div>
 
               {/* 2. Linked Team Sector */}
               <div className="space-y-2 pt-4 border-t border-slate-800">
-                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 2. ربط المتابع بقطاع الفريق الميداني</label>
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 2. ربط {accountType === 'accountant' ? 'المحاسب' : 'المتابع'} بقطاع الفريق الميداني</label>
                 <select 
                   required 
                   value={linkedTeamSector} 
                   onChange={(e) => setLinkedTeamSector(e.target.value)} 
                   className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500"
                 >
-                  <option value="">اختر القطاع / الفريق الميداني المرتبط</option>
+                  <option value="">{accountType === 'accountant' ? 'اختر القطاع المالي المرتبط' : 'اختر القطاع / الفريق الميداني المرتبط'}</option>
                   {teams.map(team => (
                     <option key={team.id} value={team.sector || team.name}>
                       {team.name} ({team.sector})
                     </option>
                   ))}
                 </select>
-                <p className="text-[10px] text-slate-400 mt-1">المتابع سيشاهد إغلاقات هذا القطاع حصراً للتحقق منها.</p>
+                <p className="text-[10px] text-slate-400 mt-1">{accountType === 'accountant' ? 'المحاسب سيشاهد ويتابع إغلاقات هذا القطاع حصراً والجباية الخاصة بها.' : 'المتابع سيشاهد إغلاقات هذا القطاع حصراً للتحقق منها.'}</p>
               </div>
             </>
           )}
