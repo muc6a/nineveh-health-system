@@ -11,15 +11,12 @@ export const LiveSupportWidget = () => {
   const [showRoleSelect, setShowRoleSelect] = useState(false);
   const chatEndRef = useRef(null);
 
-  // If there's no user logged in, don't show the chat
-  if (!user || user.role === 'admin') return null;
-
   const roles = [
     { id: 'operations', label: 'غرفة العمليات المركزية' },
     { id: 'accountant', label: 'الإدارة المالية (المحاسبين)' },
     { id: 'director', label: 'الإدارة العليا' },
     { id: 'team', label: 'الفرق الميدانية' }
-  ].filter(r => r.id !== user.role); // Don't allow chatting with own role directly
+  ].filter(r => r.id !== user?.role); // Don't allow chatting with own role directly
 
   const currentRoleLabel = roles.find(r => r.id === targetRole)?.label || 'غرفة العمليات المركزية';
 
@@ -70,6 +67,9 @@ export const LiveSupportWidget = () => {
       }]);
     }, 2000);
   };
+
+  // If there's no user logged in, don't show the chat
+  if (!user || user.role === 'admin') return null;
 
   return (
     <div className="fixed bottom-6 left-6 z-[60] flex flex-col items-end">
