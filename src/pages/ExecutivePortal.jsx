@@ -446,7 +446,18 @@ export const ExecutivePortal = () => {
               });
             })()}
 
-
+            {(user?.role === 'accountant' || user?.role === 'financial_accountant') && (
+              <>
+                <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
+                <button
+                  onClick={() => navigate('/dashboard/accountant')}
+                  className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 bg-slate-800 dark:bg-slate-700 text-white hover:bg-slate-900 shadow-md"
+                >
+                  <DollarSign className="w-4.5 h-4.5 text-emerald-400" />
+                  <span>العودة لبوابة المحاسبين</span>
+                </button>
+              </>
+            )}
           </div>
 
         {/* Logout at bottom - Sticky */}
