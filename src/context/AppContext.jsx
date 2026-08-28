@@ -790,6 +790,27 @@ export const AppProvider = ({ children }) => {
     }
   }, [user]);
 
+  // Synchronize current user with the latest data from account arrays
+  useEffect(() => {
+    if (!user) return;
+    
+    let updatedUser = null;
+    
+    if (user.role === 'admin' || user.isDirector) {
+      updatedUser = directors.find(d => d.id === user.id);
+    } else if (user.role === 'tracker') {
+      updatedUser = trackers.find(t => t.id === user.id);
+    } else if (user.role === 'accountant' || user.role === 'financial_accountant') {
+      updatedUser = accountants.find(a => a.id === user.id);
+    } else if (user.isTeam || user.role === 'field_team' || user.role === 'team') {
+      updatedUser = teams.find(t => t.id === user.id);
+    }
+    
+    if (updatedUser && JSON.stringify(updatedUser) !== JSON.stringify(user)) {
+      setUser(updatedUser);
+    }
+  }, [teams, accountants, trackers, directors]);
+
   const [deliveries, setDeliveries] = useState(() => {
     const saved = localStorage.getItem('deliveries');
     return saved ? JSON.parse(saved) : INITIAL_DELIVERIES;
