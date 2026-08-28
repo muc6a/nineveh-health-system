@@ -2122,7 +2122,9 @@ export const SuperAdminPanel = () => {
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-400 block mb-1">القطاع المكلف</span>
-                  <span className="font-extrabold text-sm text-teal-600 dark:text-teal-400">{selectedTeamDetails.sector}</span>
+                  <span className="font-extrabold text-sm text-teal-600 dark:text-teal-400">
+                    {selectedTeamDetails.linkedTeamSector || (selectedTeamDetails.targetSectors && selectedTeamDetails.targetSectors.length > 0 ? selectedTeamDetails.targetSectors.join('، ') : null) || selectedTeamDetails.sector || 'الكل'}
+                  </span>
                 </div>
               </div>
 
