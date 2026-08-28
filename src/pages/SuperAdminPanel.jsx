@@ -546,10 +546,7 @@ export const SuperAdminPanel = () => {
     manageSettings: false,
     backupData: false,
     // Section F: Financial
-    confirmReceipt: false,
-    enterReceiptNumber: false,
-    printReceiptA4: false,
-    viewFinancialReports: false
+    viewComprehensiveFinancialReports: false
   };
 
   const handleSaveAccount = (accountData) => {
@@ -2303,10 +2300,7 @@ export const SuperAdminPanel = () => {
           manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
           manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
           backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
-          confirmReceipt: { title: 'تأكيد القبض واستلام المبالغ', desc: 'يمنح المحاسب صلاحية النقر على تأكيد استلام مبالغ الغرامة من صاحب المنشأة وتوثيقها في النظام.' },
-          enterReceiptNumber: { title: 'إدخال رقم وصل القبض (الدفتر)', desc: 'يسمح بكتابة وربط رقم الوصل الورقي الرسمي (دفتر الوصولات) بالغرامة الإلكترونية.' },
-          printReceiptA4: { title: 'طباعة وصل القبض A4', desc: 'يتيح خيار إنشاء وطباعة وصل استلام رسمي من المنظومة بنسق A4 كأرشيف للإدارة.' },
-          viewFinancialReports: { title: 'عرض التقارير المالية للقطاع', desc: 'يسمح للحساب بمشاهدة ملخص الإيرادات والغرامات المستحصلة ضمن الرقعة الجغرافية المسؤولة عنها.' }
+          viewComprehensiveFinancialReports: { title: 'التقارير المالية الشاملة والرقابية', desc: 'يسمح للحساب بمشاهدة كافة الإيرادات المالية في المحافظة بشكل شامل وتصفيتها حسب القطاعات وفرق الرقابة.' }
         };
 
         const PERMISSION_ROLES = {
@@ -2317,7 +2311,7 @@ export const SuperAdminPanel = () => {
           issueFine: 'management', closeEst: 'management', reopenEst: 'management',
           notify_closures: 'all', notify_inspections: 'all', notify_directives: 'all',
           exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management',
-          confirmReceipt: 'all', enterReceiptNumber: 'all', printReceiptA4: 'all', viewFinancialReports: 'all'
+          viewComprehensiveFinancialReports: 'management'
         };
 
         const totalPerms = Object.keys(DEFAULT_PERMISSIONS).length;
