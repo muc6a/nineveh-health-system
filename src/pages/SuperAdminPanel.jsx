@@ -2275,7 +2275,7 @@ export const SuperAdminPanel = () => {
           { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
           { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
-          { id: 'financials', label: 'الإدارة المالية / المحاسبين', icon: <DollarSign className="w-4 h-4 text-emerald-500"/>, keys: ['confirmReceipt', 'enterReceiptNumber', 'printReceiptA4', 'viewFinancialReports'] },
+          { id: 'financials', label: 'التقارير المالية', icon: <Activity className="w-4 h-4 text-amber-500"/>, keys: ['viewComprehensiveFinancialReports'] },
         ];
 
         const PERMISSION_DETAILS = {
