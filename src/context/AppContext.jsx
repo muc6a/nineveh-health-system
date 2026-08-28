@@ -1123,7 +1123,7 @@ export const AppProvider = ({ children }) => {
     setEstablishments(prev => prev.filter(est => est.id !== id));
   };
 
-  const addInspection = (establishmentId, score, notes, selectedRatings, inspectorName, coords, isEdit = false, teamId = null, photoBase64 = null) => {
+  const addInspection = (establishmentId, score, notes, selectedRatings, inspectorName, coords, isEdit = false, teamId = null, photoBase64 = null, aiReport = null, signatureData = null, ownerPhoto = null) => {
     const status = score >= 90 ? 'compliant' : score >= 70 ? 'monitoring' : 'non_compliant';
     const date = new Date().toISOString().split('T')[0];
     
@@ -1133,7 +1133,7 @@ export const AppProvider = ({ children }) => {
       if (est.id === establishmentId) {
         targetEstName = est.name;
         let updatedHistory = [...(est.history || [])];
-        const newEntry = { date, score, notes, inspectorName, ratings: selectedRatings, photo: photoBase64 };
+        const newEntry = { date, score, notes, inspectorName, ratings: selectedRatings, photo: photoBase64, aiReport, signatureData, ownerPhoto };
         if (isEdit && updatedHistory.length > 0) {
           updatedHistory[0] = newEntry;
         } else {

@@ -1,14 +1,14 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { AppProvider, AppContext } from './context/AppContext';
 import { Router } from './components/Router';
-import { NotificationToast } from './components/NotificationToast';
 import { BroadcastModal } from './components/BroadcastModal';
+import { LiveSupportWidget } from './components/LiveSupportWidget';
 import { Hammer } from 'lucide-react';
 import DisplayPreferencesModal from './components/DisplayPreferencesModal';
 
 // Sizing wrapper that reads the configuration globally
 const AppContent = () => {
-  const { config, notification, notify, user, darkMode, showDisplayPrefsModal, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { config, user, darkMode, showDisplayPrefsModal, setShowDisplayPrefsModal } = useContext(AppContext);
 
   const getScaleClass = () => {
     if (config.uiScale === 'small') return 'scale-95 origin-top';
@@ -41,13 +41,8 @@ const AppContent = () => {
           <DisplayPreferencesModal isOpen={showDisplayPrefsModal} onClose={() => setShowDisplayPrefsModal(false)} />
         </>
       )}
-      <NotificationToast 
-        key={notification.id} 
-        message={notification.message} 
-        type={notification.type} 
-        onClose={() => notify('', 'info')} 
-      />
       <BroadcastModal />
+      <LiveSupportWidget />
     </div>
   );
 };

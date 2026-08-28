@@ -4,7 +4,9 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
 import { AnimatedLogo } from '../components/AnimatedLogo';
-import { LogOut, DollarSign, Activity, FileText, CheckCircle2, ShieldAlert, BadgeInfo, BellRing, Sun, Moon, Cloud, ChevronLeft, CreditCard, Banknote, Search, AlertCircle, Eye, ClipboardList, Menu, LayoutDashboard, Printer, Mail, Inbox, Archive, Filter } from 'lucide-react';
+import { LogOut, DollarSign, Activity, FileText, CheckCircle2, ShieldAlert, BadgeInfo, BellRing, Sun, Moon, Cloud, ChevronLeft, CreditCard, Banknote, Search, AlertCircle, Eye, ClipboardList, Menu, LayoutDashboard, Printer, Mail, Inbox, Archive, Filter, Building, Compass, Map, CheckSquare } from 'lucide-react';
+import { TeamDashboard } from './TeamDashboard';
+import { ExecutivePortal } from './ExecutivePortal';
 
 export const AccountantPanel = () => {
   const { user, setUser, navigate, notify, penaltyRequests, setPenaltyRequests, establishments, setShowDisplayPrefsModal, uiPreferences, directives, setDirectives } = useContext(AppContext);
@@ -14,6 +16,7 @@ export const AccountantPanel = () => {
   // States for Pay Fines
   const [searchCode, setSearchCode] = useState('');
   const [searchedFine, setSearchedFine] = useState(null);
+  const [searchedEstablishment, setSearchedEstablishment] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash'); // 'cash' or 'pos'
   const [receiptNumber, setReceiptNumber] = useState('');
 
@@ -108,15 +111,28 @@ export const AccountantPanel = () => {
       notify('يرجى إدخال كود المنشأة أو رقم الغرامة', 'warning');
       return;
     }
-    // Search in pending fines
-    const found = pendingFines.find(f => f.establishmentId.toLowerCase() === searchCode.toLowerCase() || f.id.toLowerCase() === searchCode.toLowerCase());
-    if (found) {
-      setSearchedFine(found);
-      setPaymentMethod('cash');
-      setReceiptNumber('');
+    
+    // 1. Search for establishment
+    const est = establishments.find(e => e.id.toLowerCase() === searchCode.toLowerCase() || e.name.includes(searchCode));
+    
+    // 2. Search for fine
+    const foundFines = pendingFines.filter(f => f.establishmentId.toLowerCase() === searchCode.toLowerCase() || f.id.toLowerCase() === searchCode.toLowerCase());
+    
+    if (est || foundFines.length > 0) {
+      if (est) setSearchedEstablishment(est);
+      else setSearchedEstablishment(establishments.find(e => e.id === foundFines[0].establishmentId) || null);
+      
+      if (foundFines.length > 0) {
+        setSearchedFine(foundFines[0]);
+        setPaymentMethod('cash');
+        setReceiptNumber('');
+      } else {
+        setSearchedFine(null);
+      }
     } else {
+      setSearchedEstablishment(null);
       setSearchedFine(null);
-      notify('لم يتم العثور على غرامة معلقة بهذا الكود في قطاعك', 'error');
+      notify('المنشأة غير متوفرة في قاعدة البيانات ولم يتم العثور على غرامة مسجلة بهذا الكود', 'error');
     }
   };
 
@@ -253,15 +269,91 @@ export const AccountantPanel = () => {
                 </button>
               </>
             )}
+
+            {/* Dynamic Extra Permissions Tabs */}
+            {(hasPerm('manageEstablishments') || hasPerm('showReportsPage') || hasPerm('showMainDashboard') || hasPerm('showSectorMap') || hasPerm('showSmartTasks') || hasPerm('showDeliveryPage')) && (
+              <>
+                <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
+                <span className="text-[11px] font-bold text-teal-500 dark:text-teal-400 uppercase tracking-wider block px-3 mb-2 flex items-center gap-2">
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                  صلاحيات إضافية (ممنوحة)
+                </span>
+                
+                {hasPerm('showMainDashboard') && (
+                  <button
+                    onClick={() => { setActiveTab('ext_summary'); setIsSidebarOpen(false); }}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                      activeTab === 'ext_summary' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    <LayoutDashboard className="w-4.5 h-4.5" />
+                    <span>لوحة التقارير والإحصائيات</span>
+                  </button>
+                )}
+
+                {hasPerm('manageEstablishments') && (
+                  <button
+                    onClick={() => { setActiveTab('ext_directory'); setIsSidebarOpen(false); }}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                      activeTab === 'ext_directory' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    <Building className="w-4.5 h-4.5" />
+                    <span>إدارة المنشآت</span>
+                  </button>
+                )}
+
+                {hasPerm('showReportsPage') && (
+                  <button
+                    onClick={() => { setActiveTab('ext_reports'); setIsSidebarOpen(false); }}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                      activeTab === 'ext_reports' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    <Compass className="w-4.5 h-4.5" />
+                    <span>التقارير الجغرافية</span>
+                  </button>
+                )}
+                
+                {hasPerm('showSectorMap') && (
+                  <button
+                    onClick={() => { setActiveTab('ext_map'); setIsSidebarOpen(false); }}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                      activeTab === 'ext_map' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    <Map className="w-4.5 h-4.5" />
+                    <span>خريطة القطاع</span>
+                  </button>
+                )}
+                
+                {hasPerm('showSmartTasks') && (
+                  <button
+                    onClick={() => { setActiveTab('ext_smart_tasks'); setIsSidebarOpen(false); }}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                      activeTab === 'ext_smart_tasks' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    <CheckSquare className="w-4.5 h-4.5" />
+                    <span>مهام اليوم الذكية</span>
+                  </button>
+                )}
+              </>
+            )}
           </div>
         </div>
 
         {/* User context footer */}
         <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50 shrink-0 bg-white/95 dark:bg-slate-900/95 md:bg-transparent">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex flex-col text-right">
+            <div className="flex flex-col flex-1 truncate text-right mr-3">
               <span className="text-xs font-black text-slate-700 dark:text-slate-300">{user?.name || 'سيدي المحاسب'}</span>
-              <span className="text-[10px] text-teal-600 dark:text-teal-400 font-bold">محاسب {targetSector}</span>
+              <span className="text-[9px] font-bold text-slate-400 mt-0.5 truncate">
+                {user?.role === 'financial_accountant' ? 'محاسب مالي' : 'محاسب الدائرة'}
+              </span>
+              <span className="text-[8px] font-bold text-teal-500 mt-0.5 truncate">
+                الصلاحيات المفعلة: {user?.role === 'admin' || user?.role === 'financial_accountant' ? 'كاملة' : Object.keys(user?.permissions || {}).filter(k => user?.permissions[k]).length}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <button 
@@ -417,29 +509,52 @@ export const AccountantPanel = () => {
               </div>
             </div>
 
-            {/* Searched Fine Details (Pay Action) */}
-            {searchedFine && (
-              <div className="bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-500/30 p-6 rounded-3xl shadow-lg max-w-2xl mx-auto relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                <h4 className="text-md font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2 mb-6">
-                  <CheckCircle2 className="w-5 h-5" />
-                  تم العثور على غرامة مستحقة!
-                </h4>
+            {/* Searched Details */}
+            {searchedEstablishment && (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-lg max-w-2xl mx-auto relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-slate-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                 
-                <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
-                  <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <span className="block text-[10px] text-slate-500 font-bold mb-1">اسم المنشأة المخالفة</span>
-                    <span className="block text-sm font-black text-slate-800 dark:text-white">{getEstablishmentName(searchedFine.establishmentId)}</span>
-                  </div>
-                  <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <span className="block text-[10px] text-slate-500 font-bold mb-1">المبلغ المطلوب تسديده</span>
-                    <span className="block text-xl font-black text-red-600">{searchedFine.amount?.toLocaleString()} <span className="text-[10px]">د.ع</span></span>
-                  </div>
-                  <div className="col-span-2 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <span className="block text-[10px] text-slate-500 font-bold mb-1">سبب المخالفة</span>
-                    <span className="block text-xs font-bold text-slate-700 dark:text-slate-300">{searchedFine.reason}</span>
+                <div className="mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                  <h4 className="text-md font-black text-slate-800 dark:text-white flex items-center gap-2 mb-2">
+                    تفاصيل المنشأة
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="block text-[10px] text-slate-500 font-bold mb-1">اسم المنشأة</span>
+                      <span className="block text-sm font-black text-slate-800 dark:text-white">{searchedEstablishment.name}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] text-slate-500 font-bold mb-1">كود المنشأة</span>
+                      <span className="block text-sm font-black text-slate-700 dark:text-slate-300">{searchedEstablishment.id}</span>
+                    </div>
                   </div>
                 </div>
+
+                {searchedFine ? (
+                  <>
+                    <h4 className="text-md font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2 mb-6">
+                      <CheckCircle2 className="w-5 h-5" />
+                      تم العثور على غرامة مستحقة
+                    </h4>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
+                      <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span className="block text-[10px] text-slate-500 font-bold mb-1">المبلغ المطلوب تسديده</span>
+                        <span className="block text-xl font-black text-red-600">{searchedFine.amount?.toLocaleString()} <span className="text-[10px]">د.ع</span></span>
+                      </div>
+                      <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span className="block text-[10px] text-slate-500 font-bold mb-1">سبب المخالفة</span>
+                        <span className="block text-xs font-bold text-slate-700 dark:text-slate-300">{searchedFine.reason}</span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl mb-6 text-center">
+                    <p className="text-emerald-700 dark:text-emerald-400 font-bold text-sm">
+                      ✅ لا توجد أي غرامات مالية معلقة أو غير مسددة على هذه المنشأة.
+                    </p>
+                  </div>
+                )}
 
                 <div className="border-t border-slate-200 dark:border-slate-700 pt-6 relative z-10 space-y-4">
                   <div>
@@ -734,6 +849,37 @@ export const AccountantPanel = () => {
               </div>
             </div>
 
+          </div>
+        )}
+
+        {/* Embedded Tabs */}
+        {activeTab === 'ext_summary' && (
+          <div className="w-full h-full min-h-[85vh]">
+            <TeamDashboard embeddedTab="summary" />
+          </div>
+        )}
+        
+        {activeTab === 'ext_directory' && (
+          <div className="w-full h-full min-h-[85vh]">
+            <TeamDashboard embeddedTab="directory" />
+          </div>
+        )}
+        
+        {activeTab === 'ext_reports' && (
+          <div className="w-full h-full min-h-[85vh]">
+            <ExecutivePortal embeddedTab="reports" />
+          </div>
+        )}
+        
+        {activeTab === 'ext_map' && (
+          <div className="w-full h-full min-h-[85vh]">
+            <TeamDashboard embeddedTab="map" />
+          </div>
+        )}
+
+        {activeTab === 'ext_smart_tasks' && (
+          <div className="w-full h-full min-h-[85vh]">
+            <TeamDashboard embeddedTab="smart_tasks" />
           </div>
         )}
 

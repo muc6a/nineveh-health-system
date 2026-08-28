@@ -9,9 +9,10 @@ import { NotificationBell } from '../components/NotificationBell';
 import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
+import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
-export const TeamDashboard = () => {
+export const TeamDashboard = ({ embeddedTab }) => {
   const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
   
   // Live Chat State
@@ -21,6 +22,10 @@ export const TeamDashboard = () => {
     { id: 1, sender: 'admin', text: 'مرحباً، غرفة العمليات المركزية في خدمتكم. هل تحتاجون لأي دعم؟', time: '08:00 ص' }
   ]);
   
+  const [showFinesModal, setShowFinesModal] = useState(false);
+  const [finesModalType, setFinesModalType] = useState('fine');
+  const [targetEstForFine, setTargetEstForFine] = useState(null);
+
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
     if (user?.role === 'admin') return true;
@@ -39,7 +44,9 @@ export const TeamDashboard = () => {
   };
 
   // Active Tab: 'summary', 'directory', 'reports', etc.
-  const [activeTab, setActiveTab] = usePersistentTab('teamActiveTab', getInitialTab() || 'summary');
+  const [persistentTab, setPersistentTab] = usePersistentTab('teamActiveTab', getInitialTab() || 'summary');
+  const activeTab = embeddedTab || persistentTab;
+  const setActiveTab = embeddedTab ? () => {} : setPersistentTab;
 
   // Watch for permission changes to set initial tab if it was null
   React.useEffect(() => {
@@ -255,7 +262,7 @@ export const TeamDashboard = () => {
 
   return (
     <div 
-      className={`min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 ${uiPreferences?.density === 'compact' ? 'ui-compact' : 'ui-comfortable'}`}
+      className={`bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 ${uiPreferences?.density === 'compact' ? 'ui-compact' : 'ui-comfortable'} ${embeddedTab ? 'min-h-full rounded-2xl overflow-hidden' : 'min-h-screen'}`}
       style={{
         '--ui-heading-size': uiPreferences?.headingSize || '18px',
         '--ui-body-size': uiPreferences?.bodySize || '12px',
@@ -925,26 +932,9 @@ export const TeamDashboard = () => {
                             
                             <button
                               onClick={() => {
-                                const reason = window.prompt(`أدخل سبب طلب غرامة مالية لمنشأة (${est.name}):`);
-                                if (reason) {
-                                  setPenaltyRequests(prev => [...prev, {
-                                    id: 'pen_' + Date.now(),
-                                    type: 'fine',
-                                    estId: est.id,
-                                    estName: est.name,
-                                    sector: est.sector,
-                                    teamName: user?.name,
-                                    reason,
-                                    status: 'pending',
-                                    date: new Date().toISOString()
-                                  }]);
-                                    addSystemNotification(
-                                      'طلب غرامة مالية جديد',
-                                      `قام الفريق (${user?.name}) برفع طلب غرامة لمنشأة ${est.name} للسبب: ${reason}`,
-                                      'ops_room'
-                                    );
-                                  notify('تم رفع طلب الغرامة بنجاح', 'success', true);
-                                }
+                                setFinesModalType('fine');
+                                setTargetEstForFine(est);
+                                setShowFinesModal(true);
                               }}
                               className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
@@ -954,31 +944,14 @@ export const TeamDashboard = () => {
                             
                             <button
                               onClick={() => {
-                                const reason = window.prompt(`أدخل سبب طلب إغلاق منشأة (${est.name}):`);
-                                if (reason) {
-                                  setPenaltyRequests(prev => [...prev, {
-                                    id: 'pen_' + Date.now(),
-                                    type: 'closure',
-                                    estId: est.id,
-                                    estName: est.name,
-                                    sector: est.sector,
-                                    teamName: user?.name,
-                                    reason,
-                                    status: 'pending',
-                                    date: new Date().toISOString()
-                                  }]);
-                                  addSystemNotification(
-                                    'طلب إغلاق وتشميع جديد',
-                                    `قام الفريق (${user?.name}) برفع طلب إغلاق لمنشأة ${est.name} للسبب: ${reason}`,
-                                    'ops_room'
-                                  );
-                                  notify('تم رفع طلب الإغلاق بنجاح', 'success', true);
-                                }
+                                setFinesModalType('closure');
+                                setTargetEstForFine(est);
+                                setShowFinesModal(true);
                               }}
                               className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
                             >
                               <Ban className="w-3.5 h-3.5" />
-                              <span>طلب إغلاق</span>
+                              <span>طلب إغلاق وتشميع</span>
                             </button>
 
                             {hasPerm('manageEstablishments') && (
@@ -1355,78 +1328,15 @@ export const TeamDashboard = () => {
         onScanSuccess={handleQRScanSuccess}
       />
 
-      {/* Floating Chat Widget */}
-      <div className="fixed bottom-6 left-6 z-[60] flex flex-col items-end">
-        {isChatOpen && (
-          <div className="bg-white dark:bg-slate-900 w-80 sm:w-96 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 mb-4 flex flex-col overflow-hidden animate-fade-in-up">
-            <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-4 flex items-center justify-between text-white">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-black text-right">الدعم المباشر</h4>
-                  <p className="text-[10px] text-teal-100">غرفة العمليات المركزية</p>
-                </div>
-              </div>
-              <button onClick={() => setIsChatOpen(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="p-4 h-64 overflow-y-auto flex flex-col gap-3 bg-slate-50 dark:bg-slate-950">
-              {chatHistory.map(msg => (
-                <div key={msg.id} className={`flex ${msg.sender === 'team' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${msg.sender === 'team' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-bl-none'}`}>
-                    <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
-                    <span className={`text-[9px] block mt-1 text-left ${msg.sender === 'team' ? 'text-teal-200' : 'text-slate-400'}`}>{msg.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-              <button 
-                onClick={() => {
-                  if (chatMessage.trim()) {
-                    setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
-                    if (addDirective) {
-                      addDirective('director', chatMessage, user?.name || 'فريق', user?.id || 'team');
-                    }
-                    setChatMessage('');
-                  }
-                }}
-                className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 hover:bg-teal-700 transition-colors"
-              >
-                <Send className="w-4 h-4 rtl:-scale-x-100" />
-              </button>
-              <input 
-                type="text" 
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && chatMessage.trim()) {
-                    setChatHistory([...chatHistory, { id: Date.now(), sender: 'team', text: chatMessage, time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) }]);
-                    if (addDirective) {
-                      addDirective('director', chatMessage, user?.name || 'فريق', user?.id || 'team');
-                    }
-                    setChatMessage('');
-                  }
-                }}
-                placeholder="اكتب رسالتك لغرفة العمليات..."
-                className="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-xl px-4 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-teal-500/50 text-right"
-              />
-            </div>
-          </div>
-        )}
-        
-        <button 
-          onClick={() => setIsChatOpen(!isChatOpen)}
-          className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all hover:scale-110 ${isChatOpen ? 'bg-slate-800' : 'bg-teal-600 animate-bounce'}`}
-        >
-          {isChatOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
-        </button>
-      </div>
+      <FinesBookletModal 
+        isOpen={showFinesModal}
+        onClose={() => {
+          setShowFinesModal(false);
+          setTargetEstForFine(null);
+        }}
+        establishment={targetEstForFine}
+        requestType={finesModalType}
+      />
 
     </div>
   );

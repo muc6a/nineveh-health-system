@@ -337,7 +337,7 @@ export const InspectionForm = () => {
         const originalData = establishment.history && establishment.history.length > 0 ? establishment.history[0] : null;
         logAudit('تعديل تقييم كشف صحي', establishment.id, originalData, { score: scorePercentage, ratings, remarks }, justification, user);
       }
-      addInspection(establishment.id, scorePercentage, remarks || 'تم إجراء التقييم الصحي الدوري.', ratings, user?.name || 'اللجنة الرقابية الأولى', liveLocation, isEdit, user?.id, selectedPhoto);
+      addInspection(establishment.id, scorePercentage, remarks || 'تم إجراء التقييم الصحي الدوري.', ratings, user?.name || 'اللجنة الرقابية الأولى', liveLocation, isEdit, user?.id, selectedPhoto, aiReport, signatureData, ownerPhoto);
 
       // Submit any pending document fines
       if (pendingFines.length > 0 && setPenaltyRequests) {

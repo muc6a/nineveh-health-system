@@ -15,7 +15,7 @@ import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { FinancialReports } from '../components/FinancialReports';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning } from 'lucide-react';
 
-export const ExecutivePortal = () => {
+export const ExecutivePortal = ({ embeddedTab }) => {
   const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
@@ -42,7 +42,9 @@ export const ExecutivePortal = () => {
     return null;
   };
 
-  const [activeTab, setActiveTab] = usePersistentTab('execActiveTab', getInitialExecutiveTab() || 'strategic');
+  const [persistentTab, setPersistentTab] = usePersistentTab('execActiveTab', getInitialExecutiveTab() || 'strategic');
+  const activeTab = embeddedTab || persistentTab;
+  const setActiveTab = embeddedTab ? () => {} : setPersistentTab;
 
   React.useEffect(() => {
     let needsRedirect = false;
@@ -301,10 +303,11 @@ export const ExecutivePortal = () => {
   return (
     <>
       <PrintableDailyReport />
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 print:hidden relative">
+      <div className={`bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 print:hidden relative ${embeddedTab ? 'min-h-full rounded-2xl overflow-hidden' : 'min-h-screen'}`}>
         <CriticalAlertModal />
         
         {/* Fixed Sticky Left Sidebar */}
+        {!embeddedTab && (
         <aside className="w-80 shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col hidden md:flex sticky top-0 h-screen">
           <div className="shrink-0">
             {/* Logo */}
@@ -465,8 +468,9 @@ export const ExecutivePortal = () => {
           </button>
         </div>
       </aside>
+        )}
 
-      {/* Main Canvas Area */}
+      {/* Main Panel Canvas */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         {/* Top bar for small screens */}
         <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl">

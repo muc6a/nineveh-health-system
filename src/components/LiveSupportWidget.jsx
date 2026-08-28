@@ -1,0 +1,156 @@
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { AppContext } from '../context/AppContext';
+import { MessageCircle, X, Send, ChevronDown } from 'lucide-react';
+
+export const LiveSupportWidget = () => {
+  const { user, addDirective } = useContext(AppContext);
+  const [isOpen, setIsOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
+  const [targetRole, setTargetRole] = useState('operations');
+  const [showRoleSelect, setShowRoleSelect] = useState(false);
+  const chatEndRef = useRef(null);
+
+  // If there's no user logged in, don't show the chat
+  if (!user || user.role === 'admin') return null;
+
+  const roles = [
+    { id: 'operations', label: 'غرفة العمليات المركزية' },
+    { id: 'accountant', label: 'الإدارة المالية (المحاسبين)' },
+    { id: 'director', label: 'الإدارة العليا' },
+    { id: 'team', label: 'الفرق الميدانية' }
+  ].filter(r => r.id !== user.role); // Don't allow chatting with own role directly
+
+  const currentRoleLabel = roles.find(r => r.id === targetRole)?.label || 'غرفة العمليات المركزية';
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [chatHistory, isOpen]);
+
+  // Simulate receiving a message from the target
+  const handleSendMessage = () => {
+    if (!chatMessage.trim()) return;
+
+    const newMsg = { 
+      id: Date.now(), 
+      sender: 'me', 
+      text: chatMessage, 
+      time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) 
+    };
+
+    setChatHistory(prev => [...prev, newMsg]);
+
+    // Send as directive to central system
+    if (addDirective) {
+      addDirective(targetRole, chatMessage, user?.name || 'مستخدم', user?.id || 'user');
+    }
+
+    setChatMessage('');
+
+    // Simulate reply after 2 seconds
+    setTimeout(() => {
+      // Play WhatsApp-style sound
+      try {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); // WhatsApp-like soft notification pop
+        audio.volume = 0.6;
+        audio.play().catch(e => console.log('Audio error:', e));
+      } catch (e) {}
+
+      setChatHistory(prev => [...prev, {
+        id: Date.now() + 1,
+        sender: 'them',
+        text: `تم استلام رسالتك في ${currentRoleLabel}، سيتم الرد قريباً.`,
+        time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })
+      }]);
+    }, 2000);
+  };
+
+  return (
+    <div className="fixed bottom-6 left-6 z-[60] flex flex-col items-end">
+      {isOpen && (
+        <div className="bg-white dark:bg-slate-900 w-80 sm:w-96 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] border border-slate-200 dark:border-slate-700 mb-4 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
+          <div className="bg-gradient-to-r from-teal-600 to-teal-700 p-4 flex items-center justify-between text-white relative">
+            <div className="flex items-center gap-3 w-full">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                <MessageCircle className="w-5 h-5" />
+              </div>
+              <div className="flex-1 cursor-pointer" onClick={() => setShowRoleSelect(!showRoleSelect)}>
+                <h4 className="text-sm font-black text-right flex items-center gap-1 justify-end">
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showRoleSelect ? 'rotate-180' : ''}`} />
+                  الدعم المباشر
+                </h4>
+                <p className="text-[10px] text-teal-100 font-bold truncate text-right">إلى: {currentRoleLabel}</p>
+              </div>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors shrink-0 mr-2">
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Dropdown for role selection */}
+            {showRoleSelect && (
+              <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 rounded-b-xl overflow-hidden z-10 animate-in fade-in slide-in-from-top-2">
+                {roles.map(r => (
+                  <button
+                    key={r.id}
+                    onClick={() => { setTargetRole(r.id); setShowRoleSelect(false); }}
+                    className={`w-full text-right px-4 py-3 text-xs font-bold transition-colors ${targetRole === r.id ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div className="p-4 h-72 overflow-y-auto flex flex-col gap-3 bg-[#e5ddd5] dark:bg-slate-950/80 custom-scrollbar" style={{backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")', backgroundSize: 'contain', backgroundBlendMode: 'multiply'}}>
+            {chatHistory.map(msg => (
+              <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-sm ${msg.sender === 'me' ? 'bg-[#dcf8c6] dark:bg-teal-800 text-slate-800 dark:text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
+                  <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
+                  <span className={`text-[9px] block mt-1 text-left ${msg.sender === 'me' ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'}`}>{msg.time}</span>
+                </div>
+              </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+          
+          <div className="p-3 bg-slate-100 dark:bg-slate-900 flex gap-2 items-end">
+            <button 
+              onClick={handleSendMessage}
+              disabled={!chatMessage.trim()}
+              className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center shrink-0 hover:bg-teal-700 disabled:opacity-50 disabled:hover:bg-teal-600 transition-colors shadow-sm"
+            >
+              <Send className="w-4 h-4 rtl:-scale-x-100 mr-1" />
+            </button>
+            <textarea 
+              value={chatMessage}
+              onChange={(e) => setChatMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder="اكتب رسالتك هنا..."
+              className="flex-1 bg-white dark:bg-slate-800 border-none rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-teal-500/30 text-right resize-none shadow-sm"
+              rows="1"
+            />
+          </div>
+        </div>
+      )}
+      
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_10px_25px_rgba(13,148,136,0.4)] transition-all hover:scale-110 ${isOpen ? 'bg-slate-700' : 'bg-teal-600 hover:bg-teal-500'}`}
+      >
+        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-7 h-7" />}
+      </button>
+    </div>
+  );
+};

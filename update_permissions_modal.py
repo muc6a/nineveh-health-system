@@ -1,75 +1,60 @@
-import sys
+import re
 
-with open('src/pages/SuperAdminPanel.jsx', 'r') as f:
+filepath = "/Users/admin/web/منظومة الرقابة الصحية الرقمية/src/pages/SuperAdminPanel.jsx"
+with open(filepath, "r", encoding="utf-8") as f:
     content = f.read()
 
-# 1. Add financials to PERMISSIONS_TABS
-old_tabs = """{ id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
-        ];"""
-new_tabs = """{ id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
-          { id: 'financials', label: 'الإدارة المالية / المحاسبين', icon: <DollarSign className="w-4 h-4 text-emerald-500"/>, keys: ['confirmReceipt', 'enterReceiptNumber', 'printReceiptA4', 'viewFinancialReports'] },
-        ];"""
-content = content.replace(old_tabs, new_tabs)
+# Fix outer container for mobile scrolling
+target_container = """<div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative flex flex-col md:flex-row text-right max-h-[90vh] overflow-hidden">"""
+replacement_container = """<div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative flex flex-col md:flex-row text-right max-h-[90vh] overflow-hidden">"""
+# Wait, if we keep overflow-hidden on outer, we MUST make the inner left container min-h-0 and footer sticky properly.
 
-# Ensure DollarSign is imported
-if 'import { DollarSign } from' not in content and 'DollarSign' not in content.split('lucide-react')[0]:
-    if 'DollarSign' not in content:
-        # Let's just add it to lucide-react imports
-        content = content.replace("import { Plus, Trash2", "import { Plus, Trash2, DollarSign")
+# Left Content Area:
+target_left = """              {/* Left Content Area: Toggle Switches */}
+              <div className="w-full md:w-2/3 p-8 flex flex-col h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10">"""
+replacement_left = """              {/* Left Content Area: Toggle Switches */}
+              <div className="w-full md:w-2/3 flex flex-col h-[70vh] md:h-full bg-slate-50/80 dark:bg-slate-900/40 relative z-10 min-h-0">
+                <div className="p-4 md:p-8 flex flex-col min-h-0 flex-1 overflow-hidden">"""
+content = content.replace(target_left, replacement_left)
 
-# 2. Add to PERMISSION_DETAILS
-old_details = "backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' }"
-new_details = """backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
-          confirmReceipt: { title: 'تأكيد القبض واستلام المبالغ', desc: 'يمنح المحاسب صلاحية النقر على تأكيد استلام مبالغ الغرامة من صاحب المنشأة وتوثيقها في النظام.' },
-          enterReceiptNumber: { title: 'إدخال رقم وصل القبض (الدفتر)', desc: 'يسمح بكتابة وربط رقم الوصل الورقي الرسمي (دفتر الوصولات) بالغرامة الإلكترونية.' },
-          printReceiptA4: { title: 'طباعة وصل القبض A4', desc: 'يتيح خيار إنشاء وطباعة وصل استلام رسمي من المنظومة بنسق A4 كأرشيف للإدارة.' },
-          viewFinancialReports: { title: 'عرض التقارير المالية للقطاع', desc: 'يسمح للحساب بمشاهدة ملخص الإيرادات والغرامات المستحصلة ضمن الرقعة الجغرافية المسؤولة عنها.' }"""
-content = content.replace(old_details, new_details)
+# Inner part of left content:
+target_inner_bottom = """                  {activePermissionsTab === 'directives' && (
+                    <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-amber-400/90 font-bold leading-relaxed">
+                        تنويه: إطفاء إذن الإرسال والرد يكتسب من خلاله الحساب "صلاحية المشاهدة فقط" للتبليغات الموجهة له دون إمكانية الرد عليها أو إرسال تبليغات جديدة.
+                      </p>
+                    </div>
+                  )}
+                </div>
 
-# 3. Add to PERMISSION_ROLES
-old_roles = "exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management'"
-new_roles = "exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management',\n          confirmReceipt: 'all', enterReceiptNumber: 'all', printReceiptA4: 'all', viewFinancialReports: 'all'"
-content = content.replace(old_roles, new_roles)
-
-# 4. Fix scrolling in PermissionsModal
-# Search for: <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right max-h-[85vh]">
-old_modal_container = '<div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative overflow-hidden flex flex-col md:flex-row text-right max-h-[85vh]">'
-new_modal_container = '<div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative flex flex-col md:flex-row text-right max-h-[90vh] overflow-hidden">'
-content = content.replace(old_modal_container, new_modal_container)
-
-# The list container
-old_list_container = '<div className="flex-1 overflow-y-auto pr-3 space-y-3 custom-scrollbar">'
-new_list_container = '<div className="flex-1 overflow-y-auto pr-3 pb-6 space-y-3 custom-scrollbar">'
-content = content.replace(old_list_container, new_list_container)
-
-# 5. Fix Save Buttons to be sticky at the bottom
-# The save button is at the end of the modal, let's find it.
-old_save_buttons = """                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5 flex gap-4">
-                  <button onClick={() => setShowPermissionsModal(false)} className="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-extrabold text-sm transition-all cursor-pointer">
-                    إلغاء
+                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/5 shrink-0">
+                  <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0">
+                    حفظ واعتماد صلاحيات الحساب
                   </button>
-                  <button onClick={() => {
-                    handleSaveAccount(selectedPermissionsAccount);
-                    setShowPermissionsModal(false);
-                    triggerAlert('تم حفظ الصلاحيات والأذونات بنجاح.');
-                  }} className="flex-1 py-3 rounded-xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(168,85,247,0.4)] hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
-                    <Check className="w-5 h-5" /> حفظ واعتماد الصلاحيات
-                  </button>
-                </div>"""
-new_save_buttons = """                <div className="sticky bottom-0 mt-4 pt-4 pb-4 border-t border-slate-200 dark:border-white/5 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-md flex gap-4 z-20">
-                  <button onClick={() => setShowPermissionsModal(false)} className="px-6 py-3 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-extrabold text-sm transition-all cursor-pointer">
-                    إلغاء
-                  </button>
-                  <button onClick={() => {
-                    handleSaveAccount(selectedPermissionsAccount);
-                    setShowPermissionsModal(false);
-                    triggerAlert('تم حفظ الصلاحيات والأذونات بنجاح.');
-                  }} className="flex-1 py-3 rounded-xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(168,85,247,0.4)] hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
-                    <Check className="w-5 h-5" /> حفظ واعتماد الصلاحيات
-                  </button>
-                </div>"""
-content = content.replace(old_save_buttons, new_save_buttons)
+                </div>
+              </div>"""
 
-with open('src/pages/SuperAdminPanel.jsx', 'w') as f:
+replacement_inner_bottom = """                  {activePermissionsTab === 'directives' && (
+                    <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-[11px] text-amber-400/90 font-bold leading-relaxed">
+                        تنويه: إطفاء إذن الإرسال والرد يكتسب من خلاله الحساب "صلاحية المشاهدة فقط" للتبليغات الموجهة له دون إمكانية الرد عليها أو إرسال تبليغات جديدة.
+                      </p>
+                    </div>
+                  )}
+                </div>
+                </div>
+
+                {/* STICKY FOOTER OUTSIDE SCROLLING AREA */}
+                <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-slate-200 dark:border-white/5 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-xl z-20">
+                  <button onClick={handleSavePermissions} className="w-full py-4 rounded-2xl bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-[0_10px_25px_-5px_rgba(124,58,237,0.4)] hover:shadow-[0_15px_35px_-5px_rgba(124,58,237,0.5)] active:scale-[0.98]">
+                    حفظ واعتماد صلاحيات الحساب
+                  </button>
+                </div>
+              </div>"""
+content = content.replace(target_inner_bottom, replacement_inner_bottom)
+
+with open(filepath, "w", encoding="utf-8") as f:
     f.write(content)
-print("Updated permissions modal")
+print("Updated PermissionsModal layout in SuperAdminPanel.jsx")
