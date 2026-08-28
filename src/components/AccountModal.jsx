@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Eye, EyeOff, Trash2, Plus, Users, MapPin, Briefcase, Mail, Phone, Lock, User, Edit3, CheckSquare, Square, Clock, PenLine, BarChart3 } from 'lucide-react';
+import { X, Eye, EyeOff, Trash2, Plus, Users, MapPin, Briefcase, Mail, Phone, Lock, User, Edit3, CheckSquare, Square, Clock, PenLine, BarChart3, Check } from 'lucide-react';
 import { ROLES_DICTIONARY, NINEVEH_GEOGRAPHY } from '../utils/constants';
 
 export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add', accountType = 'team', teams = [] }) => {
