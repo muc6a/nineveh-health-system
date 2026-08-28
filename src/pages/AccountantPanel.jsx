@@ -233,57 +233,6 @@ export const AccountantPanel = () => {
               <span>جرد اليومية والمطابقة</span>
             </button>
 
-            {/* --- Dynamic Extra Permissions --- */}
-            {(hasPerm('manageEstablishments') || hasPerm('showMainDashboard') || hasPerm('manageComplaints') || hasPerm('showOperationsRoom')) && (
-              <>
-                <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
-                <span className="text-[11px] font-bold text-purple-500 dark:text-purple-400 uppercase tracking-wider block px-3 mb-2 flex items-center gap-2">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  صلاحيات إضافية (ممنوحة)
-                </span>
-                
-                {hasPerm('showMainDashboard') && (
-                  <button
-                    onClick={() => { localStorage.setItem('teamActiveTab', 'summary'); navigate('/dashboard/team'); }}
-                    className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  >
-                    <LayoutDashboard className="w-4.5 h-4.5 text-purple-500" />
-                    <span>لوحة إحصائيات الرقابة</span>
-                  </button>
-                )}
-                
-                {hasPerm('manageEstablishments') && (
-                  <button
-                    onClick={() => { localStorage.setItem('teamActiveTab', 'directory'); navigate('/dashboard/team'); }}
-                    className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  >
-                    <Building className="w-4.5 h-4.5 text-blue-500" />
-                    <span>إدارة المنشآت والغرامات</span>
-                  </button>
-                )}
-
-                {hasPerm('showReportsPage') && (
-                  <button
-                    onClick={() => { localStorage.setItem('teamActiveTab', 'reports'); navigate('/dashboard/team'); }}
-                    className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  >
-                    <FileText className="w-4.5 h-4.5 text-orange-500" />
-                    <span>التقارير الرقابية الشاملة</span>
-                  </button>
-                )}
-
-                {hasPerm('showOperationsRoom') && (
-                  <button
-                    onClick={() => { localStorage.setItem('directorActiveTab', 'operations_room'); navigate('/dashboard/director'); }}
-                    className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  >
-                    <Activity className="w-4.5 h-4.5 text-red-500" />
-                    <span>غرفة العمليات المركزية</span>
-                  </button>
-                )}
-              </>
-            )}
-
             {hasPerm('viewComprehensiveFinancialReports') && (
               <>
                 <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
