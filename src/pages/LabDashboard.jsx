@@ -4,7 +4,7 @@ import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power } from 'lucide-react';
+import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3 } from 'lucide-react';
 
 export const LabDashboard = () => {
   const { user, setUser, navigate, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep } = useContext(AppContext);
