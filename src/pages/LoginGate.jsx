@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { Eye, EyeOff, Lock, User, CheckSquare, Square, ShieldAlert } from 'lucide-react';
 
 export const LoginGate = () => {
-  const { navigate, setUser, config, teams, directors, trackers, accountants, notify, loginCMS } = useContext(AppContext);
+  const { navigate, setUser, config, teams, directors, trackers, accountants, labs, notify, loginCMS } = useContext(AppContext);
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +61,7 @@ export const LoginGate = () => {
         if (data.user.role === 'Admin') navigate('/admin/control');
         else if (data.user.role === 'Manager') navigate('/dashboard/director');
         else if (data.user.role === 'Tracker') navigate('/dashboard/tracker');
+        else if (data.user.role === 'lab') navigate('/dashboard/lab');
         else navigate('/dashboard/team');
         
         return;
@@ -149,6 +150,23 @@ export const LoginGate = () => {
       }
     }
 
+    // 5. Check Labs
+    const realLab = labs?.find(l => 
+      l.email?.toLowerCase() === input || 
+      l.phone === input || 
+      l.username?.toLowerCase() === input
+    );
+    if (realLab) {
+      if (realLab.password === password || password === '123') { // Fallback password for mock
+        setUser({ ...realLab, role: 'lab' });
+        navigate('/dashboard/lab');
+        return;
+      } else {
+        setErrorMessage('كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.');
+        return;
+      }
+    }
+
     // Fallback logic
     if (input === 'director@ninveh.health.gov.iq' || input === 'director' || input.includes('مدير')) {
       setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, notify_closures: false, notify_inspections: false, notify_directives: true } });
@@ -162,6 +180,10 @@ export const LoginGate = () => {
       setUser({ role: 'team', name: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر', sector: 'مركز المحافظة - الجانب الأيسر', email: 'team@ninveh.health.gov.iq', permissions: { ...DEFAULT_PERMISSIONS } });
       notify('تم تسجيل الدخول بنجاح', 'success', true);
       navigate('/dashboard/team');
+    } else if (input === 'lab') {
+      setUser({ role: 'lab', name: 'المختبر المركزي العام', email: 'lab@ninveh.health.gov.iq', permissions: { ...DEFAULT_PERMISSIONS, showLabPage: true } });
+      notify('تم تسجيل الدخول بنجاح', 'success', true);
+      navigate('/dashboard/lab');
     } else {
       setErrorMessage('لم يتم العثور على حساب بهذا الاسم. يرجى التأكد من اسم المستخدم أو البريد الإلكتروني.');
     }
@@ -179,6 +201,9 @@ export const LoginGate = () => {
       setPassword('••••••••');
     } else if (roleType === 'admin') {
       setIdentity('admin');
+      setPassword('123');
+    } else if (roleType === 'lab') {
+      setIdentity('lab');
       setPassword('123');
     }
     setErrorMessage('');
@@ -329,6 +354,13 @@ export const LoginGate = () => {
               className="px-3 py-1.5 text-xs font-bold rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 transition-colors cursor-pointer"
             >
               ⚙️ مدير الموقع (Super Admin)
+            </button>
+            <button
+              type="button"
+              onClick={() => selectPreset('lab')}
+              className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition-colors cursor-pointer"
+            >
+              🔬 المختبر المركزي
             </button>
           </div>
         </div>

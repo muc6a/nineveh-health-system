@@ -495,6 +495,16 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [labs, setLabs] = useState(() => {
+    const saved = localStorage.getItem('nineveh_labs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [labRequests, setLabRequests] = useState(() => {
+    const saved = localStorage.getItem('nineveh_lab_requests');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [finesBooklet, setFinesBooklet] = useState(() => {
     const saved = localStorage.getItem('nineveh_fines_booklet');
     return saved ? JSON.parse(saved) : [
@@ -1370,8 +1380,14 @@ export const AppProvider = ({ children }) => {
       setUiPreferences,
       showDisplayPrefsModal,
       setShowDisplayPrefsModal,
-      activityTypes
-    , accountants, setAccountants, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions}}>
+      activityTypes,
+      accountants,
+      setAccountants,
+      labs,
+      setLabs,
+      labRequests,
+      setLabRequests,
+      finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions}}>
       {children}
     </AppContext.Provider>
   );

@@ -12,7 +12,7 @@ import { FinesManager } from '../components/FinesManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, labs, setLabs, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
@@ -206,6 +206,8 @@ export const SuperAdminPanel = () => {
       setTeams(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
     } else if (role === 'accountant' || role === 'financial_accountant') {
       setAccountants(prev => prev.map(a => a.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : a));
+    } else if (selectedPermissionsAccount.role === 'lab') {
+      setLabs(prev => prev.map(l => l.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : l));
     } else if (role === 'tracker') {
       setTrackers(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
     } else {
@@ -560,6 +562,8 @@ export const SuperAdminPanel = () => {
         setTrackers(prev => [...prev, newAccount]);
       } else if (accountData.role === 'accountant') {
         setAccountants(prev => [...prev, newAccount]);
+      } else if (accountData.role === 'lab') {
+        setLabs(prev => [...prev, newAccount]);
       } else if (accountData.isTeam) {
         setTeams(prev => [...prev, newAccount]);
       } else {
@@ -571,6 +575,8 @@ export const SuperAdminPanel = () => {
         setTrackers(prev => prev.map(t => t.id === accountData.id ? accountData : t));
       } else if (accountData.role === 'accountant' || accountData.id.startsWith('accountant_') || accountData.role === 'financial_accountant') {
         setAccountants(prev => prev.map(t => t.id === accountData.id ? accountData : t));
+      } else if (accountData.role === 'lab') {
+        setLabs(prev => prev.map(t => t.id === accountData.id ? accountData : t));
       } else if (accountData.isTeam) {
         setTeams(prev => prev.map(t => t.id === accountData.id ? accountData : t));
       } else {
@@ -584,6 +590,8 @@ export const SuperAdminPanel = () => {
   const handleDeleteAccount = (id, isTeam, isTracker = false, isAccountant = false) => {
     if (isAccountant) {
       setAccountants(prev => prev.filter(a => a.id !== id));
+    } else if (type === 'lab') {
+      setLabs(prev => prev.filter(a => a.id !== id));
     } else if (isTracker) {
       setTrackers(prev => prev.filter(t => t.id !== id));
     } else if (isTeam) {
@@ -935,6 +943,16 @@ export const SuperAdminPanel = () => {
                 }`}
               >
                 💼 إدارة المحاسبين
+              </button>
+              <button
+                onClick={() => setSubRosterTab('labs')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subRosterTab === 'labs'
+                    ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                🔬 المختبرات المركزية
               </button>
             </div>
 
@@ -1375,6 +1393,104 @@ export const SuperAdminPanel = () => {
                                   const updated = accountants.filter(tr => tr.id !== t.id);
                                   setAccountants(updated);
                                   triggerAlert('تم حذف المحاسب بنجاح');
+                                }}
+                                className="px-2.5 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" /> حذف
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+
+            {subRosterTab === 'labs' && (
+              <>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                  <div>
+                    <h2 className="text-sm font-black text-slate-800 dark:text-white">جدول المختبرات المركزية</h2>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">إدارة حسابات المختبرات الخاصة بالرقابة الصحية</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'lab' });
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs transition-all cursor-pointer"
+                  >
+                    ➕ إضافة مختبر جديد
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-right border-collapse text-xs font-bold">
+                    <thead>
+                      <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                        <th className="p-4">اسم المختبر</th>
+                        <th className="p-4">البريد/المعرف</th>
+                        <th className="p-4">رقم الهاتف</th>
+                        <th className="p-4">حالة الحساب</th>
+                        <th className="p-4 text-center">الإجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+                      {(labs || []).map(t => (
+                        <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                          <td 
+                            onClick={() => setSelectedTeamDetails(t)}
+                            className="p-4 font-black text-slate-800 dark:text-white cursor-pointer hover:text-indigo-600 transition-colors flex items-center gap-1.5"
+                          >
+                            <Info className="w-4 h-4 text-slate-400 shrink-0" />
+                            {t.name}
+                          </td>
+                          <td className="p-4 text-slate-500 font-medium font-sans">
+                            {t.email}<br/>
+                            <span className="text-[10px] text-slate-400">{t.username}</span>
+                          </td>
+                          <td className="p-4 text-slate-600 dark:text-slate-300 font-sans">{t.phone}</td>
+                          <td className="p-4">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] ${t.active === false ? 'bg-slate-100 dark:bg-slate-800 text-slate-600' : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600'}`}>
+                              {t.active === false ? 'مجمد' : 'نشط'}
+                            </span>
+                          </td>
+                          <td className="p-4">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setAccountModalState({ isOpen: true, mode: 'edit', data: t, accountType: 'lab' });
+                                }}
+                                className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer text-[10px] flex items-center gap-1"
+                              >
+                                <Edit className="w-3.5 h-3.5" /> تعديل
+                              </button>
+                              
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const updated = labs.map(tm => tm.id === t.id ? { ...tm, active: tm.active === false ? true : false } : tm);
+                                  setLabs(updated);
+                                  triggerAlert(`تم ${t.active === false ? 'تفعيل' : 'تجميد'} حساب المختبر`);
+                                }}
+                                className={`px-2.5 py-1.5 rounded-xl transition-all cursor-pointer text-[10px] flex items-center gap-1 ${
+                                  t.active === false 
+                                    ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600'
+                                    : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600'
+                                }`}
+                              >
+                                {t.active === false ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />} 
+                                {t.active === false ? 'تنشيط' : 'تجميد'}
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (!window.confirm('هل أنت متأكد من حذف حساب هذا المختبر نهائياً؟')) return;
+                                  const updated = labs.filter(tm => tm.id !== t.id);
+                                  setLabs(updated);
+                                  triggerAlert('تم حذف المختبر بنجاح');
                                 }}
                                 className="px-2.5 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
                               >
@@ -2273,7 +2389,7 @@ export const SuperAdminPanel = () => {
       {showPermissionsModal && selectedPermissionsAccount && (() => {
         const PERMISSIONS_TABS = [
           { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
-          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDirectivesPage', 'showDeliveryPage', 'showPublicEvalsPage'] },
+          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDirectivesPage', 'showDeliveryPage', 'showPublicEvalsPage', 'showLabPage'] },
           { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
           { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
@@ -2291,6 +2407,7 @@ export const SuperAdminPanel = () => {
           showDirectivesPage: { title: 'التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
           showDeliveryPage: { title: 'خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
           showPublicEvalsPage: { title: 'التقييمات العامة (الشكاوى)', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
+          showLabPage: { title: 'إدارة المختبرات المركزية', desc: 'يسمح بفتح بوابة المختبر للوصول إلى العينات الواردة ونتائج الفحص.' },
           sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
           replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
           issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
@@ -2307,7 +2424,7 @@ export const SuperAdminPanel = () => {
 
         const PERMISSION_ROLES = {
           manageEstablishments: 'management', createEst: 'management', editEst: 'management', deleteEst: 'management',
-          addEval: 'team', showMainDashboard: 'management', showOperationsRoom: 'management', showReportsPage: 'management',
+          addEval: 'team', showMainDashboard: 'management', showOperationsRoom: 'management', showReportsPage: 'management', showLabPage: 'management',
           showDirectivesPage: 'management', showPublicEvalsPage: 'management', sendDirective: 'management', replyDirective: 'team',
           canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management',
           issueFine: 'management', closeEst: 'management', reopenEst: 'management',

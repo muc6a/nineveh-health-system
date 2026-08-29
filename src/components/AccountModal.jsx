@@ -29,7 +29,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
     { id: 'manageEstablishments', label: 'إدارة المنشآت والمطاعم' },
     { id: 'showDirectivesPage', label: 'الرد على التوجيهات الرسمية' },
     { id: 'sendDirective', label: 'إرسال التوجيهات للفرق' },
-    { id: 'showPublicEvalsPage', label: 'تقييمات وشكاوى المواطنين' }
+    { id: 'showPublicEvalsPage', label: 'تقييمات وشكاوى المواطنين' },
+    { id: 'showLabPage', label: 'إدارة المختبرات المركزية' }
   ];
   
   // Sector Selection State (For both Team and Director Geo-Scope)
@@ -120,6 +121,34 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         
         if (((accountType === 'tracker' || accountType === 'accountant') || accountType === 'accountant')) {
           setLinkedTeamSector(initialData.linkedTeamSector || initialData.sector || '');
+        }
+        if (accountType === 'lab') {
+          // Lab uses common state and members/geo state
+          if (initialData.members) {
+            const mapToObj = (arr, defaultTitle) => arr?.length ? (typeof arr[0] === 'string' ? arr.map(a => ({ name: a, title: defaultTitle })) : arr) : [{ name: '', title: defaultTitle }];
+            setDoctors(mapToObj(initialData.members.doctors, 'طبيب اختصاص / مسؤول'));
+            setAssistants(mapToObj(initialData.members.assistants, 'ملاحظ فني / مدقق'));
+          } else {
+            setDoctors([{ name: '', title: 'طبيب اختصاص / مسؤول' }]);
+            setAssistants([{ name: '', title: 'ملاحظ فني / مدقق' }]);
+          }
+
+          if (initialData.sector && initialData.sector !== 'المختبرات') {
+            setSelectionMode('all');
+            if (initialData.sector.includes('مركز المحافظة - الجانب الأيمن')) {
+              setSectorType('mosul');
+              setMosulSide('right');
+            } else if (initialData.sector.includes('مركز المحافظة - الجانب الأيسر')) {
+              setSectorType('mosul');
+              setMosulSide('left');
+            } else {
+              setSectorType('district');
+              const matchedDistrict = NINEVEH_GEOGRAPHY.districts.find(d => initialData.sector.includes(d.label.replace('قضاء ', '')));
+              if (matchedDistrict) {
+                setDistrictId(matchedDistrict.id);
+              }
+            }
+          }
         }
       } else {
         // Reset form
@@ -261,6 +290,13 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
     } else if (accountType === 'accountant') {
       result.role = 'accountant';
       result.linkedTeamSector = linkedTeamSector;
+    } else if (accountType === 'lab') {
+      result.role = 'lab';
+      result.sector = calculatedSector || 'المختبرات';
+      result.members = {
+        doctors: doctors.filter(d => d.name.trim() !== ''),
+        assistants: assistants.filter(a => a.name.trim() !== '')
+      };
     }
 
     onSave(result);
@@ -354,8 +390,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
               {accountType === 'director' ? <Briefcase className="w-5 h-5"/> : <Users className="w-5 h-5"/>}
             </div>
             {mode === 'add' 
-              ? (accountType === 'director' ? 'إضافة حساب مدير/قيادة' : (accountType === 'accountant' ? 'إضافة حساب محاسب' : 'إضافة حساب ميداني')) 
-              : (accountType === 'director' ? 'تعديل بيانات القيادة' : (accountType === 'accountant' ? 'تعديل بيانات المحاسب' : 'تعديل بيانات الحساب'))
+              ? (accountType === 'director' ? 'إضافة حساب مدير/قيادة' : (accountType === 'accountant' ? 'إضافة حساب محاسب' : (accountType === 'lab' ? 'إضافة حساب مختبر' : 'إضافة حساب ميداني'))) 
+              : (accountType === 'director' ? 'تعديل بيانات القيادة' : (accountType === 'accountant' ? 'تعديل بيانات المحاسب' : (accountType === 'lab' ? 'تعديل بيانات المختبر' : 'تعديل بيانات الحساب')))
             }
           </h3>
           <button onClick={onClose} className="flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group shadow-sm border border-slate-200 dark:border-white/5">
@@ -536,7 +572,84 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
             </>
           )}
 
-          {/* TRACKER FLOW */}
+          {/* LAB FLOW */}
+          {accountType === 'lab' && (
+            <>
+              {/* 1. Location */}
+              <div className="space-y-2">
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 1. النطاق الجغرافي للمختبر</label>
+                {renderGeoSelection()}
+              </div>
+
+              {/* 2. Lab Name */}
+              <div className="space-y-3 pt-6 border-t border-white/5">
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><User className="w-4 h-4"/> 2. اسم المختبر المركزي</label>
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: المختبر المركزي الرئيسي" className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 shadow-inner" />
+              </div>
+
+              {/* 3. Members */}
+              <div className="space-y-3 pt-6 border-t border-white/5">
+                <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><Users className="w-4 h-4"/> 3. إدارة الكادر والطاقم (طبيب / ملاحظ فني)</label>
+                <div className="bg-slate-100/40 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 space-y-6">
+                  <div>
+                    <label className="text-slate-400 block mb-3 text-xs font-semibold">الأطباء والمسؤولون</label>
+                    {doctors.map((doc, idx) => (
+                      <div key={idx} className="flex flex-col md:flex-row gap-3 mb-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 relative group">
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[10px] text-slate-500">اسم المسؤول</label>
+                          <input type="text" placeholder="الاسم الرباعي واللقب" value={doc.name} onChange={(e) => { const newDocs = [...doctors]; newDocs[idx].name = e.target.value; setDoctors(newDocs); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner" />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[10px] text-slate-500">المسمى الوظيفي المخصص</label>
+                          <div className="relative">
+                            <input type="text" placeholder="مثال: مدير المختبر" value={doc.title} onChange={(e) => { const newDocs = [...doctors]; newDocs[idx].title = e.target.value; setDoctors(newDocs); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner pr-8" />
+                            <PenLine className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-3.5" />
+                          </div>
+                        </div>
+                        {doctors.length > 1 && (
+                          <button type="button" onClick={() => setDoctors(doctors.filter((_, i) => i !== idx))} className="md:absolute md:left-2 md:-top-2 p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-full transition-colors self-end md:self-auto border border-red-500/20 opacity-0 group-hover:opacity-100">
+                            <X className="w-4 h-4"/>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => setDoctors([...doctors, { name: '', title: 'طبيب اختصاص / مسؤول' }])} className="text-indigo-600 dark:text-indigo-400 text-xs font-black hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                      <Plus className="w-3 h-3" /> إضافة طبيب / مسؤول آخر
+                    </button>
+                  </div>
+
+                  <div className="pt-4 border-t border-white/5">
+                    <label className="text-slate-400 block mb-3 text-xs font-semibold">ملاحظين فنيين وكوادر ساندة</label>
+                    {assistants.map((ast, idx) => (
+                      <div key={idx} className="flex flex-col md:flex-row gap-3 mb-3 p-3 bg-slate-900/40 rounded-xl border border-slate-200 dark:border-white/5 relative group">
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[10px] text-slate-500">اسم الملاحظ</label>
+                          <input type="text" placeholder="الاسم الرباعي" value={ast.name} onChange={(e) => { const newAst = [...assistants]; newAst[idx].name = e.target.value; setAssistants(newAst); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner" />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <label className="text-[10px] text-slate-500">المسمى الوظيفي المخصص</label>
+                          <div className="relative">
+                            <input type="text" placeholder="مثال: ملاحظ فني" value={ast.title} onChange={(e) => { const newAst = [...assistants]; newAst[idx].title = e.target.value; setAssistants(newAst); }} className="w-full p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-sm text-white outline-none focus:border-indigo-500 shadow-inner pr-8" />
+                            <PenLine className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-3.5" />
+                          </div>
+                        </div>
+                        {assistants.length > 1 && (
+                          <button type="button" onClick={() => setAssistants(assistants.filter((_, i) => i !== idx))} className="md:absolute md:left-2 md:-top-2 p-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-full transition-colors self-end md:self-auto border border-red-500/20 opacity-0 group-hover:opacity-100">
+                            <X className="w-4 h-4"/>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => setAssistants([...assistants, { name: '', title: 'ملاحظ فني / مدقق' }])} className="text-indigo-600 dark:text-indigo-400 text-xs font-black hover:text-indigo-300 flex items-center gap-1 transition-colors">
+                      <Plus className="w-3 h-3" /> إضافة ملاحظ فني آخر
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* TRACKER / ACCOUNTANT FLOW */}
           {((accountType === 'tracker' || accountType === 'accountant') || accountType === 'accountant') && (
             <>
               {/* 1. Name */}

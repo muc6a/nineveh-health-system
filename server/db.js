@@ -10,6 +10,12 @@ const pool = connectionString ? new Pool({
   ssl: { rejectUnauthorized: false }
 }) : null;
 
+if (pool) {
+  pool.on('error', (err) => {
+    console.error('Unexpected error on idle client (Database is likely offline or paused):', err.message);
+  });
+}
+
 /**
  * Executes a query against the PostgreSQL database.
  * @param {string} text - The SQL query text.

@@ -1,13 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { AppContext } from '../context/AppContext';
-import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X, MessageCircle, Check, CheckCheck } from 'lucide-react';
+import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X, MessageCircle, Check, CheckCheck, Database, FlaskConical, ShieldAlert, AlertOctagon } from 'lucide-react';
 import AccountModal from './AccountModal';
 import { FinancialReports } from './FinancialReports';
-import { Database } from 'lucide-react';
 
 export default function OperationsRoom() {
-  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts, chatMessages, addChatMessage, markChatRead, user } = useContext(AppContext);
+  const { notify, teams, trackers, setTeams, setTrackers, penaltyRequests, setPenaltyRequests, establishments, setEstablishments, setSosAlerts, chatMessages, addChatMessage, markChatRead, user, labRequests, setLabRequests, addSystemNotification, sosAlerts, setDispatches, setClosureVerifications, closureVerifications } = useContext(AppContext);
   const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'live_operations');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
@@ -29,7 +28,6 @@ export default function OperationsRoom() {
         'all'
       );
     } else {
-      // Instead of prompt, open custom modal
       setClosureModalData(verification);
     }
   };
@@ -40,7 +38,6 @@ export default function OperationsRoom() {
     setClosureVerifications(prev => prev.map(v => v.id === closureModalData.id ? { ...v, status: 'approved' } : v));
     setEstablishments(prev => prev.map(e => e.id === closureModalData.estId ? { ...e, status: 'closed', closureDuration: closureDuration, closureDate: new Date().toISOString() } : e));
     
-    // Notify Tracker/Field Team
     addSystemNotification(
       'قرار إغلاق نهائي صادر من الإدارة المركزية 🚫', 
       `المديرية تصادق على غلق مطعم (${closureModalData.estName}) لمدة (${closureDuration}). قرار نهائي واجب التنفيذ.`, 
@@ -57,12 +54,10 @@ export default function OperationsRoom() {
     triggerAlert('تم رفض الدليل وإعادته للمتابعة.');
   };
 
-  // States for Dispatch
   const [selectedEstId, setSelectedEstId] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
   
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
-  const [chatReplyText, setChatReplyText] = useState('');
   const [activeChatTarget, setActiveChatTarget] = useState(null);
 
   const opsUnreadMessages = (chatMessages || []).filter(m => (m.targetRole === 'operations' || user?.role === 'admin') && m.senderId !== user?.id && !m.isRead);
@@ -76,7 +71,7 @@ export default function OperationsRoom() {
       }
     }
   }, [activeChatTarget, chatMessages, markChatRead, user?.id]);
-// Listen for navigation events from NotificationBell
+
   useEffect(() => {
     const handleNav = () => {
       setActiveTab('penalties');
@@ -85,7 +80,6 @@ export default function OperationsRoom() {
     return () => window.removeEventListener('navToPenalties', handleNav);
   }, []);
 
-  // Handle Team Deletion
   const handleDeleteTeam = (id) => {
     if(window.confirm('هل أنت متأكد من حذف هذا الفريق الميداني؟ لا يمكن التراجع.')) {
       setTeams(prev => prev.filter(t => t.id !== id));
@@ -93,7 +87,6 @@ export default function OperationsRoom() {
     }
   };
 
-  // Handle Save Team or Tracker
   const handleSaveAccount = (accountData) => {
     const isTracker = accountModalState.accountType === 'tracker';
 
@@ -121,7 +114,6 @@ export default function OperationsRoom() {
     setAccountModalState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
   };
 
-  // Example Dispatch Function
   const handleDispatch = () => {
     if (!selectedEstId || !selectedTeamId) {
       alert('الرجاء تحديد المنشأة واللجنة المطلوبة');
@@ -136,7 +128,7 @@ export default function OperationsRoom() {
       estName: est.name,
       teamId: team.id,
       date: new Date().toISOString(),
-      status: 'pending' // pending, accepted, completed
+      status: 'pending'
     }]);
 
     addSystemNotification(
@@ -153,82 +145,42 @@ export default function OperationsRoom() {
   return (
     <div className="space-y-6 text-right">
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
-        <button
-          onClick={() => setActiveTab('teams_management')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'teams_management' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4" />
-          إدارة اللجان ({teams?.length || 0})
+        <button onClick={() => setActiveTab('teams_management')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'teams_management' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <ShieldCheck className="w-4 h-4" />إدارة اللجان ({teams?.length || 0})
         </button>
-        <button
-          onClick={() => setActiveTab('trackers_management')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'trackers_management' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          إدارة المتابعين ({trackers?.length || 0})
+        <button onClick={() => setActiveTab('trackers_management')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'trackers_management' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Users className="w-4 h-4" />إدارة المتابعين ({trackers?.length || 0})
         </button>
-        <button
-          onClick={() => setActiveTab('penalties')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <AlertCircle className="w-4 h-4" />
-          المصادقة على العقوبات
+        <button onClick={() => setActiveTab('penalties')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <AlertCircle className="w-4 h-4" />المصادقة على العقوبات
         </button>
-        <button
-          onClick={() => setActiveTab('financials')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'financials' ? 'border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Database className="w-4 h-4" />
-          التقارير المالية للغرامات
+        <button onClick={() => setActiveTab('financials')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'financials' ? 'border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Database className="w-4 h-4" />التقارير المالية للغرامات
         </button>
-        <button
-          onClick={() => setActiveTab('live_operations')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'live_operations' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <Target className="w-4 h-4" />
-          التتبع والعمليات الحية
+        <button onClick={() => setActiveTab('live_operations')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'live_operations' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Target className="w-4 h-4" />التتبع والعمليات الحية
         </button>
-        <button
-          onClick={() => setActiveTab('live_chat')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 relative ${
-            activeTab === 'live_chat' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
-          }`}
-        >
-          <MessageCircle className="w-4 h-4" />
-          الدعم المباشر والنداءات
-          {totalOpsUnread > 0 && (
-            <span className="absolute -top-1 -left-2 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
-              {totalOpsUnread}
-            </span>
-          )}
+        <button onClick={() => setActiveTab('live_chat')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 relative ${activeTab === 'live_chat' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <MessageCircle className="w-4 h-4" />الدعم المباشر والنداءات
+          {totalOpsUnread > 0 && <span className="absolute -top-1 -left-2 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">{totalOpsUnread}</span>}
+        </button>
+        <button onClick={() => setActiveTab('lab_results')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 relative ${activeTab === 'lab_results' ? 'border-b-2 border-fuchsia-600 text-fuchsia-600 dark:text-fuchsia-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <FlaskConical className="w-4 h-4" />قرارات المختبر
+          {labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').length > 0 && <span className="absolute -top-1 -left-2 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">{labRequests.filter(r => r.status === 'finished' && r.result === 'contaminated').length}</span>}
         </button>
       </div>
 
-{activeTab === 'teams_management' && (
+      {activeTab === 'teams_management' && (
         <div className="glassmorphic-card p-6 border border-teal-500/20">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
               <h3 className="text-sm font-black text-slate-800 dark:text-white">إدارة اللجان الميدانية</h3>
               <p className="text-[10px] text-slate-500 mt-1">توليد حسابات لجان التفتيش وتوزيع المسؤوليات القطاعية في نينوى</p>
             </div>
-            <button
-              onClick={() => setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'team' })}
-              className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs transition-all cursor-pointer shadow-md"
-            >
+            <button onClick={() => setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'team' })} className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs transition-all cursor-pointer shadow-md">
               ➕ إنشاء وتعيين فريق جديد
             </button>
           </div>
-
           <div className="overflow-x-auto border-t border-slate-200/50 dark:border-slate-800/50 pt-4">
             <table className="w-full text-right border-collapse text-xs font-bold">
               <thead>
@@ -244,200 +196,73 @@ export default function OperationsRoom() {
                   <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
                     <td className="p-3 text-slate-800 dark:text-slate-200">{t.name}</td>
                     <td className="p-3 text-teal-600 dark:text-teal-400">{t.sector}</td>
-                    <td className="p-3">
-                      {t.active ? (
-                        <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط وصالح</span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-600 text-[10px]">مجمد مؤقتاً</span>
-                      )}
-                    </td>
+                    <td className="p-3">{t.active ? <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط وصالح</span> : <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-600 text-[10px]">مجمد مؤقتاً</span>}</td>
                     <td className="p-3">
                       <div className="flex justify-center gap-2">
-                        <button
-                          onClick={() => setAccountModalState({ isOpen: true, mode: 'edit', data: { ...t, isTeam: true }, accountType: 'team' })}
-                          className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-all cursor-pointer"
-                          title="تعديل"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteTeam(t.id)}
-                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer"
-                          title="حذف"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <button onClick={() => setAccountModalState({ isOpen: true, mode: 'edit', data: { ...t, isTeam: true }, accountType: 'team' })} className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-all cursor-pointer"><Edit className="w-4 h-4" /></button>
+                        <button onClick={() => handleDeleteTeam(t.id)} className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {teams.length === 0 && (
-              <div className="text-center p-8 text-slate-400 text-xs">لا توجد لجان مسجلة حالياً.</div>
-            )}
           </div>
         </div>
       )}
-
-
 
       {activeTab === 'penalties' && (
         <div className="glassmorphic-card p-6 border border-red-500/20">
           <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
           <p className="text-[10px] text-slate-500 mb-6">طلبات الإغلاق المعلقة من الفرق الميدانية والتي تنتظر مصادقتك لتنفيذها قانونياً.</p>
-          {(() => {
-            const pendingPenalties = penaltyRequests.filter(req => req.status === 'pending');
-            if (pendingPenalties.length === 0) {
-              return (
-                <div className="text-center p-8 text-slate-400 text-xs border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50">
-                  لا توجد طلبات إغلاق معلقة بانتظار المصادقة حالياً.
+          <div className="space-y-4">
+            {penaltyRequests.filter(req => req.status === 'pending').map(req => (
+              <div key={req.id} className={`p-4 rounded-xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${req.type === 'fine' ? 'border-orange-500/30 bg-orange-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
+                <div>
+                  <h4 className={`text-xs font-black ${req.type === 'fine' ? 'text-orange-600 dark:text-orange-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {req.type === 'fine' ? 'طلب غرامة مالية: ' : 'طلب تشميع: '} {req.estName}
+                  </h4>
+                  <p className="text-[10px] text-slate-500 mt-1">السبب: {req.reason}</p>
                 </div>
-              );
-            }
-            return (
-              <div className="space-y-4">
-                {pendingPenalties.map(req => (
-                <div key={req.id} className={`p-4 rounded-xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${req.type === 'fine' ? 'border-orange-500/30 bg-orange-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
-                  <div>
-                    <h4 className={`text-xs font-black ${req.type === 'fine' ? 'text-orange-600 dark:text-orange-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {req.type === 'fine' ? 'طلب غرامة مالية: ' : 'طلب تشميع: '} {req.estName}
-                    </h4>
-                    <p className="text-[10px] text-slate-500 mt-1">السبب: {req.reason}</p>
-                    <p className="text-[10px] font-bold text-slate-400 mt-1">مُقدم الطلب: {req.teamName} - {new Date(req.date).toLocaleString('ar-IQ')}</p>
-                  </div>
-                  <div className="flex gap-2 w-full md:w-auto">
-                    <button 
-                      onClick={() => {
-                        if (window.confirm(`الموافقة على ${req.type === 'fine' ? 'الغرامة' : 'الإغلاق'}؟`)) {
-                          setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'approved' } : r));
-                          if (req.type === 'closure') {
-                            setEstablishments(prev => prev.map(est => 
-                              est.id === req.estId ? { ...est, status: 'closed' } : est
-                            ));
-                          }
-                          triggerAlert(`تم المصادقة على ${req.type === 'fine' ? 'الغرامة' : 'الإغلاق'} وإصدار الأمر لمطعم ${req.estName}`);
-                          addSystemNotification(
-                            'تمت المصادقة على العقوبة',
-                            `قامت إدارة الرقابة المركزية بالمصادقة على ${req.type === 'fine' ? 'الغرامة' : 'الإغلاق'} لمطعم ${req.estName} بناءً على طلب ${req.teamName}.`,
-                            'all'
-                          );
-                        }
-                      }}
-                      className={`px-3 py-2 rounded-lg text-white font-bold text-xs transition-all flex-1 ${req.type === 'fine' ? 'bg-orange-600 hover:bg-orange-700' : 'bg-red-600 hover:bg-red-700'}`}
-                    >
-                      صادق على {req.type === 'fine' ? 'الغرامة' : 'الإغلاق'}
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'rejected' } : r));
-                        triggerAlert(`تم رفض طلب ${req.type === 'fine' ? 'الغرامة' : 'الإغلاق'}`);
-                        addSystemNotification(
-                          'رفض طلب العقوبة',
-                          `تم رفض طلب ${req.type === 'fine' ? 'الغرامة' : 'الإغلاق'} الخاص بمطعم ${req.estName} من قبل الرقابة المركزية.`,
-                          'all'
-                        );
-                      }}
-                      className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex-1"
-                    >
-                      رفض
-                    </button>
-                  </div>
+                <div className="flex gap-2">
+                  <button onClick={() => { setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'approved' } : r)); triggerAlert('تمت المصادقة'); }} className="px-3 py-2 rounded-lg text-white font-bold text-xs bg-emerald-600">صادق</button>
+                  <button onClick={() => { setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'rejected' } : r)); triggerAlert('تم الرفض'); }} className="px-3 py-2 rounded-lg border border-slate-300 text-slate-600 font-bold text-xs">رفض</button>
                 </div>
-              ))}
-            </div>
-          );
-        })()}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       {activeTab === 'trackers_management' && (
         <div className="glassmorphic-card p-6 border border-indigo-500/20">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-sm font-black text-slate-800 dark:text-white">إدارة المتابعين الميدانيين</h3>
-              <p className="text-[10px] text-slate-500 mt-1">حسابات المتابعين السريين الموزعين على القطاعات لتقييم الفرق الميدانية.</p>
             </div>
-            <button
-              onClick={() => setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'tracker' })}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs transition-all cursor-pointer shadow-md"
-            >
-              ➕ إنشاء حساب متابع جديد
-            </button>
+            <button onClick={() => setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'tracker' })} className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-extrabold text-xs">➕ إنشاء حساب متابع</button>
           </div>
-
-          <div className="overflow-x-auto border-t border-slate-200/50 dark:border-slate-800/50 pt-4">
-            <table className="w-full text-right border-collapse text-xs font-bold">
-              <thead>
-                <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                  <th className="p-3">الاسم الكامل للمتابع</th>
-                  <th className="p-3">اسم المستخدم</th>
-                  <th className="p-3">القطاع المرتبط</th>
-                  <th className="p-3">حالة الحساب</th>
-                  <th className="p-3 text-center">الإجراءات</th>
+          <table className="w-full text-right border-collapse text-xs font-bold">
+            <thead>
+              <tr className="bg-slate-100/50 border-b border-slate-200">
+                <th className="p-3">اسم المتابع</th>
+                <th className="p-3">القطاع</th>
+                <th className="p-3 text-center">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              {trackers?.map(t => (
+                <tr key={t.id} className="border-b border-slate-100">
+                  <td className="p-3">{t.name}</td>
+                  <td className="p-3">{t.linkedTeamSector}</td>
+                  <td className="p-3 text-center"><button onClick={() => setTrackers(prev => prev.filter(tr => tr.id !== t.id))} className="text-red-600"><Trash2 className="w-4 h-4" /></button></td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
-                {trackers?.map(t => (
-                  <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
-                    <td className="p-3 text-slate-800 dark:text-slate-200">{t.name}</td>
-                    <td className="p-3 text-slate-500 dir-ltr text-right">{t.username}</td>
-                    <td className="p-3 text-indigo-600 dark:text-indigo-400">{t.linkedTeamSector}</td>
-                    <td className="p-3">
-                      {t.active !== false ? (
-                        <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط وصالح</span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-600 text-[10px]">مجمد مؤقتاً</span>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <div className="flex justify-center gap-2">
-                        <button
-                          onClick={() => setAccountModalState({ isOpen: true, mode: 'edit', data: { ...t }, accountType: 'tracker' })}
-                          className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-all cursor-pointer"
-                          title="تعديل"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            const updated = trackers.map(tr => tr.id === t.id ? { ...tr, active: !(tr.active !== false) } : tr);
-                            setTrackers(updated);
-                            triggerAlert(t.active !== false ? 'تم تجميد المتابع' : 'تم تفعيل المتابع');
-                          }}
-                          className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-                            t.active !== false ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600' : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600'
-                          }`}
-                          title={t.active !== false ? 'تجميد' : 'تفعيل'}
-                        >
-                          {t.active !== false ? '⏸️' : '▶️'}
-                        </button>
-                        <button
-                          onClick={() => {
-                            if(window.confirm('هل أنت متأكد من حذف حساب المتابع؟')) {
-                              setTrackers(prev => prev.filter(tr => tr.id !== t.id));
-                              triggerAlert('تم حذف المتابع بنجاح.');
-                            }
-                          }}
-                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer"
-                          title="حذف"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {(!trackers || trackers.length === 0) && (
-              <div className="text-center p-8 text-slate-400 text-xs">لا يوجد متابعين مسجلين حالياً.</div>
-            )}
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
-      
       {activeTab === 'financials' && (
         <div className="glassmorphic-card p-0 border border-emerald-500/20 overflow-hidden">
           <FinancialReports />
@@ -446,10 +271,7 @@ export default function OperationsRoom() {
 
       {activeTab === 'live_operations' && (
         <div className="space-y-6">
-          
-          {/* Top Section: Alerts & Notifications */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* SOS Alerts */}
             <div className="glassmorphic-card p-4 border border-red-500/20 max-h-80 overflow-y-auto">
               <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-red-500" />
@@ -717,6 +539,72 @@ export default function OperationsRoom() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'lab_results' && (
+        <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                <FlaskConical className="w-6 h-6 text-fuchsia-600" />
+                نتائج المختبر المركزي (تحتاج قرار)
+              </h3>
+              <p className="text-xs font-bold text-slate-500 mt-1">النتائج المختبرية التي تثبت تلوث العينات وتستوجب اتخاذ قرار الغرامة أو الإغلاق</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').length === 0 ? (
+              <div className="text-center p-12 text-slate-400 font-bold bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5">
+                لا توجد عينات ملوثة حالياً تحتاج لقرار.
+              </div>
+            ) : (
+              labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').map(req => (
+                <div key={req.id} className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/50 rounded-2xl">
+                  <div className="flex flex-col md:flex-row justify-between gap-4">
+                    <div className="flex gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center shrink-0">
+                        <ShieldAlert className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-slate-800 dark:text-white mb-1">المنشأة: {req.estName}</h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">الفريق المرسل: {req.teamName}</p>
+                        <p className="text-[10px] text-slate-500 mt-1">تاريخ الفحص: {new Date(req.finishedAt).toLocaleString('ar-IQ')}</p>
+                        {req.notes && (
+                          <div className="mt-2 p-3 bg-white/50 dark:bg-slate-900/50 rounded-xl text-xs font-bold text-red-700 dark:text-red-400 border border-red-100 dark:border-red-900/30">
+                            ملاحظات المختبر: {req.notes}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2 min-w-[200px]">
+                      <button 
+                        onClick={() => {
+                          setLabRequests(prev => prev.map(r => r.id === req.id ? { ...r, result: 'contaminated_action_taken' } : r));
+                          notify('تم توجيه طلب غرامة وإغلاق للفريق الميداني', 'success', true);
+                        }}
+                        className="w-full py-2.5 rounded-xl bg-gradient-to-l from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-2"
+                      >
+                        <AlertOctagon className="w-4 h-4" />
+                        توجيه الفريق بالغلق والتغريم
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setLabRequests(prev => prev.map(r => r.id === req.id ? { ...r, result: 'contaminated_ignored' } : r));
+                          notify('تم أرشفة النتيجة دون اتخاذ إجراء', 'info');
+                        }}
+                        className="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all"
+                      >
+                        أرشفة بدون إجراء
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
