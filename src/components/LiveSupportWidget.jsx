@@ -3,22 +3,61 @@ import { AppContext } from '../context/AppContext';
 import { MessageCircle, X, Send, ChevronDown } from 'lucide-react';
 
 export const LiveSupportWidget = () => {
-  const { user, addDirective } = useContext(AppContext);
+  const { user, addChatMessage, chatMessages } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([]);
+  const prevMessagesCountRef = useRef(0);
   const [targetRole, setTargetRole] = useState('operations');
   const [showRoleSelect, setShowRoleSelect] = useState(false);
   const chatEndRef = useRef(null);
 
+  // Roles filtered based on administrative scope
   const roles = [
     { id: 'operations', label: 'غرفة العمليات المركزية' },
-    { id: 'accountant', label: 'الإدارة المالية (المحاسبين)' },
-    { id: 'director', label: 'الإدارة العليا' },
-    { id: 'team', label: 'الفرق الميدانية' }
-  ].filter(r => r.id !== user?.role); // Don't allow chatting with own role directly
+    { id: 'accountant', label: user?.sector ? `المحاسب المالي (${user.sector})` : 'الإدارة المالية' },
+    { id: 'team', label: user?.sector ? `الفرق الميدانية (${user.sector})` : 'الفرق الميدانية' }
+  ].filter(r => {
+    if (r.id === user?.role) return false;
+    // Accountant shouldn't see 'accountant', Team shouldn't see 'team'.
+    return true;
+  });
 
   const currentRoleLabel = roles.find(r => r.id === targetRole)?.label || 'غرفة العمليات المركزية';
+
+  // Filter messages relevant to the current user
+  const relevantMessages = (chatMessages || []).filter(msg => {
+    // Message is relevant if:
+    // 1. I am the sender
+    if (msg.senderId === user?.id) return true;
+    
+    // 2. I am the target based on role and sector
+    const isTargetRole = msg.targetRole === user?.role;
+    const isTargetSector = msg.targetSector === 'all' || msg.targetSector === user?.sector || !msg.targetSector;
+    
+    // If the sender is targeting my role (e.g. they sent to 'accountant' and I am 'accountant' in that sector)
+    if (isTargetRole && isTargetSector) return true;
+
+    // 3. Central operations can see all messages targeting 'operations'
+    if (msg.targetRole === 'operations' && (user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director')) return true;
+
+    return false;
+  }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  // Sound effect logic
+  useEffect(() => {
+    if (relevantMessages.length > prevMessagesCountRef.current) {
+      // Only play sound if the last message was NOT sent by me
+      const lastMsg = relevantMessages[relevantMessages.length - 1];
+      if (lastMsg && lastMsg.senderId !== user?.id) {
+        try {
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+          audio.volume = 0.6;
+          audio.play().catch(e => console.log('Audio play error:', e));
+        } catch (e) {}
+      }
+    }
+    prevMessagesCountRef.current = relevantMessages.length;
+  }, [relevantMessages, user?.id]);
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -28,44 +67,17 @@ export const LiveSupportWidget = () => {
     if (isOpen) {
       scrollToBottom();
     }
-  }, [chatHistory, isOpen]);
+  }, [relevantMessages, isOpen]);
 
   // Simulate receiving a message from the target
   const handleSendMessage = () => {
     if (!chatMessage.trim()) return;
 
-    const newMsg = { 
-      id: Date.now(), 
-      sender: 'me', 
-      text: chatMessage, 
-      time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' }) 
-    };
-
-    setChatHistory(prev => [...prev, newMsg]);
-
-    // Send as directive to central system
-    if (addDirective) {
-      addDirective(targetRole, chatMessage, user?.name || 'مستخدم', user?.id || 'user');
+    if (addChatMessage) {
+      addChatMessage(targetRole, user?.sector || 'all', chatMessage, user?.name || 'مستخدم', user?.role, user?.sector, user?.id);
     }
 
     setChatMessage('');
-
-    // Simulate reply after 2 seconds
-    setTimeout(() => {
-      // Play WhatsApp-style sound
-      try {
-        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); // WhatsApp-like soft notification pop
-        audio.volume = 0.6;
-        audio.play().catch(e => console.log('Audio error:', e));
-      } catch (e) {}
-
-      setChatHistory(prev => [...prev, {
-        id: Date.now() + 1,
-        sender: 'them',
-        text: `تم استلام رسالتك في ${currentRoleLabel}، سيتم الرد قريباً.`,
-        time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })
-      }]);
-    }, 2000);
   };
 
   // If there's no user logged in, don't show the chat
@@ -109,11 +121,14 @@ export const LiveSupportWidget = () => {
           </div>
           
           <div className="p-4 h-72 overflow-y-auto flex flex-col gap-3 bg-[#e5ddd5] dark:bg-slate-950/80 custom-scrollbar" style={{backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")', backgroundSize: 'contain', backgroundBlendMode: 'multiply'}}>
-            {chatHistory.map(msg => (
-              <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-sm ${msg.sender === 'me' ? 'bg-[#dcf8c6] dark:bg-teal-800 text-slate-800 dark:text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
+            {relevantMessages.map(msg => (
+              <div key={msg.id} className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-sm ${msg.senderId === user?.id ? 'bg-[#dcf8c6] dark:bg-teal-800 text-slate-800 dark:text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
+                  {msg.senderId !== user?.id && <span className="block text-[10px] font-bold text-teal-600 mb-1">{msg.senderName}</span>}
                   <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
-                  <span className={`text-[9px] block mt-1 text-left ${msg.sender === 'me' ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'}`}>{msg.time}</span>
+                  <span className={`text-[9px] block mt-1 text-left ${msg.senderId === user?.id ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'}`}>
+                    {new Date(msg.timestamp).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
               </div>
             ))}

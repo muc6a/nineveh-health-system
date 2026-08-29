@@ -1,13 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { AppContext } from '../context/AppContext';
-import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X } from 'lucide-react';
+import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X, MessageCircle } from 'lucide-react';
 import AccountModal from './AccountModal';
 import { FinancialReports } from './FinancialReports';
 import { Database } from 'lucide-react';
 
 export default function OperationsRoom() {
-  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts } = useContext(AppContext);
+  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts, chatMessages, addChatMessage, user } = useContext(AppContext);
   const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'live_operations');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
@@ -62,6 +62,8 @@ export default function OperationsRoom() {
   const [selectedTeamId, setSelectedTeamId] = useState('');
   
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
+  const [chatReplyText, setChatReplyText] = useState('');
+  const [activeChatTarget, setActiveChatTarget] = useState(null);
 // Listen for navigation events from NotificationBell
   useEffect(() => {
     const handleNav = () => {
@@ -183,6 +185,15 @@ export default function OperationsRoom() {
         >
           <Target className="w-4 h-4" />
           التتبع والعمليات الحية
+        </button>
+        <button
+          onClick={() => setActiveTab('live_chat')}
+          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'live_chat' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <MessageCircle className="w-4 h-4" />
+          الدعم المباشر والنداءات
         </button>
       </div>
 
@@ -587,6 +598,96 @@ export default function OperationsRoom() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'live_chat' && (
+        <div className="glassmorphic-card p-6 border border-teal-500/20 flex flex-col h-[600px]">
+          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-teal-500" />
+            مركز اتصالات الدعم المباشر
+          </h3>
+          <p className="text-[10px] text-slate-500 mb-4">التواصل الفوري مع الفرق الميدانية والمحاسبين في كافة القطاعات.</p>
+          
+          <div className="flex flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+            {/* Chat List */}
+            <div className="w-1/3 border-l border-slate-200 dark:border-slate-800 overflow-y-auto">
+              {(() => {
+                // Group messages by sender to form conversations
+                const conversations = {};
+                (chatMessages || []).forEach(msg => {
+                  if (msg.targetRole === 'operations' || msg.senderRole === 'operations' || user?.role === 'admin') {
+                    const key = msg.senderId === user?.id ? msg.targetSector + '_' + msg.targetRole : msg.senderId;
+                    const contactName = msg.senderId === user?.id ? (msg.targetRole === 'team' ? 'فريق ' : 'محاسب ') + (msg.targetSector || '') : msg.senderName;
+                    
+                    if (!conversations[key]) conversations[key] = { id: key, targetRole: msg.senderId === user?.id ? msg.targetRole : msg.senderRole, targetSector: msg.senderId === user?.id ? msg.targetSector : msg.senderSector, contactName, msgs: [] };
+                    conversations[key].msgs.push(msg);
+                  }
+                });
+                
+                return Object.values(conversations).map(conv => (
+                  <div 
+                    key={conv.id} 
+                    onClick={() => setActiveChatTarget(conv)}
+                    className={`p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors ${activeChatTarget?.id === conv.id ? 'bg-teal-50 dark:bg-teal-900/20' : 'hover:bg-white dark:hover:bg-slate-800'}`}
+                  >
+                    <h4 className="font-bold text-xs text-slate-800 dark:text-white">{conv.contactName}</h4>
+                    <p className="text-[10px] text-teal-600">{conv.targetRole === 'team' ? 'فريق ميداني' : 'محاسب'} - {conv.targetSector || 'عام'}</p>
+                  </div>
+                ));
+              })()}
+            </div>
+            
+            {/* Active Chat */}
+            <div className="flex-1 flex flex-col bg-white dark:bg-slate-950">
+              {activeChatTarget ? (
+                <>
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-between items-center">
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-800 dark:text-white">{activeChatTarget.contactName}</h4>
+                      <p className="text-[10px] text-teal-600">{activeChatTarget.targetSector}</p>
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")', backgroundSize: 'contain', backgroundBlendMode: 'multiply'}}>
+                    {activeChatTarget.msgs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).map(msg => (
+                      <div key={msg.id} className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm ${msg.senderId === user?.id ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
+                          <p className="text-sm font-bold text-right">{msg.text}</p>
+                          <span className={`text-[10px] block mt-1 text-left ${msg.senderId === user?.id ? 'text-teal-200' : 'text-slate-400'}`}>
+                            {new Date(msg.timestamp).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex gap-2">
+                    <button 
+                      onClick={() => {
+                        if(chatReplyText.trim()) {
+                          addChatMessage(activeChatTarget.targetRole, activeChatTarget.targetSector, chatReplyText, user?.name || 'غرفة العمليات', 'operations', 'all', user?.id);
+                          setChatReplyText('');
+                        }
+                      }}
+                      className="w-12 h-12 rounded-xl bg-teal-600 text-white flex items-center justify-center hover:bg-teal-700 transition-colors"
+                    >
+                      <Send className="w-5 h-5 rtl:-scale-x-100" />
+                    </button>
+                    <textarea 
+                      value={chatReplyText}
+                      onChange={e => setChatReplyText(e.target.value)}
+                      placeholder="اكتب ردك هنا..."
+                      className="flex-1 bg-white dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm font-bold resize-none outline-none focus:ring-2 focus:ring-teal-500/30"
+                      rows="2"
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-slate-400 text-sm font-bold">
+                  اختر محادثة لعرضها والرد عليها
+                </div>
+              )}
             </div>
           </div>
         </div>

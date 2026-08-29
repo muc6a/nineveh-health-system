@@ -719,6 +719,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('auditLogs', setAuditLogs, auditLogs);
       setupFirebaseSync('globalBroadcast', setGlobalBroadcast, globalBroadcast);
       setupFirebaseSync('systemTickets', setTickets, tickets);
+      setupFirebaseSync('chatMessages', setChatMessages, chatMessages);
       setupFirebaseSync('trackerTasks_v1', setTasks, tasks);
       setupFirebaseSync('sysNotifs', setSystemNotifications, systemNotifications);
       setupFirebaseSync('publicCMS', setPublicCMS, publicCMS);
@@ -907,7 +908,33 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('sosAlerts');
     return saved ? JSON.parse(saved) : [];
   });
+  // --- Live Support Chat System ---
+  const [chatMessages, setChatMessages] = useState(() => {
+    const saved = localStorage.getItem('chatMessages');
+    return saved ? JSON.parse(saved) : [];
+  });
 
+  const addChatMessage = (targetRole, targetSector, text, senderName, senderRole, senderSector, senderId) => {
+    const newMsg = {
+      id: 'msg_' + Date.now(),
+      targetRole, // e.g. 'operations', 'accountant', 'team'
+      targetSector, // e.g. 'الجانب الأيسر', 'الجانب الأيمن', 'all'
+      text,
+      senderName,
+      senderRole,
+      senderSector,
+      senderId,
+      timestamp: new Date().toISOString(),
+      isRead: false
+    };
+    setChatMessages(prev => [...prev, newMsg]);
+    return newMsg;
+  };
+
+  const markChatRead = (msgId) => {
+    setChatMessages(prev => prev.map(m => m.id === msgId ? { ...m, isRead: true } : m));
+  };
+  // --------------------------------
   const triggerSOSAlert = (teamInfo, locationInfo) => {
     const newAlert = {
       id: 'sos_' + Date.now(),
@@ -1260,6 +1287,8 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
   useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
   useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
+  const isMountedChat = useRef(false);
+  useEffect(() => { if (isMountedChat.current) syncToCloud('chatMessages', chatMessages); else isMountedChat.current = true; }, [chatMessages]);
   useEffect(() => { if (isMountedTasks.current) syncToCloud('trackerTasks_v1', tasks); else isMountedTasks.current = true; }, [tasks]);
   useEffect(() => { if (isMountedSos.current) syncToCloud('sosAlerts', sosAlerts); else isMountedSos.current = true; }, [sosAlerts]);
   useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
@@ -1306,6 +1335,7 @@ export const AppProvider = ({ children }) => {
       fines, setFines,
       systemNotifications, setSystemNotifications,
       addSystemNotification,
+      chatMessages, setChatMessages, addChatMessage, markChatRead,
       sosAlerts, setSosAlerts,
       triggerSOSAlert,
       directives,
