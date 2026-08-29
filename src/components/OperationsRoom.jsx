@@ -1,13 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { AppContext } from '../context/AppContext';
-import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X, MessageCircle } from 'lucide-react';
+import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X, MessageCircle, Check, CheckCheck } from 'lucide-react';
 import AccountModal from './AccountModal';
 import { FinancialReports } from './FinancialReports';
 import { Database } from 'lucide-react';
 
 export default function OperationsRoom() {
-  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts, chatMessages, addChatMessage, user } = useContext(AppContext);
+  const { establishments, setEstablishments, teams, setTeams, trackers, setTrackers, reports, setReports, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, closureVerifications, setClosureVerifications, addSystemNotification, notify, sosAlerts, setSosAlerts, chatMessages, addChatMessage, markChatRead, user } = useContext(AppContext);
   const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'live_operations');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
@@ -64,6 +64,18 @@ export default function OperationsRoom() {
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
   const [chatReplyText, setChatReplyText] = useState('');
   const [activeChatTarget, setActiveChatTarget] = useState(null);
+
+  const opsUnreadMessages = (chatMessages || []).filter(m => (m.targetRole === 'operations' || user?.role === 'admin') && m.senderId !== user?.id && !m.isRead);
+  const totalOpsUnread = opsUnreadMessages.length;
+
+  useEffect(() => {
+    if (activeChatTarget) {
+      const unreadInActiveChat = activeChatTarget.msgs.filter(m => m.senderId !== user?.id && !m.isRead).map(m => m.id);
+      if (unreadInActiveChat.length > 0) {
+        markChatRead(unreadInActiveChat);
+      }
+    }
+  }, [activeChatTarget, chatMessages, markChatRead, user?.id]);
 // Listen for navigation events from NotificationBell
   useEffect(() => {
     const handleNav = () => {
@@ -188,12 +200,17 @@ export default function OperationsRoom() {
         </button>
         <button
           onClick={() => setActiveTab('live_chat')}
-          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${
+          className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 relative ${
             activeTab === 'live_chat' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <MessageCircle className="w-4 h-4" />
           الدعم المباشر والنداءات
+          {totalOpsUnread > 0 && (
+            <span className="absolute -top-1 -left-2 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+              {totalOpsUnread}
+            </span>
+          )}
         </button>
       </div>
 
@@ -622,8 +639,9 @@ export default function OperationsRoom() {
                     const key = msg.senderId === user?.id ? msg.targetSector + '_' + msg.targetRole : msg.senderId;
                     const contactName = msg.senderId === user?.id ? (msg.targetRole === 'team' ? 'فريق ' : 'محاسب ') + (msg.targetSector || '') : msg.senderName;
                     
-                    if (!conversations[key]) conversations[key] = { id: key, targetRole: msg.senderId === user?.id ? msg.targetRole : msg.senderRole, targetSector: msg.senderId === user?.id ? msg.targetSector : msg.senderSector, contactName, msgs: [] };
+                    if (!conversations[key]) conversations[key] = { id: key, targetRole: msg.senderId === user?.id ? msg.targetRole : msg.senderRole, targetSector: msg.senderId === user?.id ? msg.targetSector : msg.senderSector, contactName, msgs: [], unread: 0 };
                     conversations[key].msgs.push(msg);
+                    if (msg.senderId !== user?.id && !msg.isRead) conversations[key].unread++;
                   }
                 });
                 
@@ -631,10 +649,17 @@ export default function OperationsRoom() {
                   <div 
                     key={conv.id} 
                     onClick={() => setActiveChatTarget(conv)}
-                    className={`p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors ${activeChatTarget?.id === conv.id ? 'bg-teal-50 dark:bg-teal-900/20' : 'hover:bg-white dark:hover:bg-slate-800'}`}
+                    className={`p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors flex justify-between items-center ${activeChatTarget?.id === conv.id ? 'bg-teal-50 dark:bg-teal-900/20' : 'hover:bg-white dark:hover:bg-slate-800'}`}
                   >
-                    <h4 className="font-bold text-xs text-slate-800 dark:text-white">{conv.contactName}</h4>
-                    <p className="text-[10px] text-teal-600">{conv.targetRole === 'team' ? 'فريق ميداني' : 'محاسب'} - {conv.targetSector || 'عام'}</p>
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-800 dark:text-white">{conv.contactName}</h4>
+                      <p className="text-[10px] text-teal-600">{conv.targetRole === 'team' ? 'فريق ميداني' : 'محاسب'} - {conv.targetSector || 'عام'}</p>
+                    </div>
+                    {conv.unread > 0 && (
+                      <span className="w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-sm">
+                        {conv.unread}
+                      </span>
+                    )}
                   </div>
                 ));
               })()}
@@ -655,8 +680,11 @@ export default function OperationsRoom() {
                       <div key={msg.id} className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm ${msg.senderId === user?.id ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
                           <p className="text-sm font-bold text-right">{msg.text}</p>
-                          <span className={`text-[10px] block mt-1 text-left ${msg.senderId === user?.id ? 'text-teal-200' : 'text-slate-400'}`}>
+                          <span className={`text-[10px] block mt-1 text-left flex items-center justify-end gap-1 ${msg.senderId === user?.id ? 'text-teal-200' : 'text-slate-400'}`}>
                             {new Date(msg.timestamp).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}
+                            {msg.senderId === user?.id && (
+                              msg.isRead ? <CheckCheck className="w-3 h-3 text-blue-300" /> : <Check className="w-3 h-3 text-teal-200 opacity-70" />
+                            )}
                           </span>
                         </div>
                       </div>

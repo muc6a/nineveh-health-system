@@ -659,7 +659,7 @@ export const AccountantPanel = () => {
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
               <Mail className="w-5 h-5 text-blue-500" />
-              التبليغات والتوجيهات الرسمية
+              الأوامر والتوجيهات الرسمية
             </h3>
             
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm min-h-[50vh]">

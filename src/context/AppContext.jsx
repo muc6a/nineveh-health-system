@@ -931,8 +931,9 @@ export const AppProvider = ({ children }) => {
     return newMsg;
   };
 
-  const markChatRead = (msgId) => {
-    setChatMessages(prev => prev.map(m => m.id === msgId ? { ...m, isRead: true } : m));
+  const markChatRead = (msgIds) => {
+    if (!Array.isArray(msgIds)) msgIds = [msgIds];
+    setChatMessages(prev => prev.map(m => msgIds.includes(m.id) ? { ...m, isRead: true } : m));
   };
   // --------------------------------
   const triggerSOSAlert = (teamInfo, locationInfo) => {

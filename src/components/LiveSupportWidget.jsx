@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { AppContext } from '../context/AppContext';
-import { MessageCircle, X, Send, ChevronDown } from 'lucide-react';
+import { MessageCircle, X, Send, ChevronDown, Check, CheckCheck } from 'lucide-react';
 
 export const LiveSupportWidget = () => {
-  const { user, addChatMessage, chatMessages } = useContext(AppContext);
+  const { user, addChatMessage, chatMessages, markChatRead } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const prevMessagesCountRef = useRef(0);
@@ -59,6 +59,9 @@ export const LiveSupportWidget = () => {
     prevMessagesCountRef.current = relevantMessages.length;
   }, [relevantMessages, user?.id]);
 
+  const unreadMessages = relevantMessages.filter(m => m.senderId !== user?.id && !m.isRead);
+  const unreadCount = unreadMessages.length;
+
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -66,8 +69,12 @@ export const LiveSupportWidget = () => {
   useEffect(() => {
     if (isOpen) {
       scrollToBottom();
+      if (unreadCount > 0) {
+        const unreadIds = unreadMessages.map(m => m.id);
+        markChatRead(unreadIds);
+      }
     }
-  }, [relevantMessages, isOpen]);
+  }, [relevantMessages, isOpen, unreadCount, markChatRead]);
 
   // Simulate receiving a message from the target
   const handleSendMessage = () => {
@@ -126,8 +133,11 @@ export const LiveSupportWidget = () => {
                 <div className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-sm ${msg.senderId === user?.id ? 'bg-[#dcf8c6] dark:bg-teal-800 text-slate-800 dark:text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
                   {msg.senderId !== user?.id && <span className="block text-[10px] font-bold text-teal-600 mb-1">{msg.senderName}</span>}
                   <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
-                  <span className={`text-[9px] block mt-1 text-left ${msg.senderId === user?.id ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'}`}>
+                  <span className={`text-[9px] block mt-1 text-left flex items-center justify-end gap-1 ${msg.senderId === user?.id ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'}`}>
                     {new Date(msg.timestamp).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}
+                    {msg.senderId === user?.id && (
+                      msg.isRead ? <CheckCheck className="w-3 h-3 text-blue-500" /> : <Check className="w-3 h-3 text-slate-400" />
+                    )}
                   </span>
                 </div>
               </div>
@@ -162,9 +172,18 @@ export const LiveSupportWidget = () => {
       
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_10px_25px_rgba(13,148,136,0.4)] transition-all hover:scale-110 ${isOpen ? 'bg-slate-700' : 'bg-teal-600 hover:bg-teal-500'}`}
+        className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_10px_25px_rgba(13,148,136,0.4)] transition-all hover:scale-110 relative ${isOpen ? 'bg-slate-700' : 'bg-teal-600 hover:bg-teal-500'}`}
       >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-7 h-7" />}
+        {isOpen ? <X className="w-6 h-6" /> : (
+          <>
+            <MessageCircle className="w-7 h-7" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 animate-pulse">
+                {unreadCount > 9 ? '+9' : unreadCount}
+              </span>
+            )}
+          </>
+        )}
       </button>
     </div>
   );

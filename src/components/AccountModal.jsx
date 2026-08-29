@@ -27,7 +27,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
     { id: 'showMainDashboard', label: 'لوحة القياس الرئيسية (الاستراتيجية)' },
     { id: 'showReportsPage', label: 'التقارير والإحصائيات الجغرافية' },
     { id: 'manageEstablishments', label: 'إدارة المنشآت والمطاعم' },
-    { id: 'showDirectivesPage', label: 'صندوق التوجيهات' },
+    { id: 'showDirectivesPage', label: 'الرد على التوجيهات الرسمية' },
     { id: 'sendDirective', label: 'إرسال التوجيهات للفرق' },
     { id: 'showPublicEvalsPage', label: 'تقييمات وشكاوى المواطنين' }
   ];
