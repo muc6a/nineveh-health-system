@@ -886,17 +886,17 @@ export const SuperAdminPanel = () => {
       </header>
 
       {/* Tabs navigation */}
-      <div className="w-full max-w-7xl mx-auto flex flex-nowrap justify-between items-center overflow-hidden gap-0.5 md:gap-1 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2">
+      <div className="w-full max-w-[1400px] mx-auto flex flex-nowrap justify-evenly items-center overflow-hidden gap-1 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2">
         {(user?.role === 'admin' || user?.role === 'central_director') && (
           <button
             onClick={() => setActiveTab('roster')}
-            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
               activeTab === 'roster'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Users className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+            <Users className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
             <span>إدارة الحسابات</span>
           </button>
         )}
@@ -904,13 +904,13 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('general_settings')}
-            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
               activeTab === 'general_settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Settings className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+            <Settings className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
             <span>هوية المنظومة والبوابات</span>
           </button>
         )}
@@ -918,13 +918,13 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('permissions')}
-            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
               activeTab === 'permissions'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <ShieldAlert className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+            <ShieldAlert className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
             <span>مركز الصلاحيات</span>
           </button>
         )}
@@ -932,13 +932,13 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('activities_fines')}
-            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
               activeTab === 'activities_fines'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Gavel className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+            <Gavel className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
             <span>إدارة النشاطات والقوانين الرقابية</span>
           </button>
         )}
@@ -946,26 +946,26 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
               activeTab === 'settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Database className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+            <Database className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
             <span>قواعد البيانات والتخزين</span>
           </button>
         )}
 
         <button
           onClick={() => setActiveTab('establishments')}
-          className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+          className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
             activeTab === 'establishments'
               ? 'bg-teal-600 text-white shadow-md'
               : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
           }`}
         >
-          <Building className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+          <Building className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
           <span>قاعدة بيانات المنشآت</span>
         </button>
 
@@ -973,25 +973,25 @@ export const SuperAdminPanel = () => {
           <>
             <button
               onClick={() => setActiveTab('audit')}
-              className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+              className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
                 activeTab === 'audit'
                   ? 'bg-teal-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <ShieldAlert className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+              <ShieldAlert className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
               <span>سجل المراقبة والتدقيق</span>
             </button>
 
             <button
               onClick={() => setActiveTab('broadcast')}
-              className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+              className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
                 activeTab === 'broadcast'
                   ? 'bg-red-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <AlertTriangle className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+              <AlertTriangle className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
               <span>نظام التعميم والبث العاجل</span>
             </button>
 
@@ -1011,10 +1011,12 @@ export const SuperAdminPanel = () => {
 
         {activeTab === 'activities_fines' && (
           <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
-            <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
-              <Gavel className="w-5 h-5 text-teal-600" />
-              <span>إدارة النشاطات والقوانين الرقابية</span>
-            </h2>
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                <Gavel className="w-4 h-4 text-teal-600" />
+                نافذة التحكم المركزية لتخصيص بنود التقييم الصحي وتحديث قائمة المخالفات والغرامات القانونية.
+              </p>
+            </div>
             
             <div className="flex gap-2 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 overflow-x-auto hide-scrollbar whitespace-nowrap">
               <button
@@ -1188,56 +1190,30 @@ export const SuperAdminPanel = () => {
           <section className="glassmorphic-card p-6">
             
             {/* Sub Roster Tabs Selection Bar */}
-            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6">
+            <div className="flex gap-2 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 overflow-x-auto hide-scrollbar whitespace-nowrap">
               <button
                 onClick={() => setSubRosterTab('directors')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'directors'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all cursor-pointer ${(!subRosterTab || subRosterTab === 'directors') ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'}`}
               >
                 👑 إدارة المدراء والقيادات
               </button>
               <button
                 onClick={() => setSubRosterTab('labs')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'labs'
-                    ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all cursor-pointer ${subRosterTab === 'labs' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'}`}
               >
                 🔬 المختبرات المركزية
               </button>
               <button
                 onClick={() => setSubRosterTab('committees')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'committees'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all cursor-pointer ${subRosterTab === 'committees' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'}`}
               >
                 👥 إدارة اللجان الميدانية
               </button>
               <button
                 onClick={() => setSubRosterTab('accountants')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'accountants'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all cursor-pointer ${subRosterTab === 'accountants' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'}`}
               >
                 💼 إدارة المحاسبين
-              </button>
-              <button
-                onClick={() => setSubRosterTab('trackers')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'trackers'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                🕵️‍♂️ إدارة المتابعين
               </button>
             </div>
 
@@ -1800,28 +1776,19 @@ export const SuperAdminPanel = () => {
           <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
 
             
-            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 flex-wrap">
+            <div className="flex gap-2 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 overflow-x-auto hide-scrollbar whitespace-nowrap">
               <button
                 onClick={() => setSubSettingsTab('identity')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  (subSettingsTab === 'identity' || subSettingsTab === 'database')
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all cursor-pointer ${(!subSettingsTab || subSettingsTab === 'identity' || subSettingsTab === 'database') ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'}`}
               >
                 🎨 الهوية والترويسة
               </button>
               <button
                 onClick={() => setSubSettingsTab('public_cms')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'public_cms'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all cursor-pointer ${subSettingsTab === 'public_cms' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'}`}
               >
                 📢 إدارة البوابات
               </button>
-
             </div>
 
             <div className="grid grid-cols-1 gap-8">
