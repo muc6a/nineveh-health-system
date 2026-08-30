@@ -11,6 +11,54 @@ import { EvaluationManager } from '../components/EvaluationManager';
 import { FinesManager } from '../components/FinesManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
+const PERMISSIONS_TABS = [
+  { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
+  { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage'] },
+  { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
+  { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
+  { id: 'complaints', label: 'الشكاوى', icon: <Activity className="w-4 h-4 text-rose-400"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage', 'manageComplaints'] },
+  { id: 'lab', label: 'قرارات المختبر', icon: <Activity className="w-4 h-4 text-teal-400"/>, keys: ['showLabPage'] },
+  { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
+  { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['viewComprehensiveFinancialReports'] },
+];
+
+const PERMISSION_DETAILS = {
+  manageEstablishments: { title: 'إدارة المنشآت (المفتاح الرئيسي)', desc: 'بإعطاء هذا الإذن، سيتمكن هذا الحساب من رؤية قسم المنشآت والمطاعم بالكامل والوصول إليه.' },
+  createEst: { title: 'إضافة منشأة جديدة', desc: 'هذا الإذن يتيح للحساب إمكانية تسجيل وإضافة مطاعم أو كافيهات أو منشآت جديدة إلى النظام.' },
+  editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي مطعم مسجل وتحديث معلوماته (كاسم المدير، رقم الهاتف، والتراخيص).' },
+  deleteEst: { title: 'حذف منشأة نهائياً', desc: 'إذن خطير: يسمح لهذا الحساب بشطب ومسح المنشأة نهائياً من قاعدة بيانات النظام.' },
+  addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
+  showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
+  showReportsPage: { title: 'التقارير الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
+  showDirectivesPage: { title: 'تصفح التبليغات', desc: 'يسمح للحساب بفتح صفحة "التبليغات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
+  showDeliveryPage: { title: 'شكاوى خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
+  showPublicEvalsPage: { title: 'شكاوى المواطنين', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
+  showLabPage: { title: 'إدارة المختبرات المركزية', desc: 'يسمح بفتح بوابة المختبر للوصول إلى العينات الواردة ونتائج الفحص.' },
+  sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
+  replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
+  issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
+  closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
+  reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
+  manageComplaints: { title: 'إدارة الشكاوى العامة', desc: 'يتيح للحساب صلاحية الرد على شكاوى المواطنين وإغلاقها بعد معالجتها.' },
+  exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المطاعم على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
+  viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
+  manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
+  manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
+  backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
+  viewComprehensiveFinancialReports: { title: 'التقارير المالية الشاملة والرقابية', desc: 'يسمح للحساب بمشاهدة كافة الإيرادات المالية في المحافظة بشكل شامل وتصفيتها حسب القطاعات وفرق الرقابة.' }
+};
+
+const PERMISSION_ROLES = {
+  manageEstablishments: 'management', createEst: 'management', editEst: 'management', deleteEst: 'management',
+  addEval: 'team', showMainDashboard: 'management', showOperationsRoom: 'management', showReportsPage: 'management', showLabPage: 'management',
+  showDirectivesPage: 'management', showPublicEvalsPage: 'management', sendDirective: 'management', replyDirective: 'team',
+  canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management',
+  issueFine: 'management', closeEst: 'management', reopenEst: 'management',
+  notify_closures: 'all', notify_inspections: 'all', notify_directives: 'all',
+  exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management',
+  viewComprehensiveFinancialReports: 'management'
+};
+
 export const SuperAdminPanel = () => {
   const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, labs, setLabs, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions , globalLogout } = useContext(AppContext);
 
@@ -838,17 +886,17 @@ export const SuperAdminPanel = () => {
       </header>
 
       {/* Tabs navigation */}
-      <div className="max-w-7xl mx-auto flex flex-nowrap overflow-x-auto hide-scrollbar gap-1.5 md:gap-2 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2">
+      <div className="w-full max-w-7xl mx-auto flex flex-nowrap justify-between items-center overflow-hidden gap-0.5 md:gap-1 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2">
         {(user?.role === 'admin' || user?.role === 'central_director') && (
           <button
             onClick={() => setActiveTab('roster')}
-            className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'roster'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Users className="w-4.5 h-4.5" />
+            <Users className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
             <span>إدارة الحسابات</span>
           </button>
         )}
@@ -856,13 +904,13 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('general_settings')}
-            className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'general_settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Settings className="w-4.5 h-4.5" />
+            <Settings className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
             <span>هوية المنظومة والبوابات</span>
           </button>
         )}
@@ -870,13 +918,13 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('permissions')}
-            className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'permissions'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <ShieldAlert className="w-4.5 h-4.5" />
+            <ShieldAlert className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
             <span>مركز الصلاحيات</span>
           </button>
         )}
@@ -884,13 +932,13 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('activities_fines')}
-            className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'activities_fines'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Gavel className="w-4.5 h-4.5" />
+            <Gavel className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
             <span>إدارة النشاطات والقوانين الرقابية</span>
           </button>
         )}
@@ -898,26 +946,26 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Database className="w-4.5 h-4.5" />
+            <Database className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
             <span>قواعد البيانات والتخزين</span>
           </button>
         )}
 
         <button
           onClick={() => setActiveTab('establishments')}
-          className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+          className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
             activeTab === 'establishments'
               ? 'bg-teal-600 text-white shadow-md'
               : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
           }`}
         >
-          <Building className="w-4.5 h-4.5" />
+          <Building className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
           <span>قاعدة بيانات المنشآت</span>
         </button>
 
@@ -925,25 +973,25 @@ export const SuperAdminPanel = () => {
           <>
             <button
               onClick={() => setActiveTab('audit')}
-              className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
                 activeTab === 'audit'
                   ? 'bg-teal-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <ShieldAlert className="w-4.5 h-4.5" />
+              <ShieldAlert className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
               <span>سجل المراقبة والتدقيق</span>
             </button>
 
             <button
               onClick={() => setActiveTab('broadcast')}
-              className={`px-3 py-2 rounded-xl text-xs md:text-sm font-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-black whitespace-nowrap text-ellipsis overflow-hidden transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
                 activeTab === 'broadcast'
                   ? 'bg-red-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <AlertTriangle className="w-4.5 h-4.5" />
+              <AlertTriangle className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
               <span>نظام التعميم والبث العاجل</span>
             </button>
 
@@ -2595,53 +2643,7 @@ export const SuperAdminPanel = () => {
       {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
       {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
       {showPermissionsModal && selectedPermissionsAccount && (() => {
-                const PERMISSIONS_TABS = [
-          { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
-          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage'] },
-          { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
-          { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
-          { id: 'complaints', label: 'الشكاوى', icon: <Activity className="w-4 h-4 text-rose-400"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage', 'manageComplaints'] },
-          { id: 'lab', label: 'قرارات المختبر', icon: <Activity className="w-4 h-4 text-teal-400"/>, keys: ['showLabPage'] },
-          { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
-          { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['viewComprehensiveFinancialReports'] },
-        ];
-
-        const PERMISSION_DETAILS = {
-          manageEstablishments: { title: 'إدارة المنشآت (المفتاح الرئيسي)', desc: 'بإعطاء هذا الإذن، سيتمكن هذا الحساب من رؤية قسم المنشآت والمطاعم بالكامل والوصول إليه.' },
-          createEst: { title: 'إضافة منشأة جديدة', desc: 'هذا الإذن يتيح للحساب إمكانية تسجيل وإضافة مطاعم أو كافيهات أو منشآت جديدة إلى النظام.' },
-          editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي مطعم مسجل وتحديث معلوماته (كاسم المدير، رقم الهاتف، والتراخيص).' },
-          deleteEst: { title: 'حذف منشأة نهائياً', desc: 'إذن خطير: يسمح لهذا الحساب بشطب ومسح المنشأة نهائياً من قاعدة بيانات النظام.' },
-          addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
-          showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
-          showReportsPage: { title: 'التقارير الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
-          showDirectivesPage: { title: 'تصفح التبليغات', desc: 'يسمح للحساب بفتح صفحة "التبليغات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
-          showDeliveryPage: { title: 'شكاوى خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
-          showPublicEvalsPage: { title: 'شكاوى المواطنين', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
-          showLabPage: { title: 'إدارة المختبرات المركزية', desc: 'يسمح بفتح بوابة المختبر للوصول إلى العينات الواردة ونتائج الفحص.' },
-          sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
-          replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
-          issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
-          closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
-          reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
-          manageComplaints: { title: 'إدارة الشكاوى العامة', desc: 'يتيح للحساب صلاحية الرد على شكاوى المواطنين وإغلاقها بعد معالجتها.' },
-          exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المطاعم على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
-          viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
-          manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
-          manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
-          backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
-          viewComprehensiveFinancialReports: { title: 'التقارير المالية الشاملة والرقابية', desc: 'يسمح للحساب بمشاهدة كافة الإيرادات المالية في المحافظة بشكل شامل وتصفيتها حسب القطاعات وفرق الرقابة.' }
-        };
-
-        const PERMISSION_ROLES = {
-          manageEstablishments: 'management', createEst: 'management', editEst: 'management', deleteEst: 'management',
-          addEval: 'team', showMainDashboard: 'management', showOperationsRoom: 'management', showReportsPage: 'management', showLabPage: 'management',
-          showDirectivesPage: 'management', showPublicEvalsPage: 'management', sendDirective: 'management', replyDirective: 'team',
-          canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management',
-          issueFine: 'management', closeEst: 'management', reopenEst: 'management',
-          notify_closures: 'all', notify_inspections: 'all', notify_directives: 'all',
-          exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management',
-          viewComprehensiveFinancialReports: 'management'
-        };
+        
         const handleGrantAll = () => {
           setSelectedPermissionsAccount(prev => {
             const allTrue = {};
