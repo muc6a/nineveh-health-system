@@ -543,7 +543,7 @@ export const AccountantPanel = () => {
                   dir="ltr"
                   placeholder="مثال: est_123 أو كود QR..."
                   value={searchCode}
-                  onChange={(e) => setSearchCode(e.target.value.trim())}
+                  onChange={(e) => setSearchCode(e.target.value.toUpperCase().trim())}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSearchFine(); }}
                   className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors text-left"
                 />
