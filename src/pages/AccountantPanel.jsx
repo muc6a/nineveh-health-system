@@ -112,7 +112,7 @@ export const AccountantPanel = () => {
     }
     
     // 1. Search for establishment directly by code or name
-    let est = establishments.find(e => String(e.id).toLowerCase() === String(searchCode).toLowerCase() || e.name.includes(searchCode));
+    let est = establishments.find(e => String(e.id).toLowerCase() === String(searchCode).toLowerCase() || (e.name || '').includes(searchCode));
     
     // 2. Search for fine directly by fine ID
     let fineByFineId = pendingFines.find(f => String(f.id).toLowerCase() === String(searchCode).toLowerCase());
