@@ -45,6 +45,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
   // Tracker Specific State
   const [linkedTeamSector, setLinkedTeamSector] = useState('');
 
+  // Lab Specific State
+  const [labSector, setLabSector] = useState('');
+
   // Team Members State (Object array: { name, title })
   const [doctors, setDoctors] = useState([{ name: '', title: 'الطبيب / المفتش المسؤول' }]);
   const [assistants, setAssistants] = useState([{ name: '', title: 'ملاحظ فني / مدقق' }]);
@@ -124,6 +127,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         }
         if (accountType === 'lab') {
           // Lab uses common state and members/geo state
+          setLabSector(initialData.sector || '');
           if (initialData.members) {
             const mapToObj = (arr, defaultTitle) => arr?.length ? (typeof arr[0] === 'string' ? arr.map(a => ({ name: a, title: defaultTitle })) : arr) : [{ name: '', title: defaultTitle }];
             setDoctors(mapToObj(initialData.members.doctors, 'طبيب اختصاص / مسؤول'));
@@ -162,6 +166,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         setEditTimeWindow('open');
         setEditOneTimeOnly(false);
         setLinkedTeamSector('');
+        setLabSector('');
         setCopyPermissionsFrom('');
       }
     }
@@ -292,7 +297,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
       result.linkedTeamSector = linkedTeamSector;
     } else if (accountType === 'lab') {
       result.role = 'lab';
-      result.sector = calculatedSector || 'المختبرات';
+      result.sector = labSector || 'عموم محافظة نينوى';
       result.members = {
         doctors: doctors.filter(d => d.name.trim() !== ''),
         assistants: assistants.filter(a => a.name.trim() !== '')
@@ -579,8 +584,8 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
               <div className="space-y-2">
                 <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 1. النطاق الجغرافي للمختبر</label>
                 <select 
-                  value={sector} 
-                  onChange={(e) => setSector(e.target.value)}
+                  value={labSector} 
+                  onChange={(e) => setLabSector(e.target.value)}
                   className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 shadow-inner"
                   required
                 >
