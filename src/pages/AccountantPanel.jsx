@@ -20,6 +20,8 @@ export const AccountantPanel = () => {
   const [searchedEstablishment, setSearchedEstablishment] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash'); // 'cash' or 'pos'
   const [receiptNumber, setReceiptNumber] = useState('');
+  const [receiptType, setReceiptType] = useState('electronic');
+  const [archiveSearchTerm, setArchiveSearchTerm] = useState('');
 
   // States for Comprehensive Reports
   const [reportFilter, setReportFilter] = useState('الكل');
@@ -160,7 +162,8 @@ export const AccountantPanel = () => {
         if (targetFine) {
           setSearchedFine(targetFine);
           setPaymentMethod('cash');
-          setReceiptNumber('');
+          setReceiptType('electronic');
+          setReceiptNumber(`REC-${Date.now().toString().slice(-6)}`);
           if (targetFine.paymentStatus === 'paid') {
             notify('تنبيه: تم العثور على غرامة سابقة ولكنها مسددة.', 'warning');
           }
@@ -201,7 +204,10 @@ export const AccountantPanel = () => {
 
     notify('تم تأكيد القبض وتسجيل التسديد بنجاح!', 'success');
     setSearchedFine(null);
+    setSearchedEstablishment(null);
     setSearchCode('');
+    setReceiptNumber('');
+    setReceiptType('electronic');
   };
 
   const handleCloseRegister = (status) => {
@@ -560,7 +566,7 @@ export const AccountantPanel = () => {
 
             {/* Searched Details */}
             {searchedEstablishment && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-lg max-w-2xl mx-auto relative overflow-hidden">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-lg w-full mx-auto relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-slate-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                 
                 <div className="mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
@@ -589,7 +595,7 @@ export const AccountantPanel = () => {
                     <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
                       <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
                         <span className="block text-[10px] text-slate-500 font-bold mb-1">المبلغ المطلوب تسديده</span>
-                        <span className="block text-xl font-black text-red-600">{searchedFine.amount?.toLocaleString()} <span className="text-[10px]">د.ع</span></span>
+                        <span className="block text-3xl md:text-4xl font-black text-red-600 py-1 drop-shadow-sm">{searchedFine.amount?.toLocaleString()} <span className="text-xs">د.ع</span></span>
                       </div>
                       <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
                         <span className="block text-[10px] text-slate-500 font-bold mb-1">سبب المخالفة</span>
@@ -641,14 +647,35 @@ export const AccountantPanel = () => {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-2">رقم الوصل الورقي (الدفتر) - إن وجد:</label>
-                    <input
-                      type="text"
-                      value={receiptNumber}
-                      onChange={(e) => setReceiptNumber(e.target.value)}
-                      placeholder="أدخل رقم الوصل..."
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl text-sm font-bold focus:outline-none focus:border-emerald-500"
-                    />
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-2">رقم الوصل ونوع الإصدار:</label>
+                    <div className="flex bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl mb-3">
+                      <button
+                        onClick={() => { setReceiptType('electronic'); setReceiptNumber(`REC-${Date.now().toString().slice(-6)}`); }}
+                        className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all ${receiptType === 'electronic' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                      >
+                        إلكتروني (تلقائي)
+                      </button>
+                      <button
+                        onClick={() => { setReceiptType('manual'); setReceiptNumber(''); }}
+                        className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all ${receiptType === 'manual' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                      >
+                        يدوي (ورقي)
+                      </button>
+                    </div>
+                    {receiptType === 'manual' ? (
+                      <input
+                        type="text"
+                        value={receiptNumber}
+                        onChange={(e) => setReceiptNumber(e.target.value)}
+                        placeholder="أدخل رقم الوصل الورقي من الدفتر..."
+                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl text-sm font-bold focus:outline-none focus:border-emerald-500"
+                      />
+                    ) : (
+                      <div className="w-full bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/50 px-4 py-3 rounded-xl flex items-center justify-between">
+                        <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">رقم الوصل الإلكتروني:</span>
+                        <span className="text-sm font-black text-emerald-800 dark:text-emerald-300">{receiptNumber || `REC-${Date.now().toString().slice(-6)}`}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-3 pt-4">
@@ -659,10 +686,10 @@ export const AccountantPanel = () => {
                       استلام المبلغ وإثبات التسديد
                     </button>
                     <button
-                      onClick={() => notify('جاري التجهيز لطباعة الوصل A4...', 'info')}
+                      onClick={() => { notify('جاري التجهيز لطباعة الوصل...', 'info'); setTimeout(() => window.print(), 500); }}
                       className="px-4 py-4 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-xl text-xs font-black transition-all shadow-sm flex items-center gap-2"
                     >
-                      <Printer className="w-4 h-4" /> طباعة A4
+                      <Printer className="w-4 h-4" /> طباعة الوصل
                     </button>
                   </div>
                   </>
@@ -673,10 +700,22 @@ export const AccountantPanel = () => {
 
             {/* Archive of Paid Fines */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
-              <h4 className="text-md font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
-                <Archive className="w-5 h-5 text-slate-400" />
-                أرشيف الوصولات المالية (تم التسديد)
-              </h4>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                <h4 className="text-md font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <Archive className="w-5 h-5 text-slate-400" />
+                  أرشيف الوصولات المالية (تم التسديد)
+                </h4>
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-4 h-4 absolute right-3 top-2.5 text-slate-400" />
+                  <input 
+                    type="text" 
+                    placeholder="بحث برقم الوصل أو المنشأة..."
+                    value={archiveSearchTerm}
+                    onChange={(e) => setArchiveSearchTerm(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-9 py-2 rounded-xl text-xs font-bold focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
               {paidFines.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 text-xs font-bold bg-slate-50 dark:bg-slate-800/30 rounded-2xl">لا توجد وصولات مسددة في الأرشيف.</div>
               ) : (
@@ -692,7 +731,13 @@ export const AccountantPanel = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
-                      {paidFines.slice(0, 10).map(fine => (
+                      {paidFines
+                        .filter(f => !archiveSearchTerm || 
+                           (f.receiptNumber && f.receiptNumber.toLowerCase().includes(archiveSearchTerm.toLowerCase())) ||
+                           (getEstablishmentName(f.establishmentId || f.estId).toLowerCase().includes(archiveSearchTerm.toLowerCase())) ||
+                           (f.establishmentId || f.estId).toLowerCase().includes(archiveSearchTerm.toLowerCase())
+                        )
+                        .slice(0, 20).map(fine => (
                         <tr key={fine.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
                           <td className="p-3 text-slate-700 dark:text-slate-300">{fine.receiptNumber || 'بدون'}</td>
                         <td className="p-3 text-slate-700 dark:text-slate-300">{getEstablishmentName(fine.establishmentId || fine.estId)}</td>
