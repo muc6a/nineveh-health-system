@@ -15,6 +15,7 @@ export const AccountantPanel = () => {
   
   // States for Pay Fines
   const [searchCode, setSearchCode] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const [searchedFine, setSearchedFine] = useState(null);
   const [searchedEstablishment, setSearchedEstablishment] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash'); // 'cash' or 'pos'
@@ -106,12 +107,16 @@ export const AccountantPanel = () => {
 
   // Pay Fines Handlers
   const handleSearchFine = () => {
-    try {
+    if (!searchCode.trim()) {
+      notify('يرجى إدخال كود المنشأة أو رقم الغرامة', 'warning');
+      return;
+    }
+    setIsSearching(true);
+    
+    // Simulate HTTP Request delay to satisfy the expected UX
+    setTimeout(() => {
+      try {
       const code = (searchCode || '').trim().toLowerCase();
-      if (!code) {
-        notify('يرجى إدخال كود المنشأة أو رقم الغرامة', 'warning');
-        return;
-      }
       
       const safeString = (val) => (val ? String(val).trim().toLowerCase() : '');
 
@@ -149,7 +154,10 @@ export const AccountantPanel = () => {
     } catch (error) {
       console.error("Search error:", error);
       notify('حدث خطأ برمجي أثناء البحث: ' + error.message, 'error');
+    } finally {
+      setIsSearching(false);
     }
+    }, 800); // 800ms delay to simulate network
   };
 
   const submitPayment = () => {
@@ -514,14 +522,16 @@ export const AccountantPanel = () => {
                   placeholder="مثال: est_123 أو كود QR..."
                   value={searchCode}
                   onChange={(e) => setSearchCode(e.target.value.trim())}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSearchFine(); }}
                   className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors text-left"
                 />
                 <button 
                   onClick={handleSearchFine}
-                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs transition-colors flex items-center gap-2 shadow-sm"
+                  disabled={isSearching}
+                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50"
                 >
-                  <Search className="w-4 h-4" />
-                  بحث واستعلام
+                  {isSearching ? <span className="animate-spin mr-2">⏳</span> : <Search className="w-4 h-4" />}
+                  {isSearching ? 'جاري البحث...' : 'بحث واستعلام'}
                 </button>
               </div>
             </div>
