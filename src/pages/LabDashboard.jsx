@@ -4,14 +4,15 @@ import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3 } from 'lucide-react';
+import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut } from 'lucide-react';
 
 export const LabDashboard = () => {
-  const { user, setUser, navigate, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('incoming'); // 'stats', 'incoming', 'testing', 'archive'
+  const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences } = useContext(AppContext);
+  const [activeTab, setActiveTab] = useState('stats'); // 'stats', 'incoming', 'testing', 'archive'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null });
   const [resultStatus, setResultStatus] = useState('safe');
   const [resultNotes, setResultNotes] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Protect route
   useEffect(() => {
@@ -26,6 +27,13 @@ export const LabDashboard = () => {
   const incomingReqs = labRequests.filter(r => r.status === 'pending_arrival');
   const testingReqs = labRequests.filter(r => r.status === 'under_testing');
   const archivedReqs = labRequests.filter(r => r.status === 'finished');
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('auth_token');
+    notify('تم تسجيل الخروج بنجاح', 'info');
+    navigate('/');
+  };
 
   const handleReceiveSample = (id) => {
     setLabRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'under_testing', receivedAt: new Date().toISOString() } : r));
@@ -77,175 +85,283 @@ export const LabDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-sans" dir="rtl">
-      {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <AnimatedLogo className="w-12 h-12" />
-            <div>
-              <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-l from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 leading-tight">بوابة المختبر المركزي</h1>
-              <p className="text-xs font-bold text-slate-500">نظام فحص العينات والتحليل</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <WeatherWidget />
-            <div className="h-8 w-px bg-slate-200 dark:bg-white/10 hidden md:block"></div>
-            <NotificationBell />
-            <ThemeToggle />
-            <button 
-              onClick={() => { setUser(null); navigate('/login'); }}
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-600 dark:text-slate-300 hover:text-red-600 transition-colors cursor-pointer"
-            >
-              <Power className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </header>
+    <div 
+      className={`min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 ${uiPreferences?.density === 'compact' ? 'ui-compact' : 'ui-comfortable'}`}
+      style={{
+        '--ui-heading-size': uiPreferences?.headingSize || '18px',
+        '--ui-body-size': uiPreferences?.bodySize || '12px',
+      }}
+      dir="rtl"
+    >
+      
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
-      <main className="max-w-7xl mx-auto p-4 md:p-6 pb-24">
-        {/* Welcome Card */}
-        <div className="mb-6 p-6 rounded-[2rem] bg-gradient-to-bl from-indigo-600 to-purple-700 text-white shadow-xl relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-2xl font-black mb-2 flex items-center gap-2">
-              <FlaskConical className="w-6 h-6" /> مرحباً بك، {user.name}
-            </h2>
-            <p className="text-indigo-100 font-medium">لوحة التحكم الخاصة بفحص وتحليل العينات الميدانية.</p>
-          </div>
-          <FlaskConical className="w-32 h-32 absolute -left-8 -bottom-8 text-white/10 transform -rotate-12" />
-        </div>
+      {/* Fixed Sticky Sidebar */}
+      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
+        isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
+      } right-0`}>
+        <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
+          <AnimatedLogo variant="sidebar" className="mb-6" />
 
-        {/* Tabs */}
-        <div className="flex overflow-x-auto gap-2 mb-6 custom-scrollbar pb-2">
-          {[
-            { id: 'stats', label: 'الإحصائيات', icon: BarChart3 },
-            { id: 'incoming', label: 'قيد الوصول', icon: Clock, count: incomingReqs.length },
-            { id: 'testing', label: 'قيد الفحص', icon: FlaskConical, count: testingReqs.length },
-            { id: 'archive', label: 'الأرشيف', icon: Archive }
-          ].map(tab => (
+          <div className="space-y-1 mb-6">
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
+              بوابة المختبر المركزي
+            </span>
+            
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-sm transition-all whitespace-nowrap cursor-pointer ${
-                activeTab === tab.id
-                  ? 'bg-indigo-600 text-white shadow-[0_4px_20px_-5px_rgba(79,70,229,0.5)]'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/5'
+              onClick={() => { setActiveTab('stats'); setIsSidebarOpen(false); }}
+              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                activeTab === 'stats'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-              {tab.count !== undefined && tab.count > 0 && (
-                <span className={`px-2 py-0.5 rounded-full text-[10px] ${activeTab === tab.id ? 'bg-white/20' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'}`}>
-                  {tab.count}
-                </span>
+              <BarChart3 className="w-4.5 h-4.5" />
+              <span>الرئيسية والتقارير</span>
+            </button>
+            
+            <button
+              onClick={() => { setActiveTab('incoming'); setIsSidebarOpen(false); }}
+              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                activeTab === 'incoming'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Clock className="w-4.5 h-4.5" />
+                <span>الطلبات الواردة</span>
+              </div>
+              {incomingReqs.length > 0 && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'incoming' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700'}`}>{incomingReqs.length}</span>
               )}
             </button>
-          ))}
+
+            <button
+              onClick={() => { setActiveTab('testing'); setIsSidebarOpen(false); }}
+              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                activeTab === 'testing'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <FlaskConical className="w-4.5 h-4.5" />
+                <span>قيد الفحص</span>
+              </div>
+              {testingReqs.length > 0 && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'testing' ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-700'}`}>{testingReqs.length}</span>
+              )}
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('archive'); setIsSidebarOpen(false); }}
+              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                activeTab === 'archive'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              }`}
+            >
+              <Archive className="w-4.5 h-4.5" />
+              <span>الأرشيف المختبري</span>
+            </button>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-200 dark:border-white/5 min-h-[50vh]">
-          
-          {/* STATS */}
-          {activeTab === 'stats' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-indigo-50 dark:bg-indigo-900/10 p-6 rounded-2xl border border-indigo-100 dark:border-indigo-800/30">
-                <h3 className="text-indigo-600 dark:text-indigo-400 font-bold mb-2">إجمالي العينات المستلمة</h3>
-                <p className="text-4xl font-black text-indigo-700 dark:text-indigo-300">{labRequests.length}</p>
-              </div>
-              <div className="bg-amber-50 dark:bg-amber-900/10 p-6 rounded-2xl border border-amber-100 dark:border-amber-800/30">
-                <h3 className="text-amber-600 dark:text-amber-400 font-bold mb-2">عينات قيد الفحص</h3>
-                <p className="text-4xl font-black text-amber-700 dark:text-amber-300">{testingReqs.length}</p>
-              </div>
-              <div className="bg-emerald-50 dark:bg-emerald-900/10 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
-                <h3 className="text-emerald-600 dark:text-emerald-400 font-bold mb-2">عينات منجزة</h3>
-                <p className="text-4xl font-black text-emerald-700 dark:text-emerald-300">{archivedReqs.length}</p>
-              </div>
+        <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+          <div className="flex items-center gap-3 px-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md">
+              {user?.name?.charAt(0) || 'م'}
             </div>
-          )}
+            <div className="flex-1 overflow-hidden">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-white truncate">{user?.name}</h4>
+              <p className="text-xs text-slate-500 truncate">{user?.sector || 'نطاق غير محدد'}</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" /> تسجيل الخروج
+          </button>
+        </div>
+      </aside>
 
-          {/* INCOMING */}
-          {activeTab === 'incoming' && (
-            <div className="space-y-4">
-              {incomingReqs.length === 0 ? (
-                <div className="text-center p-12 text-slate-400 font-bold">لا توجد عينات قيد الوصول حالياً.</div>
-              ) : (
-                incomingReqs.map(req => (
-                  <div key={req.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5 gap-4">
-                    <div className="flex gap-4 items-center">
-                      <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/20 text-amber-600 flex items-center justify-center">
-                        <Clock className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-800 dark:text-white">{req.estName}</h4>
-                        <p className="text-xs text-slate-500 mt-1">مرسلة من: {req.teamName} - {new Date(req.date).toLocaleString('ar-IQ')}</p>
-                        {req.senderNotes && <p className="text-xs text-slate-400 mt-1">ملاحظة: {req.senderNotes}</p>}
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => handleReceiveSample(req.id)}
-                      className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center"
-                    >
-                      <CheckCircle className="w-4 h-4" /> تأكيد الاستلام المادي
-                    </button>
+      {/* Main Content */}
+      <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
+        
+        {/* Header */}
+        <header className="h-16 shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between px-4 sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 -mr-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden cursor-pointer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-lg font-black text-slate-800 dark:text-white hidden md:block">
+              {activeTab === 'stats' && 'الرئيسية والتقارير'}
+              {activeTab === 'incoming' && 'الطلبات الواردة'}
+              {activeTab === 'testing' && 'عينات قيد الفحص'}
+              {activeTab === 'archive' && 'الأرشيف المختبري'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2 md:gap-3">
+            <WeatherWidget />
+            <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 hidden md:block mx-1"></div>
+            <NotificationBell />
+            <ThemeToggle />
+          </div>
+        </header>
+
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 custom-scrollbar">
+          <div className="max-w-6xl mx-auto space-y-6">
+
+            {/* STATS */}
+            {activeTab === 'stats' && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
+                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">إجمالي العينات المستلمة</h3>
+                    <p className="text-4xl font-black text-indigo-600 dark:text-indigo-400">{labRequests.length}</p>
                   </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {/* TESTING */}
-          {activeTab === 'testing' && (
-            <div className="space-y-4">
-              {testingReqs.length === 0 ? (
-                <div className="text-center p-12 text-slate-400 font-bold">لا توجد عينات قيد الفحص حالياً.</div>
-              ) : (
-                testingReqs.map(req => (
-                  <div key={req.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5 gap-4">
-                    <div className="flex gap-4 items-center">
-                      <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 flex items-center justify-center animate-pulse">
-                        <FlaskConical className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-800 dark:text-white">{req.estName}</h4>
-                        <p className="text-xs text-slate-500 mt-1">مرسلة من: {req.teamName} - تم الاستلام: {new Date(req.receivedAt).toLocaleTimeString('ar-IQ')}</p>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => setResultModal({ isOpen: true, request: req })}
-                      className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-teal-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center"
-                    >
-                      <FileText className="w-4 h-4" /> إدخال النتيجة
-                    </button>
+                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
+                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات قيد الفحص</h3>
+                    <p className="text-4xl font-black text-amber-600 dark:text-amber-400">{testingReqs.length}</p>
                   </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {/* ARCHIVE */}
-          {activeTab === 'archive' && (
-            <div className="space-y-4">
-              {archivedReqs.length === 0 ? (
-                <div className="text-center p-12 text-slate-400 font-bold">الأرشيف فارغ.</div>
-              ) : (
-                archivedReqs.map(req => (
-                  <div key={req.id} className={`flex items-center p-4 rounded-2xl border gap-4 ${req.result === 'safe' ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30'}`}>
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${req.result === 'safe' ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600' : 'bg-red-100 dark:bg-red-900/20 text-red-600'}`}>
-                      {req.result === 'safe' ? <CheckCircle className="w-6 h-6" /> : <ShieldAlert className="w-6 h-6" />}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-slate-800 dark:text-white">{req.estName}</h4>
-                      <p className="text-xs text-slate-500 mt-1">النتيجة: {req.result === 'safe' ? 'سليمة ومطابقة' : 'ملوثة / غير مطابقة'}</p>
-                      <p className="text-[10px] text-slate-400 mt-1">التاريخ: {new Date(req.finishedAt).toLocaleString('ar-IQ')}</p>
-                    </div>
+                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
+                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات منجزة</h3>
+                    <p className="text-4xl font-black text-emerald-600 dark:text-emerald-400">{archivedReqs.length}</p>
                   </div>
-                ))
-              )}
-            </div>
-          )}
+                </div>
 
+                <div className="bg-indigo-600 text-white rounded-[2rem] p-8 relative overflow-hidden shadow-xl shadow-indigo-600/20">
+                  <div className="relative z-10 max-w-2xl">
+                    <h2 className="text-2xl font-black mb-2">بوابة المختبر المركزي جاهزة</h2>
+                    <p className="text-indigo-100 leading-relaxed">
+                      يمكنك استلام العينات الميدانية، إجراء الفحوصات، واعتماد النتائج. 
+                      سيتم إشعار الفرق الرقابية أو الرقابة المركزية بالنتائج فور اعتمادها للمتابعة الميدانية أو اتخاذ الإجراءات القانونية بحق المخالفين.
+                    </p>
+                  </div>
+                  <FlaskConical className="w-48 h-48 absolute -left-12 -bottom-12 text-white/10 transform -rotate-12" />
+                </div>
+              </div>
+            )}
+
+            {/* INCOMING */}
+            {activeTab === 'incoming' && (
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="space-y-4">
+                  {incomingReqs.length === 0 ? (
+                    <div className="text-center p-12 flex flex-col items-center">
+                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4">
+                        <CheckCircle className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-slate-600 dark:text-slate-300 font-bold text-lg mb-1">لا توجد عينات قيد الوصول</h3>
+                      <p className="text-slate-400 text-sm">تم استلام جميع العينات بنجاح.</p>
+                    </div>
+                  ) : (
+                    incomingReqs.map(req => (
+                      <div key={req.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5 gap-4 transition-all hover:border-indigo-300 dark:hover:border-indigo-700/50">
+                        <div className="flex gap-4 items-center">
+                          <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/20 text-amber-600 flex items-center justify-center">
+                            <Clock className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-slate-800 dark:text-white">{req.estName}</h4>
+                            <p className="text-xs text-slate-500 mt-1">مرسلة من: {req.teamName} - {new Date(req.date).toLocaleString('ar-IQ')}</p>
+                            {req.senderNotes && <p className="text-xs text-slate-400 mt-1 bg-white dark:bg-slate-800 px-2 py-1 rounded inline-block">ملاحظة: {req.senderNotes}</p>}
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => handleReceiveSample(req.id)}
+                          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
+                        >
+                          <CheckCircle className="w-4 h-4" /> تأكيد الاستلام المادي
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* TESTING */}
+            {activeTab === 'testing' && (
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="space-y-4">
+                  {testingReqs.length === 0 ? (
+                    <div className="text-center p-12 flex flex-col items-center">
+                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4">
+                        <FlaskConical className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-slate-600 dark:text-slate-300 font-bold text-lg mb-1">لا توجد عينات قيد الفحص</h3>
+                      <p className="text-slate-400 text-sm">جميع العينات المستلمة تم فحصها.</p>
+                    </div>
+                  ) : (
+                    testingReqs.map(req => (
+                      <div key={req.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5 gap-4 transition-all hover:border-indigo-300 dark:hover:border-indigo-700/50">
+                        <div className="flex gap-4 items-center">
+                          <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 flex items-center justify-center animate-pulse">
+                            <FlaskConical className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-slate-800 dark:text-white text-lg">{req.estName}</h4>
+                            <p className="text-xs text-slate-500 mt-1">مرسلة من: {req.teamName} - تم الاستلام: {new Date(req.receivedAt).toLocaleTimeString('ar-IQ')}</p>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => setResultModal({ isOpen: true, request: req })}
+                          className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-teal-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
+                        >
+                          <FileText className="w-4 h-4" /> إدخال النتيجة
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ARCHIVE */}
+            {activeTab === 'archive' && (
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="space-y-4">
+                  {archivedReqs.length === 0 ? (
+                    <div className="text-center p-12 text-slate-400 font-bold">الأرشيف فارغ.</div>
+                  ) : (
+                    archivedReqs.map(req => (
+                      <div key={req.id} className={`flex items-center p-4 rounded-2xl border gap-4 ${req.result === 'safe' ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30'}`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${req.result === 'safe' ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600' : 'bg-red-100 dark:bg-red-900/20 text-red-600'}`}>
+                          {req.result === 'safe' ? <CheckCircle className="w-6 h-6" /> : <ShieldAlert className="w-6 h-6" />}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-800 dark:text-white">{req.estName}</h4>
+                          <p className="text-sm font-bold mt-1 text-slate-700 dark:text-slate-300">النتيجة: {req.result === 'safe' ? <span className="text-emerald-600 dark:text-emerald-400">سليمة ومطابقة للمواصفات</span> : <span className="text-red-600 dark:text-red-400">ملوثة / غير مطابقة</span>}</p>
+                          <div className="flex gap-3 text-[10px] text-slate-400 mt-2">
+                            <span>الفريق: {req.teamName}</span>
+                            <span>&bull;</span>
+                            <span>تاريخ الفحص: {new Date(req.finishedAt).toLocaleString('ar-IQ')}</span>
+                          </div>
+                          {req.notes && (
+                            <p className="mt-2 text-xs p-2 bg-white/50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700">ملاحظات: {req.notes}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+          </div>
         </div>
       </main>
 
@@ -279,7 +395,7 @@ export const LabDashboard = () => {
                   <textarea 
                     value={resultNotes}
                     onChange={(e) => setResultNotes(e.target.value)}
-                    className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500 h-24 resize-none"
+                    className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white outline-none focus:border-indigo-500 h-24 resize-none custom-scrollbar"
                     placeholder="اكتب أسباب التلوث أو ملاحظات الفحص هنا..."
                   ></textarea>
                 </div>

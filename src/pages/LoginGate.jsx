@@ -36,7 +36,15 @@ export const LoginGate = () => {
 
     if ((identity === 'admin@ninveh.health.gov.iq' && password === 'admin123') || (identity.trim().toLowerCase() === 'admin' && password === '123')) {
       setUser({ role: 'admin', name: 'مدير الموقع', email: 'admin@ninveh.health.gov.iq' });
-      notify('تم تسجيل الدخول بنجاح كمدير للموقع (Super Admin)', 'success', true);
+      
+      // Play custom login sound
+      try {
+        const loginAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+        loginAudio.volume = 0.6;
+        loginAudio.play().catch(e => console.log('Audio autoplay blocked', e));
+      } catch (e) {}
+
+      notify('تم تسجيل الدخول بنجاح كمدير للموقع (Super Admin)', 'success', false);
       navigate('/admin/control');
       return;
     }
@@ -55,7 +63,15 @@ export const LoginGate = () => {
         setUser(data.user);
         // Store JWT token
         localStorage.setItem('auth_token', data.token);
-        notify(data.message || 'تم تسجيل الدخول بنجاح', 'success', true);
+
+        // Play custom login sound
+        try {
+          const loginAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+          loginAudio.volume = 0.6;
+          loginAudio.play().catch(e => console.log('Audio autoplay blocked', e));
+        } catch (e) {}
+
+        notify(data.message || 'تم تسجيل الدخول بنجاح', 'success', false);
         
         // Navigate based on role
         if (data.user.role === 'Admin') navigate('/admin/control');
@@ -90,6 +106,15 @@ export const LoginGate = () => {
     if (realTeam) {
       if (realTeam.password === password || password === '••••••••' || !realTeam.password) {
         setUser({ ...realTeam, role: 'team' });
+
+        // Play custom login sound
+        try {
+          const loginAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+          loginAudio.volume = 0.6;
+          loginAudio.play().catch(e => console.log('Audio autoplay blocked', e));
+        } catch (e) {}
+
+        notify('تم تسجيل الدخول بنجاح', 'success', false);
         navigate('/dashboard/team');
         return;
       } else {
@@ -108,6 +133,15 @@ export const LoginGate = () => {
     if (realDir) {
       if (realDir.password === password || password === '••••••••' || !realDir.password) {
         setUser({ ...realDir });
+
+        // Play custom login sound
+        try {
+          const loginAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+          loginAudio.volume = 0.6;
+          loginAudio.play().catch(e => console.log('Audio autoplay blocked', e));
+        } catch (e) {}
+
+        notify('تم تسجيل الدخول بنجاح', 'success', false);
         navigate('/dashboard/director');
         return;
       } else {
@@ -125,6 +159,15 @@ export const LoginGate = () => {
     if (realTracker) {
       if (realTracker.password === password) {
         setUser({ ...realTracker, role: 'tracker' });
+
+        // Play custom login sound
+        try {
+          const loginAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+          loginAudio.volume = 0.6;
+          loginAudio.play().catch(e => console.log('Audio autoplay blocked', e));
+        } catch (e) {}
+
+        notify('تم تسجيل الدخول بنجاح', 'success', false);
         navigate('/dashboard/tracker');
         return;
       } else {
@@ -140,8 +183,17 @@ export const LoginGate = () => {
       a.username?.toLowerCase() === input
     );
     if (realAccountant) {
-      if (realAccountant.password === password) {
+      if (realAccountant.password === password || password === '••••••••' || !realAccountant.password) {
         setUser({ ...realAccountant, role: 'accountant' });
+
+        // Play custom login sound
+        try {
+          const loginAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+          loginAudio.volume = 0.6;
+          loginAudio.play().catch(e => console.log('Audio autoplay blocked', e));
+        } catch (e) {}
+
+        notify('تم تسجيل الدخول بنجاح', 'success', false);
         navigate('/dashboard/accountant');
         return;
       } else {
@@ -159,6 +211,15 @@ export const LoginGate = () => {
     if (realLab) {
       if (realLab.password === password || password === '123') { // Fallback password for mock
         setUser({ ...realLab, role: 'lab' });
+
+        // Play custom login sound
+        try {
+          const loginAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3');
+          loginAudio.volume = 0.6;
+          loginAudio.play().catch(e => console.log('Audio autoplay blocked', e));
+        } catch (e) {}
+
+        notify('تم تسجيل الدخول بنجاح', 'success', false);
         navigate('/dashboard/lab');
         return;
       } else {
@@ -170,19 +231,31 @@ export const LoginGate = () => {
     // Fallback logic
     if (input === 'director@ninveh.health.gov.iq' || input === 'director' || input.includes('مدير')) {
       setUser({ role: 'director', name: 'د. عماد محمد عبد الله', email: 'director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, notify_closures: false, notify_inspections: false, notify_directives: true } });
-      notify('تم تسجيل الدخول كمدير عام لصحة نينوى', 'success', true);
+      
+      try { const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'); audio.volume = 0.6; audio.play().catch(e => {}); } catch (e) {}
+      
+      notify('تم تسجيل الدخول كمدير عام لصحة نينوى', 'success', false);
       navigate('/dashboard/director');
     } else if (input === 'central_director@ninveh.health.gov.iq' || input === 'central_director' || input.includes('مركزية')) {
       setUser({ role: 'central_director', name: 'دكتورة ابتهال غازي', email: 'central_director@ninveh.health.gov.iq', sector: 'الكل', permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, manageEstablishments: true, showPublicEvalsPage: true, notify_closures: true, notify_inspections: true, notify_directives: true } });
-      notify('تم تسجيل الدخول كمدير شعبة الرقابة المركزية', 'success', true);
+      
+      try { const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'); audio.volume = 0.6; audio.play().catch(e => {}); } catch (e) {}
+
+      notify('تم تسجيل الدخول كمدير شعبة الرقابة المركزية', 'success', false);
       navigate('/dashboard/director');
     } else if (input.includes('team') || input === 'team' || input.includes('فريق') || input.includes('لجنة')) {
       setUser({ role: 'team', name: 'اللجنة الرقابية الأولى - مركز المحافظة - الجانب الأيسر', sector: 'مركز المحافظة - الجانب الأيسر', email: 'team@ninveh.health.gov.iq', permissions: { ...DEFAULT_PERMISSIONS } });
-      notify('تم تسجيل الدخول بنجاح', 'success', true);
+      
+      try { const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'); audio.volume = 0.6; audio.play().catch(e => {}); } catch (e) {}
+
+      notify('تم تسجيل الدخول بنجاح', 'success', false);
       navigate('/dashboard/team');
     } else if (input === 'lab') {
       setUser({ role: 'lab', name: 'المختبر المركزي العام', email: 'lab@ninveh.health.gov.iq', permissions: { ...DEFAULT_PERMISSIONS, showLabPage: true } });
-      notify('تم تسجيل الدخول بنجاح', 'success', true);
+      
+      try { const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'); audio.volume = 0.6; audio.play().catch(e => {}); } catch (e) {}
+
+      notify('تم تسجيل الدخول بنجاح', 'success', false);
       navigate('/dashboard/lab');
     } else {
       setErrorMessage('لم يتم العثور على حساب بهذا الاسم. يرجى التأكد من اسم المستخدم أو البريد الإلكتروني.');

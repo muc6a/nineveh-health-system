@@ -1022,7 +1022,7 @@ export const SuperAdminPanel = () => {
                           <td className="p-4 text-slate-500">{t.phone}</td>
                           <td className="p-4">
                             {t.active ? (
-                              <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط وصالح</span>
+                              <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط</span>
                             ) : (
                               <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-600 text-[10px]">مجمد مؤقتاً</span>
                             )}
@@ -1129,7 +1129,7 @@ export const SuperAdminPanel = () => {
                           <td className="p-4 text-slate-500">{d.phone}</td>
                           <td className="p-4">
                             {d.active ? (
-                              <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط وصالح</span>
+                              <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط</span>
                             ) : (
                               <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-600 text-[10px]">مجمد مؤقتاً</span>
                             )}
