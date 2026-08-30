@@ -742,6 +742,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('dispatches', setDispatches, dispatches);
       setupFirebaseSync('fines', setFines, fines);
       setupFirebaseSync('nineveh_accountants', setAccountants, accountants);
+      setupFirebaseSync('nineveh_labs', setLabs, labs);
       setupFirebaseSync('nineveh_fines_booklet', setFinesBooklet, finesBooklet);
       setupFirebaseSync('nineveh_fine_transactions', setFineTransactions, fineTransactions);
     } catch (err) {
@@ -1023,6 +1024,7 @@ export const AppProvider = ({ children }) => {
 
   // Use refs to prevent initial mount sync from overwriting cloud data
   const isMountedAcc = React.useRef(false);
+  const isMountedLabs = React.useRef(false);
   const isMountedFinesBooklet = React.useRef(false);
   const isMountedFineTrans = React.useRef(false);
   const isMountedEst = React.useRef(false);
@@ -1315,6 +1317,7 @@ export const AppProvider = ({ children }) => {
 
   // Persist new states to Firebase Cloud
   useEffect(() => { if (isMountedAcc.current) syncToCloud('nineveh_accountants', accountants); else isMountedAcc.current = true; }, [accountants]);
+  useEffect(() => { if (isMountedLabs.current) syncToCloud('nineveh_labs', labs); else isMountedLabs.current = true; }, [labs]);
   useEffect(() => { if (isMountedFinesBooklet.current) syncToCloud('nineveh_fines_booklet', finesBooklet); else isMountedFinesBooklet.current = true; }, [finesBooklet]);
   useEffect(() => { if (isMountedFineTrans.current) syncToCloud('nineveh_fine_transactions', fineTransactions); else isMountedFineTrans.current = true; }, [fineTransactions]);
 
