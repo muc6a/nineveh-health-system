@@ -117,6 +117,10 @@ export const SuperAdminPanel = () => {
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [activePermissionsTab, setActivePermissionsTab] = useState('establishments');
   const [selectedPermissionsAccount, setSelectedPermissionsAccount] = useState(null);
+  const totalPerms = Object.keys(DEFAULT_PERMISSIONS || {}).length;
+  const grantedPerms = selectedPermissionsAccount?.permissions ? Object.keys(DEFAULT_PERMISSIONS || {}).filter(k => selectedPermissionsAccount.permissions?.[k]).length : 0;
+  const progressPercentage = totalPerms ? Math.round((grantedPerms / totalPerms) * 100) : 0;
+
   
   // Establishments management states
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
@@ -833,11 +837,11 @@ export const SuperAdminPanel = () => {
       </header>
 
       {/* Tabs navigation */}
-      <div className="max-w-7xl mx-auto flex overflow-x-auto hide-scrollbar gap-2 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-2 whitespace-nowrap">
+      <div className="max-w-7xl mx-auto flex flex-wrap gap-2 md:gap-3 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2">
         {(user?.role === 'admin' || user?.role === 'central_director') && (
           <button
             onClick={() => setActiveTab('roster')}
-            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'roster'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -851,7 +855,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('general_settings')}
-            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'general_settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -865,7 +869,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('permissions')}
-            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'permissions'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -879,7 +883,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('activities_fines')}
-            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'activities_fines'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -893,7 +897,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -906,7 +910,7 @@ export const SuperAdminPanel = () => {
 
         <button
           onClick={() => setActiveTab('establishments')}
-          className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+          className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'establishments'
               ? 'bg-teal-600 text-white shadow-md'
               : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -920,7 +924,7 @@ export const SuperAdminPanel = () => {
           <>
             <button
               onClick={() => setActiveTab('audit')}
-              className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
                 activeTab === 'audit'
                   ? 'bg-teal-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -932,7 +936,7 @@ export const SuperAdminPanel = () => {
 
             <button
               onClick={() => setActiveTab('broadcast')}
-              className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-4 py-2.5 rounded-xl text-sm md:text-base font-black transition-all flex items-center gap-2 cursor-pointer ${
                 activeTab === 'broadcast'
                   ? 'bg-red-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -955,6 +959,23 @@ export const SuperAdminPanel = () => {
         )}
 
         {/* Tab 1: Roster */}
+
+        {activeTab === 'activities_fines' && (
+          <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
+            <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
+              <Gavel className="w-5 h-5 text-teal-600" />
+              <span>إدارة النشاطات والقوانين الرقابية</span>
+            </h2>
+            <div className="grid grid-cols-1 gap-8">
+              
+                <EvaluationManager />
+              
+                <FinesManager />
+            
+            
+            </div>
+          </section>
+        )}
 
         {activeTab === 'permissions' && (
           <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
@@ -1973,14 +1994,7 @@ export const SuperAdminPanel = () => {
               )}
               
 
-{subSettingsTab === "evaluations" && (
-                <EvaluationManager />
-              )}
-              {subSettingsTab === "fines_booklet" && (
-                <FinesManager />
-              )}
-            
-            </div>
+</div>
           </section>
         )}
 
