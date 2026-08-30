@@ -40,12 +40,12 @@ export const AccountantPanel = () => {
   };
 
   const getEstablishmentSector = (estId) => {
-    const est = establishments.find(e => e.id === estId);
+    const est = establishments.find(e => String(e.id).toLowerCase() === String(estId).toLowerCase());
     return est ? est.sector : '';
   };
 
   const getEstablishmentName = (estId) => {
-    const est = establishments.find(e => e.id === estId);
+    const est = establishments.find(e => String(e.id).toLowerCase() === String(estId).toLowerCase());
     return est ? est.name : 'مجهول';
   };
 
@@ -123,11 +123,11 @@ export const AccountantPanel = () => {
 
     if (fineByFineId) {
       targetFine = fineByFineId;
-      targetEst = establishments.find(e => String(e.id) === String(targetFine.establishmentId || targetFine.estId));
+      targetEst = establishments.find(e => String(e.id).toLowerCase() === String(targetFine.establishmentId || targetFine.estId).toLowerCase());
     } else if (est) {
       targetEst = est;
       // find any pending fine for this establishment
-      targetFine = pendingFines.find(f => String(f.establishmentId || f.estId) === String(est.id));
+      targetFine = pendingFines.find(f => String(f.establishmentId || f.estId).toLowerCase() === String(est.id).toLowerCase());
     }
 
     if (targetEst) {
