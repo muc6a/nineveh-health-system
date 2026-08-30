@@ -9,7 +9,7 @@ import { TeamDashboard } from './TeamDashboard';
 import { ExecutivePortal } from './ExecutivePortal';
 
 export const AccountantPanel = () => {
-  const { user, setUser, navigate, notify, penaltyRequests, setPenaltyRequests, establishments, setShowDisplayPrefsModal, uiPreferences, directives, setDirectives } = useContext(AppContext);
+  const { user, setUser, navigate, notify, penaltyRequests, setPenaltyRequests, establishments, setShowDisplayPrefsModal, uiPreferences, directives, setDirectives, dailyInventories, setDailyInventories } = useContext(AppContext);
 
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'pay_fines', 'directives', 'reconciliation', 'comprehensive_reports'
   
@@ -22,6 +22,7 @@ export const AccountantPanel = () => {
   const [receiptNumber, setReceiptNumber] = useState('');
   const [receiptType, setReceiptType] = useState('electronic');
   const [archiveSearchTerm, setArchiveSearchTerm] = useState('');
+  const [inventoryArchiveDate, setInventoryArchiveDate] = useState('');
 
   // States for Comprehensive Reports
   const [reportFilter, setReportFilter] = useState('الكل');
@@ -212,7 +213,16 @@ export const AccountantPanel = () => {
 
   const handleCloseRegister = (status) => {
     if (status === 'confirm') {
-      notify('تم تأكيد صحة الجرد وإغلاق الصندوق بنجاح', 'success');
+      const newInventory = {
+        id: `INV-${Date.now()}`,
+        date: new Date().toISOString(),
+        totalAmount: cashCollected + posCollected,
+        totalReceipts: totalReceipts,
+        accountantName: user?.name,
+        sector: targetSector
+      };
+      setDailyInventories(prev => [newInventory, ...(prev || [])]);
+      notify('تم تأكيد صحة الجرد وإغلاق الصندوق وتوثيق العملية الدائمة بنجاح', 'success');
       setActiveTab('dashboard');
     } else {
       notify('تم تسجيل وجود خطأ وتم رفع طلب مراجعة للتدقيق', 'warning');
@@ -443,9 +453,9 @@ export const AccountantPanel = () => {
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
             <NotificationBell />
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-              <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span>📅 {new Date().toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit' })}</span>
               <span className="text-slate-300">|</span>
-              <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
+              <span>⏰ {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
             </div>
             <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
               <WeatherWidget variant="full" />
@@ -747,7 +757,7 @@ export const AccountantPanel = () => {
                               {fine.paymentMethod === 'pos' ? 'POS' : 'نقدي'}
                             </span>
                           </td>
-                          <td className="p-3 text-slate-500 text-[10px]">{new Date(fine.paymentDate).toLocaleDateString('ar-IQ', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                          <td className="p-3 text-slate-500 text-[10px]">{new Date(fine.paymentDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -792,7 +802,7 @@ export const AccountantPanel = () => {
                           </h4>
                         </div>
                         <span className="text-[10px] text-slate-400 font-bold bg-white dark:bg-slate-800 px-2 py-1 rounded border border-slate-100 dark:border-slate-700 shadow-sm">
-                          {new Date(dir.date).toLocaleDateString('ar-IQ')}
+                          {new Date(dir.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </span>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-white/50 dark:border-slate-700/50">
@@ -869,6 +879,55 @@ export const AccountantPanel = () => {
                   يوجد خطأ بالمطابقة (طلب مراجعة)
                 </button>
               </div>
+            </div>
+
+            {/* Monthly Inventory Archive */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm mt-8">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                <h4 className="text-md font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <Archive className="w-5 h-5 text-indigo-500" />
+                  أرشيف الجرد الشهري (سجلات مغلقة)
+                </h4>
+                <div className="relative w-full sm:w-64">
+                  <input 
+                    type="date"
+                    value={inventoryArchiveDate}
+                    onChange={(e) => setInventoryArchiveDate(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl text-xs font-bold focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+              
+              {(!dailyInventories || dailyInventories.length === 0) ? (
+                <div className="p-8 text-center text-slate-500 text-xs font-bold bg-slate-50 dark:bg-slate-800/30 rounded-2xl">لا توجد سجلات جرد سابقة.</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-right border-collapse text-xs font-bold">
+                    <thead>
+                      <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                        <th className="p-3">التاريخ والوقت</th>
+                        <th className="p-3">المبلغ الكلي</th>
+                        <th className="p-3">عدد الوصولات</th>
+                        <th className="p-3">المحاسب المسؤول</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+                      {dailyInventories
+                        .filter(inv => !inventoryArchiveDate || inv.date.startsWith(inventoryArchiveDate))
+                        .map(inv => (
+                        <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                          <td className="p-3 text-slate-700 dark:text-slate-300" dir="ltr" style={{textAlign: 'right'}}>
+                            {new Date(inv.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}
+                          </td>
+                          <td className="p-3 text-emerald-600 font-black">{inv.totalAmount?.toLocaleString()} د.ع</td>
+                          <td className="p-3 text-slate-600 dark:text-slate-400">{inv.totalReceipts} وصل</td>
+                          <td className="p-3 text-slate-600 dark:text-slate-400">{inv.accountantName}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}

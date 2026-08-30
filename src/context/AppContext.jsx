@@ -514,6 +514,11 @@ export const AppProvider = ({ children }) => {
     ];
   });
 
+  const [dailyInventories, setDailyInventories] = useState(() => {
+    const saved = localStorage.getItem('nineveh_daily_inventories');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [fineTransactions, setFineTransactions] = useState(() => {
     const saved = localStorage.getItem('nineveh_fine_transactions');
     return saved ? JSON.parse(saved) : [];
@@ -663,6 +668,8 @@ export const AppProvider = ({ children }) => {
         setDeliveries(JSON.parse(e.newValue));
       } else if (e.key === 'dispatches' && e.newValue) {
         setDispatches(JSON.parse(e.newValue));
+      } else if (e.key === 'nineveh_daily_inventories' && e.newValue) {
+        setDailyInventories(JSON.parse(e.newValue));
       }
     };
     
@@ -745,6 +752,8 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('nineveh_labs', setLabs, labs);
       setupFirebaseSync('nineveh_fines_booklet', setFinesBooklet, finesBooklet);
       setupFirebaseSync('nineveh_fine_transactions', setFineTransactions, fineTransactions);
+      setupFirebaseSync('nineveh_daily_inventories', setDailyInventories, dailyInventories);
+
     } catch (err) {
       console.error("Firebase load error", err);
     }
@@ -1320,6 +1329,8 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedLabs.current) syncToCloud('nineveh_labs', labs); else isMountedLabs.current = true; }, [labs]);
   useEffect(() => { if (isMountedFinesBooklet.current) syncToCloud('nineveh_fines_booklet', finesBooklet); else isMountedFinesBooklet.current = true; }, [finesBooklet]);
   useEffect(() => { if (isMountedFineTrans.current) syncToCloud('nineveh_fine_transactions', fineTransactions); else isMountedFineTrans.current = true; }, [fineTransactions]);
+  const isMountedInv = useRef(false);
+  useEffect(() => { if (isMountedInv.current) syncToCloud('nineveh_daily_inventories', dailyInventories); else isMountedInv.current = true; }, [dailyInventories]);
 
   return (
     <AppContext.Provider value={{
@@ -1395,7 +1406,8 @@ export const AppProvider = ({ children }) => {
       setLabs,
       labRequests,
       setLabRequests,
-      finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions}}>
+      finesBooklet, setFinesBooklet,
+      dailyInventories, setDailyInventories, fineTransactions, setFineTransactions}}>
       {children}
     </AppContext.Provider>
   );
