@@ -469,20 +469,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         {/* User context footer */}
         <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
           <div className="flex flex-col gap-2 mb-4">
-             {hasPerm('canSendSOS') && (
-               <button 
-                  onClick={() => {
-                    if (triggerSOSAlert) {
-                      triggerSOSAlert(user, 'الموقع الحالي للفريق غير مسجل بعد');
-                    }
-                    notify('تم إرسال نداء استغاثة (SOS) وموقعك الحالي لغرفة العمليات المركزية!', 'error', true);
-                  }}
-                  className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-               >
-                <Siren className="w-4 h-4 animate-pulse" />
-                <span>إرسال استغاثة (SOS)</span>
-               </button>
-             )}
+
           </div>
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col text-right">

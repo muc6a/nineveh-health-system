@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { MessageCircle, X, Send, ChevronDown, Check, CheckCheck } from 'lucide-react';
 
 export const LiveSupportWidget = () => {
-  const { user, addChatMessage, chatMessages, markChatRead, accountants, teams } = useContext(AppContext);
+  const { user, addChatMessage, chatMessages, markChatRead, accountants, teams, labs } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const prevMessagesCountRef = useRef(0);
@@ -39,6 +39,16 @@ export const LiveSupportWidget = () => {
     });
   });
 
+  // 4. Labs
+  (labs || []).forEach(l => {
+    if (l.id === user?.id) return;
+    roles.push({
+      id: l.id,
+      label: `المختبر المركزي: ${l.name}`,
+      sector: 'all'
+    });
+  });
+
   const currentRoleObj = roles.find(r => r.id === targetRole);
   const currentRoleLabel = currentRoleObj?.label || (roles.length > 0 ? roles[0].label : 'غير محدد');
 
@@ -49,23 +59,31 @@ export const LiveSupportWidget = () => {
   }, [roles, targetRole]);
 
   // Filter messages relevant to the current user
-  const relevantMessages = (chatMessages || []).filter(msg => {
-    // 1. I am the sender
+  const visibleMessages = (chatMessages || []).filter(msg => {
     if (msg.senderId === user?.id) return true;
-    
-    // 2. I am specifically targeted by ID
     if (msg.targetRole === user?.id) return true;
-
-    // 3. I am targeted by role (legacy fallback)
     const isTargetRole = msg.targetRole === user?.role;
     const isTargetSector = msg.targetSector === 'all' || msg.targetSector === user?.sector || !msg.targetSector;
     if (isTargetRole && isTargetSector) return true;
-
-    // 4. Central operations can see all messages targeting 'operations'
     if (msg.targetRole === 'operations' && (user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director')) return true;
-
     return false;
   }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  // Isolate conversation to prevent crosstalk
+  const relevantMessages = visibleMessages.filter(msg => {
+    const isOperations = user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director';
+    if (isOperations) {
+      if (msg.senderId === targetRole || msg.targetRole === targetRole) return true;
+      if (msg.targetRole === 'operations' && msg.senderId === targetRole) return true;
+      if (msg.senderRole === 'operations' && msg.targetRole === targetRole) return true;
+      return false;
+    }
+    return true; // Non-operations users only see their own isolated chat with operations anyway
+  });
+
+  // Unread badge calculation for operations should reflect ALL chats, not just the active one
+  const totalUnreadMessages = visibleMessages.filter(m => m.senderId !== user?.id && !m.isRead);
+  const totalUnreadCount = totalUnreadMessages.length;
 
   // Sound effect logic
   useEffect(() => {
@@ -203,9 +221,9 @@ export const LiveSupportWidget = () => {
         {isOpen ? <X className="w-6 h-6" /> : (
           <>
             <MessageCircle className="w-7 h-7" />
-            {unreadCount > 0 && (
+            {totalUnreadCount > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 animate-pulse">
-                {unreadCount > 9 ? '+9' : unreadCount}
+                {totalUnreadCount > 9 ? '+9' : totalUnreadCount}
               </span>
             )}
           </>

@@ -53,9 +53,7 @@ export const AccountantPanel = () => {
   
   // Fines for current sector
   const sectorFines = allFines.filter(f => {
-    if (targetSector === 'الكل') return true;
-    const estSector = getEstablishmentSector(f.establishmentId);
-    return estSector === targetSector || estSector.includes(targetSector);
+    const estSector = getEstablishmentSector(f.establishmentId || f.estId);
   });
 
   const pendingFines = sectorFines.filter(f => f.paymentStatus !== 'paid');
@@ -96,7 +94,7 @@ export const AccountantPanel = () => {
   const comprehensiveFilteredFines = useMemo(() => {
     return allFines.filter(f => {
       if (reportFilter === 'الكل') return true;
-      const estSector = getEstablishmentSector(f.establishmentId);
+      const estSector = getEstablishmentSector(f.establishmentId || f.estId);
       return estSector.includes(reportFilter);
     });
   }, [allFines, reportFilter]);
@@ -116,11 +114,11 @@ export const AccountantPanel = () => {
     const est = establishments.find(e => e.id.toLowerCase() === searchCode.toLowerCase() || e.name.includes(searchCode));
     
     // 2. Search for fine
-    const foundFines = pendingFines.filter(f => f.establishmentId.toLowerCase() === searchCode.toLowerCase() || f.id.toLowerCase() === searchCode.toLowerCase());
+    const foundFines = pendingFines.filter(f => (f.establishmentId || f.estId || '').toLowerCase() === searchCode.toLowerCase() || f.id.toLowerCase() === searchCode.toLowerCase());
     
     if (est || foundFines.length > 0) {
       if (est) setSearchedEstablishment(est);
-      else setSearchedEstablishment(establishments.find(e => e.id === foundFines[0].establishmentId) || null);
+      else setSearchedEstablishment(establishments.find(e => e.id === (foundFines[0].establishmentId || foundFines[0].estId)) || null);
       
       if (foundFines.length > 0) {
         setSearchedFine(foundFines[0]);
@@ -466,7 +464,7 @@ export const AccountantPanel = () => {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                       {pendingFines.slice(0, 5).map(fine => (
                         <tr key={fine.id}>
-                          <td className="p-3 text-slate-700 dark:text-slate-300">{getEstablishmentName(fine.establishmentId)}</td>
+                        <td className="p-3 text-slate-700 dark:text-slate-300">{getEstablishmentName(fine.establishmentId || fine.estId)}</td>
                           <td className="p-3 text-slate-500">{fine.reason}</td>
                           <td className="p-3 text-red-600 font-black">{fine.amount?.toLocaleString()}</td>
                           <td className="p-3 text-slate-500 text-[10px]">{new Date(fine.date).toLocaleDateString('en-GB')}</td>
@@ -636,7 +634,7 @@ export const AccountantPanel = () => {
                       {paidFines.slice(0, 10).map(fine => (
                         <tr key={fine.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
                           <td className="p-3 text-slate-700 dark:text-slate-300">{fine.receiptNumber || 'بدون'}</td>
-                          <td className="p-3 text-slate-700 dark:text-slate-300">{getEstablishmentName(fine.establishmentId)}</td>
+                        <td className="p-3 text-slate-700 dark:text-slate-300">{getEstablishmentName(fine.establishmentId || fine.estId)}</td>
                           <td className="p-3 text-emerald-600 font-black">{fine.amount?.toLocaleString()}</td>
                           <td className="p-3">
                             <span className={`px-2 py-1 text-[10px] rounded-lg ${fine.paymentMethod === 'pos' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400'}`}>
@@ -837,8 +835,8 @@ export const AccountantPanel = () => {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                     {comprehensiveFilteredFines.filter(f => f.paymentStatus === 'paid').slice(0, 50).map(fine => (
                       <tr key={fine.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20">
-                        <td className="p-4 text-slate-800 dark:text-slate-200">{getEstablishmentName(fine.establishmentId)}</td>
-                        <td className="p-4 text-teal-600 dark:text-teal-400">{getEstablishmentSector(fine.establishmentId)}</td>
+                        <td className="p-4 text-slate-800 dark:text-slate-200">{getEstablishmentName(fine.establishmentId || fine.estId)}</td>
+                        <td className="p-4 text-teal-600 dark:text-teal-400">{getEstablishmentSector(fine.establishmentId || fine.estId)}</td>
                         <td className="p-4 text-emerald-600 font-black">{fine.amount?.toLocaleString()}</td>
                         <td className="p-4 text-slate-500">{fine.paymentMethod === 'pos' ? 'POS' : 'نقدي'}</td>
                         <td className="p-4 text-slate-500 dir-ltr text-right">{new Date(fine.paymentDate).toLocaleDateString('en-GB')}</td>

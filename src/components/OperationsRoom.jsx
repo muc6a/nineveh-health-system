@@ -154,20 +154,6 @@ export default function OperationsRoom() {
         <button onClick={() => setActiveTab('penalties')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
           <AlertCircle className="w-4 h-4" />المصادقة على العقوبات
         </button>
-        <button onClick={() => setActiveTab('financials')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'financials' ? 'border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <Database className="w-4 h-4" />التقارير المالية للغرامات
-        </button>
-        <button onClick={() => setActiveTab('live_operations')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'live_operations' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <Target className="w-4 h-4" />التتبع والعمليات الحية
-        </button>
-        <button onClick={() => setActiveTab('live_chat')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 relative ${activeTab === 'live_chat' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <MessageCircle className="w-4 h-4" />الدعم المباشر والنداءات
-          {totalOpsUnread > 0 && <span className="absolute -top-1 -left-2 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">{totalOpsUnread}</span>}
-        </button>
-        <button onClick={() => setActiveTab('lab_results')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 relative ${activeTab === 'lab_results' ? 'border-b-2 border-fuchsia-600 text-fuchsia-600 dark:text-fuchsia-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <FlaskConical className="w-4 h-4" />قرارات المختبر
-          {labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').length > 0 && <span className="absolute -top-1 -left-2 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">{labRequests.filter(r => r.status === 'finished' && r.result === 'contaminated').length}</span>}
-        </button>
       </div>
 
       {activeTab === 'teams_management' && (
@@ -212,24 +198,66 @@ export default function OperationsRoom() {
       )}
 
       {activeTab === 'penalties' && (
-        <div className="glassmorphic-card p-6 border border-red-500/20">
-          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
-          <p className="text-[10px] text-slate-500 mb-6">طلبات الإغلاق المعلقة من الفرق الميدانية والتي تنتظر مصادقتك لتنفيذها قانونياً.</p>
-          <div className="space-y-4">
-            {penaltyRequests.filter(req => req.status === 'pending').map(req => (
-              <div key={req.id} className={`p-4 rounded-xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${req.type === 'fine' ? 'border-orange-500/30 bg-orange-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
-                <div>
-                  <h4 className={`text-xs font-black ${req.type === 'fine' ? 'text-orange-600 dark:text-orange-400' : 'text-red-600 dark:text-red-400'}`}>
-                    {req.type === 'fine' ? 'طلب غرامة مالية: ' : 'طلب تشميع: '} {req.estName}
-                  </h4>
-                  <p className="text-[10px] text-slate-500 mt-1">السبب: {req.reason}</p>
+        <div className="space-y-6">
+          <div className="glassmorphic-card p-6 border border-red-500/20">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
+            <p className="text-[10px] text-slate-500 mb-6">طلبات الإغلاق المعلقة من الفرق الميدانية والتي تنتظر مصادقتك لتنفيذها قانونياً.</p>
+            <div className="space-y-4">
+              {penaltyRequests.filter(req => req.status === 'pending').map(req => (
+                <div key={req.id} className={`p-4 rounded-xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${req.type === 'fine' ? 'border-orange-500/30 bg-orange-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
+                  <div>
+                    <h4 className={`text-xs font-black ${req.type === 'fine' ? 'text-orange-600 dark:text-orange-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {req.type === 'fine' ? 'طلب غرامة مالية: ' : 'طلب تشميع: '} {req.estName}
+                    </h4>
+                    <p className="text-[10px] text-slate-500 mt-1">السبب: {req.reason}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'approved' } : r)); triggerAlert('تمت المصادقة'); }} className="px-3 py-2 rounded-lg text-white font-bold text-xs bg-emerald-600">صادق</button>
+                    <button onClick={() => { setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'rejected' } : r)); triggerAlert('تم الرفض'); }} className="px-3 py-2 rounded-lg border border-slate-300 text-slate-600 font-bold text-xs">رفض</button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => { setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'approved' } : r)); triggerAlert('تمت المصادقة'); }} className="px-3 py-2 rounded-lg text-white font-bold text-xs bg-emerald-600">صادق</button>
-                  <button onClick={() => { setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'rejected' } : r)); triggerAlert('تم الرفض'); }} className="px-3 py-2 rounded-lg border border-slate-300 text-slate-600 font-bold text-xs">رفض</button>
+              ))}
+              {penaltyRequests.filter(req => req.status === 'pending').length === 0 && (
+                <p className="text-center text-xs text-slate-500 py-4">لا توجد طلبات معلقة حالياً.</p>
+              )}
+            </div>
+          </div>
+          
+          {/* Penalty Archive */}
+          <div className="glassmorphic-card p-6 border border-slate-500/20">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">أرشيف القرارات (آخر 30 يوماً)</h3>
+            <p className="text-[10px] text-slate-500 mb-6">يمكنك مراجعة القرارات المصادق عليها حديثاً والتراجع عنها أو تعديلها في حال وجود خطأ.</p>
+            <div className="space-y-4">
+              {penaltyRequests.filter(req => req.status === 'approved' || req.status === 'rejected').slice(-15).reverse().map(req => (
+                <div key={req.id} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <h4 className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      {req.type === 'fine' ? 'غرامة مالية: ' : 'إغلاق وتشميع: '} {req.estName}
+                    </h4>
+                    <p className="text-[10px] text-slate-500 mt-1">السبب: {req.reason}</p>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full inline-block mt-2 ${req.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                      {req.status === 'approved' ? 'تمت المصادقة' : 'تم الرفض'}
+                    </span>
+                  </div>
+                  <div>
+                    <button 
+                      onClick={() => {
+                        if(window.confirm('هل أنت متأكد من سحب هذا القرار وإعادته للمراجعة والتعديل؟')) {
+                          setPenaltyRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'pending' } : r));
+                          triggerAlert('تم سحب القرار بنجاح وهو الآن قيد المراجعة.');
+                        }
+                      }}
+                      className="px-3 py-2 rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 font-bold text-xs transition-colors flex items-center gap-2"
+                    >
+                      <Edit className="w-3.5 h-3.5" /> تراجع / تعديل القرار
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+              {penaltyRequests.filter(req => req.status === 'approved' || req.status === 'rejected').length === 0 && (
+                <p className="text-center text-xs text-slate-500 py-4">لا توجد قرارات مؤرشفة حالياً.</p>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -263,351 +291,7 @@ export default function OperationsRoom() {
         </div>
       )}
 
-      {activeTab === 'financials' && (
-        <div className="glassmorphic-card p-0 border border-emerald-500/20 overflow-hidden">
-          <FinancialReports />
-        </div>
-      )}
 
-      {activeTab === 'live_operations' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="glassmorphic-card p-4 border border-red-500/20 max-h-80 overflow-y-auto">
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-red-500" />
-                سجل الطوارئ (SOS)
-              </h3>
-              {sosAlerts && sosAlerts.length > 0 ? (
-                sosAlerts.map(alert => (
-                  <div key={alert.id} className="mb-3 p-3 rounded-xl border border-red-500/30 bg-red-50 dark:bg-red-900/10 relative">
-                    <div className="absolute top-0 right-0 w-1 h-full bg-red-600 rounded-r-xl"></div>
-                    <div className="flex justify-between items-start mb-2 mr-2">
-                      <div>
-                        <h4 className="font-black text-xs text-red-700 dark:text-red-400">🚨 {alert.teamName}</h4>
-                        <p className="text-[10px] text-slate-600">القطاع: {alert.sector}</p>
-                      </div>
-                      {alert.status === 'active' ? (
-                        <span className="bg-red-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold animate-pulse">عاجل</span>
-                      ) : (
-                        <span className="bg-emerald-100 text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مستجاب</span>
-                      )}
-                    </div>
-                    {alert.status === 'active' && (
-                      <button 
-                        onClick={() => {
-                          setSosAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, status: 'resolved' } : a));
-                          triggerAlert('تم الاستجابة لنداء الاستغاثة.');
-                        }}
-                        className="mr-2 mt-2 w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold"
-                      >
-                        ✅ تأكيد الاستجابة
-                      </button>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-xs text-slate-500 py-4">لا توجد استغاثات حالياً.</p>
-              )}
-            </div>
-
-            {/* Closure Verifications */}
-            <div className="glassmorphic-card p-4 border border-indigo-500/20 max-h-80 overflow-y-auto">
-              <div className="flex justify-between items-center mb-4 border-b border-indigo-500/10 pb-2">
-                <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
-                  <Camera className="w-4 h-4 text-indigo-500" />
-                  أدلة الإغلاق {showClosureArchive ? 'المؤرشفة' : 'الواردة'}
-                </h3>
-                <button
-                  onClick={() => setShowClosureArchive(!showClosureArchive)}
-                  className={`text-[10px] font-bold px-3 py-1 rounded-full transition-all ${
-                    showClosureArchive 
-                      ? 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                      : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-                  }`}
-                >
-                  {showClosureArchive ? 'عرض الوارد الجديد' : 'عرض الأرشيف المغلق'}
-                </button>
-              </div>
-              {(() => {
-                const activeVerifications = closureVerifications?.filter(v => v.status === 'pending') || [];
-                const archivedVerifications = closureVerifications?.filter(v => v.status !== 'pending') || [];
-                const displayVerifications = showClosureArchive ? archivedVerifications : activeVerifications;
-                
-                return displayVerifications.length > 0 ? (
-                  displayVerifications.map(ver => (
-                  <div key={ver.id} className="mb-3 p-3 rounded-xl border border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-900/10 relative">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h4 className="font-bold text-xs text-indigo-700 dark:text-indigo-400">
-                          {ver.type === 'reopening' ? '🔓 طلب فتح:' : '🔒 إغلاق:'} {ver.estName}
-                        </h4>
-                        <p className="text-[10px] text-slate-500">{ver.trackerName}</p>
-                      </div>
-                      {ver.status === 'pending' ? (
-                        <span className="bg-amber-100 text-amber-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مراجعة</span>
-                      ) : ver.status === 'approved' ? (
-                        <span className="bg-emerald-100 text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مُصادق</span>
-                      ) : (
-                        <span className="bg-rose-100 text-rose-700 text-[9px] px-2 py-0.5 rounded-full font-bold">مرفوض</span>
-                      )}
-                    </div>
-                    {ver.photo && (
-                      <div className="mt-2 mb-2 bg-slate-900 rounded-lg overflow-hidden flex justify-center items-center h-20">
-                        <img src={ver.photo} alt="دليل" className="max-h-full object-contain" />
-                      </div>
-                    )}
-                    {ver.status === 'pending' && (
-                      <div className="flex gap-1 mt-2">
-                        <button onClick={() => handleApproveClosure(ver)} className="flex-1 bg-emerald-600 text-white rounded py-1 text-[10px] font-bold">قبول</button>
-                        <button onClick={() => handleRejectClosure(ver.id)} className="flex-1 bg-rose-600 text-white rounded py-1 text-[10px] font-bold">رفض</button>
-                      </div>
-                    )}
-                  </div>
-                ))
-                ) : (
-                  <p className="text-center text-xs text-slate-500 py-4">لا توجد أدلة إغلاق {showClosureArchive ? 'مؤرشفة' : 'معلقة'}.</p>
-                );
-              })()}
-            </div>
-          </div>
-
-          {/* Bottom Section: Teams Live Tracking & Dispatch */}
-          <div className="glassmorphic-card p-6 border border-blue-500/20">
-            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
-              <Target className="w-5 h-5 text-blue-500" />
-              الفرق الميدانية والتوجيه السريع
-            </h3>
-            
-            <div className="overflow-x-auto mt-4">
-              <table className="w-full text-right border-collapse text-xs font-bold">
-                <thead>
-                  <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                    <th className="p-3">الفريق / القطاع</th>
-                    <th className="p-3">آخر تواجد مسجل</th>
-                    <th className="p-3">المنشأة المستهدفة للتوجيه</th>
-                    <th className="p-3 text-center">إجراء التوجيه</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
-                  {teams.map(t => {
-                    const teamInspections = establishments
-                      .filter(e => e.lastInspection !== 'لم يزر بعد' && e.lastInspectorId === t.id)
-                      .sort((a, b) => new Date(b.lastInspectionDate || 0) - new Date(a.lastInspectionDate || 0));
-                    const lastEst = teamInspections[0];
-                    
-                    return (
-                      <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
-                        <td className="p-3">
-                          <span className="text-slate-800 dark:text-slate-200 block">{t.name}</span>
-                          <span className="text-[10px] text-teal-600">{t.sector}</span>
-                        </td>
-                        <td className="p-3 text-slate-500">
-                          <span className="block text-slate-700 dark:text-slate-300">
-                            {lastEst ? `${lastEst.name}` : 'غير متوفر'}
-                          </span>
-                          <span className="text-[10px]">
-                            {lastEst ? new Date(lastEst.lastInspectionDate).toLocaleString('ar-IQ') : 'لا يوجد نشاط'}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <select 
-                            onChange={(e) => setSelectedEstId(e.target.value)}
-                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
-                          >
-                            <option value="">-- اختر المطعم --</option>
-                            {establishments.filter(e => e.sector === t.sector).map(est => (
-                              <option key={est.id} value={est.id}>{est.name}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="p-3 text-center">
-                          <button
-                            onClick={() => {
-                              setSelectedTeamId(t.id);
-                              // We wait a tick to ensure selectedTeamId is set before dispatching.
-                              setTimeout(handleDispatch, 0);
-                            }}
-                            className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
-                          >
-                            🚀 إرسال التوجيه
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'live_chat' && (
-        <div className="glassmorphic-card p-6 border border-teal-500/20 flex flex-col h-[600px]">
-          <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-teal-500" />
-            مركز اتصالات الدعم المباشر
-          </h3>
-          <p className="text-[10px] text-slate-500 mb-4">التواصل الفوري مع الفرق الميدانية والمحاسبين في كافة القطاعات.</p>
-          
-          <div className="flex flex-1 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-            {/* Chat List */}
-            <div className="w-1/3 border-l border-slate-200 dark:border-slate-800 overflow-y-auto">
-              {(() => {
-                // Group messages by sender to form conversations
-                const conversations = {};
-                (chatMessages || []).forEach(msg => {
-                  if (msg.targetRole === 'operations' || msg.senderRole === 'operations' || user?.role === 'admin') {
-                    const key = msg.senderId === user?.id ? msg.targetSector + '_' + msg.targetRole : msg.senderId;
-                    const contactName = msg.senderId === user?.id ? (msg.targetRole === 'team' ? 'فريق ' : 'محاسب ') + (msg.targetSector || '') : msg.senderName;
-                    
-                    if (!conversations[key]) conversations[key] = { id: key, targetRole: msg.senderId === user?.id ? msg.targetRole : msg.senderRole, targetSector: msg.senderId === user?.id ? msg.targetSector : msg.senderSector, contactName, msgs: [], unread: 0 };
-                    conversations[key].msgs.push(msg);
-                    if (msg.senderId !== user?.id && !msg.isRead) conversations[key].unread++;
-                  }
-                });
-                
-                return Object.values(conversations).map(conv => (
-                  <div 
-                    key={conv.id} 
-                    onClick={() => setActiveChatTarget(conv)}
-                    className={`p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors flex justify-between items-center ${activeChatTarget?.id === conv.id ? 'bg-teal-50 dark:bg-teal-900/20' : 'hover:bg-white dark:hover:bg-slate-800'}`}
-                  >
-                    <div>
-                      <h4 className="font-bold text-xs text-slate-800 dark:text-white">{conv.contactName}</h4>
-                      <p className="text-[10px] text-teal-600">{conv.targetRole === 'team' ? 'فريق ميداني' : 'محاسب'} - {conv.targetSector || 'عام'}</p>
-                    </div>
-                    {conv.unread > 0 && (
-                      <span className="w-5 h-5 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-sm">
-                        {conv.unread}
-                      </span>
-                    )}
-                  </div>
-                ));
-              })()}
-            </div>
-            
-            {/* Active Chat */}
-            <div className="flex-1 flex flex-col bg-white dark:bg-slate-950">
-              {activeChatTarget ? (
-                <>
-                  <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-between items-center">
-                    <div>
-                      <h4 className="font-bold text-sm text-slate-800 dark:text-white">{activeChatTarget.contactName}</h4>
-                      <p className="text-[10px] text-teal-600">{activeChatTarget.targetSector}</p>
-                    </div>
-                  </div>
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")', backgroundSize: 'contain', backgroundBlendMode: 'multiply'}}>
-                    {activeChatTarget.msgs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).map(msg => (
-                      <div key={msg.id} className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm ${msg.senderId === user?.id ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
-                          <p className="text-sm font-bold text-right">{msg.text}</p>
-                          <span className={`text-[10px] block mt-1 text-left flex items-center justify-end gap-1 ${msg.senderId === user?.id ? 'text-teal-200' : 'text-slate-400'}`}>
-                            {new Date(msg.timestamp).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}
-                            {msg.senderId === user?.id && (
-                              msg.isRead ? <CheckCheck className="w-3 h-3 text-blue-300" /> : <Check className="w-3 h-3 text-teal-200 opacity-70" />
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex gap-2">
-                    <button 
-                      onClick={() => {
-                        if(chatReplyText.trim()) {
-                          addChatMessage(activeChatTarget.targetRole, activeChatTarget.targetSector, chatReplyText, user?.name || 'غرفة العمليات', 'operations', 'all', user?.id);
-                          setChatReplyText('');
-                        }
-                      }}
-                      className="w-12 h-12 rounded-xl bg-teal-600 text-white flex items-center justify-center hover:bg-teal-700 transition-colors"
-                    >
-                      <Send className="w-5 h-5 rtl:-scale-x-100" />
-                    </button>
-                    <textarea 
-                      value={chatReplyText}
-                      onChange={e => setChatReplyText(e.target.value)}
-                      placeholder="اكتب ردك هنا..."
-                      className="flex-1 bg-white dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm font-bold resize-none outline-none focus:ring-2 focus:ring-teal-500/30"
-                      rows="2"
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-slate-400 text-sm font-bold">
-                  اختر محادثة لعرضها والرد عليها
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'lab_results' && (
-        <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <div>
-              <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
-                <FlaskConical className="w-6 h-6 text-fuchsia-600" />
-                نتائج المختبر المركزي (تحتاج قرار)
-              </h3>
-              <p className="text-xs font-bold text-slate-500 mt-1">النتائج المختبرية التي تثبت تلوث العينات وتستوجب اتخاذ قرار الغرامة أو الإغلاق</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            {labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').length === 0 ? (
-              <div className="text-center p-12 text-slate-400 font-bold bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5">
-                لا توجد عينات ملوثة حالياً تحتاج لقرار.
-              </div>
-            ) : (
-              labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').map(req => (
-                <div key={req.id} className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/50 rounded-2xl">
-                  <div className="flex flex-col md:flex-row justify-between gap-4">
-                    <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center shrink-0">
-                        <ShieldAlert className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h4 className="font-black text-slate-800 dark:text-white mb-1">المنشأة: {req.estName}</h4>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">الفريق المرسل: {req.teamName}</p>
-                        <p className="text-[10px] text-slate-500 mt-1">تاريخ الفحص: {new Date(req.finishedAt).toLocaleString('ar-IQ')}</p>
-                        {req.notes && (
-                          <div className="mt-2 p-3 bg-white/50 dark:bg-slate-900/50 rounded-xl text-xs font-bold text-red-700 dark:text-red-400 border border-red-100 dark:border-red-900/30">
-                            ملاحظات المختبر: {req.notes}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col gap-2 min-w-[200px]">
-                      <button 
-                        onClick={() => {
-                          setLabRequests(prev => prev.map(r => r.id === req.id ? { ...r, result: 'contaminated_action_taken' } : r));
-                          notify('تم توجيه طلب غرامة وإغلاق للفريق الميداني', 'success', true);
-                        }}
-                        className="w-full py-2.5 rounded-xl bg-gradient-to-l from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-2"
-                      >
-                        <AlertOctagon className="w-4 h-4" />
-                        توجيه الفريق بالغلق والتغريم
-                      </button>
-                      <button 
-                        onClick={() => {
-                          setLabRequests(prev => prev.map(r => r.id === req.id ? { ...r, result: 'contaminated_ignored' } : r));
-                          notify('تم أرشفة النتيجة دون اتخاذ إجراء', 'info');
-                        }}
-                        className="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all"
-                      >
-                        أرشفة بدون إجراء
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Account Modal for Adding/Editing Teams */}
       {accountModalState.isOpen && (

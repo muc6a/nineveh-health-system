@@ -13,10 +13,10 @@ import { CriticalAlertModal } from '../components/CriticalAlertModal';
 import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { FinancialReports } from '../components/FinancialReports';
-import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning } from 'lucide-react';
+import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon } from 'lucide-react';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
-  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
@@ -26,6 +26,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   const [chartModalState, setChartModalState] = useState({ isOpen: false, title: '', data: [] });
   const [replyingTo, setReplyingTo] = useState(null); // ID of the directive being replied to
   const [replyText, setReplyText] = useState('');
+  const [dispatchEstId, setDispatchEstId] = useState('');
+  const [dispatchTeamId, setDispatchTeamId] = useState('');
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
     if (user?.role === 'admin') return true;
@@ -130,6 +132,26 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     } else {
       notify('لم يتم العثور على فريق مطابق لهذا القطاع', 'error');
     }
+  };
+
+  const handleDispatch = (tId, eId) => {
+    if (!eId || !tId) {
+      notify('الرجاء تحديد المنشأة واللجنة المطلوبة', 'error');
+      return;
+    }
+    const est = establishments.find(e => e.id === eId);
+    const team = teams.find(t => t.id === tId);
+    
+    setDispatches(prev => [...prev, {
+      id: 'disp_' + Date.now(),
+      estId: est.id,
+      estName: est.name,
+      teamId: team.id,
+      date: new Date().toISOString(),
+      status: 'pending'
+    }]);
+
+    notify(`تم إرسال أمر توجيه عاجل إلى ${team.name} لزيارة ${est.name} فوراً!`, 'success', true);
   };
 
   const handleSendDirective = (e) => {
@@ -404,6 +426,26 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
                   showCondition: true
                 },
+                field_dispatch: {
+                  label: 'الفرق الميدانية والتوجيه السريع',
+                  icon: Target,
+                  iconColorClass: 'text-blue-500',
+                  activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
+                  permission: 'showOperationsRoom',
+                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('field_dispatch'); },
+                  isActive: executiveTab === 'dashboard' && activeTab === 'field_dispatch',
+                  showCondition: true
+                },
+                lab_results: {
+                  label: 'قرارات المختبر',
+                  icon: FlaskConical,
+                  iconColorClass: 'text-fuchsia-500',
+                  activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
+                  permission: 'showOperationsRoom',
+                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('lab_results'); },
+                  isActive: executiveTab === 'dashboard' && activeTab === 'lab_results',
+                  showCondition: true
+                },
                 financials: {
                   label: 'التقارير المالية (الغرامات)',
                   icon: Database,
@@ -532,6 +574,12 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             {hasPerm('showPublicEvalsPage') && (
               <option value="complaints">⚠️ التقييمات العامة (الشكاوى)</option>
             )}
+            {hasPerm('showOperationsRoom') && (
+              <option value="field_dispatch">🚀 الفرق الميدانية والتوجيه السريع</option>
+            )}
+            {hasPerm('showOperationsRoom') && (
+              <option value="lab_results">🧪 قرارات المختبر</option>
+            )}
             {hasPerm('manageEstablishments') && (
               <option value="establishments">🏢 إدارة المنشآت</option>
             )}
@@ -543,7 +591,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         <div className="relative z-40 flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">
-              {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : '💼'}
+              {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_results' ? '🧪' : '💼'}
             </span>
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">
@@ -551,6 +599,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                  activeTab === 'directives' ? 'الأوامر والتوجيهات الرسمية' : 
                  activeTab === 'complaints' ? 'التقييمات العامة (الشكاوى)' :
                  activeTab === 'geographic' ? 'الخريطة التفاعلية' :
+                 activeTab === 'field_dispatch' ? 'الفرق الميدانية والتوجيه السريع' :
+                 activeTab === 'lab_results' ? 'قرارات المختبر' :
                  activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
                  (activeTab === 'none' ? 'بوابة المدير العام' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`))}
               </h2>
@@ -770,6 +820,137 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               onSectorSelect={handleMapSectorSelect}
               fullHeight={true}
             />
+          </div>
+        ) : activeTab === 'field_dispatch' && hasPerm('showOperationsRoom') ? (
+          <div className="glassmorphic-card p-6 border border-blue-500/20">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+              <Target className="w-5 h-5 text-blue-500" />
+              الفرق الميدانية والتوجيه السريع
+            </h3>
+            
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-right border-collapse text-xs font-bold">
+                <thead>
+                  <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                    <th className="p-3">الفريق / القطاع</th>
+                    <th className="p-3">آخر تواجد مسجل</th>
+                    <th className="p-3">المنشأة المستهدفة للتوجيه</th>
+                    <th className="p-3 text-center">إجراء التوجيه</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+                  {teams.map(t => {
+                    const teamInspections = establishments
+                      .filter(e => e.lastInspection !== 'لم يزر بعد' && e.lastInspectorId === t.id)
+                      .sort((a, b) => new Date(b.lastInspectionDate || 0) - new Date(a.lastInspectionDate || 0));
+                    const lastEst = teamInspections[0];
+                    
+                    return (
+                      <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
+                        <td className="p-3">
+                          <span className="text-slate-800 dark:text-slate-200 block">{t.name}</span>
+                          <span className="text-[10px] text-teal-600">{t.sector}</span>
+                        </td>
+                        <td className="p-3 text-slate-500">
+                          <span className="block text-slate-700 dark:text-slate-300">
+                            {lastEst ? `${lastEst.name}` : 'غير متوفر'}
+                          </span>
+                          <span className="text-[10px]">
+                            {lastEst ? new Date(lastEst.lastInspectionDate).toLocaleString('ar-IQ') : 'لا يوجد نشاط'}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <select 
+                            onChange={(e) => {
+                              setDispatchEstId(e.target.value);
+                              setDispatchTeamId(t.id);
+                            }}
+                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          >
+                            <option value="">-- اختر المطعم --</option>
+                            {establishments.filter(e => e.sector === t.sector).map(est => (
+                              <option key={est.id} value={est.id}>{est.name}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="p-3 text-center">
+                          <button
+                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId)}
+                            className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
+                          >
+                            🚀 إرسال التوجيه
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : activeTab === 'lab_results' && hasPerm('showOperationsRoom') ? (
+          <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+              <div>
+                <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
+                  <FlaskConical className="w-6 h-6 text-fuchsia-600" />
+                  نتائج المختبر المركزي (تحتاج قرار)
+                </h3>
+                <p className="text-xs font-bold text-slate-500 mt-1">النتائج المختبرية التي تثبت تلوث العينات وتستوجب اتخاذ قرار الغرامة أو الإغلاق</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').length === 0 ? (
+                <div className="text-center p-12 text-slate-400 font-bold bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5">
+                  لا توجد عينات ملوثة حالياً تحتاج لقرار.
+                </div>
+              ) : (
+                labRequests?.filter(r => r.status === 'finished' && r.result === 'contaminated').map(req => (
+                  <div key={req.id} className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/50 rounded-2xl">
+                    <div className="flex flex-col md:flex-row justify-between gap-4">
+                      <div className="flex gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center shrink-0">
+                          <ShieldAlert className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h4 className="font-black text-slate-800 dark:text-white mb-1">المنشأة: {req.estName}</h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">الفريق المرسل: {req.teamName}</p>
+                          <p className="text-[10px] text-slate-500 mt-1">تاريخ الفحص: {new Date(req.finishedAt).toLocaleString('ar-IQ')}</p>
+                          {req.notes && (
+                            <div className="mt-2 p-3 bg-white/50 dark:bg-slate-900/50 rounded-xl text-xs font-bold text-red-700 dark:text-red-400 border border-red-100 dark:border-red-900/30">
+                              ملاحظات المختبر: {req.notes}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-2 min-w-[200px]">
+                        <button 
+                          onClick={() => {
+                            setLabRequests(prev => prev.map(r => r.id === req.id ? { ...r, result: 'contaminated_action_taken' } : r));
+                            notify('تم توجيه طلب غرامة وإغلاق للفريق الميداني', 'success', true);
+                          }}
+                          className="w-full py-2.5 rounded-xl bg-gradient-to-l from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-2"
+                        >
+                          <AlertOctagon className="w-4 h-4" />
+                          توجيه الفريق بالغلق والتغريم
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setLabRequests(prev => prev.map(r => r.id === req.id ? { ...r, result: 'contaminated_ignored' } : r));
+                            notify('تم أرشفة النتيجة دون اتخاذ إجراء', 'info');
+                          }}
+                          className="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all"
+                        >
+                          أرشفة بدون إجراء
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
