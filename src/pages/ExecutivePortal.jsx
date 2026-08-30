@@ -16,7 +16,7 @@ import { FinancialReports } from '../components/FinancialReports';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon } from 'lucide-react';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
-  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
@@ -306,10 +306,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     ? uninspectedList.map(e => `${e.name} (${e.sector})`).join('， ')
     : 'لا توجد منشآت غير مزارة في هذا القطاع.';
 
-  const handleLogout = () => {
-    setUser(null);
-    navigate('/');
-  };
+  
 
   const handleMapSectorSelect = (sector) => {
     if (sector === 'all') {
@@ -492,7 +489,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             <span>تخصيص العرض</span>
           </button>
           <button
-            onClick={handleLogout}
+            onClick={globalLogout}
             className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
@@ -516,7 +513,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               <Settings className="w-5 h-5" />
             </button>
             <button
-              onClick={handleLogout}
+              onClick={globalLogout}
               className="p-2 text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
             >
               <LogOut className="w-5 h-5" />
@@ -588,7 +585,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                  activeTab === 'geographic' ? 'الخريطة التفاعلية' :
                  activeTab === 'lab_results' ? 'قرارات المختبر' :
                  activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
-                 (activeTab === 'none' ? 'بوابة المدير العام' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name}`))}
+                 (activeTab === 'none' ? 'بوابة المدير العام' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'المنظومة'}`))}
               </h2>
               <p className="text-[10px] text-slate-400 mt-1">
                 {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 

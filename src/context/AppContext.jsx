@@ -688,7 +688,16 @@ export const AppProvider = ({ children }) => {
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('online', handleOnline);
     
-    return () => {
+  
+  const globalLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    setUser(null);
+    window.location.replace('/');
+  };
+
+  return (
+) => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('online', handleOnline);
     };
@@ -1151,7 +1160,16 @@ export const AppProvider = ({ children }) => {
     const initialPath = window.location.pathname + window.location.search;
     navigate(initialPath || '/');
     
-    return () => window.removeEventListener('popstate', handlePopState);
+  
+  const globalLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    setUser(null);
+    window.location.replace('/');
+  };
+
+  return (
+) => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // Global actions
@@ -1332,8 +1350,18 @@ export const AppProvider = ({ children }) => {
   const isMountedInv = useRef(false);
   useEffect(() => { if (isMountedInv.current) syncToCloud('nineveh_daily_inventories', dailyInventories); else isMountedInv.current = true; }, [dailyInventories]);
 
+
+  const globalLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    setUser(null);
+    window.location.replace('/');
+  };
+
   return (
-    <AppContext.Provider value={{
+
+        <AppContext.Provider value={{
+      globalLogout,
       darkMode,
       setDarkMode,
       currentRoute,

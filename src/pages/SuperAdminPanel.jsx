@@ -5,16 +5,17 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
-import { Plus, Trash2, DollarSign, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity, Bell, Lock, Unlock } from 'lucide-react';
+import { Plus, Trash2, DollarSign, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity, Bell, Lock, Unlock, Gavel } from 'lucide-react';
 import { AccountModal } from '../components/AccountModal';
 import { EvaluationManager } from '../components/EvaluationManager';
 import { FinesManager } from '../components/FinesManager';
 import { ROLES_DICTIONARY } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, labs, setLabs, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, labs, setLabs, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions , globalLogout } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
+  const [permissionsSelectedAccountId, setPermissionsSelectedAccountId] = useState('');
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('superAdminActiveTab') || 'roster');
 
   // Modal views
@@ -732,10 +733,7 @@ export const SuperAdminPanel = () => {
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    navigate('/');
-  };
+  
 
   const handleCreateDirector = (e) => {
     e.preventDefault();
@@ -762,6 +760,36 @@ export const SuperAdminPanel = () => {
     setShowEditDirectorModal(false);
     setEditingDirector(null);
     triggerAlert('تم تعديل بيانات المدير بنجاح.');
+  };
+
+  
+  // Gather all accounts for the permissions center dropdown
+  const allAccountsForPermissions = [
+    { label: 'الفرق الميدانية', options: teams.map(t => ({ value: `team_${t.id}`, label: t.name, obj: t, type: 'team' })) },
+    { label: 'مدراء الصحة (المدراء)', options: directors.map(d => ({ value: `director_${d.id}`, label: d.name, obj: d, type: 'director' })) },
+    { label: 'المتابعين الميدانيين', options: trackers.map(tr => ({ value: `tracker_${tr.id}`, label: tr.name, obj: tr, type: 'tracker' })) },
+    { label: 'المحاسبين الماليين', options: accountants.map(a => ({ value: `accountant_${a.id}`, label: a.name, obj: a, type: 'accountant' })) },
+    { label: 'المختبرات المركزية', options: labs.map(l => ({ value: `lab_${l.id}`, label: l.name, obj: l, type: 'lab' })) }
+  ];
+
+  // When an account is selected in the permissions tab, we need to populate `selectedPermissionsAccount`
+  const handlePermissionsAccountSelect = (e) => {
+    const val = e.target.value;
+    setPermissionsSelectedAccountId(val);
+    if (!val) {
+      setSelectedPermissionsAccount(null);
+      return;
+    }
+    
+    // Find the object
+    for (let group of allAccountsForPermissions) {
+      const found = group.options.find(opt => opt.value === val);
+      if (found) {
+        setSelectedPermissionsAccount(found.obj);
+        // Important: Reset granted state to whatever is in the DB
+        break;
+      }
+    }
   };
 
   return (
@@ -796,7 +824,7 @@ export const SuperAdminPanel = () => {
             🎨 تخصيص العرض
           </button>
           <button
-            onClick={handleLogout}
+            onClick={globalLogout}
             className="px-3 py-1.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer font-black"
           >
             تسجيل الخروج
@@ -816,7 +844,7 @@ export const SuperAdminPanel = () => {
             }`}
           >
             <Users className="w-4.5 h-4.5" />
-            <span>إدارة الحسابات والصلاحيات</span>
+            <span>إدارة الحسابات</span>
           </button>
         )}
 
@@ -830,7 +858,35 @@ export const SuperAdminPanel = () => {
             }`}
           >
             <Settings className="w-4.5 h-4.5" />
-            <span>هوية المنظومة والواجهات</span>
+            <span>هوية المنظومة والبوابات</span>
+          </button>
+        )}
+
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('permissions')}
+            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'permissions'
+                ? 'bg-teal-600 text-white shadow-md'
+                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            <ShieldAlert className="w-4.5 h-4.5" />
+            <span>مركز الصلاحيات</span>
+          </button>
+        )}
+        
+        {user?.role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('activities_fines')}
+            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'activities_fines'
+                ? 'bg-teal-600 text-white shadow-md'
+                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            <Gavel className="w-4.5 h-4.5" />
+            <span>إدارة النشاطات والقوانين الرقابية</span>
           </button>
         )}
 
@@ -899,6 +955,148 @@ export const SuperAdminPanel = () => {
         )}
 
         {/* Tab 1: Roster */}
+
+        {activeTab === 'permissions' && (
+          <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
+            <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
+              <ShieldAlert className="w-5 h-5 text-teal-600" />
+              <span>مركز الصلاحيات السيادي (Role-Based Access Control)</span>
+            </h2>
+            
+            <div className="mb-6 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+              <label className="block text-sm font-black text-slate-700 dark:text-slate-300 mb-3">اختر الحساب أو اللجنة المراد تعديل صلاحياتها:</label>
+              <select
+                value={permissionsSelectedAccountId}
+                onChange={handlePermissionsAccountSelect}
+                className="w-full md:w-1/2 p-3 rounded-xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer"
+              >
+                <option value="">-- يرجى اختيار حساب من القائمة --</option>
+                {allAccountsForPermissions.map((group, idx) => (
+                  <optgroup key={idx} label={group.label} className="font-black text-teal-700 dark:text-teal-400">
+                    {group.options.map(opt => (
+                      <option key={opt.value} value={opt.value} className="font-semibold text-slate-800 dark:text-slate-200">{opt.label}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+
+            {selectedPermissionsAccount ? (
+              <div className="flex flex-col md:flex-row gap-6 mt-8">
+                {/* Right Sidebar: Tabs & Stats */}
+                <div className="w-full md:w-1/3 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/5 rounded-3xl p-6 flex flex-col">
+                  <div className="mb-6 p-4 rounded-2xl bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                    <p className="text-[10px] text-slate-400 mb-1 font-semibold uppercase tracking-wider">الحساب المستهدف</p>
+                    <p className="text-base font-black text-slate-800 dark:text-white mb-5 truncate">{selectedPermissionsAccount.name}</p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[11px] font-black">
+                        <span className="text-teal-600 dark:text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]">ممنوح ({grantedPerms})</span>
+                        <span className="text-slate-500">من {totalPerms} إذن</span>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-800/80 ring-1 ring-slate-300 dark:ring-white/5 rounded-full h-2 overflow-hidden shadow-inner">
+                        <div className="bg-gradient-to-l from-purple-500 via-indigo-500 to-teal-400 h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${progressPercentage}%` }}></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 space-y-2">
+                    {PERMISSIONS_TABS.filter(tab => {
+                      if (tab.id === 'establishments' && (selectedPermissionsAccount?.role === 'director' || selectedPermissionsAccount?.role === 'central_director')) {
+                        return false;
+                      }
+                      return true;
+                    }).map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActivePermissionsTab(tab.id)}
+                        className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-all duration-300 cursor-pointer text-xs font-black relative overflow-hidden ${activePermissionsTab === tab.id ? 'bg-gradient-to-l from-purple-600/20 to-indigo-600/20 text-purple-600 dark:text-purple-300 border border-purple-500/30 translate-x-1' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 border border-transparent'}`}
+                      >
+                        {tab.icon}
+                        <span className="relative z-10">{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t border-slate-200 dark:border-white/10 space-y-3">
+                    <button onClick={handleGrantAll} className="w-full py-3 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 font-black text-xs hover:bg-teal-500/20 transition-all cursor-pointer">
+                      منح كل الصلاحيات (الكل)
+                    </button>
+                    <button onClick={handleRevokeAll} className="w-full py-3 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 font-black text-xs hover:bg-rose-500/20 transition-all cursor-pointer">
+                      سحب كل الصلاحيات
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleSavePermissions();
+                        notify("تم تحديث الصلاحيات وحفظها في قاعدة البيانات فوراً بنجاح.", "success");
+                      }}
+                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-xs shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Save className="w-4 h-4" />
+                      حفظ التعديلات فوراً
+                    </button>
+                  </div>
+                </div>
+
+                {/* Left Side: Permission Toggles */}
+                <div className="w-full md:w-2/3 bg-white/50 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/10 p-6 md:p-8 relative">
+                  <div className="mb-6 pb-6 border-b border-slate-200 dark:border-white/10 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                      {activeTabObj?.icon}
+                    </div>
+                    <div>
+                      <h4 className="text-base font-black text-slate-800 dark:text-white">{activeTabObj?.label}</h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">تحكم بـ {activeTabObj?.keys.length} إذن ضمن هذا القسم</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {activeTabObj?.keys.map(key => {
+                      const permDef = DEFAULT_PERMISSIONS[key];
+                      const isGranted = !!selectedPermissionsAccount.permissions?.[key];
+
+                      return (
+                        <div key={key} className={`p-4 rounded-2xl border transition-all duration-300 ${isGranted ? 'bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 border-teal-200 dark:border-teal-800/50 shadow-sm' : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5'}`}>
+                          <div className="flex justify-between items-start gap-4">
+                            <div className="flex-1">
+                              <h5 className={`text-xs font-black mb-1 ${isGranted ? 'text-teal-800 dark:text-teal-300' : 'text-slate-700 dark:text-slate-300'}`}>
+                                {permDef.title}
+                              </h5>
+                              <p className={`text-[10px] leading-relaxed ${isGranted ? 'text-teal-600/80 dark:text-teal-400/80' : 'text-slate-500'}`}>
+                                {permDef.desc}
+                              </p>
+                            </div>
+                            
+                            <button
+                              onClick={() => {
+                                setSelectedPermissionsAccount(prev => ({
+                                  ...prev,
+                                  permissions: {
+                                    ...(prev.permissions || {}),
+                                    [key]: !isGranted
+                                  }
+                                }));
+                              }}
+                              className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-300 ease-in-out cursor-pointer ${isGranted ? 'bg-teal-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+                            >
+                              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ease-in-out shadow-sm ${isGranted ? 'left-1' : 'left-7'}`}></div>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/30 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+                <ShieldAlert className="w-12 h-12 mb-4 opacity-50" />
+                <p className="font-bold text-sm">يرجى اختيار حساب من القائمة أعلاه لعرض وتعديل صلاحياته.</p>
+              </div>
+            )}
+          </section>
+        )}
+
         {activeTab === 'roster' && (
           <section className="glassmorphic-card p-6">
             
@@ -1515,7 +1713,7 @@ export const SuperAdminPanel = () => {
           <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
             <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
               <Settings className="w-5 h-5 text-teal-600" />
-              <span>هوية المنظومة والواجهات</span>
+              <span>هوية المنظومة والبوابات</span>
             </h2>
             
             <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 flex-wrap">
@@ -1539,26 +1737,7 @@ export const SuperAdminPanel = () => {
               >
                 📢 إدارة البوابات
               </button>
-              <button
-                onClick={() => setSubSettingsTab('evaluations')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'evaluations'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                📝 إدارة النشاطات وبنود التقييم
-              </button>
-              <button
-                onClick={() => setSubSettingsTab('fines_booklet')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subSettingsTab === 'fines_booklet'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                💰 كراس الغرامات القانونية
-              </button>
+
             </div>
 
             <div className="grid grid-cols-1 gap-8">
@@ -2457,7 +2636,37 @@ export const SuperAdminPanel = () => {
 
         const activeTabObj = PERMISSIONS_TABS.find(t => t.id === activePermissionsTab);
 
-        return (
+        
+  // Gather all accounts for the permissions center dropdown
+  const allAccountsForPermissions = [
+    { label: 'الفرق الميدانية', options: teams.map(t => ({ value: `team_${t.id}`, label: t.name, obj: t, type: 'team' })) },
+    { label: 'مدراء الصحة (المدراء)', options: directors.map(d => ({ value: `director_${d.id}`, label: d.name, obj: d, type: 'director' })) },
+    { label: 'المتابعين الميدانيين', options: trackers.map(tr => ({ value: `tracker_${tr.id}`, label: tr.name, obj: tr, type: 'tracker' })) },
+    { label: 'المحاسبين الماليين', options: accountants.map(a => ({ value: `accountant_${a.id}`, label: a.name, obj: a, type: 'accountant' })) },
+    { label: 'المختبرات المركزية', options: labs.map(l => ({ value: `lab_${l.id}`, label: l.name, obj: l, type: 'lab' })) }
+  ];
+
+  // When an account is selected in the permissions tab, we need to populate `selectedPermissionsAccount`
+  const handlePermissionsAccountSelect = (e) => {
+    const val = e.target.value;
+    setPermissionsSelectedAccountId(val);
+    if (!val) {
+      setSelectedPermissionsAccount(null);
+      return;
+    }
+    
+    // Find the object
+    for (let group of allAccountsForPermissions) {
+      const found = group.options.find(opt => opt.value === val);
+      if (found) {
+        setSelectedPermissionsAccount(found.obj);
+        // Important: Reset granted state to whatever is in the DB
+        break;
+      }
+    }
+  };
+
+  return (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-md">
             <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] text-slate-800 dark:text-white shadow-[0_0_50px_-12px_rgba(168,85,247,0.3)] relative flex flex-col text-right max-h-[90vh] overflow-hidden">
               
@@ -2546,7 +2755,37 @@ export const SuperAdminPanel = () => {
                     const targetRole = PERMISSION_ROLES[key] || 'all';
                     const isOutofRole = targetRole !== 'all' && targetRole !== accountRole;
 
-                    return (
+                    
+  // Gather all accounts for the permissions center dropdown
+  const allAccountsForPermissions = [
+    { label: 'الفرق الميدانية', options: teams.map(t => ({ value: `team_${t.id}`, label: t.name, obj: t, type: 'team' })) },
+    { label: 'مدراء الصحة (المدراء)', options: directors.map(d => ({ value: `director_${d.id}`, label: d.name, obj: d, type: 'director' })) },
+    { label: 'المتابعين الميدانيين', options: trackers.map(tr => ({ value: `tracker_${tr.id}`, label: tr.name, obj: tr, type: 'tracker' })) },
+    { label: 'المحاسبين الماليين', options: accountants.map(a => ({ value: `accountant_${a.id}`, label: a.name, obj: a, type: 'accountant' })) },
+    { label: 'المختبرات المركزية', options: labs.map(l => ({ value: `lab_${l.id}`, label: l.name, obj: l, type: 'lab' })) }
+  ];
+
+  // When an account is selected in the permissions tab, we need to populate `selectedPermissionsAccount`
+  const handlePermissionsAccountSelect = (e) => {
+    const val = e.target.value;
+    setPermissionsSelectedAccountId(val);
+    if (!val) {
+      setSelectedPermissionsAccount(null);
+      return;
+    }
+    
+    // Find the object
+    for (let group of allAccountsForPermissions) {
+      const found = group.options.find(opt => opt.value === val);
+      if (found) {
+        setSelectedPermissionsAccount(found.obj);
+        // Important: Reset granted state to whatever is in the DB
+        break;
+      }
+    }
+  };
+
+  return (
                       <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${isGranted ? (isOutofRole ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-500/40 shadow-[0_0_20px_-5px_rgba(168,85,247,0.1)]') : (isOutofRole ? 'bg-slate-100/50 dark:bg-slate-800/20 border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40' : 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-white/10')}`}>
                         {isGranted && <div className={`absolute right-0 top-0 bottom-0 w-1 shadow-md ${isOutofRole ? 'bg-amber-500 shadow-amber-500/50' : 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]'}`}></div>}
                         
@@ -3615,7 +3854,37 @@ export const SuperAdminPanel = () => {
                 const total = teamEsts.length;
                 const coverage = total > 0 ? Math.round((inspectionsDone / total) * 100) : 0;
                 
-                return (
+                
+  // Gather all accounts for the permissions center dropdown
+  const allAccountsForPermissions = [
+    { label: 'الفرق الميدانية', options: teams.map(t => ({ value: `team_${t.id}`, label: t.name, obj: t, type: 'team' })) },
+    { label: 'مدراء الصحة (المدراء)', options: directors.map(d => ({ value: `director_${d.id}`, label: d.name, obj: d, type: 'director' })) },
+    { label: 'المتابعين الميدانيين', options: trackers.map(tr => ({ value: `tracker_${tr.id}`, label: tr.name, obj: tr, type: 'tracker' })) },
+    { label: 'المحاسبين الماليين', options: accountants.map(a => ({ value: `accountant_${a.id}`, label: a.name, obj: a, type: 'accountant' })) },
+    { label: 'المختبرات المركزية', options: labs.map(l => ({ value: `lab_${l.id}`, label: l.name, obj: l, type: 'lab' })) }
+  ];
+
+  // When an account is selected in the permissions tab, we need to populate `selectedPermissionsAccount`
+  const handlePermissionsAccountSelect = (e) => {
+    const val = e.target.value;
+    setPermissionsSelectedAccountId(val);
+    if (!val) {
+      setSelectedPermissionsAccount(null);
+      return;
+    }
+    
+    // Find the object
+    for (let group of allAccountsForPermissions) {
+      const found = group.options.find(opt => opt.value === val);
+      if (found) {
+        setSelectedPermissionsAccount(found.obj);
+        // Important: Reset granted state to whatever is in the DB
+        break;
+      }
+    }
+  };
+
+  return (
                   <div key={team.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/50 dark:border-slate-800/50 flex flex-col gap-3 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
                     <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
@@ -3703,7 +3972,37 @@ export const SuperAdminPanel = () => {
                       const inspectionsDone = teamEsts.filter(e => e.lastInspection !== 'لم يزر بعد').length;
                       const total = teamEsts.length;
                       const coverage = total > 0 ? Math.round((inspectionsDone / total) * 100) : 0;
-                      return (
+                      
+  // Gather all accounts for the permissions center dropdown
+  const allAccountsForPermissions = [
+    { label: 'الفرق الميدانية', options: teams.map(t => ({ value: `team_${t.id}`, label: t.name, obj: t, type: 'team' })) },
+    { label: 'مدراء الصحة (المدراء)', options: directors.map(d => ({ value: `director_${d.id}`, label: d.name, obj: d, type: 'director' })) },
+    { label: 'المتابعين الميدانيين', options: trackers.map(tr => ({ value: `tracker_${tr.id}`, label: tr.name, obj: tr, type: 'tracker' })) },
+    { label: 'المحاسبين الماليين', options: accountants.map(a => ({ value: `accountant_${a.id}`, label: a.name, obj: a, type: 'accountant' })) },
+    { label: 'المختبرات المركزية', options: labs.map(l => ({ value: `lab_${l.id}`, label: l.name, obj: l, type: 'lab' })) }
+  ];
+
+  // When an account is selected in the permissions tab, we need to populate `selectedPermissionsAccount`
+  const handlePermissionsAccountSelect = (e) => {
+    const val = e.target.value;
+    setPermissionsSelectedAccountId(val);
+    if (!val) {
+      setSelectedPermissionsAccount(null);
+      return;
+    }
+    
+    // Find the object
+    for (let group of allAccountsForPermissions) {
+      const found = group.options.find(opt => opt.value === val);
+      if (found) {
+        setSelectedPermissionsAccount(found.obj);
+        // Important: Reset granted state to whatever is in the DB
+        break;
+      }
+    }
+  };
+
+  return (
                         <tr key={team.id}>
                           <td className="p-3 border border-slate-300">{team.name}</td>
                           <td className="p-3 border border-slate-300">{team.sector}</td>

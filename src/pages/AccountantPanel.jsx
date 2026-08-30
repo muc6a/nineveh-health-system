@@ -9,7 +9,7 @@ import { TeamDashboard } from './TeamDashboard';
 import { ExecutivePortal } from './ExecutivePortal';
 
 export const AccountantPanel = () => {
-  const { user, setUser, navigate, notify, penaltyRequests, setPenaltyRequests, establishments, setShowDisplayPrefsModal, uiPreferences, directives, setDirectives, dailyInventories, setDailyInventories } = useContext(AppContext);
+  const { user, setUser, navigate, notify, penaltyRequests, setPenaltyRequests, establishments, setShowDisplayPrefsModal, uiPreferences, directives, setDirectives, dailyInventories, setDailyInventories , globalLogout } = useContext(AppContext);
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedReportType, setSelectedReportType] = useState(null); // 'dashboard', 'pay_fines', 'directives', 'reconciliation', 'comprehensive_reports'
@@ -37,12 +37,7 @@ export const AccountantPanel = () => {
     return user?.permissions?.[permName] === true;
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('auth_token');
-    notify('تم تسجيل الخروج بنجاح', 'info');
-    navigate('/');
-  };
+  
 
   const getEstablishmentSector = (estId) => {
     const est = establishments.find(e => String(e.id).toLowerCase() === String(estId).toLowerCase());
@@ -431,7 +426,7 @@ export const AccountantPanel = () => {
             </div>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={globalLogout}
             className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
           >
             <span>تسجيل الخروج</span>

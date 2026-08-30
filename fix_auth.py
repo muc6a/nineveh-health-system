@@ -1,4 +1,38 @@
-import React, { useContext, useEffect } from 'react';
+import os
+import re
+
+def main():
+    # 1. Update AppContext.jsx
+    app_context = 'src/context/AppContext.jsx'
+    with open(app_context, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    logout_func = """
+  const globalLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    setUser(null);
+    window.location.replace('/');
+  };
+
+  return (
+"""
+    content = content.replace("  return (", logout_func)
+    
+    # Export it
+    value_export = """    <AppContext.Provider value={{
+      globalLogout,"""
+    content = content.replace("<AppContext.Provider value={{", value_export)
+
+    with open(app_context, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+    # 2. Update Router.jsx
+    router = 'src/components/Router.jsx'
+    with open(router, 'r', encoding='utf-8') as f:
+        router_content = f.read()
+
+    router_new = """import React, { useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { LoginGate } from '../pages/LoginGate';
 import { ExecutivePortal } from '../pages/ExecutivePortal';
@@ -88,3 +122,11 @@ export const Router = () => {
 };
 
 export default Router;
+"""
+    with open(router, 'w', encoding='utf-8') as f:
+        f.write(router_new)
+        
+    print("Updated Context and Router.")
+
+if __name__ == "__main__":
+    main()

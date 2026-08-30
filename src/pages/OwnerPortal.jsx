@@ -13,7 +13,7 @@ import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { QRCodeSVG } from 'qrcode.react';
 
 export const OwnerPortal = () => {
-  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, fines, penaltyRequests } = useContext(AppContext);
+  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, fines, penaltyRequests , globalLogout } = useContext(AppContext);
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);
@@ -74,12 +74,7 @@ export const OwnerPortal = () => {
     }
   };
 
-  const handleLogout = () => {
-    setOwnerEst(null);
-    setAccessCode('');
-    localStorage.removeItem('ownerAuthToken');
-    navigate('/');
-  };
+  
 
   const requestReinspection = () => {
     setIsRequestingInspection(true);
@@ -375,7 +370,7 @@ export const OwnerPortal = () => {
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
            {/* Removed Print Page Button as requested */}
            <button 
-             onClick={handleLogout}
+             onClick={globalLogout}
              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 text-xs font-bold transition-all"
            >
              <LogOut className="w-4 h-4" /> تسجيل الخروج

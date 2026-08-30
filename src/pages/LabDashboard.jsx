@@ -7,7 +7,7 @@ import { NotificationBell } from '../components/NotificationBell';
 import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut } from 'lucide-react';
 
 export const LabDashboard = () => {
-  const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences } = useContext(AppContext);
+  const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , globalLogout } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('stats'); // 'stats', 'incoming', 'testing', 'archive'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null });
   const [resultStatus, setResultStatus] = useState('safe');
@@ -28,12 +28,7 @@ export const LabDashboard = () => {
   const testingReqs = labRequests.filter(r => r.status === 'under_testing');
   const archivedReqs = labRequests.filter(r => r.status === 'finished');
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('auth_token');
-    notify('تم تسجيل الخروج بنجاح', 'info');
-    navigate('/');
-  };
+  
 
   const handleReceiveSample = (id) => {
     setLabRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'under_testing', receivedAt: new Date().toISOString() } : r));
@@ -185,7 +180,7 @@ export const LabDashboard = () => {
             </div>
           </div>
           <button 
-            onClick={handleLogout}
+            onClick={globalLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" /> تسجيل الخروج

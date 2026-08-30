@@ -13,7 +13,7 @@ import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = ({ embeddedTab }) => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal , globalLogout } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -199,10 +199,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
     setEditJustification('');
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    navigate('/');
-  };
+  
 
   // Tab A helper calculations
   const totalShops = teamEstablishments.length;
@@ -489,7 +486,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
             </div>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={globalLogout}
             className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
           >
             <span>تسجيل الخروج</span>

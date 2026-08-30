@@ -7,7 +7,7 @@ import { usePersistentTab } from '../hooks/usePersistentTab';
 import { LogOut, Settings, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Target, Building, Save, ScanLine, Radar, RefreshCw, Search, ClipboardList, Clock } from 'lucide-react';
 
 export const TrackerDashboard = () => {
-  const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify, addSystemNotification, setShowDisplayPrefsModal, tasks, setTasks } = useContext(AppContext);
+  const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify, addSystemNotification, setShowDisplayPrefsModal, tasks, setTasks , globalLogout } = useContext(AppContext);
   
   // UI States
   const [activeTab, setActiveTab] = usePersistentTab('trackerActiveTab', 'daily_tasks');
