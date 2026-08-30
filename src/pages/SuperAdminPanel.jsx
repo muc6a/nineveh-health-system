@@ -2387,13 +2387,15 @@ export const SuperAdminPanel = () => {
       {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
       {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
       {showPermissionsModal && selectedPermissionsAccount && (() => {
-        const PERMISSIONS_TABS = [
+                const PERMISSIONS_TABS = [
           { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
-          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'showDirectivesPage', 'showDeliveryPage', 'showPublicEvalsPage', 'showLabPage'] },
-          { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['sendDirective', 'replyDirective'] },
+          { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage'] },
+          { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
           { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
-          { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['manageComplaints', 'exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
-          { id: 'financials', label: 'التقارير المالية', icon: <Activity className="w-4 h-4 text-amber-500"/>, keys: ['viewComprehensiveFinancialReports'] },
+          { id: 'complaints', label: 'الشكاوى', icon: <Activity className="w-4 h-4 text-rose-400"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage', 'manageComplaints'] },
+          { id: 'lab', label: 'قرارات المختبر', icon: <Activity className="w-4 h-4 text-teal-400"/>, keys: ['showLabPage'] },
+          { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
+          { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['viewComprehensiveFinancialReports'] },
         ];
 
         const PERMISSION_DETAILS = {
@@ -2404,9 +2406,9 @@ export const SuperAdminPanel = () => {
           addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
           showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
           showReportsPage: { title: 'التقارير الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
-          showDirectivesPage: { title: 'التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
-          showDeliveryPage: { title: 'خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
-          showPublicEvalsPage: { title: 'التقييمات العامة (الشكاوى)', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
+          showDirectivesPage: { title: 'تصفح التبليغات', desc: 'يسمح للحساب بفتح صفحة "التبليغات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
+          showDeliveryPage: { title: 'شكاوى خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
+          showPublicEvalsPage: { title: 'شكاوى المواطنين', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
           showLabPage: { title: 'إدارة المختبرات المركزية', desc: 'يسمح بفتح بوابة المختبر للوصول إلى العينات الواردة ونتائج الفحص.' },
           sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
           replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },

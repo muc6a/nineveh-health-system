@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { MessageCircle, X, Send, ChevronDown, Check, CheckCheck } from 'lucide-react';
 
 export const LiveSupportWidget = () => {
-  const { user, addChatMessage, chatMessages, markChatRead, accountants, teams, labs } = useContext(AppContext);
+  const { user, addChatMessage, chatMessages, markChatRead, accountants, teams, labs, trackers } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const prevMessagesCountRef = useRef(0);
@@ -11,47 +11,55 @@ export const LiveSupportWidget = () => {
   const [showRoleSelect, setShowRoleSelect] = useState(false);
   const chatEndRef = useRef(null);
 
-  // Roles filtered based on administrative scope dynamically
+  // Determine user capabilities
+  const isOperations = user?.role === 'admin' || user?.role === 'central_director' || user?.role === 'director';
+  const isAccountant = user?.role === 'financial_accountant';
+  
+  // Build contact list (roles)
   const roles = [];
   
-  // 1. Operations
-  if (user?.role !== 'admin' && user?.role !== 'central_director' && user?.role !== 'director') {
-    roles.push({ id: 'operations', label: 'الرقابة المركزية', sector: 'all' });
+  // Everyone EXCEPT operations can talk to operations
+  if (!isOperations) {
+    roles.push({ id: 'operations', label: 'الإدارة المركزية', sector: 'all' });
   }
-  // 2. Accountants
+
+  // Helper to check sector match
+  const matchesSector = (itemSector) => {
+    if (isOperations) return true; // Ops sees all
+    if (!user?.sector || user?.sector === 'الكل' || itemSector === 'الكل') return true;
+    return user.sector.includes(itemSector) || itemSector.includes(user.sector);
+  };
+
+  // Add Accountants to contacts
   (accountants || []).forEach(acc => {
     if (acc.id === user?.id) return;
-    if (user?.role === 'financial_accountant' || user?.role === 'team_leader') {
-      if (user?.sector && user?.sector !== 'الكل' && acc.sector && !acc.sector.includes(user.sector) && !user.sector.includes(acc.sector)) return;
+    if (isOperations || (!isAccountant && matchesSector(acc.sector))) {
+      roles.push({ id: acc.id, label: `محاسب: ${acc.name} - ${acc.sector || 'عموم'}`, sector: acc.sector || 'all' });
     }
-    roles.push({
-      id: acc.id,
-      label: `محاسب ${acc.name} - ${acc.sector || 'عموم نينوى'}`,
-      sector: acc.sector || 'all'
-    });
   });
 
-  // 3. Teams
+  // Add Teams to contacts
   (teams || []).forEach(t => {
     if (t.id === user?.id) return;
-    if (user?.role === 'financial_accountant' || user?.role === 'team_leader') {
-      if (user?.sector && user?.sector !== 'الكل' && t.sector && !t.sector.includes(user.sector) && !user.sector.includes(t.sector)) return;
+    if (isOperations || matchesSector(t.sector)) {
+      roles.push({ id: t.id, label: `فريق: ${t.name} - ${t.sector || 'عموم'}`, sector: t.sector || 'all' });
     }
-    roles.push({
-      id: t.id,
-      label: `فريق: ${t.name} - ${t.sector || 'عموم نينوى'}`,
-      sector: t.sector || 'all'
-    });
+  });
+  
+  // Add Trackers to contacts
+  (trackers || []).forEach(tr => {
+    if (tr.id === user?.id) return;
+    if (isOperations || matchesSector(tr.sector)) {
+      roles.push({ id: tr.id, label: `متابع ميداني: ${tr.name} - ${tr.sector || 'عموم'}`, sector: tr.sector || 'all' });
+    }
   });
 
-  // 4. Labs
+  // Add Labs to contacts
   (labs || []).forEach(l => {
     if (l.id === user?.id) return;
-    roles.push({
-      id: l.id,
-      label: `المختبر المركزي: ${l.name}`,
-      sector: 'all'
-    });
+    if (isOperations) {
+      roles.push({ id: l.id, label: `المختبر: ${l.name}`, sector: 'all' });
+    }
   });
 
   const currentRoleObj = roles.find(r => r.id === targetRole);
@@ -63,51 +71,58 @@ export const LiveSupportWidget = () => {
     }
   }, [roles, targetRole]);
 
-  // Filter messages relevant to the current user
-  const visibleMessages = (chatMessages || []).filter(msg => {
-    if (msg.senderId === user?.id) return true;
-    if (msg.targetRole === user?.id) return true;
-    const isTargetRole = msg.targetRole === user?.role;
-    const isTargetSector = msg.targetSector === 'all' || msg.targetSector === user?.sector || !msg.targetSector;
-    if (isTargetRole && isTargetSector) return true;
-    if (msg.targetRole === 'operations' && (user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director')) return true;
-    return false;
+  // Isolate conversation to prevent crosstalk
+  const relevantMessages = (chatMessages || []).filter(msg => {
+    const msgSenderOps = msg.senderRole === 'admin' || msg.senderRole === 'director' || msg.senderRole === 'central_director' || msg.senderRole === 'operations';
+    
+    if (isOperations) {
+      // I am operations.
+      if (targetRole === 'operations') {
+        // Chatting with other operations (if supported)
+        return msg.targetRole === 'operations' && msgSenderOps;
+      } else {
+        // Chatting with a specific user
+        return (msg.senderId === targetRole && (msg.targetRole === 'operations' || msg.targetRole === user?.id)) ||
+               (msgSenderOps && msg.targetRole === targetRole);
+      }
+    } else {
+      // I am a normal user
+      if (targetRole === 'operations') {
+        // Chatting with operations
+        return (msg.senderId === user?.id && msg.targetRole === 'operations') ||
+               (msgSenderOps && (msg.targetRole === user?.id || msg.targetRole === user?.role));
+      } else {
+        // Chatting with another specific user
+        return (msg.senderId === user?.id && msg.targetRole === targetRole) ||
+               (msg.senderId === targetRole && msg.targetRole === user?.id);
+      }
+    }
   }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-  // Isolate conversation to prevent crosstalk
-  const relevantMessages = visibleMessages.filter(msg => {
-    const isOperations = user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director';
-    if (isOperations) {
-      if (msg.senderId === targetRole || msg.targetRole === targetRole) return true;
-      if (msg.targetRole === 'operations' && msg.senderId === targetRole) return true;
-      if (msg.senderRole === 'operations' && msg.targetRole === targetRole) return true;
-      return false;
-    }
-    return true; // Non-operations users only see their own isolated chat with operations anyway
-  });
+  // Global unread badge for me
+  const totalUnreadCount = (chatMessages || []).filter(msg => {
+    if (msg.senderId === user?.id || msg.isRead) return false;
+    if (isOperations && msg.targetRole === 'operations') return true;
+    if (msg.targetRole === user?.id || msg.targetRole === user?.role) return true;
+    return false;
+  }).length;
 
-  // Unread badge calculation for operations should reflect ALL chats, not just the active one
-  const totalUnreadMessages = visibleMessages.filter(m => m.senderId !== user?.id && !m.isRead);
-  const totalUnreadCount = totalUnreadMessages.length;
-
-  // Sound effect logic
   useEffect(() => {
     if (relevantMessages.length > prevMessagesCountRef.current) {
-      // Only play sound if the last message was NOT sent by me
       const lastMsg = relevantMessages[relevantMessages.length - 1];
       if (lastMsg && lastMsg.senderId !== user?.id) {
         try {
           const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
           audio.volume = 0.6;
-          audio.play().catch(e => console.log('Audio play error:', e));
+          audio.play().catch(() => {});
         } catch (e) {}
       }
     }
     prevMessagesCountRef.current = relevantMessages.length;
   }, [relevantMessages, user?.id]);
 
-  const unreadMessages = relevantMessages.filter(m => m.senderId !== user?.id && !m.isRead);
-  const unreadCount = unreadMessages.length;
+  const unreadMessagesInView = relevantMessages.filter(m => m.senderId !== user?.id && !m.isRead);
+  const unreadCountInView = unreadMessagesInView.length;
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -116,25 +131,20 @@ export const LiveSupportWidget = () => {
   useEffect(() => {
     if (isOpen) {
       scrollToBottom();
-      if (unreadCount > 0) {
-        const unreadIds = unreadMessages.map(m => m.id);
-        markChatRead(unreadIds);
+      if (unreadCountInView > 0) {
+        markChatRead(unreadMessagesInView.map(m => m.id));
       }
     }
-  }, [relevantMessages, isOpen, unreadCount, markChatRead]);
+  }, [relevantMessages, isOpen, unreadCountInView, markChatRead]);
 
-  // Simulate receiving a message from the target
   const handleSendMessage = () => {
     if (!chatMessage.trim()) return;
-
     if (addChatMessage) {
       addChatMessage(targetRole, currentRoleObj?.sector || 'all', chatMessage, user?.name || 'مستخدم', user?.role, user?.sector, user?.id);
     }
-
     setChatMessage('');
   };
 
-  // If there's no user logged in, don't show the chat
   if (!user || user.role === 'admin') return null;
 
   return (
@@ -149,7 +159,7 @@ export const LiveSupportWidget = () => {
               <div className="flex-1 cursor-pointer" onClick={() => setShowRoleSelect(!showRoleSelect)}>
                 <h4 className="text-sm font-black text-right flex items-center gap-1 justify-end">
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showRoleSelect ? 'rotate-180' : ''}`} />
-                  الرقابة المركزية والدعم
+                  الدردشة
                 </h4>
                 <p className="text-[10px] text-teal-100 font-bold truncate text-right">إلى: {currentRoleLabel}</p>
               </div>
@@ -158,7 +168,6 @@ export const LiveSupportWidget = () => {
               <X className="w-5 h-5" />
             </button>
 
-            {/* Dropdown for role selection */}
             {showRoleSelect && (
               <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 rounded-b-xl overflow-hidden z-10 animate-in fade-in slide-in-from-top-2">
                 <div className="max-h-60 overflow-y-auto custom-scrollbar">
@@ -171,6 +180,7 @@ export const LiveSupportWidget = () => {
                       {r.label}
                     </button>
                   ))}
+                  {roles.length === 0 && <div className="p-4 text-center text-xs text-slate-500">لا توجد جهات اتصال متاحة</div>}
                 </div>
               </div>
             )}
@@ -197,7 +207,7 @@ export const LiveSupportWidget = () => {
           <div className="p-3 bg-slate-100 dark:bg-slate-900 flex gap-2 items-end">
             <button 
               onClick={handleSendMessage}
-              disabled={!chatMessage.trim()}
+              disabled={!chatMessage.trim() || roles.length === 0}
               className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center shrink-0 hover:bg-teal-700 disabled:opacity-50 disabled:hover:bg-teal-600 transition-colors shadow-sm"
             >
               <Send className="w-4 h-4 rtl:-scale-x-100 mr-1" />
@@ -214,6 +224,7 @@ export const LiveSupportWidget = () => {
               placeholder="اكتب رسالتك هنا..."
               className="flex-1 bg-white dark:bg-slate-800 border-none rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none focus:ring-2 focus:ring-teal-500/30 text-right resize-none shadow-sm"
               rows="1"
+              disabled={roles.length === 0}
             />
           </div>
         </div>

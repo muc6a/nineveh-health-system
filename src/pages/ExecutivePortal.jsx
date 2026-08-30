@@ -407,7 +407,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: true
                 },
                 directives: {
-                  label: 'الأوامر والتوجيهات الرسمية',
+                  label: 'التبليغات',
                   icon: Mail,
                   iconColorClass: 'text-amber-500',
                   activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10',
@@ -417,7 +417,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: true
                 },
                 complaints: {
-                  label: 'التقييمات العامة (الشكاوى)',
+                  label: 'شكاوى المواطنين',
                   icon: ShieldAlert,
                   iconColorClass: 'text-red-500',
                   activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
@@ -437,7 +437,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: true
                 },
                 financials: {
-                  label: 'التقارير المالية (الغرامات)',
+                  label: 'المالية',
                   icon: Database,
                   iconColorClass: 'text-emerald-500',
                   activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
@@ -559,10 +559,10 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               <option value="geographic">🗺️ الخريطة الجغرافية</option>
             )}
             {hasPerm('showDirectivesPage') && (
-              <option value="directives">📢 الأوامر والتوجيهات الرسمية</option>
+              <option value="directives">📢 التبليغات</option>
             )}
             {hasPerm('showPublicEvalsPage') && (
-              <option value="complaints">⚠️ التقييمات العامة (الشكاوى)</option>
+              <option value="complaints">⚠️ شكاوى المواطنين</option>
             )}
             {hasPerm('showOperationsRoom') && (
               <option value="lab_results">🧪 قرارات المختبر</option>
@@ -583,8 +583,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">
                 {activeTab === 'establishments' ? 'إدارة المنشآت والـ QR' : 
-                 activeTab === 'directives' ? 'الأوامر والتوجيهات الرسمية' : 
-                 activeTab === 'complaints' ? 'التقييمات العامة (الشكاوى)' :
+                 activeTab === 'directives' ? 'التبليغات' : 
+                 activeTab === 'complaints' ? 'شكاوى المواطنين' :
                  activeTab === 'geographic' ? 'الخريطة التفاعلية' :
                  activeTab === 'lab_results' ? 'قرارات المختبر' :
                  activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
@@ -947,7 +947,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
                 <h3 className="text-sm font-black text-amber-500 flex items-center gap-2">
                   <Mail className="w-5 h-5" />
-                  الأوامر والتوجيهات الرسمية
+                  التبليغات
                 </h3>
               </div>
               <div className="space-y-4 text-right pr-1">

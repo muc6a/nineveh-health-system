@@ -12,7 +12,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
     operations_room: 'غرفة العمليات المركزية',
     geographic: 'الخريطة الجغرافية',
     directives: 'التبليغات والتوجيهات',
-    complaints: 'التقييمات العامة (الشكاوى)',
+    complaints: 'شكاوى المواطنين',
     establishments: 'إدارة المنشآت'
   };
 

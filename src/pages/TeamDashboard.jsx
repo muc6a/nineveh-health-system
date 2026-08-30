@@ -962,6 +962,12 @@ export const TeamDashboard = ({ embeddedTab }) => {
                                   <Trash className="w-3.5 h-3.5" />
                                   <span>حذف</span>
                                 </button>
+                                <button
+                                  onClick={() => window.open(`/dashboard/central/establishments/${est.id}`, '_blank')}
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
+                                >
+                                  🔗 انتقال للصفحة
+                                </button>
                               </>
                             )}
                           </div>
@@ -986,7 +992,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         {activeTab === 'reports' && hasPerm('showReportsPage') && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">الرد على الأوامر والتوجيهات الرسمية للقطاع</h2>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">الرد على التبليغات للقطاع</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التوجيهات الرسمية الصادرة من مدير الصحة وشكاوى المواطنين والمستهلكين لـ {userSector}</p>
             </div>
 
@@ -996,7 +1002,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               <div className="glassmorphic-card p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
                   <h3 className="text-xs font-black text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
-                    <span>📢 الأوامر والتوجيهات الرسمية الصادرة من المدير</span>
+                    <span>📢 التبليغات الصادرة من المدير</span>
                   </h3>
                   <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">{myDirectives.length} توجيه</span>
                 </div>

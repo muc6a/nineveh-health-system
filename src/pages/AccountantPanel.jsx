@@ -741,6 +741,7 @@ export const AccountantPanel = () => {
                         <th className="p-3">المنشأة</th>
                         <th className="p-3">المبلغ المستلم</th>
                         <th className="p-3">طريقة الدفع</th>
+                        <th className="p-3">تاريخ إصدار المخالفة</th>
                         <th className="p-3">تاريخ التسديد</th>
                       </tr>
                     </thead>
@@ -761,7 +762,15 @@ export const AccountantPanel = () => {
                               {fine.paymentMethod === 'pos' ? 'POS' : 'نقدي'}
                             </span>
                           </td>
-                          <td className="p-3 text-slate-500 text-[10px]">{new Date(fine.paymentDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</td>
+                          <td className="p-3 text-slate-500 text-[10px]">{fine.timestamp ? new Date(fine.timestamp).toLocaleDateString('en-GB') : (fine.date ? new Date(fine.date).toLocaleDateString('en-GB') : '---')}</td>
+                          <td className="p-3 text-slate-500 text-[10px]">
+                            <div className="flex flex-col gap-1">
+                              <span>{new Date(fine.paymentDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                              <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded font-bold w-fit">
+                                التأخير: {Math.ceil(Math.abs(new Date(fine.paymentDate) - new Date(fine.timestamp || fine.date || fine.paymentDate)) / (1000 * 60 * 60 * 24)) === 0 ? 'بنفس اليوم' : `${Math.ceil(Math.abs(new Date(fine.paymentDate) - new Date(fine.timestamp || fine.date || fine.paymentDate)) / (1000 * 60 * 60 * 24))} يوم`}
+                              </span>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -777,7 +786,7 @@ export const AccountantPanel = () => {
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
               <Mail className="w-5 h-5 text-blue-500" />
-              الأوامر والتوجيهات الرسمية
+              التبليغات
             </h3>
             
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm min-h-[50vh]">
@@ -998,7 +1007,7 @@ export const AccountantPanel = () => {
                       <th className="p-4">القطاع</th>
                       <th className="p-4">المبلغ المسدد</th>
                       <th className="p-4">طريقة الدفع</th>
-                      <th className="p-4">التاريخ</th>
+                      <th className="p-4">تاريخ التسديد</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">

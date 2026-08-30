@@ -32,7 +32,7 @@ export const FinesBookletModal = ({ isOpen, onClose, establishment, requestType 
         date: new Date().toISOString(),
         type: requestType,
         status: 'pending',
-        reason: `تطبيق كراس الغرامات: ${selectedFine.type}`,
+        reason: `${selectedFine.type}`,
         amount: selectedFine.amount,
         fineId: selectedFine.id
       };

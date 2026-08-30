@@ -352,6 +352,15 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave,
 
         {/* Footer Actions */}
         <div className="p-6 border-t border-slate-200 dark:border-white/5 bg-white/50 dark:bg-slate-900/40 flex items-center justify-end gap-3 shrink-0 backdrop-blur-sm">
+          {mode === 'edit' && initialData?.id && (
+            <button
+              type="button"
+              onClick={() => window.open(`/dashboard/central/establishments/${initialData.id}`, '_blank')}
+              className="px-4 py-3.5 rounded-2xl text-xs font-black text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border border-transparent hover:border-blue-200 flex items-center gap-2 mr-auto"
+            >
+              🔗 انتقال لصفحة السجل
+            </button>
+          )}
           <button
             type="button"
             onClick={onClose}

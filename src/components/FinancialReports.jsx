@@ -77,7 +77,8 @@ export const FinancialReports = () => {
               <th className="pb-3 px-2 font-bold">نوع الغرامة</th>
               <th className="pb-3 px-2 font-bold">المبلغ (د.ع)</th>
               <th className="pb-3 px-2 font-bold">حالة الدفع</th>
-              <th className="pb-3 px-2 font-bold">تاريخ الاستلام</th>
+              <th className="pb-3 px-2 font-bold">تاريخ إصدار المخالفة</th>
+              <th className="pb-3 px-2 font-bold">تاريخ التسديد (مدة التأخير)</th>
               <th className="pb-3 px-2 font-bold">المحاسب المستلم</th>
             </tr>
           </thead>
@@ -94,7 +95,17 @@ export const FinancialReports = () => {
                     <span className="px-2 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-[10px]">قيد الانتظار</span>
                   )}
                 </td>
-                <td className="py-4 px-2 text-slate-500">{fine.paymentDate ? new Date(fine.paymentDate).toLocaleDateString('ar-IQ') : '---'}</td>
+                <td className="py-4 px-2 text-slate-500">{fine.timestamp ? new Date(fine.timestamp).toLocaleDateString('en-GB') : (fine.date ? new Date(fine.date).toLocaleDateString('en-GB') : '---')}</td>
+                <td className="py-4 px-2 text-slate-500">
+                  {fine.paymentDate ? (
+                    <div className="flex flex-col gap-1">
+                      <span>{new Date(fine.paymentDate).toLocaleDateString('en-GB')}</span>
+                      <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold w-fit">
+                        {Math.ceil(Math.abs(new Date(fine.paymentDate) - new Date(fine.timestamp || fine.date || fine.paymentDate)) / (1000 * 60 * 60 * 24)) === 0 ? 'بنفس اليوم' : `${Math.ceil(Math.abs(new Date(fine.paymentDate) - new Date(fine.timestamp || fine.date || fine.paymentDate)) / (1000 * 60 * 60 * 24))} يوم`}
+                      </span>
+                    </div>
+                  ) : '---'}
+                </td>
                 <td className="py-4 px-2 font-bold text-slate-600 dark:text-slate-400">{fine.accountantName || '---'}</td>
               </tr>
             )) : (
