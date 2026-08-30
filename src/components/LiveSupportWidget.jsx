@@ -16,12 +16,14 @@ export const LiveSupportWidget = () => {
   
   // 1. Operations
   if (user?.role !== 'admin' && user?.role !== 'central_director' && user?.role !== 'director') {
-    roles.push({ id: 'operations', label: 'غرفة العمليات المركزية', sector: 'all' });
+    roles.push({ id: 'operations', label: 'الرقابة المركزية', sector: 'all' });
   }
-
   // 2. Accountants
   (accountants || []).forEach(acc => {
     if (acc.id === user?.id) return;
+    if (user?.role === 'financial_accountant' || user?.role === 'team_leader') {
+      if (user?.sector && user?.sector !== 'الكل' && acc.sector && !acc.sector.includes(user.sector) && !user.sector.includes(acc.sector)) return;
+    }
     roles.push({
       id: acc.id,
       label: `محاسب ${acc.name} - ${acc.sector || 'عموم نينوى'}`,
@@ -32,6 +34,9 @@ export const LiveSupportWidget = () => {
   // 3. Teams
   (teams || []).forEach(t => {
     if (t.id === user?.id) return;
+    if (user?.role === 'financial_accountant' || user?.role === 'team_leader') {
+      if (user?.sector && user?.sector !== 'الكل' && t.sector && !t.sector.includes(user.sector) && !user.sector.includes(t.sector)) return;
+    }
     roles.push({
       id: t.id,
       label: `فريق: ${t.name} - ${t.sector || 'عموم نينوى'}`,
@@ -144,7 +149,7 @@ export const LiveSupportWidget = () => {
               <div className="flex-1 cursor-pointer" onClick={() => setShowRoleSelect(!showRoleSelect)}>
                 <h4 className="text-sm font-black text-right flex items-center gap-1 justify-end">
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showRoleSelect ? 'rotate-180' : ''}`} />
-                  الدعم المباشر
+                  الرقابة المركزية والدعم
                 </h4>
                 <p className="text-[10px] text-teal-100 font-bold truncate text-right">إلى: {currentRoleLabel}</p>
               </div>

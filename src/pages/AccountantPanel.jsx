@@ -54,6 +54,7 @@ export const AccountantPanel = () => {
   // Fines for current sector
   const sectorFines = allFines.filter(f => {
     const estSector = getEstablishmentSector(f.establishmentId || f.estId);
+    return targetSector === 'الكل' || estSector === targetSector || (estSector && estSector.includes(targetSector));
   });
 
   const pendingFines = sectorFines.filter(f => f.paymentStatus !== 'paid');
