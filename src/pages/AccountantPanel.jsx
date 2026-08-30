@@ -505,10 +505,11 @@ export const AccountantPanel = () => {
               <div className="flex gap-2">
                 <input 
                   type="text" 
+                  dir="ltr"
                   placeholder="مثال: est_123 أو كود QR..."
                   value={searchCode}
-                  onChange={(e) => setSearchCode(e.target.value)}
-                  className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors text-left dir-ltr"
+                  onChange={(e) => setSearchCode(e.target.value.trim())}
+                  className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors text-left"
                 />
                 <button 
                   onClick={handleSearchFine}
