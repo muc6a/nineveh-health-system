@@ -837,7 +837,7 @@ export const SuperAdminPanel = () => {
         {(user?.role === 'admin' || user?.role === 'central_director') && (
           <button
             onClick={() => setActiveTab('roster')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'roster'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -851,7 +851,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('general_settings')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'general_settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -865,7 +865,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('permissions')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'permissions'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -879,7 +879,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('activities_fines')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'activities_fines'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -893,7 +893,7 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -906,7 +906,7 @@ export const SuperAdminPanel = () => {
 
         <button
           onClick={() => setActiveTab('establishments')}
-          className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+          className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'establishments'
               ? 'bg-teal-600 text-white shadow-md'
               : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -920,7 +920,7 @@ export const SuperAdminPanel = () => {
           <>
             <button
               onClick={() => setActiveTab('audit')}
-              className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
                 activeTab === 'audit'
                   ? 'bg-teal-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -932,7 +932,7 @@ export const SuperAdminPanel = () => {
 
             <button
               onClick={() => setActiveTab('broadcast')}
-              className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-3 py-2 rounded-xl text-[11px] font-black transition-all flex items-center gap-2 cursor-pointer ${
                 activeTab === 'broadcast'
                   ? 'bg-red-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
@@ -962,6 +962,7 @@ export const SuperAdminPanel = () => {
               <ShieldAlert className="w-5 h-5 text-teal-600" />
               <span>مركز الصلاحيات السيادي (Role-Based Access Control)</span>
             </h2>
+            <p className="text-xs text-slate-500 mb-6 text-right font-medium">من خلال هذه الصفحة يمكنك التحكم الشامل بصلاحيات كافة الحسابات واللجان، وتفعيل أو إطفاء الخصائص لكل جهة بضغطة زر.</p>
             
             <div className="mb-6 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
               <label className="block text-sm font-black text-slate-700 dark:text-slate-300 mb-3">اختر الحساب أو اللجنة المراد تعديل صلاحياتها:</label>
@@ -1711,10 +1712,7 @@ export const SuperAdminPanel = () => {
                 {/* Tab 1.5: General Branding & Settings */}
         {activeTab === 'general_settings' && (
           <section className="glassmorphic-card p-6 animate-fade-in-up text-right">
-            <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-6">
-              <Settings className="w-5 h-5 text-teal-600" />
-              <span>هوية المنظومة والبوابات</span>
-            </h2>
+
             
             <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 flex-wrap">
               <button
@@ -2613,11 +2611,6 @@ export const SuperAdminPanel = () => {
           exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management',
           viewComprehensiveFinancialReports: 'management'
         };
-
-        const totalPerms = Object.keys(DEFAULT_PERMISSIONS).length;
-        const grantedPerms = Object.keys(DEFAULT_PERMISSIONS).filter(k => selectedPermissionsAccount.permissions?.[k]).length;
-        const progressPercentage = Math.round((grantedPerms / totalPerms) * 100);
-
         const handleGrantAll = () => {
           setSelectedPermissionsAccount(prev => {
             const allTrue = {};

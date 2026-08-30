@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --heading-size: 18px;
+  --body-size: 14px;
+}
+html {
+  font-size: var(--body-size) !important;
+}
+.compact-mode {
+  zoom: 0.9;
+}
+
+
 @layer utilities {
   .glassmorphism {
     @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-glass-light dark:shadow-glass-dark;
