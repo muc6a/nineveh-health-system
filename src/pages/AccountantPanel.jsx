@@ -117,11 +117,28 @@ export const AccountantPanel = () => {
     setTimeout(() => {
       try {
       const code = (searchCode || '').trim().toLowerCase();
+      let extractedCode = code;
+      // Handle QR Code URL if scanned
+      if (code.includes('/qr/')) {
+        extractedCode = code.split('/qr/').pop().split('?')[0].trim();
+      }
       
       const safeString = (val) => (val ? String(val).trim().toLowerCase() : '');
+      const fuzzyMatch = (a, b) => safeString(a).replace(/[-_\s]/g, '') === safeString(b).replace(/[-_\s]/g, '');
 
-      let est = (establishments || []).find(e => safeString(e.id) === code || (e.name || '').includes(searchCode));
-      let fineByFineId = (pendingFines || []).find(f => safeString(f.id) === code);
+      // Broaden the search: try exact ID, fuzzy ID, QR extracted ID, or partial name
+      let est = (establishments || []).find(e => 
+        safeString(e.id) === code || 
+        safeString(e.id) === extractedCode ||
+        fuzzyMatch(e.id, code) ||
+        fuzzyMatch(e.id, extractedCode) ||
+        (e.name || '').toLowerCase().includes((searchCode || '').trim().toLowerCase())
+      );
+      
+      // Also search in allFines (not just pending) to show if a fine was already paid
+      let fineByFineId = (allFines || []).find(f => 
+        safeString(f.id) === code || fuzzyMatch(f.id, code)
+      );
 
       let targetEst = null;
       let targetFine = null;
@@ -129,11 +146,13 @@ export const AccountantPanel = () => {
       if (fineByFineId) {
         targetFine = fineByFineId;
         const targetEstId = safeString(targetFine.establishmentId || targetFine.estId);
-        targetEst = (establishments || []).find(e => safeString(e.id) === targetEstId);
+        targetEst = (establishments || []).find(e => safeString(e.id) === targetEstId || fuzzyMatch(e.id, targetEstId));
       } else if (est) {
         targetEst = est;
         const estId = safeString(est.id);
-        targetFine = (pendingFines || []).find(f => safeString(f.establishmentId || f.estId) === estId);
+        // Find the fine in allFines, prioritize pending fines if multiple exist
+        const estFines = (allFines || []).filter(f => safeString(f.establishmentId || f.estId) === estId || fuzzyMatch(f.establishmentId || f.estId, estId));
+        targetFine = estFines.find(f => f.paymentStatus !== 'paid') || estFines[0] || null;
       }
 
       if (targetEst) {
@@ -142,9 +161,12 @@ export const AccountantPanel = () => {
           setSearchedFine(targetFine);
           setPaymentMethod('cash');
           setReceiptNumber('');
+          if (targetFine.paymentStatus === 'paid') {
+            notify('تنبيه: تم العثور على غرامة سابقة ولكنها مسددة.', 'warning');
+          }
         } else {
           setSearchedFine(null);
-          notify('لا توجد غرامة معلقة على هذه المنشأة.', 'info');
+          notify('تم العثور على المنشأة، ولا توجد غرامات معلقة عليها.', 'info');
         }
       } else {
         setSearchedEstablishment(null);
@@ -584,6 +606,14 @@ export const AccountantPanel = () => {
                 )}
 
                 <div className="border-t border-slate-200 dark:border-slate-700 pt-6 relative z-10 space-y-4">
+                  {searchedFine?.paymentStatus === 'paid' ? (
+                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl mb-6 text-center">
+                      <p className="text-emerald-700 dark:text-emerald-400 font-bold text-sm">
+                        هذه الغرامة مسددة مسبقاً ولا تتطلب إجراء آخر.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-2">طريقة الدفع المستلمة:</label>
                     <div className="grid grid-cols-2 gap-3">
@@ -635,6 +665,8 @@ export const AccountantPanel = () => {
                       <Printer className="w-4 h-4" /> طباعة A4
                     </button>
                   </div>
+                  </>
+                  )}
                 </div>
               </div>
             )}
