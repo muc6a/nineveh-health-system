@@ -845,6 +845,26 @@ export const SuperAdminPanel = () => {
     }
   };
 
+  const handleGrantAll = () => {
+    setSelectedPermissionsAccount(prev => {
+      if (!prev) return prev;
+      const allTrue = {};
+      Object.keys(DEFAULT_PERMISSIONS).forEach(k => allTrue[k] = true);
+      return { ...prev, permissions: allTrue };
+    });
+  };
+
+  const handleRevokeAll = () => {
+    setSelectedPermissionsAccount(prev => {
+      if (!prev) return prev;
+      const allFalse = {};
+      Object.keys(DEFAULT_PERMISSIONS).forEach(k => allFalse[k] = false);
+      return { ...prev, permissions: allFalse };
+    });
+  };
+
+  const activeTabObj = PERMISSIONS_TABS.find(t => t.id === activePermissionsTab);
+
   return (
     <div className="min-h-screen bg-slatebg-light dark:bg-slatebg-dark p-4 md:p-8 transition-colors duration-300">
       
@@ -2611,23 +2631,11 @@ export const SuperAdminPanel = () => {
       {/* PROFESSIONAL PERMISSIONS HUB MODAL */}
       {showPermissionsModal && selectedPermissionsAccount && (() => {
         
-        const handleGrantAll = () => {
-          setSelectedPermissionsAccount(prev => {
-            const allTrue = {};
-            Object.keys(DEFAULT_PERMISSIONS).forEach(k => allTrue[k] = true);
-            return { ...prev, permissions: allTrue };
-          });
-        };
 
-        const handleRevokeAll = () => {
-          setSelectedPermissionsAccount(prev => {
-            const allFalse = {};
-            Object.keys(DEFAULT_PERMISSIONS).forEach(k => allFalse[k] = false);
-            return { ...prev, permissions: allFalse };
-          });
-        };
 
-        const activeTabObj = PERMISSIONS_TABS.find(t => t.id === activePermissionsTab);
+
+
+
 
         
   // Gather all accounts for the permissions center dropdown
