@@ -915,6 +915,16 @@ export const SuperAdminPanel = () => {
                 👑 إدارة المدراء والقيادات
               </button>
               <button
+                onClick={() => setSubRosterTab('labs')}
+                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
+                  subRosterTab === 'labs'
+                    ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                🔬 المختبرات المركزية
+              </button>
+              <button
                 onClick={() => setSubRosterTab('committees')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
                   subRosterTab === 'committees'
@@ -923,16 +933,6 @@ export const SuperAdminPanel = () => {
                 }`}
               >
                 👥 إدارة اللجان الميدانية
-              </button>
-              <button
-                onClick={() => setSubRosterTab('trackers')}
-                className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'trackers'
-                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                🕵️‍♂️ إدارة المتابعين
               </button>
               <button
                 onClick={() => setSubRosterTab('accountants')}
@@ -945,14 +945,14 @@ export const SuperAdminPanel = () => {
                 💼 إدارة المحاسبين
               </button>
               <button
-                onClick={() => setSubRosterTab('labs')}
+                onClick={() => setSubRosterTab('trackers')}
                 className={`pb-2 text-xs font-black transition-all cursor-pointer ${
-                  subRosterTab === 'labs'
-                    ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold'
+                  subRosterTab === 'trackers'
+                    ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold'
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
-                🔬 المختبرات المركزية
+                🕵️‍♂️ إدارة المتابعين
               </button>
             </div>
 

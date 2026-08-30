@@ -205,7 +205,7 @@ export const AccountantPanel = () => {
               }`}
             >
               <LayoutDashboard className="w-4.5 h-4.5" />
-              <span>الرئيسية والتقارير</span>
+              <span>التقارير</span>
             </button>
             
             <button
@@ -217,7 +217,7 @@ export const AccountantPanel = () => {
               }`}
             >
               <Banknote className="w-4.5 h-4.5" />
-              <span>تسديد الغرامات واستعلام الكود</span>
+              <span>تسديد الغرامات</span>
             </button>
 
             <button
@@ -485,7 +485,7 @@ export const AccountantPanel = () => {
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
               <Banknote className="w-5 h-5 text-emerald-500" />
-              تسديد الغرامات واستعلام الكود
+              تسديد الغرامات
             </h3>
 
             {/* Search Box */}
@@ -551,7 +551,7 @@ export const AccountantPanel = () => {
                 ) : (
                   <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl mb-6 text-center">
                     <p className="text-emerald-700 dark:text-emerald-400 font-bold text-sm">
-                      ✅ لا توجد أي غرامات مالية معلقة أو غير مسددة على هذه المنشأة.
+                      ✅ لا توجد غرامات لهذه المنشأة.
                     </p>
                   </div>
                 )}

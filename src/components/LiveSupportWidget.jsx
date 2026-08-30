@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { MessageCircle, X, Send, ChevronDown, Check, CheckCheck } from 'lucide-react';
 
 export const LiveSupportWidget = () => {
-  const { user, addChatMessage, chatMessages, markChatRead } = useContext(AppContext);
+  const { user, addChatMessage, chatMessages, markChatRead, accountants, teams } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const prevMessagesCountRef = useRef(0);
@@ -11,33 +11,57 @@ export const LiveSupportWidget = () => {
   const [showRoleSelect, setShowRoleSelect] = useState(false);
   const chatEndRef = useRef(null);
 
-  // Roles filtered based on administrative scope
-  const roles = [
-    { id: 'operations', label: 'غرفة العمليات المركزية' },
-    { id: 'accountant', label: user?.sector ? `المحاسب المالي (${user.sector})` : 'الإدارة المالية' },
-    { id: 'team', label: user?.sector ? `الفرق الميدانية (${user.sector})` : 'الفرق الميدانية' }
-  ].filter(r => {
-    if (r.id === user?.role) return false;
-    // Accountant shouldn't see 'accountant', Team shouldn't see 'team'.
-    return true;
+  // Roles filtered based on administrative scope dynamically
+  const roles = [];
+  
+  // 1. Operations
+  if (user?.role !== 'admin' && user?.role !== 'central_director' && user?.role !== 'director') {
+    roles.push({ id: 'operations', label: 'غرفة العمليات المركزية', sector: 'all' });
+  }
+
+  // 2. Accountants
+  (accountants || []).forEach(acc => {
+    if (acc.id === user?.id) return;
+    roles.push({
+      id: acc.id,
+      label: `محاسب ${acc.name} - ${acc.sector || 'عموم نينوى'}`,
+      sector: acc.sector || 'all'
+    });
   });
 
-  const currentRoleLabel = roles.find(r => r.id === targetRole)?.label || 'غرفة العمليات المركزية';
+  // 3. Teams
+  (teams || []).forEach(t => {
+    if (t.id === user?.id) return;
+    roles.push({
+      id: t.id,
+      label: `فريق: ${t.name} - ${t.sector || 'عموم نينوى'}`,
+      sector: t.sector || 'all'
+    });
+  });
+
+  const currentRoleObj = roles.find(r => r.id === targetRole);
+  const currentRoleLabel = currentRoleObj?.label || (roles.length > 0 ? roles[0].label : 'غير محدد');
+
+  useEffect(() => {
+    if (!roles.find(r => r.id === targetRole) && roles.length > 0) {
+      setTargetRole(roles[0].id);
+    }
+  }, [roles, targetRole]);
 
   // Filter messages relevant to the current user
   const relevantMessages = (chatMessages || []).filter(msg => {
-    // Message is relevant if:
     // 1. I am the sender
     if (msg.senderId === user?.id) return true;
     
-    // 2. I am the target based on role and sector
+    // 2. I am specifically targeted by ID
+    if (msg.targetRole === user?.id) return true;
+
+    // 3. I am targeted by role (legacy fallback)
     const isTargetRole = msg.targetRole === user?.role;
     const isTargetSector = msg.targetSector === 'all' || msg.targetSector === user?.sector || !msg.targetSector;
-    
-    // If the sender is targeting my role (e.g. they sent to 'accountant' and I am 'accountant' in that sector)
     if (isTargetRole && isTargetSector) return true;
 
-    // 3. Central operations can see all messages targeting 'operations'
+    // 4. Central operations can see all messages targeting 'operations'
     if (msg.targetRole === 'operations' && (user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director')) return true;
 
     return false;
@@ -81,7 +105,7 @@ export const LiveSupportWidget = () => {
     if (!chatMessage.trim()) return;
 
     if (addChatMessage) {
-      addChatMessage(targetRole, user?.sector || 'all', chatMessage, user?.name || 'مستخدم', user?.role, user?.sector, user?.id);
+      addChatMessage(targetRole, currentRoleObj?.sector || 'all', chatMessage, user?.name || 'مستخدم', user?.role, user?.sector, user?.id);
     }
 
     setChatMessage('');
@@ -114,15 +138,17 @@ export const LiveSupportWidget = () => {
             {/* Dropdown for role selection */}
             {showRoleSelect && (
               <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 rounded-b-xl overflow-hidden z-10 animate-in fade-in slide-in-from-top-2">
-                {roles.map(r => (
-                  <button
-                    key={r.id}
-                    onClick={() => { setTargetRole(r.id); setShowRoleSelect(false); }}
-                    className={`w-full text-right px-4 py-3 text-xs font-bold transition-colors ${targetRole === r.id ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
-                  >
-                    {r.label}
-                  </button>
-                ))}
+                <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                  {roles.map(r => (
+                    <button
+                      key={r.id}
+                      onClick={() => { setTargetRole(r.id); setShowRoleSelect(false); }}
+                      className={`w-full text-right px-4 py-3 text-xs font-bold transition-colors ${targetRole === r.id ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>

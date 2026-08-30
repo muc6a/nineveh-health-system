@@ -578,7 +578,17 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
               {/* 1. Location */}
               <div className="space-y-2">
                 <label className="text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><MapPin className="w-4 h-4"/> 1. النطاق الجغرافي للمختبر</label>
-                {renderGeoSelection()}
+                <select 
+                  value={sector} 
+                  onChange={(e) => setSector(e.target.value)}
+                  className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white outline-none focus:border-indigo-500 shadow-inner"
+                  required
+                >
+                  <option value="" disabled>اختر النطاق الجغرافي...</option>
+                  <option value="عموم محافظة نينوى">عموم محافظة نينوى</option>
+                  <option value="قضاء الموصل مركزاً">قضاء الموصل مركزاً</option>
+                  <option value="الأقضية والنواحي">الأقضية والنواحي</option>
+                </select>
               </div>
 
               {/* 2. Lab Name */}
