@@ -106,44 +106,49 @@ export const AccountantPanel = () => {
 
   // Pay Fines Handlers
   const handleSearchFine = () => {
-    if (!searchCode.trim()) {
-      notify('يرجى إدخال كود المنشأة أو رقم الغرامة', 'warning');
-      return;
-    }
-    
-    // 1. Search for establishment directly by code or name
-    let est = establishments.find(e => String(e.id).toLowerCase() === String(searchCode).toLowerCase() || (e.name || '').includes(searchCode));
-    
-    // 2. Search for fine directly by fine ID
-    let fineByFineId = pendingFines.find(f => String(f.id).toLowerCase() === String(searchCode).toLowerCase());
-
-    // 3. Determine target establishment and fine
-    let targetEst = null;
-    let targetFine = null;
-
-    if (fineByFineId) {
-      targetFine = fineByFineId;
-      targetEst = establishments.find(e => String(e.id).toLowerCase() === String(targetFine.establishmentId || targetFine.estId).toLowerCase());
-    } else if (est) {
-      targetEst = est;
-      // find any pending fine for this establishment
-      targetFine = pendingFines.find(f => String(f.establishmentId || f.estId).toLowerCase() === String(est.id).toLowerCase());
-    }
-
-    if (targetEst) {
-      setSearchedEstablishment(targetEst);
-      if (targetFine) {
-        setSearchedFine(targetFine);
-        setPaymentMethod('cash');
-        setReceiptNumber('');
-      } else {
-        setSearchedFine(null);
-        notify('لا توجد غرامة معلقة على هذه المنشأة.', 'info');
+    try {
+      const code = (searchCode || '').trim().toLowerCase();
+      if (!code) {
+        notify('يرجى إدخال كود المنشأة أو رقم الغرامة', 'warning');
+        return;
       }
-    } else {
-      setSearchedEstablishment(null);
-      setSearchedFine(null);
-      notify('المنشأة غير متوفرة في قاعدة البيانات ولم يتم العثور على غرامة مسجلة بهذا الكود', 'error');
+      
+      const safeString = (val) => (val ? String(val).trim().toLowerCase() : '');
+
+      let est = (establishments || []).find(e => safeString(e.id) === code || (e.name || '').includes(searchCode));
+      let fineByFineId = (pendingFines || []).find(f => safeString(f.id) === code);
+
+      let targetEst = null;
+      let targetFine = null;
+
+      if (fineByFineId) {
+        targetFine = fineByFineId;
+        const targetEstId = safeString(targetFine.establishmentId || targetFine.estId);
+        targetEst = (establishments || []).find(e => safeString(e.id) === targetEstId);
+      } else if (est) {
+        targetEst = est;
+        const estId = safeString(est.id);
+        targetFine = (pendingFines || []).find(f => safeString(f.establishmentId || f.estId) === estId);
+      }
+
+      if (targetEst) {
+        setSearchedEstablishment(targetEst);
+        if (targetFine) {
+          setSearchedFine(targetFine);
+          setPaymentMethod('cash');
+          setReceiptNumber('');
+        } else {
+          setSearchedFine(null);
+          notify('لا توجد غرامة معلقة على هذه المنشأة.', 'info');
+        }
+      } else {
+        setSearchedEstablishment(null);
+        setSearchedFine(null);
+        notify('المنشأة غير متوفرة في قاعدة البيانات ولم يتم العثور على غرامة مسجلة بهذا الكود', 'error');
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      notify('حدث خطأ برمجي أثناء البحث: ' + error.message, 'error');
     }
   };
 
