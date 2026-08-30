@@ -110,22 +110,34 @@ export const AccountantPanel = () => {
       return;
     }
     
-    // 1. Search for establishment
-    const est = establishments.find(e => e.id.toLowerCase() === searchCode.toLowerCase() || e.name.includes(searchCode));
+    // 1. Search for establishment directly by code or name
+    let est = establishments.find(e => String(e.id).toLowerCase() === String(searchCode).toLowerCase() || e.name.includes(searchCode));
     
-    // 2. Search for fine
-    const foundFines = pendingFines.filter(f => (f.establishmentId || f.estId || '').toLowerCase() === searchCode.toLowerCase() || f.id.toLowerCase() === searchCode.toLowerCase());
-    
-    if (est || foundFines.length > 0) {
-      if (est) setSearchedEstablishment(est);
-      else setSearchedEstablishment(establishments.find(e => e.id === (foundFines[0].establishmentId || foundFines[0].estId)) || null);
-      
-      if (foundFines.length > 0) {
-        setSearchedFine(foundFines[0]);
+    // 2. Search for fine directly by fine ID
+    let fineByFineId = pendingFines.find(f => String(f.id).toLowerCase() === String(searchCode).toLowerCase());
+
+    // 3. Determine target establishment and fine
+    let targetEst = null;
+    let targetFine = null;
+
+    if (fineByFineId) {
+      targetFine = fineByFineId;
+      targetEst = establishments.find(e => String(e.id) === String(targetFine.establishmentId || targetFine.estId));
+    } else if (est) {
+      targetEst = est;
+      // find any pending fine for this establishment
+      targetFine = pendingFines.find(f => String(f.establishmentId || f.estId) === String(est.id));
+    }
+
+    if (targetEst) {
+      setSearchedEstablishment(targetEst);
+      if (targetFine) {
+        setSearchedFine(targetFine);
         setPaymentMethod('cash');
         setReceiptNumber('');
       } else {
         setSearchedFine(null);
+        notify('لا توجد غرامة معلقة على هذه المنشأة.', 'info');
       }
     } else {
       setSearchedEstablishment(null);

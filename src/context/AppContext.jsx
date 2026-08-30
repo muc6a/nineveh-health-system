@@ -872,11 +872,16 @@ export const AppProvider = ({ children }) => {
   const [uiPreferences, setUiPreferences] = useState(() => {
     const saved = localStorage.getItem('uiPreferences');
     const savedPrefs = saved ? JSON.parse(saved) : {};
+    let currentTabOrder = savedPrefs.tabOrder || ['strategic', 'team_reports', 'operations_room', 'geographic', 'directives', 'complaints', 'establishments'];
+    if (!currentTabOrder.includes('lab_results')) currentTabOrder.push('lab_results');
+    if (!currentTabOrder.includes('financials')) currentTabOrder.push('financials');
+    currentTabOrder = currentTabOrder.filter(t => t !== 'field_dispatch');
+
     return {
       headingSize: savedPrefs.headingSize || '18px',
       bodySize: savedPrefs.bodySize || '12px',
       density: savedPrefs.density || 'comfortable',
-      tabOrder: savedPrefs.tabOrder || ['strategic', 'team_reports', 'operations_room', 'geographic', 'directives', 'complaints', 'establishments']
+      tabOrder: currentTabOrder
     };
   });
 
