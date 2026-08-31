@@ -3,21 +3,34 @@ import { Eye, X, ChevronUp, ChevronDown, ListOrdered } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
-  const { uiPreferences, setUiPreferences, notify } = useContext(AppContext);
+  const { uiPreferences, setUiPreferences, notify, user } = useContext(AppContext);
   const [draftUiPreferences, setDraftUiPreferences] = useState(uiPreferences);
 
-  const TAB_LABELS = {
-    strategic: 'اللوحة الرئيسية (الاستراتيجية)',
-    team_reports: 'تقارير الفرق الميدانية',
-    operations_room: 'غرفة العمليات المركزية',
-    geographic: 'الخريطة الجغرافية',
-    directives: 'التبليغات والتوجيهات',
-    complaints: 'شكاوى المواطنين',
-    establishments: 'إدارة المنشآت'
+  const hasPerm = (p) => user?.permissions?.[p] === true;
+
+  const getAvailableTabs = () => {
+    const tabs = {};
+    if (hasPerm('showMainDashboard')) tabs.strategic = 'اللوحة الرئيسية (الاستراتيجية)';
+    if (user?.teams?.length > 0 || hasPerm('showFieldTeamsStats')) tabs.team_reports = 'تقارير الفرق الميدانية';
+    if (hasPerm('authenticatePenalties')) tabs.operations_room = 'غرفة العمليات المركزية';
+    if (hasPerm('showReportsPage')) tabs.geographic = 'الخريطة الجغرافية';
+    if (hasPerm('showDirectivesPage')) tabs.directives = 'التبليغات والتوجيهات';
+    if (hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) tabs.complaints = 'شكاوى المواطنين';
+    if (hasPerm('showLabPage')) tabs.lab_results = 'قرارات المختبر';
+    if (['director', 'central_director', 'admin'].includes(user?.role) && hasPerm('showMainDashboard')) tabs.financials = 'المالية';
+    if (hasPerm('createEst') || hasPerm('editEst') || hasPerm('deleteEst')) tabs.establishments = 'إدارة المنشآت';
+    return tabs;
   };
 
+  const availableTabsMap = getAvailableTabs();
+  
+  const activeTabKeys = (draftUiPreferences?.tabOrder || Object.keys(availableTabsMap)).filter(k => availableTabsMap[k]);
+  Object.keys(availableTabsMap).forEach(k => {
+    if (!activeTabKeys.includes(k)) activeTabKeys.push(k);
+  });
+
   const moveTab = (index, direction) => {
-    const newOrder = [...(draftUiPreferences.tabOrder || Object.keys(TAB_LABELS))];
+    const newOrder = [...activeTabKeys];
     if (direction === 'up' && index > 0) {
       [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
     } else if (direction === 'down' && index < newOrder.length - 1) {
@@ -35,7 +48,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in" dir="rtl">
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in" dir="rtl">
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-slate-200 dark:border-slate-800">
         <div className="shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 z-10">
           <h2 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
@@ -131,13 +144,13 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
               <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                   <ListOrdered className="w-4 h-4 text-teal-600" />
-                  ترتيب القوائم الجانبية (Sidebar Tabs Order)
+                  ترتيب قوائم الشريط الجانبي (Sidebar Tabs Order)
                 </label>
-                <div className="space-y-2 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                  {(draftUiPreferences?.tabOrder || Object.keys(TAB_LABELS)).map((tabKey, idx, arr) => (
+                <div className="grid grid-cols-2 gap-[10px] bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                  {activeTabKeys.map((tabKey, idx, arr) => (
                     <div key={tabKey} className="flex items-center justify-between bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{TAB_LABELS[tabKey] || tabKey}</span>
-                      <div className="flex items-center gap-1">
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate pl-2">{availableTabsMap[tabKey]}</span>
+                      <div className="flex items-center gap-1 shrink-0">
                         <button
                           disabled={idx === 0}
                           onClick={() => moveTab(idx, 'up')}
