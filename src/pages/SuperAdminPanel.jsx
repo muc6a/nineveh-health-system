@@ -1161,7 +1161,8 @@ export const SuperAdminPanel = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {activeTabObj?.keys.map(key => {
-                      const permDef = DEFAULT_PERMISSIONS[key];
+                      const permDef = PERMISSION_DETAILS[key];
+                      if (!permDef) return null;
                       const isGranted = !!selectedPermissionsAccount.permissions?.[key];
 
                       return (
