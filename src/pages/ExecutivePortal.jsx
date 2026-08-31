@@ -37,7 +37,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   const getInitialExecutiveTab = () => {
     if (hasPerm('showMainDashboard')) return 'strategic';
     if (hasPerm('showFieldTeamsStats')) return 'team_reports';
-    if (hasPerm('showOperationsRoom')) return 'operations_room';
+    if (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) return 'operations_room';
     if (hasPerm('manageEstablishments')) return 'establishments';
     if (hasPerm('showReportsPage')) return 'geographic';
     if (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) return 'unified_inbox';
@@ -52,7 +52,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     let needsRedirect = false;
     if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
     if (activeTab === 'team_reports' && !hasPerm('showFieldTeamsStats')) needsRedirect = true;
-    if (activeTab === 'operations_room' && !hasPerm('showOperationsRoom')) needsRedirect = true;
+    if (activeTab === 'operations_room' && !hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) needsRedirect = true;
     if (activeTab === 'geographic' && !hasPerm('showReportsPage')) needsRedirect = true;
     if (activeTab === 'directives' && !hasPerm('showDirectivesPage')) needsRedirect = true;
     if (activeTab === 'complaints' && !hasPerm('showPublicEvalsPage')) needsRedirect = true;
@@ -428,20 +428,20 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   icon: FlaskConical,
                   iconColorClass: 'text-fuchsia-500',
                   activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
-                  permission: 'showOperationsRoom',
+                  permission: null,
                   onClick: () => { setExecutiveTab('dashboard'); setActiveTab('lab_results'); },
                   isActive: executiveTab === 'dashboard' && activeTab === 'lab_results',
-                  showCondition: true
+                  showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')
                 },
                 financials: {
                   label: 'المالية',
                   icon: Database,
                   iconColorClass: 'text-emerald-500',
                   activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
-                  permission: 'showMainDashboard', // Required to be director/admin anyway
+                  permission: null,
                   onClick: () => { setExecutiveTab('dashboard'); setActiveTab('financials'); },
                   isActive: executiveTab === 'dashboard' && activeTab === 'financials',
-                  showCondition: ['director', 'central_director', 'admin'].includes(user?.role)
+                  showCondition: hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory')
                 },
                 establishments: {
                   label: 'إدارة المنشآت',
@@ -549,7 +549,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             {hasPerm('showFieldTeamsStats') && allowedTeams.length > 0 && (
               <option value="team_reports">👥 تقارير الفرق الميدانية</option>
             )}
-            {hasPerm('showOperationsRoom') && (
+            {hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') && (
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
             {hasPerm('showReportsPage') && (
@@ -561,10 +561,10 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             {hasPerm('showPublicEvalsPage') && (
               <option value="complaints">⚠️ شكاوى المواطنين</option>
             )}
-            {hasPerm('showOperationsRoom') && (
+            {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
               <option value="lab_results">🧪 قرارات المختبر</option>
             )}
-            {hasPerm('manageEstablishments') && (
+            {(hasPerm('createEst') || hasPerm('editEst') || hasPerm('deleteEst')) && (
               <option value="establishments">🏢 إدارة المنشآت</option>
             )}
 
@@ -804,7 +804,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               fullHeight={true}
             />
           </div>
-        ) : activeTab === 'lab_results' && hasPerm('showOperationsRoom') ? (
+        ) : activeTab === 'lab_results' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) ? (
           <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
               <div>
@@ -1019,7 +1019,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             </div>
           </div>
             
-            {hasPerm('showOperationsRoom') && (
+            {hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') && (
 <div className="glassmorphic-card p-6 border border-blue-500/20">
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
               <Target className="w-5 h-5 text-blue-500" />

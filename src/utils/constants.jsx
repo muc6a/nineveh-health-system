@@ -126,12 +126,14 @@ export const DEFAULT_PERMISSIONS = {
 
 export const PERMISSIONS_TABS = [
   { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: <Target className="w-4 h-4 text-red-500"/>, keys: ['authenticatePenalties', 'showFieldTeamsStats'] },
-  { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['createEst', 'editEst', 'deleteEst'] },
-  { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage', 'showLabPage', 'managePayments'] },
-  { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['addEval', 'showSectorMap', 'showSmartTasks', 'canSendSOS', 'showTeamMonthlyStats'] },
+  { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['createEst', 'addEval', 'editEst', 'deleteEst'] },
+  { id: 'complaints', label: 'الشكاوى', icon: <Compass className="w-4 h-4 text-rose-500"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage'] },
+  { id: 'lab', label: 'قرارات المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'labArchive'] },
+  { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['financialReports', 'payFines', 'dailyInventory'] },
+  { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['showSectorMap', 'showSmartTasks', 'canSendSOS'] },
   { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
   { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
-  { id: 'notifications', label: 'الإشعارات المخصصة', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
+  { id: 'notifications', label: 'الإشعارات', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
   { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'exportData', 'backupData'] },
 ];
 
@@ -140,13 +142,17 @@ export const PERMISSION_DETAILS = {
   editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي مطعم مسجل وتحديث معلوماته (كاسم المدير، رقم الهاتف، والتراخيص).' },
   deleteEst: { title: 'حذف منشأة نهائياً', desc: 'إذن خطير: يسمح لهذا الحساب بشطب ومسح المنشأة نهائياً من قاعدة بيانات النظام.' },
   addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
-  showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الرئيسية (الاستراتيجية، الميدانية، الخ).' },
+  showMainDashboard: { title: 'اللوحة الاستراتيجية', desc: 'الاطلاع على التقارير والإحصائيات الشاملة للمنظومة.' },
   showReportsPage: { title: 'الخريطة الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
-  showDirectivesPage: { title: 'التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
+  showDirectivesPage: { title: 'رؤية التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
   showPublicEvalsPage: { title: 'شكاوى المواطنين', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة.' },
   showDeliveryPage: { title: 'شكاوى خدمة التوصيل', desc: 'يسمح بمتابعة البلاغات الواردة بخصوص شركات التوصيل والدراجات النارية.' },
-  showLabPage: { title: 'اللوحة المختبرية', desc: 'يسمح للحساب بإدارة النماذج والطلبات الواردة للمختبر.' },
-  managePayments: { title: 'الإدارة المالية', desc: 'يسمح للحساب بمتابعة الجرد المالي وتسديد الغرامات.' },
+  receiveSamples: { title: 'استلام العينات', desc: 'يسمح للمختبر باستلام وجدولة العينات المسحوبة من المنشآت.' },
+  enterLabResults: { title: 'إدخال نتائج الفحص', desc: 'يسمح بإدخال وتوثيق نتائج الفحوصات المختبرية.' },
+  labArchive: { title: 'أرشيف المختبر', desc: 'يسمح بالاطلاع على السجل التاريخي لكافة الفحوصات المختبرية السابقة.' },
+  financialReports: { title: 'التقارير المالية', desc: 'يسمح للحساب بعرض التقارير المالية والإحصائيات الخاصة بالغرامات والواردات.' },
+  payFines: { title: 'تسديد الغرامات', desc: 'يسمح للحساب بتوثيق دفع الغرامات ورفع الوصل المالي لتبرئة ذمة المنشأة.' },
+  dailyInventory: { title: 'الجرد اليومي والمطابقة', desc: 'يسمح بإجراء الجرد اليومي والمطابقة المالية للإيرادات.' },
   sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
   replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
   canSendSOS: { title: 'إرسال نداء استغاثة (SOS)', desc: 'يسمح للفريق بإرسال إشعار طارئ لغرفة العمليات لطلب الإسناد.' },
@@ -154,25 +160,27 @@ export const PERMISSION_DETAILS = {
   showSmartTasks: { title: 'مهام اليوم (المهام الذكية)', desc: 'يسمح للفريق بالوصول لجدول المهام اليومية المخصصة لهم.' },
   showFieldTeamsStats: { title: 'متابعة أداء الفرق', desc: 'يسمح برؤية تقييمات وأداء اللجان الميدانية.' },
   authenticatePenalties: { title: 'المصادقة على العقوبات', desc: 'يسمح بالاطلاع على طلبات الإغلاق والغرامات المرفوعة من الفرق والمصادقة عليها.' },
-  showTeamMonthlyStats: { title: 'إحصائيات الإغلاقات والغرامات', desc: 'يسمح للفريق برؤية إحصائيات المطاعم المغلقة والمُغرمة ضمن قطاعه الميداني شهرياً.' },
   issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
   closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
   reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
-  notify_closures: { title: 'إشعارات الإغلاقات والعقوبات', desc: 'يسمح بوصول إشعارات المصادقة على الإغلاق أو إصدار الغرامات الميدانية (خاص بالفرق الميدانية والرقابة المركزية).' },
+  notify_closures: { title: 'إشعارات الإغلاقات والعقوبات', desc: 'يسمح بوصول إشعارات المصادقة على الإغلاق أو إصدار الغرامات الميدانية.' },
   notify_inspections: { title: 'إشعارات الكشوفات والمهام', desc: 'يسمح بوصول إشعارات إضافة كشف جديد أو طلبات إعادة الكشف.' },
-  notify_directives: { title: 'إشعارات التبليغات الإدارية', desc: 'يسمح بوصول إشعارات القرارات الإدارية، اجتماعات المجلس، ونداءات الاستغاثة (مهم جداً للمدير العام).' },
+  notify_directives: { title: 'إشعارات التبليغات الإدارية', desc: 'يسمح بوصول إشعارات القرارات الإدارية، اجتماعات المجلس، ونداءات الاستغاثة.' },
   exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المطاعم على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
-  backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' }
+  backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
+  showTeamDashboard: { title: 'اللوحة الميدانية', desc: 'يسمح للحساب بالوصول إلى لوحة المتابعة الميدانية والعمليات اليومية.' },
+  monitorClosures: { title: 'لوحة الرصد والمتابعة', desc: 'مراقبة التزام المنشآت بقرارات الإغلاق والتشميع.' },
+  searchAndAddPreliminaryEst: { title: 'الاستعلام والرصد', desc: 'البحث عن المنشآت، وإضافة منشأة أولية/غير مسجلة مع تحديد موقعها وصورها ليتم تفتيشها لاحقاً.' }
 };
 
 export const ROLE_CORE_BASICS = {
-  director: ['showMainDashboard', 'authenticatePenalties', 'showFieldTeamsStats', 'showDirectivesPage', 'closeEst', 'issueFine'],
-  central_director: ['authenticatePenalties', 'showFieldTeamsStats', 'editEst', 'deleteEst', 'showMainDashboard', 'showReportsPage', 'exportData', 'backupData'],
-  accountant: ['managePayments'],
-  financial_accountant: ['managePayments'],
-  team: ['createEst', 'addEval'],
-  lab: ['showLabPage'],
-  tracker: ['showPublicEvalsPage', 'showDeliveryPage']
+  director: ['showMainDashboard'],
+  central_director: ['authenticatePenalties', 'showFieldTeamsStats', 'editEst', 'deleteEst'],
+  accountant: ['payFines', 'dailyInventory', 'financialReports'],
+  financial_accountant: ['payFines', 'dailyInventory', 'financialReports'],
+  team: ['createEst', 'addEval', 'showTeamDashboard'],
+  lab: ['receiveSamples', 'enterLabResults', 'labArchive'],
+  tracker: ['monitorClosures', 'searchAndAddPreliminaryEst']
 };
 
 export const PERMISSION_ROLES = {
