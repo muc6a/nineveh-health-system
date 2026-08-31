@@ -527,7 +527,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
             </div>
             <h2 className="text-lg font-black text-slate-800 dark:text-white">لا توجد صلاحيات مخصصة</h2>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب حتى الآن. جميع القوائم والمهام محجوبة. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر لوحة التحكم.
+              عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب حتى الآن. جميع القوائم والمهام محجوبة. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر الرئيسية.
             </p>
           </div>
         )}

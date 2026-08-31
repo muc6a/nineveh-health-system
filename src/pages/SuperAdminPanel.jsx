@@ -9,7 +9,7 @@ import { Plus, Trash2, DollarSign, Edit, X, Power, ShieldAlert, Check, Users, Se
 import { AccountModal } from '../components/AccountModal';
 import { EvaluationManager } from '../components/EvaluationManager';
 import { FinesManager } from '../components/FinesManager';
-import { ROLES_DICTIONARY } from '../utils/constants';
+import { ROLES_DICTIONARY, ROLE_CORE_BASICS } from '../utils/constants';
 
 const PERMISSIONS_TABS = [
   { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
@@ -251,21 +251,41 @@ export const SuperAdminPanel = () => {
   const handleSavePermissions = () => {
     if (!selectedPermissionsAccount) return;
     
-    const role = selectedPermissionsAccount.role;
-    if (role === 'team' || selectedPermissionsAccount.isTeam || !role) {
-      setTeams(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
+    // Inject core basics before saving
+    const getRoleKey = (acc) => {
+      if (!acc) return null;
+      if (acc.role) return acc.role;
+      if (acc.id?.startsWith('team_')) return 'team';
+      if (acc.id?.startsWith('tracker_')) return 'tracker';
+      if (acc.id?.startsWith('lab_')) return 'lab';
+      if (acc.id?.startsWith('accountant_')) return 'accountant';
+      if (acc.id?.startsWith('director_')) return 'director';
+      return null;
+    };
+    
+    const roleKey = getRoleKey(selectedPermissionsAccount);
+    const coreKeys = ROLE_CORE_BASICS[roleKey] || [];
+    
+    const finalPermissions = { ...(selectedPermissionsAccount.permissions || {}) };
+    coreKeys.forEach(k => finalPermissions[k] = true);
+    
+    const finalAccount = { ...selectedPermissionsAccount, permissions: finalPermissions };
+
+    const role = finalAccount.role;
+    if (role === 'team' || finalAccount.isTeam || !role) {
+      setTeams(prev => prev.map(t => t.id === finalAccount.id ? finalAccount : t));
     } else if (role === 'accountant' || role === 'financial_accountant') {
-      setAccountants(prev => prev.map(a => a.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : a));
-    } else if (selectedPermissionsAccount.role === 'lab') {
-      setLabs(prev => prev.map(l => l.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : l));
+      setAccountants(prev => prev.map(a => a.id === finalAccount.id ? finalAccount : a));
+    } else if (finalAccount.role === 'lab') {
+      setLabs(prev => prev.map(l => l.id === finalAccount.id ? finalAccount : l));
     } else if (role === 'tracker') {
-      setTrackers(prev => prev.map(t => t.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : t));
+      setTrackers(prev => prev.map(t => t.id === finalAccount.id ? finalAccount : t));
     } else {
-      setDirectors(prev => prev.map(d => d.id === selectedPermissionsAccount.id ? selectedPermissionsAccount : d));
+      setDirectors(prev => prev.map(d => d.id === finalAccount.id ? finalAccount : d));
     }
     
-    logAudit('تعديل صلاحيات حساب', selectedPermissionsAccount.id, null, selectedPermissionsAccount.permissions, 'تعديل الصلاحيات الإدارية', user);
-    triggerAlert(`تم حفظ وتحديث الصلاحيات لحساب (${selectedPermissionsAccount.name}) بنجاح.`);
+    logAudit('تعديل صلاحيات حساب', finalAccount.id, null, finalAccount.permissions, 'تعديل الصلاحيات الإدارية', user);
+    triggerAlert(`تم حفظ وتحديث الصلاحيات لحساب (${finalAccount.name}) بنجاح.`);
     setShowPermissionsModal(false);
   };
 
@@ -906,17 +926,17 @@ export const SuperAdminPanel = () => {
       </header>
 
       {/* Tabs navigation */}
-      <div className="w-full max-w-[1400px] mx-auto flex flex-nowrap justify-evenly items-center overflow-hidden gap-1 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-4 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2">
+      <div className="w-full max-w-full mx-auto flex flex-nowrap justify-between items-center gap-0.5 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-2 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2 overflow-x-hidden">
         {(user?.role === 'admin' || user?.role === 'central_director') && (
           <button
             onClick={() => setActiveTab('roster')}
-            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'roster'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Users className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
+            <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
             <span>إدارة الحسابات</span>
           </button>
         )}
@@ -924,98 +944,96 @@ export const SuperAdminPanel = () => {
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('general_settings')}
-            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'general_settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Settings className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
-            <span>هوية المنظومة والبوابات</span>
+            <Settings className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+            <span>هوية المنظومة</span>
           </button>
         )}
 
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('permissions')}
-            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'permissions'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <ShieldAlert className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
-            <span>مركز الصلاحيات</span>
+            <ShieldAlert className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+            <span>الصلاحيات</span>
           </button>
         )}
         
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('activities_fines')}
-            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'activities_fines'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Gavel className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
-            <span>إدارة النشاطات والقوانين الرقابية</span>
+            <Gavel className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+            <span>النشاطات والقوانين</span>
           </button>
         )}
 
         {user?.role === 'admin' && (
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'settings'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
-            <Database className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
-            <span>قواعد البيانات والتخزين</span>
+            <Database className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+            <span>التخزين</span>
           </button>
         )}
 
         <button
           onClick={() => setActiveTab('establishments')}
-          className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+          className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
             activeTab === 'establishments'
               ? 'bg-teal-600 text-white shadow-md'
               : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
           }`}
         >
-          <Building className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
-          <span>قاعدة بيانات المنشآت</span>
+          <Building className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+          <span>المنشآت</span>
         </button>
 
         {(user?.role === 'admin' || user?.role === 'central_director') && (
           <>
             <button
               onClick={() => setActiveTab('audit')}
-              className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+              className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
                 activeTab === 'audit'
                   ? 'bg-teal-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <ShieldAlert className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
-              <span>سجل المراقبة والتدقيق</span>
+              <ShieldAlert className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+              <span>التدقيق</span>
             </button>
 
             <button
               onClick={() => setActiveTab('broadcast')}
-              className={`px-2 py-2 rounded-xl text-[10px] sm:text-xs md:text-sm font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1.5 cursor-pointer ${
+              className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
                 activeTab === 'broadcast'
                   ? 'bg-red-600 text-white shadow-md'
                   : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
               }`}
             >
-              <AlertTriangle className="w-3.5 h-3.5 md:w-4.5 md:h-4.5 shrink-0" />
-              <span>نظام التعميم والبث العاجل</span>
+              <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+              <span>التعميم</span>
             </button>
-
-
           </>
         )}
       </div>
@@ -1149,14 +1167,61 @@ export const SuperAdminPanel = () => {
 
                 {/* Left Side: Permission Toggles */}
                 <div className="w-full md:w-2/3 bg-white/50 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/10 p-6 md:p-8 relative">
-                  <div className="mb-4 pb-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
+                  {/* Core Basics Section */}
+                  <div className="mb-8">
+                    <h4 className="text-base font-black text-teal-700 dark:text-teal-400 mb-4 flex items-center gap-2">
+                      <Shield className="w-5 h-5" /> أساسيات الحساب الثابتة (Core Basics)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(() => {
+                        const getRoleKey = (acc) => {
+                          if (!acc) return null;
+                          if (acc.role) return acc.role;
+                          if (acc.id?.startsWith('team_')) return 'team';
+                          if (acc.id?.startsWith('tracker_')) return 'tracker';
+                          if (acc.id?.startsWith('lab_')) return 'lab';
+                          if (acc.id?.startsWith('accountant_')) return 'accountant';
+                          if (acc.id?.startsWith('director_')) return 'director';
+                          return null;
+                        };
+                        const roleKey = getRoleKey(selectedPermissionsAccount);
+                        const coreKeys = ROLE_CORE_BASICS[roleKey] || [];
+                        
+                        if (coreKeys.length === 0) return <p className="text-xs text-slate-500">لا توجد أساسيات ثابتة محددة لهذا الحساب.</p>;
+
+                        return coreKeys.map(key => {
+                          const permDef = PERMISSION_DETAILS[key] || { title: key, desc: '' };
+                          return (
+                            <div key={key} className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-900/10 border border-teal-200 dark:border-teal-800/50 shadow-sm opacity-90 cursor-not-allowed">
+                              <div className="flex justify-between items-start gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <h5 className="text-sm font-black mb-1.5 text-teal-800 dark:text-teal-300">
+                                    {permDef.title}
+                                  </h5>
+                                  <p className="text-[11px] leading-relaxed text-teal-700/80 dark:text-teal-400/80">
+                                    {permDef.desc} (أساسي ومفعل دائماً)
+                                  </p>
+                                </div>
+                                <div className="relative shrink-0 w-14 h-7 rounded-full bg-teal-500">
+                                  <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white shadow-md"></div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        });
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Active Tab Toggles */}
+                  <div className="mb-4 pb-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 mt-8">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
                         {activeTabObj?.icon}
                       </div>
                       <div>
-                        <h4 className="text-base font-black text-slate-800 dark:text-white">{activeTabObj?.label || 'القسم'}</h4>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">تحكم بـ {activeTabObj?.keys?.length || 0} إذن ضمن هذا القسم</p>
+                        <h4 className="text-base font-black text-slate-800 dark:text-white">الصلاحيات الإضافية: {activeTabObj?.label || 'القسم'}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">تبديل الصلاحيات الاختيارية</p>
                       </div>
                     </div>
                     {/* Per-section Enable/Disable All */}
@@ -1191,45 +1256,65 @@ export const SuperAdminPanel = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(activeTabObj?.keys || []).map(key => {
-                      const permDef = PERMISSION_DETAILS[key];
-                      const fallbackTitle = key;
-                      const title = permDef?.title || fallbackTitle;
-                      const desc = permDef?.desc || '';
-                      const isGranted = !!selectedPermissionsAccount?.permissions?.[key];
+                    {(() => {
+                      const getRoleKey = (acc) => {
+                        if (!acc) return null;
+                        if (acc.role) return acc.role;
+                        if (acc.id?.startsWith('team_')) return 'team';
+                        if (acc.id?.startsWith('tracker_')) return 'tracker';
+                        if (acc.id?.startsWith('lab_')) return 'lab';
+                        if (acc.id?.startsWith('accountant_')) return 'accountant';
+                        if (acc.id?.startsWith('director_')) return 'director';
+                        return null;
+                      };
+                      const roleKey = getRoleKey(selectedPermissionsAccount);
+                      const coreKeys = ROLE_CORE_BASICS[roleKey] || [];
+                      const additionalKeys = (activeTabObj?.keys || []).filter(k => !coreKeys.includes(k));
 
-                      return (
-                        <div key={key} className={`p-4 rounded-2xl border transition-all duration-300 ${isGranted ? 'bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 border-teal-200 dark:border-teal-800/50 shadow-sm' : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5'}`}>
-                          <div className="flex justify-between items-start gap-4">
-                            <div className="flex-1 min-w-0">
-                              <h5 className={`text-sm font-black mb-1.5 ${isGranted ? 'text-teal-800 dark:text-teal-300' : 'text-slate-800 dark:text-slate-200'}`}>
-                                {title}
-                              </h5>
-                              {desc && (
-                                <p className={`text-[11px] leading-relaxed ${isGranted ? 'text-teal-700/80 dark:text-teal-400/80' : 'text-slate-600 dark:text-slate-400'}`}>
-                                  {desc}
-                                </p>
-                              )}
+                      if (additionalKeys.length === 0) {
+                         return <div className="col-span-full text-center p-4 text-xs text-slate-500">جميع الصلاحيات في هذا القسم تقع ضمن الأساسيات الثابتة للحساب.</div>;
+                      }
+
+                      return additionalKeys.map(key => {
+                        const permDef = PERMISSION_DETAILS[key];
+                        const fallbackTitle = key;
+                        const title = permDef?.title || fallbackTitle;
+                        const desc = permDef?.desc || '';
+                        const isGranted = !!selectedPermissionsAccount?.permissions?.[key];
+
+                        return (
+                          <div key={key} className={`p-4 rounded-2xl border transition-all duration-300 ${isGranted ? 'bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-purple-200 dark:border-purple-800/50 shadow-sm' : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5'}`}>
+                            <div className="flex justify-between items-start gap-4">
+                              <div className="flex-1 min-w-0">
+                                <h5 className={`text-sm font-black mb-1.5 ${isGranted ? 'text-purple-800 dark:text-purple-300' : 'text-slate-800 dark:text-slate-200'}`}>
+                                  {title}
+                                </h5>
+                                {desc && (
+                                  <p className={`text-[11px] leading-relaxed ${isGranted ? 'text-purple-700/80 dark:text-purple-400/80' : 'text-slate-600 dark:text-slate-400'}`}>
+                                    {desc}
+                                  </p>
+                                )}
+                              </div>
+                              
+                              <button
+                                onClick={() => {
+                                  setSelectedPermissionsAccount(prev => ({
+                                    ...prev,
+                                    permissions: {
+                                      ...(prev?.permissions || {}),
+                                      [key]: !isGranted
+                                    }
+                                  }));
+                                }}
+                                className={`relative shrink-0 w-14 h-7 rounded-full transition-colors duration-300 ease-in-out cursor-pointer ${isGranted ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+                              >
+                                <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-all duration-300 ease-in-out shadow-md ${isGranted ? 'right-1' : 'right-8'}`}></div>
+                              </button>
                             </div>
-                            
-                            <button
-                              onClick={() => {
-                                setSelectedPermissionsAccount(prev => ({
-                                  ...prev,
-                                  permissions: {
-                                    ...(prev?.permissions || {}),
-                                    [key]: !isGranted
-                                  }
-                                }));
-                              }}
-                              className={`relative shrink-0 w-14 h-7 rounded-full transition-colors duration-300 ease-in-out cursor-pointer ${isGranted ? 'bg-teal-500' : 'bg-slate-300 dark:bg-slate-700'}`}
-                            >
-                              <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-all duration-300 ease-in-out shadow-md ${isGranted ? 'right-1' : 'right-8'}`}></div>
-                            </button>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               </div>
@@ -2772,88 +2857,124 @@ export const SuperAdminPanel = () => {
               {/* Left Content Area: Toggle Switches */}
               <div className="w-full md:w-2/3 flex flex-col bg-slate-50/80 dark:bg-slate-900/40 relative z-10 shrink-0 md:shrink md:min-h-0">
                 <div className="p-4 md:p-8 flex flex-col min-h-0 flex-1 md:overflow-hidden">
-                <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5 shrink-0">
-                  <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
-                    <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
-                      {activeTabObj?.icon}
+                  {/* Core Basics Section */}
+                  <div className="mb-8">
+                    <h4 className="text-base font-black text-purple-700 dark:text-purple-400 mb-4 flex items-center gap-2">
+                      <Shield className="w-5 h-5" /> أساسيات الحساب الثابتة (Core Basics)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(() => {
+                        const getRoleKey = (acc) => {
+                          if (!acc) return null;
+                          if (acc.role) return acc.role;
+                          if (acc.id?.startsWith('team_')) return 'team';
+                          if (acc.id?.startsWith('tracker_')) return 'tracker';
+                          if (acc.id?.startsWith('lab_')) return 'lab';
+                          if (acc.id?.startsWith('accountant_')) return 'accountant';
+                          if (acc.id?.startsWith('director_')) return 'director';
+                          return null;
+                        };
+                        const roleKey = getRoleKey(selectedPermissionsAccount);
+                        const coreKeys = ROLE_CORE_BASICS[roleKey] || [];
+                        
+                        if (coreKeys.length === 0) return <p className="text-xs text-slate-500">لا توجد أساسيات ثابتة محددة لهذا الحساب.</p>;
+
+                        return coreKeys.map(key => {
+                          const permDef = PERMISSION_DETAILS[key] || { title: key, desc: '' };
+                          return (
+                            <div key={key} className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800/50 shadow-sm opacity-90 cursor-not-allowed">
+                              <div className="flex justify-between items-start gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <h5 className="text-sm font-black mb-1.5 text-purple-800 dark:text-purple-300">
+                                    {permDef.title}
+                                  </h5>
+                                  <p className="text-[11px] leading-relaxed text-purple-700/80 dark:text-purple-400/80">
+                                    {permDef.desc} (أساسي ومفعل دائماً)
+                                  </p>
+                                </div>
+                                <div className="relative shrink-0 w-14 h-7 rounded-full bg-purple-500">
+                                  <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white shadow-md"></div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
-                    {activeTabObj?.label}
-                  </h4>
-                  <button onClick={() => setShowPermissionsModal(false)} className="hidden md:flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group">
-                    <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                  </button>
-                </div>
+                  </div>
 
-                <div className="flex-1 md:overflow-y-auto pr-3 pb-6 space-y-3 custom-scrollbar">
-                  {activeTabObj?.keys.map(key => {
-                    const detail = PERMISSION_DETAILS[key];
-                    const isGranted = !!selectedPermissionsAccount.permissions?.[key];
-                    const accountRole = (selectedPermissionsAccount.id?.startsWith('team_') || selectedPermissionsAccount.id?.startsWith('tracker_')) ? 'team' : 'management';
-                    const targetRole = PERMISSION_ROLES[key] || 'all';
-                    const isOutofRole = targetRole !== 'all' && targetRole !== accountRole;
-
-                    
-  // Gather all accounts for the permissions center dropdown
-  const allAccountsForPermissions = [
-    { label: 'الفرق الميدانية', options: teams.map(t => ({ value: `team_${t.id}`, label: t.name, obj: t, type: 'team' })) },
-    { label: 'مدراء الصحة (المدراء)', options: directors.map(d => ({ value: `director_${d.id}`, label: d.name, obj: d, type: 'director' })) },
-    { label: 'المتابعين الميدانيين', options: trackers.map(tr => ({ value: `tracker_${tr.id}`, label: tr.name, obj: tr, type: 'tracker' })) },
-    { label: 'المحاسبين الماليين', options: accountants.map(a => ({ value: `accountant_${a.id}`, label: a.name, obj: a, type: 'accountant' })) },
-    { label: 'المختبرات المركزية', options: labs.map(l => ({ value: `lab_${l.id}`, label: l.name, obj: l, type: 'lab' })) }
-  ];
-
-  // When an account is selected in the permissions tab, we need to populate `selectedPermissionsAccount`
-  const handlePermissionsAccountSelect = (e) => {
-    const val = e.target.value;
-    setPermissionsSelectedAccountId(val);
-    if (!val) {
-      setSelectedPermissionsAccount(null);
-      return;
-    }
-    
-    // Find the object
-    for (let group of allAccountsForPermissions) {
-      const found = group.options.find(opt => opt.value === val);
-      if (found) {
-        setSelectedPermissionsAccount(found.obj);
-        // Important: Reset granted state to whatever is in the DB
-        break;
-      }
-    }
-  };
-
-  return (
-                      <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${isGranted ? (isOutofRole ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-500/40 shadow-[0_0_20px_-5px_rgba(168,85,247,0.1)]') : (isOutofRole ? 'bg-slate-100/50 dark:bg-slate-800/20 border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40' : 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-white/10')}`}>
-                        {isGranted && <div className={`absolute right-0 top-0 bottom-0 w-1 shadow-md ${isOutofRole ? 'bg-amber-500 shadow-amber-500/50' : 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]'}`}></div>}
-                        
-                        <div className="flex flex-col pl-4 transition-transform duration-300 group-hover:-translate-x-1 w-full">
-                          <div className="flex items-center gap-2 mb-1.5">
-                            {isOutofRole && (
-                               isGranted ? <Unlock className="w-4 h-4 text-amber-500 shrink-0" /> : <Lock className="w-4 h-4 text-slate-400 shrink-0" />
-                            )}
-                            <span className={`text-sm font-black transition-colors ${isGranted ? (isOutofRole ? 'text-amber-700 dark:text-amber-400' : 'text-purple-700 dark:text-purple-300') : 'text-slate-700 dark:text-slate-200'}`}>{detail.title}</span>
-                            
-                            {isOutofRole && (
-                              <span className={`text-[9px] px-2 py-0.5 rounded border font-bold mr-auto shrink-0 ${isGranted ? 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700/50' : 'bg-slate-200 text-slate-500 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'}`}>
-                                {isGranted ? 'استثناء مفعّل' : (targetRole === 'management' ? 'خاص بالإدارة' : 'خاص بالميدان')}
-                              </span>
-                            )}
-                          </div>
-                          <span className={`text-[11px] leading-relaxed font-medium pr-6 ${isOutofRole && !isGranted ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>{detail.desc}</span>
-                        </div>
-                        
-                        {!isOutofRole ? (
-                          <div className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 border ${isGranted ? 'bg-purple-500 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-slate-300 dark:bg-slate-700/80 border-slate-400 dark:border-slate-600 shadow-inner'}`}>
-                            <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md ${isGranted ? 'left-1' : 'left-[26px]'}`}></div>
-                          </div>
-                        ) : (
-                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 border shadow-sm ${isGranted ? 'bg-amber-500 text-white border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:bg-amber-600' : 'bg-slate-200 text-slate-400 border-slate-300 dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-300 dark:hover:bg-slate-700/80'}`}>
-                             {isGranted ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
-                           </div>
-                        )}
+                  <div className="flex items-center justify-between mb-8 pb-5 border-b border-slate-200 dark:border-white/5 shrink-0 mt-8">
+                    <h4 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 drop-shadow-md">
+                      <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-purple-600 dark:text-purple-400">
+                        {activeTabObj?.icon}
                       </div>
-                    );
-                  })}
+                      الصلاحيات الإضافية: {activeTabObj?.label}
+                    </h4>
+                    <button onClick={() => setShowPermissionsModal(false)} className="hidden md:flex p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all items-center justify-center group">
+                      <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                    </button>
+                  </div>
+
+                  <div className="flex-1 md:overflow-y-auto pr-3 pb-6 space-y-3 custom-scrollbar">
+                    {(() => {
+                      const getRoleKey = (acc) => {
+                        if (!acc) return null;
+                        if (acc.role) return acc.role;
+                        if (acc.id?.startsWith('team_')) return 'team';
+                        if (acc.id?.startsWith('tracker_')) return 'tracker';
+                        if (acc.id?.startsWith('lab_')) return 'lab';
+                        if (acc.id?.startsWith('accountant_')) return 'accountant';
+                        if (acc.id?.startsWith('director_')) return 'director';
+                        return null;
+                      };
+                      const roleKey = getRoleKey(selectedPermissionsAccount);
+                      const coreKeys = ROLE_CORE_BASICS[roleKey] || [];
+                      const additionalKeys = (activeTabObj?.keys || []).filter(k => !coreKeys.includes(k));
+                      
+                      if (additionalKeys.length === 0) {
+                        return <div className="text-center p-4 text-xs text-slate-500">جميع الصلاحيات في هذا القسم تقع ضمن الأساسيات الثابتة للحساب.</div>;
+                      }
+
+                      return additionalKeys.map(key => {
+                        const detail = PERMISSION_DETAILS[key];
+                        const isGranted = !!selectedPermissionsAccount.permissions?.[key];
+                        const accountRole = (selectedPermissionsAccount.id?.startsWith('team_') || selectedPermissionsAccount.id?.startsWith('tracker_')) ? 'team' : 'management';
+                        const targetRole = PERMISSION_ROLES[key] || 'all';
+                        const isOutofRole = targetRole !== 'all' && targetRole !== accountRole;
+
+                        return (
+                          <div key={key} onClick={() => togglePermission(key)} className={`group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${isGranted ? (isOutofRole ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-500/40 shadow-[0_0_20px_-5px_rgba(245,158,11,0.2)]' : 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-500/40 shadow-[0_0_20px_-5px_rgba(168,85,247,0.1)]') : (isOutofRole ? 'bg-slate-100/50 dark:bg-slate-800/20 border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/40' : 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800/80 hover:border-slate-300 dark:hover:border-white/10')}`}>
+                            {isGranted && <div className={`absolute right-0 top-0 bottom-0 w-1 shadow-md ${isOutofRole ? 'bg-amber-500 shadow-amber-500/50' : 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.8)]'}`}></div>}
+                            
+                            <div className="flex flex-col pl-4 transition-transform duration-300 group-hover:-translate-x-1 w-full">
+                              <div className="flex items-center gap-2 mb-1.5">
+                                {isOutofRole && (
+                                   isGranted ? <Unlock className="w-4 h-4 text-amber-500 shrink-0" /> : <Lock className="w-4 h-4 text-slate-400 shrink-0" />
+                                )}
+                                <span className={`text-sm font-black transition-colors ${isGranted ? (isOutofRole ? 'text-amber-700 dark:text-amber-400' : 'text-purple-700 dark:text-purple-300') : 'text-slate-700 dark:text-slate-200'}`}>{detail.title}</span>
+                                
+                                {isOutofRole && (
+                                  <span className={`text-[9px] px-2 py-0.5 rounded border font-bold mr-auto shrink-0 ${isGranted ? 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700/50' : 'bg-slate-200 text-slate-500 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'}`}>
+                                    {isGranted ? 'استثناء مفعّل' : (targetRole === 'management' ? 'خاص بالإدارة' : 'خاص بالميدان')}
+                                  </span>
+                                )}
+                              </div>
+                              <span className={`text-[11px] leading-relaxed font-medium pr-6 ${isOutofRole && !isGranted ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>{detail.desc}</span>
+                            </div>
+                            
+                            {!isOutofRole ? (
+                              <div className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 border ${isGranted ? 'bg-purple-500 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-slate-300 dark:bg-slate-700/80 border-slate-400 dark:border-slate-600 shadow-inner'}`}>
+                                <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all duration-300 shadow-md ${isGranted ? 'left-1' : 'left-[26px]'}`}></div>
+                              </div>
+                            ) : (
+                               <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 border shadow-sm ${isGranted ? 'bg-amber-500 text-white border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:bg-amber-600' : 'bg-slate-200 text-slate-400 border-slate-300 dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-300 dark:hover:bg-slate-700/80'}`}>
+                                 {isGranted ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                               </div>
+                            )}
+                          </div>
+                        );
+                      });
+                    })()}
                   
                   {activePermissionsTab === 'directives' && (
                     <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-start gap-3">

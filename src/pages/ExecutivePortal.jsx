@@ -351,14 +351,14 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
           <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 mb-4 pr-1 pl-2">
             <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
-              لوحة التحكم والفرز الإقليمي
+              الرئيسية
             </span>
 
             {/* Dynamic Sidebar Buttons Based on uiPreferences.tabOrder */}
             {(() => {
               const tabConfig = {
                 strategic: {
-                  label: 'اللوحة الرئيسية (الاستراتيجية)',
+                  label: 'الرئيسية',
                   icon: TrendingUp,
                   iconColorClass: '',
                   activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20',
@@ -418,10 +418,10 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   icon: ShieldAlert,
                   iconColorClass: 'text-red-500',
                   activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
-                  permission: 'showPublicEvalsPage',
+                  permission: null,
                   onClick: () => { setExecutiveTab('dashboard'); setActiveTab('complaints'); },
                   isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
-                  showCondition: true
+                  showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')
                 },
                 lab_results: {
                   label: 'قرارات المختبر',
@@ -458,7 +458,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               const tabOrder = uiPreferences?.tabOrder || Object.keys(tabConfig);
               return tabOrder.map(tabKey => {
                 const config = tabConfig[tabKey];
-                if (!config || !hasPerm(config.permission) || !config.showCondition) return null;
+                if (!config || (config.permission && !hasPerm(config.permission)) || !config.showCondition) return null;
                 const Icon = config.icon;
                 
                 return (
@@ -639,7 +639,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             </div>
             <h2 className="text-lg font-black text-slate-800 dark:text-white">لا توجد صلاحيات مخصصة</h2>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب الإداري. جميع المؤشرات والمهام محجوبة كإجراء احترازي. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر لوحة التحكم المركزية.
+              عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب الإداري. جميع المؤشرات والمهام محجوبة كإجراء احترازي. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر الرئيسية.
             </p>
           </div>
         )}

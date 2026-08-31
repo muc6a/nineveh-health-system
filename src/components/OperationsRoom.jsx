@@ -7,7 +7,7 @@ import { FinancialReports } from './FinancialReports';
 
 export default function OperationsRoom() {
   const { notify, teams, trackers, setTeams, setTrackers, penaltyRequests, setPenaltyRequests, establishments, setEstablishments, setSosAlerts, chatMessages, addChatMessage, markChatRead, user, labRequests, setLabRequests, addSystemNotification, sosAlerts, setDispatches, setClosureVerifications, closureVerifications } = useContext(AppContext);
-  const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'live_operations');
+  const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'penalties');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
   const [showClosureArchive, setShowClosureArchive] = useState(false);
@@ -145,57 +145,13 @@ export default function OperationsRoom() {
   return (
     <div className="space-y-6 text-right">
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
-        <button onClick={() => setActiveTab('teams_management')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'teams_management' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <ShieldCheck className="w-4 h-4" />إدارة اللجان ({teams?.length || 0})
-        </button>
-        <button onClick={() => setActiveTab('trackers_management')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'trackers_management' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <Users className="w-4 h-4" />إدارة المتابعين ({trackers?.length || 0})
-        </button>
         <button onClick={() => setActiveTab('penalties')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <AlertCircle className="w-4 h-4" />المصادقة على العقوبات
+          <AlertCircle className="w-4 h-4" />المصادقة على العقوبات (Penalty Authentication)
+        </button>
+        <button onClick={() => setActiveTab('team_performance')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'team_performance' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+          <Target className="w-4 h-4" />أداء الفرق الميدانية (Team Performance)
         </button>
       </div>
-
-      {activeTab === 'teams_management' && (
-        <div className="glassmorphic-card p-6 border border-teal-500/20">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <div>
-              <h3 className="text-sm font-black text-slate-800 dark:text-white">إدارة اللجان الميدانية</h3>
-              <p className="text-[10px] text-slate-500 mt-1">توليد حسابات لجان التفتيش وتوزيع المسؤوليات القطاعية في نينوى</p>
-            </div>
-            <button onClick={() => setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'team' })} className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs transition-all cursor-pointer shadow-md">
-              ➕ إنشاء وتعيين فريق جديد
-            </button>
-          </div>
-          <div className="overflow-x-auto border-t border-slate-200/50 dark:border-slate-800/50 pt-4">
-            <table className="w-full text-right border-collapse text-xs font-bold">
-              <thead>
-                <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                  <th className="p-3">اسم فريق التفتيش</th>
-                  <th className="p-3">القطاع المكلف</th>
-                  <th className="p-3">حالة الحساب</th>
-                  <th className="p-3 text-center">الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
-                {teams.map(t => (
-                  <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
-                    <td className="p-3 text-slate-800 dark:text-slate-200">{t.name}</td>
-                    <td className="p-3 text-teal-600 dark:text-teal-400">{t.sector}</td>
-                    <td className="p-3">{t.active ? <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px]">نشط وصالح</span> : <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-600 text-[10px]">مجمد مؤقتاً</span>}</td>
-                    <td className="p-3">
-                      <div className="flex justify-center gap-2">
-                        <button onClick={() => setAccountModalState({ isOpen: true, mode: 'edit', data: { ...t, isTeam: true }, accountType: 'team' })} className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 transition-all cursor-pointer"><Edit className="w-4 h-4" /></button>
-                        <button onClick={() => handleDeleteTeam(t.id)} className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all cursor-pointer"><Trash2 className="w-4 h-4" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {activeTab === 'penalties' && (
         <div className="space-y-6">
@@ -262,36 +218,15 @@ export default function OperationsRoom() {
         </div>
       )}
 
-      {activeTab === 'trackers_management' && (
-        <div className="glassmorphic-card p-6 border border-indigo-500/20">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="text-sm font-black text-slate-800 dark:text-white">إدارة المتابعين الميدانيين</h3>
-            </div>
-            <button onClick={() => setAccountModalState({ isOpen: true, mode: 'add', data: null, accountType: 'tracker' })} className="px-4 py-2 rounded-xl bg-indigo-600 text-white font-extrabold text-xs">➕ إنشاء حساب متابع</button>
-          </div>
-          <table className="w-full text-right border-collapse text-xs font-bold">
-            <thead>
-              <tr className="bg-slate-100/50 border-b border-slate-200">
-                <th className="p-3">اسم المتابع</th>
-                <th className="p-3">القطاع</th>
-                <th className="p-3 text-center">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {trackers?.map(t => (
-                <tr key={t.id} className="border-b border-slate-100">
-                  <td className="p-3">{t.name}</td>
-                  <td className="p-3">{t.linkedTeamSector}</td>
-                  <td className="p-3 text-center"><button onClick={() => setTrackers(prev => prev.filter(tr => tr.id !== t.id))} className="text-red-600"><Trash2 className="w-4 h-4" /></button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       )}
 
-
+      {activeTab === 'team_performance' && (
+        <div className="glassmorphic-card p-6 border border-teal-500/20 text-center">
+          <Target className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+          <h3 className="text-lg font-black text-slate-800 dark:text-white">أداء الفرق الميدانية</h3>
+          <p className="text-slate-500 mt-2 text-sm">سيتم تفعيل لوحة متابعة أداء وتقييم الفرق الميدانية قريباً.</p>
+        </div>
+      )}
 
       {/* Account Modal for Adding/Editing Teams */}
       {accountModalState.isOpen && (
