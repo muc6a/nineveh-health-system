@@ -1,4 +1,4 @@
-import { Building, Compass, Activity, Mail, ShieldAlert, Bell, Settings } from 'lucide-react';
+import { Building, Compass, Activity, Mail, ShieldAlert, Bell, Settings, Target } from 'lucide-react';
 import React from 'react';
 
 export const ROLES_DICTIONARY = [
