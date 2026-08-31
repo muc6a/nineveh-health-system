@@ -9,55 +9,7 @@ import { Plus, Trash2, DollarSign, Edit, X, Power, ShieldAlert, Check, Users, Se
 import { AccountModal } from '../components/AccountModal';
 import { EvaluationManager } from '../components/EvaluationManager';
 import { FinesManager } from '../components/FinesManager';
-import { ROLES_DICTIONARY, ROLE_CORE_BASICS } from '../utils/constants';
-
-const PERMISSIONS_TABS = [
-  { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst', 'addEval'] },
-  { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage'] },
-  { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
-  { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
-  { id: 'complaints', label: 'الشكاوى', icon: <Activity className="w-4 h-4 text-rose-400"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage', 'manageComplaints'] },
-  { id: 'lab', label: 'قرارات المختبر', icon: <Activity className="w-4 h-4 text-teal-400"/>, keys: ['showLabPage'] },
-  { id: 'advanced', label: 'إدارة متقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['exportData', 'viewAuditLogs', 'manageAccounts', 'manageSettings', 'backupData'] },
-  { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['viewComprehensiveFinancialReports'] },
-];
-
-const PERMISSION_DETAILS = {
-  manageEstablishments: { title: 'إدارة المنشآت (المفتاح الرئيسي)', desc: 'بإعطاء هذا الإذن، سيتمكن هذا الحساب من رؤية قسم المنشآت والمطاعم بالكامل والوصول إليه.' },
-  createEst: { title: 'إضافة منشأة جديدة', desc: 'هذا الإذن يتيح للحساب إمكانية تسجيل وإضافة مطاعم أو كافيهات أو منشآت جديدة إلى النظام.' },
-  editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي مطعم مسجل وتحديث معلوماته (كاسم المدير، رقم الهاتف، والتراخيص).' },
-  deleteEst: { title: 'حذف منشأة نهائياً', desc: 'إذن خطير: يسمح لهذا الحساب بشطب ومسح المنشأة نهائياً من قاعدة بيانات النظام.' },
-  addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
-  showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
-  showReportsPage: { title: 'التقارير الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
-  showDirectivesPage: { title: 'تصفح التبليغات', desc: 'يسمح للحساب بفتح صفحة "التبليغات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
-  showDeliveryPage: { title: 'شكاوى خدمة التوصيل', desc: 'يمنح الحساب صلاحية رؤية صفحة التوصيل لمراقبة ومتابعة عمال الدليفري.' },
-  showPublicEvalsPage: { title: 'شكاوى المواطنين', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
-  showLabPage: { title: 'إدارة المختبرات المركزية', desc: 'يسمح بفتح بوابة المختبر للوصول إلى العينات الواردة ونتائج الفحص.' },
-  sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
-  replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
-  issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المطاعم المخالفة وتوثيقها.' },
-  closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المطعم فوراً ومنعه من العمل.' },
-  reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المطعم وإعادته لحالة العمل الطبيعية بعد إزالة المخالفة.' },
-  manageComplaints: { title: 'إدارة الشكاوى العامة', desc: 'يتيح للحساب صلاحية الرد على شكاوى المواطنين وإغلاقها بعد معالجتها.' },
-  exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المطاعم على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
-  viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
-  manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
-  manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
-  backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
-  viewComprehensiveFinancialReports: { title: 'التقارير المالية الشاملة والرقابية', desc: 'يسمح للحساب بمشاهدة كافة الإيرادات المالية في المحافظة بشكل شامل وتصفيتها حسب القطاعات وفرق الرقابة.' }
-};
-
-const PERMISSION_ROLES = {
-  manageEstablishments: 'management', createEst: 'management', editEst: 'management', deleteEst: 'management',
-  addEval: 'team', showMainDashboard: 'management', showOperationsRoom: 'management', showReportsPage: 'management', showLabPage: 'management',
-  showDirectivesPage: 'management', showPublicEvalsPage: 'management', sendDirective: 'management', replyDirective: 'team',
-  canSendSOS: 'team', showSectorMap: 'team', showSmartTasks: 'team', showFieldTeamsStats: 'management',
-  issueFine: 'management', closeEst: 'management', reopenEst: 'management',
-  notify_closures: 'all', notify_inspections: 'all', notify_directives: 'all',
-  exportData: 'management', viewAuditLogs: 'management', manageAccounts: 'management', manageSettings: 'management', backupData: 'management',
-  viewComprehensiveFinancialReports: 'management'
-};
+import { ROLES_DICTIONARY, ROLE_CORE_BASICS, PERMISSIONS_TABS, PERMISSION_DETAILS, PERMISSION_ROLES } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
   const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, labs, setLabs, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions , globalLogout } = useContext(AppContext);
@@ -205,7 +157,7 @@ export const SuperAdminPanel = () => {
   const triggerAlert = (msg) => {
     notify(msg, 'success');
     setAlertMsg(msg);
-    setTimeout(() => setAlertMsg(''), 4000);
+    setTimeout(() => setAlertMsg(''), 3000);
   };
 
   // Feedback states
@@ -285,7 +237,7 @@ export const SuperAdminPanel = () => {
     }
     
     logAudit('تعديل صلاحيات حساب', finalAccount.id, null, finalAccount.permissions, 'تعديل الصلاحيات الإدارية', user);
-    triggerAlert(`تم حفظ وتحديث الصلاحيات لحساب (${finalAccount.name}) بنجاح.`);
+    triggerAlert('تم حفظ الصلاحيات بنجاح');
     setShowPermissionsModal(false);
   };
 
@@ -1088,7 +1040,7 @@ export const SuperAdminPanel = () => {
               <ShieldAlert className="w-5 h-5 text-teal-600" />
               <span>مركز الصلاحيات السيادي (Role-Based Access Control)</span>
             </h2>
-            <p className="text-xs text-slate-500 mb-6 text-right font-medium">من خلال هذه الصفحة يمكنك التحكم الشامل بصلاحيات كافة الحسابات واللجان، وتفعيل أو إطفاء الخصائص لكل جهة بضغطة زر.</p>
+            <p className="text-xs text-slate-500 mb-6 text-right font-medium">مركز الصلاحيات السيادي للتحكم الشامل بخصائص وإمكانيات كل جهة في المنظومة.</p>
             
             <div className="mb-6 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
               <label className="block text-sm font-black text-slate-700 dark:text-slate-300 mb-3">اختر الحساب أو اللجنة المراد تعديل صلاحياتها:</label>
