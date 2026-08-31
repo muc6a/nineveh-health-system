@@ -1149,32 +1149,67 @@ export const SuperAdminPanel = () => {
 
                 {/* Left Side: Permission Toggles */}
                 <div className="w-full md:w-2/3 bg-white/50 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/10 p-6 md:p-8 relative">
-                  <div className="mb-6 pb-6 border-b border-slate-200 dark:border-white/10 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                      {activeTabObj?.icon}
+                  <div className="mb-4 pb-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                        {activeTabObj?.icon}
+                      </div>
+                      <div>
+                        <h4 className="text-base font-black text-slate-800 dark:text-white">{activeTabObj?.label || 'القسم'}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">تحكم بـ {activeTabObj?.keys?.length || 0} إذن ضمن هذا القسم</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-base font-black text-slate-800 dark:text-white">{activeTabObj?.label}</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">تحكم بـ {activeTabObj?.keys.length} إذن ضمن هذا القسم</p>
+                    {/* Per-section Enable/Disable All */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedPermissionsAccount(prev => {
+                            if (!prev) return prev;
+                            const updated = { ...(prev.permissions || {}) };
+                            (activeTabObj?.keys || []).forEach(k => updated[k] = true);
+                            return { ...prev, permissions: updated };
+                          });
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 font-black text-[10px] hover:bg-teal-500/20 transition-all cursor-pointer border border-teal-500/20"
+                      >
+                        ✅ تفعيل الكل
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedPermissionsAccount(prev => {
+                            if (!prev) return prev;
+                            const updated = { ...(prev.permissions || {}) };
+                            (activeTabObj?.keys || []).forEach(k => updated[k] = false);
+                            return { ...prev, permissions: updated };
+                          });
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 font-black text-[10px] hover:bg-rose-500/20 transition-all cursor-pointer border border-rose-500/20"
+                      >
+                        ❌ تعطيل الكل
+                      </button>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {activeTabObj?.keys.map(key => {
+                    {(activeTabObj?.keys || []).map(key => {
                       const permDef = PERMISSION_DETAILS[key];
-                      if (!permDef) return null;
-                      const isGranted = !!selectedPermissionsAccount.permissions?.[key];
+                      const fallbackTitle = key;
+                      const title = permDef?.title || fallbackTitle;
+                      const desc = permDef?.desc || '';
+                      const isGranted = !!selectedPermissionsAccount?.permissions?.[key];
 
                       return (
                         <div key={key} className={`p-4 rounded-2xl border transition-all duration-300 ${isGranted ? 'bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 border-teal-200 dark:border-teal-800/50 shadow-sm' : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5'}`}>
                           <div className="flex justify-between items-start gap-4">
-                            <div className="flex-1">
-                              <h5 className={`text-xs font-black mb-1 ${isGranted ? 'text-teal-800 dark:text-teal-300' : 'text-slate-700 dark:text-slate-300'}`}>
-                                {permDef.title}
+                            <div className="flex-1 min-w-0">
+                              <h5 className={`text-sm font-black mb-1.5 ${isGranted ? 'text-teal-800 dark:text-teal-300' : 'text-slate-800 dark:text-slate-200'}`}>
+                                {title}
                               </h5>
-                              <p className={`text-[10px] leading-relaxed ${isGranted ? 'text-teal-600/80 dark:text-teal-400/80' : 'text-slate-500'}`}>
-                                {permDef.desc}
-                              </p>
+                              {desc && (
+                                <p className={`text-[11px] leading-relaxed ${isGranted ? 'text-teal-700/80 dark:text-teal-400/80' : 'text-slate-600 dark:text-slate-400'}`}>
+                                  {desc}
+                                </p>
+                              )}
                             </div>
                             
                             <button
@@ -1182,14 +1217,14 @@ export const SuperAdminPanel = () => {
                                 setSelectedPermissionsAccount(prev => ({
                                   ...prev,
                                   permissions: {
-                                    ...(prev.permissions || {}),
+                                    ...(prev?.permissions || {}),
                                     [key]: !isGranted
                                   }
                                 }));
                               }}
-                              className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-300 ease-in-out cursor-pointer ${isGranted ? 'bg-teal-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+                              className={`relative shrink-0 w-14 h-7 rounded-full transition-colors duration-300 ease-in-out cursor-pointer ${isGranted ? 'bg-teal-500' : 'bg-slate-300 dark:bg-slate-700'}`}
                             >
-                              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ease-in-out shadow-sm ${isGranted ? 'left-1' : 'left-7'}`}></div>
+                              <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-all duration-300 ease-in-out shadow-md ${isGranted ? 'right-1' : 'right-8'}`}></div>
                             </button>
                           </div>
                         </div>
