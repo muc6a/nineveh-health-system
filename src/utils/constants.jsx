@@ -98,6 +98,9 @@ export const DEFAULT_PERMISSIONS = {
   showReportsPage: false,
   showDirectivesPage: false,
   showPublicEvalsPage: false,
+  showDeliveryPage: false,
+  showLabPage: false,
+  managePayments: false,
   // Section C: Directives
   sendDirective: false,
   replyDirective: false,
@@ -114,7 +117,6 @@ export const DEFAULT_PERMISSIONS = {
   notify_closures: false,
   notify_inspections: false,
   notify_directives: false,
-  manageComplaints: false,
   exportData: false,
   viewAuditLogs: false,
   manageAccounts: false,
@@ -124,7 +126,7 @@ export const DEFAULT_PERMISSIONS = {
 
 export const PERMISSIONS_TABS = [
   { id: 'establishments', label: 'إدارة المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'editEst', 'deleteEst'] },
-  { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showOperationsRoom', 'showReportsPage', 'showPublicEvalsPage'] },
+  { id: 'pages', label: 'صفحات النظام', icon: <Compass className="w-4 h-4"/>, keys: ['showMainDashboard', 'showOperationsRoom', 'showReportsPage', 'showPublicEvalsPage', 'showDeliveryPage', 'showLabPage', 'managePayments'] },
   { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['addEval', 'showSectorMap', 'showSmartTasks', 'canSendSOS', 'showFieldTeamsStats', 'showTeamMonthlyStats'] },
   { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
   { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
@@ -138,11 +140,14 @@ export const PERMISSION_DETAILS = {
   editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي مطعم مسجل وتحديث معلوماته (كاسم المدير، رقم الهاتف، والتراخيص).' },
   deleteEst: { title: 'حذف منشأة نهائياً', desc: 'إذن خطير: يسمح لهذا الحساب بشطب ومسح المنشأة نهائياً من قاعدة بيانات النظام.' },
   addEval: { title: 'إضافة كشف صحي', desc: 'يتيح للحساب صلاحية إجراء جولات تفتيشية وتسجيل نقاط التقييم الصحية للمطاعم.' },
-  showMainDashboard: { title: 'اللوحة الرئيسية (الاستراتيجية)', desc: 'يسمح للحساب برؤية الواجهة الاستراتيجية التي تحتوي على الأرقام، المخططات البيانية، ونسب الامتثال العامة.' },
+  showMainDashboard: { title: 'اللوحة الرئيسية', desc: 'يسمح للحساب برؤية الواجهة الرئيسية (الاستراتيجية، الميدانية، الخ).' },
   showOperationsRoom: { title: 'غرفة العمليات المركزية', desc: 'يسمح برؤية شاشة غرفة العمليات والتحكم المركزي المباشر.' },
   showReportsPage: { title: 'الخريطة الجغرافية', desc: 'يسمح برؤية الخارطة التفاعلية وتوزيع المطاعم على أحياء وأقضية محافظة نينوى.' },
   showDirectivesPage: { title: 'التبليغات والتوجيهات', desc: 'يسمح للحساب بفتح صفحة "التوجيهات" لمشاهدة المراسلات الإدارية الواردة والصادرة.' },
-  showPublicEvalsPage: { title: 'شكاوى المواطنين', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة أو رمز الـ QR.' },
+  showPublicEvalsPage: { title: 'شكاوى المواطنين', desc: 'يسمح برؤية ومتابعة شكاوى المواطنين التي تصل عبر البوابة العامة.' },
+  showDeliveryPage: { title: 'شكاوى خدمة التوصيل', desc: 'يسمح بمتابعة البلاغات الواردة بخصوص شركات التوصيل والدراجات النارية.' },
+  showLabPage: { title: 'اللوحة المختبرية', desc: 'يسمح للحساب بإدارة النماذج والطلبات الواردة للمختبر.' },
+  managePayments: { title: 'الإدارة المالية', desc: 'يسمح للحساب بمتابعة الجرد المالي وتسديد الغرامات.' },
   sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
   replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
   canSendSOS: { title: 'إرسال نداء استغاثة (SOS)', desc: 'يسمح للفريق بإرسال إشعار طارئ لغرفة العمليات لطلب الإسناد.' },
@@ -160,8 +165,17 @@ export const PERMISSION_DETAILS = {
   viewAuditLogs: { title: 'سجل النشاطات (المراقبة)', desc: 'يسمح للحساب برؤية سجل المراقبة لمعرفة "من قام بماذا" داخل النظام (متى تم التعديل ومن عدّله).' },
   manageAccounts: { title: 'إدارة الحسابات الميدانية', desc: 'يعطي الحساب القدرة على رؤية حسابات الفرق واللجان الميدانية في نينوى.' },
   manageSettings: { title: 'إعدادات النظام والبنود', desc: 'إذن خطير جداً: يسمح بتعديل بنود الكشف الـ 30 الأساسية وأوزانها وإعدادات المنظومة ككل.' },
-  backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
-  manageComplaints: { title: 'إدارة الشكاوى', desc: 'يسمح بمراجعة وإدارة الشكاوى العامة.' }
+  backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' }
+};
+
+export const ROLE_CORE_BASICS = {
+  director: ['showMainDashboard', 'showOperationsRoom', 'showFieldTeamsStats', 'showDirectivesPage', 'closeEst', 'issueFine'],
+  central_director: ['showMainDashboard', 'showOperationsRoom', 'showFieldTeamsStats', 'showDirectivesPage', 'closeEst', 'issueFine'],
+  accountant: ['showMainDashboard', 'managePayments'],
+  financial_accountant: ['showMainDashboard', 'managePayments'],
+  team: ['showMainDashboard', 'manageEstablishments', 'createEst', 'addEval'],
+  lab: ['showMainDashboard', 'showLabPage'],
+  tracker: ['showMainDashboard', 'showPublicEvalsPage', 'showDeliveryPage']
 };
 
 export const PERMISSION_ROLES = {

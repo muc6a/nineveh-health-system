@@ -218,8 +218,6 @@ export default function OperationsRoom() {
         </div>
       )}
 
-      )}
-
       {activeTab === 'team_performance' && (
         <div className="glassmorphic-card p-6 border border-teal-500/20 text-center">
           <Target className="w-12 h-12 text-slate-300 mx-auto mb-4" />
