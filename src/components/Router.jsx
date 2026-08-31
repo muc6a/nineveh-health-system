@@ -27,13 +27,13 @@ export const Router = () => {
       }
 
       // Check specific roles
-      if (currentRoute === '/dashboard/director' && !(user.role === 'admin' || user.isDirector)) {
+      if (currentRoute === '/dashboard/director' && !(user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector)) {
         globalLogout();
       } else if (currentRoute === '/dashboard/team' && !(user.role === 'team' || user.isTeam)) {
         globalLogout();
       } else if (currentRoute === '/dashboard/tracker' && user.role !== 'tracker') {
         globalLogout();
-      } else if (currentRoute === '/dashboard/accountant' && user.role !== 'financial_accountant') {
+      } else if (currentRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant')) {
         globalLogout();
       } else if (currentRoute === '/dashboard/lab' && user.role !== 'lab') {
         globalLogout();
@@ -52,7 +52,7 @@ export const Router = () => {
       return <LoginGate />;
     
     case '/dashboard/director':
-      return user && (user.role === 'admin' || user.isDirector) ? <ExecutivePortal /> : null;
+      return user && (user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector) ? <ExecutivePortal /> : null;
     
     case '/dashboard/team':
       return user && (user.role === 'team' || user.isTeam) ? <TeamDashboard /> : null;
@@ -61,7 +61,7 @@ export const Router = () => {
       return user && user.role === 'tracker' ? <TrackerDashboard /> : null;
       
     case '/dashboard/accountant':
-      return user && user.role === 'financial_accountant' ? <AccountantPanel /> : null;
+      return user && (user.role === 'accountant' || user.role === 'financial_accountant') ? <AccountantPanel /> : null;
       
     case '/dashboard/lab':
       return user && user.role === 'lab' ? <LabDashboard /> : null;

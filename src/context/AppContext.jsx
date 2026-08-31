@@ -826,7 +826,7 @@ export const AppProvider = ({ children }) => {
     
     let updatedUser = null;
     
-    if (user.role === 'admin' || user.isDirector) {
+    if (user.role === 'director' || user.role === 'central_director' || user.isDirector) {
       updatedUser = directors.find(d => d.id === user.id);
     } else if (user.role === 'tracker') {
       updatedUser = trackers.find(t => t.id === user.id);
