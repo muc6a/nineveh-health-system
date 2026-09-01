@@ -1,3 +1,5 @@
+import { NotificationToast } from "./components/NotificationToast";
+
 import React, { useContext } from 'react';
 import { AppProvider, AppContext } from './context/AppContext';
 import { Router } from './components/Router';
@@ -43,6 +45,8 @@ const AppContent = () => {
       )}
       <BroadcastModal />
       <LiveSupportWidget />
+      <NotificationToast />
+
     </div>
   );
 };

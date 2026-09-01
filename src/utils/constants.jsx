@@ -129,7 +129,6 @@ export const PERMISSIONS_TABS = [
   { id: 'complaints', label: 'الشكاوى', icon: <Compass className="w-4 h-4 text-rose-500"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage'] },
   { id: 'lab', label: 'قرارات المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'labArchive'] },
   { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['financialReports', 'payFines', 'dailyInventory'] },
-  { id: 'team_features', label: 'ميزات الفريق الميداني', icon: <Activity className="w-4 h-4"/>, keys: ['showSectorMap', 'showSmartTasks'] },
   { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
   { id: 'penalties', label: 'العقوبات والإغلاقات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
   { id: 'notifications', label: 'الإشعارات', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
@@ -174,9 +173,9 @@ export const PERMISSION_DETAILS = {
 export const ROLE_CORE_BASICS = {
   director: ['showMainDashboard'],
   central_director: ['authenticatePenalties', 'showFieldTeamsStats', 'editEst', 'deleteEst'],
-  accountant: ['payFines', 'dailyInventory', 'financialReports'],
-  financial_accountant: ['payFines', 'dailyInventory', 'financialReports'],
-  team: ['createEst', 'addEval', 'showTeamDashboard'],
+  accountant: ['financialReports', 'payFines', 'dailyInventory'],
+  financial_accountant: ['financialReports', 'payFines', 'dailyInventory'],
+  team: ['showTeamDashboard', 'showSmartTasks', 'showSectorMap', 'createEst', 'addEval'],
   lab: ['receiveSamples', 'enterLabResults', 'labArchive'],
   tracker: ['monitorClosures', 'searchAndAddPreliminaryEst']
 };

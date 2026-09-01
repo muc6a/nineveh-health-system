@@ -128,7 +128,6 @@ export const SuperAdminPanel = () => {
   const [estTeamFilter, setEstTeamFilter] = useState('all');
 
   // Success messages alerts
-  const [alertMsg, setAlertMsg] = useState('');
 
   // Zero-Code Branding Configuration States
   const [headerInput, setHeaderInput] = useState(config.headerText);
@@ -156,8 +155,6 @@ export const SuperAdminPanel = () => {
 
   const triggerAlert = (msg) => {
     notify(msg, 'success');
-    setAlertMsg(msg);
-    setTimeout(() => setAlertMsg(''), 3000);
   };
 
   // Feedback states
@@ -991,11 +988,6 @@ export const SuperAdminPanel = () => {
       </div>
 
       <div className="max-w-7xl mx-auto">
-        {alertMsg && (
-          <div className="mb-4 p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-400 text-xs font-bold text-center">
-            <span>{alertMsg}</span>
-          </div>
-        )}
 
         {/* Tab 1: Roster */}
 
@@ -1107,7 +1099,6 @@ export const SuperAdminPanel = () => {
                     <button
                       onClick={() => {
                         handleSavePermissions();
-                        notify("تم تحديث الصلاحيات وحفظها في قاعدة البيانات فوراً بنجاح.", "success");
                       }}
                       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-xs shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-2"
                     >
