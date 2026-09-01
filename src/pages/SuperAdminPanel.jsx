@@ -207,7 +207,7 @@ export const SuperAdminPanel = () => {
     const getRoleKey = (acc) => {
       if (!acc) return null;
       if (acc.role) return acc.role;
-      if (acc.id?.startsWith('team_')) return 'team';
+      if (acc.isTeam || acc.id?.startsWith('team_')) return 'team';
       if (acc.id?.startsWith('tracker_')) return 'tracker';
       if (acc.id?.startsWith('lab_')) return 'lab';
       if (acc.id?.startsWith('accountant_')) return 'accountant';
@@ -1129,7 +1129,7 @@ export const SuperAdminPanel = () => {
                         const getRoleKey = (acc) => {
                           if (!acc) return null;
                           if (acc.role) return acc.role;
-                          if (acc.id?.startsWith('team_')) return 'team';
+                          if (acc.isTeam || acc.id?.startsWith('team_')) return 'team';
                           if (acc.id?.startsWith('tracker_')) return 'tracker';
                           if (acc.id?.startsWith('lab_')) return 'lab';
                           if (acc.id?.startsWith('accountant_')) return 'accountant';
@@ -1212,7 +1212,7 @@ export const SuperAdminPanel = () => {
                       const getRoleKey = (acc) => {
                         if (!acc) return null;
                         if (acc.role) return acc.role;
-                        if (acc.id?.startsWith('team_')) return 'team';
+                        if (acc.isTeam || acc.id?.startsWith('team_')) return 'team';
                         if (acc.id?.startsWith('tracker_')) return 'tracker';
                         if (acc.id?.startsWith('lab_')) return 'lab';
                         if (acc.id?.startsWith('accountant_')) return 'accountant';
@@ -2819,7 +2819,7 @@ export const SuperAdminPanel = () => {
                         const getRoleKey = (acc) => {
                           if (!acc) return null;
                           if (acc.role) return acc.role;
-                          if (acc.id?.startsWith('team_')) return 'team';
+                          if (acc.isTeam || acc.id?.startsWith('team_')) return 'team';
                           if (acc.id?.startsWith('tracker_')) return 'tracker';
                           if (acc.id?.startsWith('lab_')) return 'lab';
                           if (acc.id?.startsWith('accountant_')) return 'accountant';
@@ -2872,7 +2872,7 @@ export const SuperAdminPanel = () => {
                       const getRoleKey = (acc) => {
                         if (!acc) return null;
                         if (acc.role) return acc.role;
-                        if (acc.id?.startsWith('team_')) return 'team';
+                        if (acc.isTeam || acc.id?.startsWith('team_')) return 'team';
                         if (acc.id?.startsWith('tracker_')) return 'tracker';
                         if (acc.id?.startsWith('lab_')) return 'lab';
                         if (acc.id?.startsWith('accountant_')) return 'accountant';
