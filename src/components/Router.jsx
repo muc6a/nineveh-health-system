@@ -27,7 +27,7 @@ export const Router = () => {
       }
 
       // Check specific roles
-      if (currentRoute === '/dashboard/director' && !(user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector)) {
+      if (currentRoute === '/dashboard/director' && !(user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector || Object.values(user.permissions || {}).some(v => v === true))) {
         globalLogout();
       } else if (currentRoute === '/dashboard/team' && !(user.role === 'team' || user.isTeam)) {
         globalLogout();

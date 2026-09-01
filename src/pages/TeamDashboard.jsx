@@ -9,6 +9,8 @@ import { NotificationBell } from '../components/NotificationBell';
 import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
+import { FinancialReports } from '../components/FinancialReports';
+import OperationsRoom from '../components/OperationsRoom';
 import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
@@ -435,6 +437,50 @@ export const TeamDashboard = ({ embeddedTab }) => {
               >
                 <CheckSquare className="w-4.5 h-4.5" />
                 <span>مهام اليوم</span>
+              </button>
+            )}
+
+                        {hasPerm('authenticatePenalties') && (
+              <button
+                onClick={() => { setActiveTab('operations_room'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                  activeTab === 'operations_room'
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <ShieldAlert className="w-4.5 h-4.5" />
+                  <span>غرفة العمليات المركزية</span>
+                </div>
+              </button>
+            )}
+
+                        {hasPerm('financialReports') && (
+              <button
+                onClick={() => { setActiveTab('financials'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                  activeTab === 'financials'
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <DollarSign className="w-4.5 h-4.5" />
+                  <span>المالية والحسابات</span>
+                </div>
+              </button>
+            )}
+
+                        {(hasPerm('receiveSamples') || hasPerm('showPublicEvalsPage') || hasPerm('showDirectivesPage') || hasPerm('exportData')) && (
+              <button
+                onClick={() => { navigate('/dashboard/director'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-amber-500/30 bg-amber-500/5`}
+              >
+                <div className="flex items-center gap-3">
+                  <ShieldAlert className="w-4.5 h-4.5 text-amber-500" />
+                  <span className="text-amber-600 font-black">بوابة الإدارة الشاملة</span>
+                </div>
               </button>
             )}
 
@@ -986,6 +1032,20 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         {/* Tab C: Incidents Box */}
+        
+        {activeTab === 'operations_room' && hasPerm('authenticatePenalties') && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500">
+            <OperationsRoom />
+          </div>
+        )}
+
+        
+        {activeTab === 'financials' && hasPerm('financialReports') && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500">
+            <FinancialReports />
+          </div>
+        )}
+
         {activeTab === 'reports' && hasPerm('showReportsPage') && (
           <div className="space-y-6">
             <div>

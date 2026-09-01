@@ -818,7 +818,11 @@ export const SuperAdminPanel = () => {
     setSelectedPermissionsAccount(prev => {
       if (!prev) return prev;
       const allTrue = {};
-      Object.keys(DEFAULT_PERMISSIONS).forEach(k => allTrue[k] = true);
+      PERMISSIONS_TABS.forEach(tab => {
+        tab.keys.forEach(k => {
+          allTrue[k] = true;
+        });
+      });
       return { ...prev, permissions: allTrue };
     });
   };
@@ -826,8 +830,17 @@ export const SuperAdminPanel = () => {
   const handleRevokeAll = () => {
     setSelectedPermissionsAccount(prev => {
       if (!prev) return prev;
-      const allFalse = {};
-      Object.keys(DEFAULT_PERMISSIONS).forEach(k => allFalse[k] = false);
+      const allFalse = { ...prev.permissions };
+      const coreBasics = ROLE_CORE_BASICS[prev.role] || [];
+      PERMISSIONS_TABS.forEach(tab => {
+        tab.keys.forEach(k => {
+          if (!coreBasics.includes(k)) {
+            allFalse[k] = false;
+          } else {
+            allFalse[k] = true;
+          }
+        });
+      });
       return { ...prev, permissions: allFalse };
     });
   };
