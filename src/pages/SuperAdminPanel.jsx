@@ -810,7 +810,7 @@ export const SuperAdminPanel = () => {
     for (let group of allAccountsForPermissions) {
       const found = group.options.find(opt => opt.value === val);
       if (found) {
-        setSelectedPermissionsAccount(found.obj);
+        setSelectedPermissionsAccount({ ...found.obj, role: found.type, isTeam: found.type === 'team' });
         // Important: Reset granted state to whatever is in the DB
         break;
       }
@@ -2733,7 +2733,7 @@ export const SuperAdminPanel = () => {
     for (let group of allAccountsForPermissions) {
       const found = group.options.find(opt => opt.value === val);
       if (found) {
-        setSelectedPermissionsAccount(found.obj);
+        setSelectedPermissionsAccount({ ...found.obj, role: found.type, isTeam: found.type === 'team' });
         // Important: Reset granted state to whatever is in the DB
         break;
       }
@@ -3987,7 +3987,7 @@ export const SuperAdminPanel = () => {
     for (let group of allAccountsForPermissions) {
       const found = group.options.find(opt => opt.value === val);
       if (found) {
-        setSelectedPermissionsAccount(found.obj);
+        setSelectedPermissionsAccount({ ...found.obj, role: found.type, isTeam: found.type === 'team' });
         // Important: Reset granted state to whatever is in the DB
         break;
       }
@@ -4105,7 +4105,7 @@ export const SuperAdminPanel = () => {
     for (let group of allAccountsForPermissions) {
       const found = group.options.find(opt => opt.value === val);
       if (found) {
-        setSelectedPermissionsAccount(found.obj);
+        setSelectedPermissionsAccount({ ...found.obj, role: found.type, isTeam: found.type === 'team' });
         // Important: Reset granted state to whatever is in the DB
         break;
       }
