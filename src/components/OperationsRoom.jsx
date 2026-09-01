@@ -21,10 +21,10 @@ export default function OperationsRoom() {
     if (verification.type === 'reopening') {
       setClosureVerifications(prev => prev.map(v => v.id === verification.id ? { ...v, status: 'approved' } : v));
       setEstablishments(prev => prev.map(e => e.id === verification.estId ? { ...e, status: 'compliant', score: 75, closureDuration: null } : e));
-      triggerAlert('تمت المصادقة على إعادة الفتح. المطعم الآن عاد للعمل بتقييم 75%.');
+      triggerAlert('تمت المصادقة على إعادة الفتح. المنشأة الآن عاد للعمل بتقييم 75%.');
       addSystemNotification(
         'موافقة الإدارة المركزية على إعادة فتح', 
-        `تمت المصادقة على طلب إعادة الفتح لمطعم (${verification.estName}). المطعم الآن مفتوح.`, 
+        `تمت المصادقة على طلب إعادة الفتح لمنشأة (${verification.estName}). المنشأة الآن مفتوح.`, 
         'all'
       );
     } else {
@@ -40,7 +40,7 @@ export default function OperationsRoom() {
     
     addSystemNotification(
       'قرار إغلاق نهائي صادر من الإدارة المركزية 🚫', 
-      `المديرية تصادق على غلق مطعم (${closureModalData.estName}) لمدة (${closureDuration}). قرار نهائي واجب التنفيذ.`, 
+      `المديرية تصادق على غلق منشأة (${closureModalData.estName}) لمدة (${closureDuration}). قرار نهائي واجب التنفيذ.`, 
       'all'
     );
     
@@ -254,7 +254,7 @@ export default function OperationsRoom() {
             )}
             
             <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-              يرجى تحديد مدة الإغلاق الرسمية لمطعم ({closureModalData.estName}). سيتم إشعار الفرق الميدانية بهذا القرار فوراً.
+              يرجى تحديد مدة الإغلاق الرسمية لمنشأة ({closureModalData.estName}). سيتم إشعار الفرق الميدانية بهذا القرار فوراً.
             </p>
             
             <div className="text-right mb-6">

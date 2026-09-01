@@ -26,7 +26,7 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
   const AVAILABLE_PERMISSIONS = [
     { id: 'showMainDashboard', label: 'لوحة القياس الرئيسية (الاستراتيجية)' },
     { id: 'showReportsPage', label: 'التقارير والإحصائيات الجغرافية' },
-    { id: 'manageEstablishments', label: 'إدارة المنشآت والمطاعم' },
+    { id: 'manageEstablishments', label: 'إدارة المنشآت' },
     { id: 'showDirectivesPage', label: 'الرد على التوجيهات الرسمية' },
     { id: 'sendDirective', label: 'إرسال التوجيهات للفرق' },
     { id: 'showPublicEvalsPage', label: 'تقييمات وشكاوى المواطنين' },
@@ -262,7 +262,6 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         showPublicEvalsPage: true,
         sendDirective: false,
         replyDirective: true,
-        canSendSOS: true,
         showSectorMap: true,
         showSmartTasks: true,
         showFieldTeamsStats: false,

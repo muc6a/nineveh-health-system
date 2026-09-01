@@ -2052,7 +2052,7 @@ export const SuperAdminPanel = () => {
 <label className="flex items-center justify-between cursor-pointer select-none p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10">
                     <div className="flex flex-col text-right">
                       <span className="text-xs font-black text-slate-800 dark:text-slate-200">تفعيل بوابة المواطن</span>
-                      <span className="text-[9px] text-slate-400 font-medium">تفعيل هذه البوابة يسمح للمواطنين بالاستعلام عن تقييم المطاعم وتقديم بلاغات التوصيل</span>
+                      <span className="text-[9px] text-slate-400 font-medium">تفعيل هذه البوابة يسمح للمواطنين بالاستعلام عن تقييم المنشآت وتقديم بلاغات التوصيل</span>
                     </div>
                     <input
                       type="checkbox"
@@ -2235,7 +2235,7 @@ export const SuperAdminPanel = () => {
           <section className="glassmorphic-card p-6 text-right space-y-6">
             <div>
               <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ إدارة المنشآت والتحكم برموز الـ QR وملصقات التوصيل</h2>
-              <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR المخصصة للصالة وخدمات الديليفري</p>
+              <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المنشآت وتصدير ملصقات الـ QR المخصصة للصالة وخدمات الديليفري</p>
             </div>
 
             {/* Search Filter bar */}
@@ -2243,7 +2243,7 @@ export const SuperAdminPanel = () => {
               <div className="relative flex-1">
                 <input
                   type="text"
-                  placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
+                  placeholder="ابحث باسم المنشأة أو المالك أو صنف النشاط..."
                   value={estSearchTerm}
                   onChange={(e) => setEstSearchTerm(e.target.value)}
                   className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
@@ -2257,8 +2257,8 @@ export const SuperAdminPanel = () => {
                 className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
               >
                 <option value="all">كل الحالات</option>
-                <option value="closed">المطاعم المغلقة 🔒</option>
-                <option value="fined">المطاعم المغرمة 💰</option>
+                <option value="closed">المنشآت المغلقة 🔒</option>
+                <option value="fined">المنشآت المغرمة 💰</option>
               </select>
 
               <select
@@ -3651,7 +3651,7 @@ export const SuperAdminPanel = () => {
 
             <form onSubmit={handleEditEstSubmit} className="space-y-4 text-xs font-bold">
               <div className="space-y-1">
-                <label className="text-slate-400">اسم المنشأة / المطعم</label>
+                <label className="text-slate-400">اسم المنشأة</label>
                 <input
                   type="text"
                   required
@@ -4025,7 +4025,7 @@ export const SuperAdminPanel = () => {
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
-                  title="🚨 المطاعم الأكثر مخالفة (مركز المحافظة - الجانب الأيسر)"
+                  title="🚨 المنشآت الأكثر مخالفة (مركز المحافظة - الجانب الأيسر)"
                   data={establishments
                     .filter(e => e.sector === 'مركز المحافظة - الجانب الأيسر' && e.lastInspection !== 'لم يزر بعد')
                     .sort((a, b) => a.score - b.score)
@@ -4035,7 +4035,7 @@ export const SuperAdminPanel = () => {
               </div>
               <div className="bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl border border-rose-200/50 dark:border-rose-900/30">
                 <ThreeDBarChart 
-                  title="🚨 المطاعم الأكثر مخالفة (مركز المحافظة - الجانب الأيمن)"
+                  title="🚨 المنشآت الأكثر مخالفة (مركز المحافظة - الجانب الأيمن)"
                   data={establishments
                     .filter(e => e.sector === 'مركز المحافظة - الجانب الأيمن' && e.lastInspection !== 'لم يزر بعد')
                     .sort((a, b) => a.score - b.score)

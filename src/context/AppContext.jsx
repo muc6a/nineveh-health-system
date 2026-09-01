@@ -269,7 +269,6 @@ const DEFAULT_PERMISSIONS = {
   showPublicEvalsPage: true,
   sendDirective: false,
   replyDirective: true,
-  canSendSOS: true,
   showSectorMap: true,
   showSmartTasks: true,
   showFieldTeamsStats: false,
@@ -938,10 +937,7 @@ export const AppProvider = ({ children }) => {
     setSystemNotifications(prev => [newNotif, ...prev]);
   };
 
-  const [sosAlerts, setSosAlerts] = useState(() => {
-    const saved = localStorage.getItem('sosAlerts');
-    return saved ? JSON.parse(saved) : [];
-  });
+
   // --- Live Support Chat System ---
   const [chatMessages, setChatMessages] = useState(() => {
     const saved = localStorage.getItem('chatMessages');
@@ -970,25 +966,7 @@ export const AppProvider = ({ children }) => {
     setChatMessages(prev => prev.map(m => msgIds.includes(m.id) ? { ...m, isRead: true } : m));
   };
   // --------------------------------
-  const triggerSOSAlert = (teamInfo, locationInfo) => {
-    const newAlert = {
-      id: 'sos_' + Date.now(),
-      teamName: teamInfo?.name || 'فريق غير معروف',
-      teamId: teamInfo?.id || 'unknown',
-      sector: teamInfo?.sector || 'غير محدد',
-      location: locationInfo || 'موقع غير متوفر',
-      date: new Date().toISOString(),
-      status: 'active'
-    };
-    setSosAlerts(prev => [newAlert, ...prev]);
-    
-    // Also notify central ops
-    addSystemNotification(
-      '🚨 نداء استغاثة (SOS) عاجل!',
-      `الفريق: ${newAlert.teamName} في قطاع ${newAlert.sector} يطلب الإسناد الفوري.`,
-      'central_director'
-    );
-  };
+
 
   const playBeep = (type) => {
     try {
@@ -1335,7 +1313,7 @@ export const AppProvider = ({ children }) => {
   const isMountedChat = useRef(false);
   useEffect(() => { if (isMountedChat.current) syncToCloud('chatMessages', chatMessages); else isMountedChat.current = true; }, [chatMessages]);
   useEffect(() => { if (isMountedTasks.current) syncToCloud('trackerTasks_v1', tasks); else isMountedTasks.current = true; }, [tasks]);
-  useEffect(() => { if (isMountedSos.current) syncToCloud('sosAlerts', sosAlerts); else isMountedSos.current = true; }, [sosAlerts]);
+
   useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
   useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
   useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
@@ -1394,8 +1372,7 @@ export const AppProvider = ({ children }) => {
       systemNotifications, setSystemNotifications,
       addSystemNotification,
       chatMessages, setChatMessages, addChatMessage, markChatRead,
-      sosAlerts, setSosAlerts,
-      triggerSOSAlert,
+
       directives,
       setDirectives,
       addDirective,

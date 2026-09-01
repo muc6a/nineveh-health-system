@@ -729,7 +729,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               <span className="text-orange-450 text-[10px] font-black tracking-wider uppercase bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">إغلاق رسمي</span>
               <span className="text-orange-400 text-xs font-bold">محاسبة قانونية</span>
             </div>
-            <h3 className="text-xs text-slate-300 font-bold">إجمالي المطاعم والمنشآت المغلقة للآن</h3>
+            <h3 className="text-xs text-slate-300 font-bold">إجمالي المنشآت المغلقة للآن</h3>
             <span className="text-4xl lg:text-5xl font-black text-orange-400 mt-1 block">
               {closedRestaurants.length} <span className="text-sm text-orange-500/70 font-medium">منشأة</span>
             </span>
@@ -743,7 +743,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
               className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none"
             >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المطاعم المغلقة هذا الشهر 🔒</h3>
+              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المنشآت المغلقة هذا الشهر 🔒</h3>
               <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-rose-500">{allMonthlyClosures.length}</p>
               <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
@@ -754,7 +754,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none"
             >
               <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
-              <p className="text-[10px] text-slate-500 mb-4">إجمالي المطاعم التي تم تغريمها مالياً خلال الشهر الحالي في القطاعات المعنية.</p>
+              <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم تغريمها مالياً خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-amber-500">{allMonthlyFines.length}</p>
               <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
             </div>
@@ -765,10 +765,10 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               {/* Compliance Bar Chart */}
               <div 
                 className="glassmorphic-card p-5 flex flex-col min-h-[320px] cursor-pointer hover:shadow-2xl transition-all"
-                onClick={() => setChartModalState({ isOpen: true, title: 'تفاصيل مؤشر امتثال السلامة الصحية للمطاعم والمنشآت', data: chart3Data })}
+                onClick={() => setChartModalState({ isOpen: true, title: 'تفاصيل مؤشر امتثال السلامة الصحية للمنشآت', data: chart3Data })}
               >
                 <ThreeDBarChart
-                  title="مؤشر امتثال السلامة الصحية للمطاعم والمنشآت"
+                  title="مؤشر امتثال السلامة الصحية للمنشآت"
                   data={chart3Data}
                 />
               </div>
@@ -1065,7 +1065,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                             }}
                             className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
                           >
-                            <option value="">-- اختر المطعم --</option>
+                            <option value="">-- اختر المنشأة --</option>
                             {establishments.filter(e => e.sector === t.sector).map(est => (
                               <option key={est.id} value={est.id}>{est.name}</option>
                             ))}
@@ -1229,7 +1229,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
               <div>
                 <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
-                  {statsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
+                  {statsModalType === 'closures' ? '🔒 المنشآت المغلقة هذا الشهر' : '💰 المنشآت المُغرمة هذا الشهر'}
                 </h3>
                 {selectedSector && (
                   <button 
@@ -1305,7 +1305,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                           <span className="text-xl font-extrabold text-teal-600 dark:text-teal-400">{count}</span>
                         </div>
                         <span className="text-[10px] text-slate-500">
-                          {statsModalType === 'closures' ? 'مطعم مغلق' : 'غرامة مسجلة'}
+                          {statsModalType === 'closures' ? 'منشأة مغلقة' : 'غرامة مسجلة'}
                         </span>
                       </div>
                     ))}

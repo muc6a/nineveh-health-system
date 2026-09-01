@@ -25,10 +25,10 @@ export const CriticalAlertModal = () => {
       ));
     }
 
-    notify(`تم المصادقة على ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'} للمطعم ${pendingPenalty.estName} بنجاح.`, 'success', true);
+    notify(`تم المصادقة على ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'} للمنشأة ${pendingPenalty.estName} بنجاح.`, 'success', true);
     addSystemNotification(
       'تمت المصادقة على العقوبة',
-      `قامت إدارة الرقابة المركزية بالمصادقة على ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'} لمطعم ${pendingPenalty.estName} بناءً على طلب ${pendingPenalty.teamName}.`,
+      `قامت إدارة الرقابة المركزية بالمصادقة على ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'} لمنشأة ${pendingPenalty.estName} بناءً على طلب ${pendingPenalty.teamName}.`,
       'all'
     );
   };
@@ -38,7 +38,7 @@ export const CriticalAlertModal = () => {
     notify(`تم رفض طلب ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'}`, 'info', true);
     addSystemNotification(
       'رفض طلب العقوبة',
-      `تم رفض طلب ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'} الخاص بمطعم ${pendingPenalty.estName} من قبل الرقابة المركزية.`,
+      `تم رفض طلب ${pendingPenalty.type === 'fine' ? 'الغرامة' : 'الإغلاق'} الخاص بمنشأة ${pendingPenalty.estName} من قبل الرقابة المركزية.`,
       'all'
     );
   };

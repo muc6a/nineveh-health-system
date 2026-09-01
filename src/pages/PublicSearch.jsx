@@ -230,13 +230,13 @@ export const PublicSearch = () => {
               ) : (
                 <form onSubmit={handleReportSubmit} className="space-y-4 text-right">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-600 dark:text-slate-300">اسم المطعم أو المنشأة</label>
+                    <label className="text-xs font-bold text-slate-600 dark:text-slate-300">اسم المنشأة</label>
                     <input 
                       type="text" 
                       required
                       value={reportEstName}
                       onChange={(e) => setReportEstName(e.target.value)}
-                      placeholder="اكتب اسم المطعم كما هو في اللوحة"
+                      placeholder="اكتب اسم المنشأة كما هو في اللوحة"
                       className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold focus:border-amber-500 outline-none text-slate-800 dark:text-white"
                     />
                   </div>

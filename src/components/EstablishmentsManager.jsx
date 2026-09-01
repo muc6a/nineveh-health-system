@@ -59,14 +59,14 @@ export const EstablishmentsManager = () => {
     <section className="glassmorphic-card p-6 text-right space-y-6 animate-fade-in print:hidden">
       <div>
         <h2 className="text-base font-black text-slate-800 dark:text-white">🍽️ إدارة المنشآت والتحكم بالبيانات</h2>
-        <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المطاعم وتصدير ملصقات الـ QR</p>
+        <p className="text-[11px] text-slate-500 mt-1">عرض، وتعديل بيانات المنشآت وتصدير ملصقات الـ QR</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1 max-w-md">
           <input
             type="text"
-            placeholder="ابحث باسم المطعم أو المالك أو صنف النشاط..."
+            placeholder="ابحث باسم المنشأة أو المالك أو صنف النشاط..."
             value={estSearchTerm}
             onChange={(e) => setEstSearchTerm(e.target.value)}
             className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 transition-all"
@@ -80,7 +80,7 @@ export const EstablishmentsManager = () => {
           className="w-full md:w-64 p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-fuchsia-500 transition-all shadow-sm"
         >
           <option value="all">الكل (بدون فلترة ذكية)</option>
-          <option value="closed">🚫 مطاعم مغلقة بالشمع الأحمر</option>
+          <option value="closed">🚫 منشآت مغلقة بالشمع الأحمر</option>
           <option value="low_score">⚠️ تقييم منخفض (أقل من 50%)</option>
           <option value="fined">💰 منشآت عليها غرامات (أو مقترحة)</option>
         </select>

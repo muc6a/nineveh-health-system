@@ -13,7 +13,7 @@ import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = ({ embeddedTab }) => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, triggerSOSAlert, setShowDisplayPrefsModal , globalLogout } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -275,7 +275,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
             </div>
             <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2">أمر تفتيش عاجل وفوري!</h2>
             <p className="text-slate-600 dark:text-slate-300 mb-6 font-bold leading-relaxed">
-              ورد أمر الآن من غرفة العمليات المركزية للتوجه فوراً وإجراء كشف صحي على مطعم/منشأة:
+              ورد أمر الآن من غرفة العمليات المركزية للتوجه فوراً وإجراء كشف صحي على منشأة:
               <br/>
               <span className="text-xl text-red-600 dark:text-red-400 font-black inline-block mt-2">{myPendingDispatch.estName}</span>
             </p>
@@ -327,7 +327,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 rounded-3xl text-slate-800 dark:text-white shadow-2xl relative max-h-[80vh] overflow-y-auto text-right">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
               <h3 className="text-lg font-black text-teal-600 dark:text-teal-400">
-                {monthlyStatsModalType === 'closures' ? '🔒 المطاعم المغلقة هذا الشهر' : '💰 المطاعم المُغرمة هذا الشهر'}
+                {monthlyStatsModalType === 'closures' ? '🔒 المنشآت المغلقة هذا الشهر' : '💰 المنشآت المُغرمة هذا الشهر'}
               </h3>
               <button onClick={() => setShowMonthlyStatsModal(false)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
                 <X className="w-5 h-5" />
@@ -777,7 +777,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               <div className="relative flex-1">
                 <input
                   type="text"
-                  placeholder="ابحث باسم المطعم أو اسم المالك..."
+                  placeholder="ابحث باسم المنشأة أو اسم المالك..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-4 pr-10 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
@@ -804,8 +804,8 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 className="px-4 py-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500 cursor-pointer"
               >
                 <option value="all">كل المنشآت</option>
-                <option value="closed">المطاعم المغلقة 🔒</option>
-                <option value="fined">المطاعم المغرمة 💰</option>
+                <option value="closed">المنشآت المغلقة 🔒</option>
+                <option value="fined">المنشآت المغرمة 💰</option>
               </select>
 
               <button
@@ -1156,7 +1156,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
           <div className="w-full max-w-md glassmorphic-card p-6 border border-white/20 shadow-2xl relative text-center">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/50 dark:border-slate-800/50 mb-4">
-              <span className="text-xs font-black text-slate-800 dark:text-white">الصورة المرفقة بالبلاغ للمطعم</span>
+              <span className="text-xs font-black text-slate-800 dark:text-white">الصورة المرفقة بالبلاغ للمنشأة</span>
               <button onClick={() => setSelectedViolationImg(null)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"><X className="w-4 h-4" /></button>
             </div>
             

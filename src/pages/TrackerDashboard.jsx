@@ -209,7 +209,7 @@ export const TrackerDashboard = () => {
       if (addSystemNotification) {
         addSystemNotification(
           '🚨 رصد منشأة جديدة غير مسجلة',
-          `تم رصد مطعم جديد باسم "${newEstName}" في قطاع ${trackerSector} من قبل المتابع ${user.name}. يرجى توجيه لجنة لتفتيشه.`,
+          `تم رصد منشأة جديد باسم "${newEstName}" في قطاع ${trackerSector} من قبل المتابع ${user.name}. يرجى توجيه لجنة لتفتيشه.`,
           'ops_room'
         );
       }
@@ -415,21 +415,21 @@ export const TrackerDashboard = () => {
             {/* Pending Verifications */}
             <div>
               <h2 className="text-sm font-black text-slate-800 dark:text-white flex justify-between items-center mb-4">
-                <span>مطاعم مغلقة بانتظار التأكد من الالتزام</span>
+                <span>منشآت مغلقة بانتظار التأكد من الالتزام</span>
                 <span className="bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400 px-2 py-1 rounded-lg text-[10px]">{pendingVerifications.length}</span>
               </h2>
               
               <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/50 p-4 rounded-2xl flex gap-3 mb-4">
                 <ShieldAlert className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                 <p className="text-xs text-blue-800 dark:text-blue-400 font-bold leading-relaxed">
-                  مهمتك هنا هي التقاط صورة للواجهة للتأكد من أن صاحب المطعم لم يكسر الشمع الأحمر وأنه ملتزم بالقرار. لست مسؤولاً عن قرار الفتح أو الإغلاق.
+                  مهمتك هنا هي التقاط صورة للواجهة للتأكد من أن صاحب المنشأة لم يكسر الشمع الأحمر وأنه ملتزم بالقرار. لست مسؤولاً عن قرار الفتح أو الإغلاق.
                 </p>
               </div>
               
               {pendingVerifications.length === 0 ? (
                 <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
                   <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                  <h3 className="font-bold text-slate-700 dark:text-slate-300">لقد وثقت جميع المطاعم المغلقة لليوم!</h3>
+                  <h3 className="font-bold text-slate-700 dark:text-slate-300">لقد وثقت جميع المنشآت المغلقة لليوم!</h3>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -441,7 +441,7 @@ export const TrackerDashboard = () => {
                           <h3 className="font-black text-slate-800 dark:text-white text-base">{est.name}</h3>
                           <p className="text-xs text-slate-500 mt-1 font-bold">القطاع/الحي: {est.neighborhood || est.sector}</p>
                           <p className="text-[11px] font-bold mt-2 inline-block px-2 py-1 rounded-lg bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400">
-                            {est.status === 'closed' ? 'حالة المطعم: مغلق بالشمع الأحمر' : `التقييم: ${est.score}% - حرج (تأكد من إغلاقه)`}
+                            {est.status === 'closed' ? 'حالة المنشأة: مغلق بالشمع الأحمر' : `التقييم: ${est.score}% - حرج (تأكد من إغلاقه)`}
                           </p>
                         </div>
                         <button
@@ -607,7 +607,7 @@ export const TrackerDashboard = () => {
             {establishmentsNeedsLocation.length === 0 ? (
                <div className="text-center p-6 bg-slate-100 dark:bg-slate-800 rounded-3xl">
                  <CheckCircle2 className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                 <p className="text-xs text-slate-500 font-bold">جميع مطاعم القطاع تحتوي على إحداثيات!</p>
+                 <p className="text-xs text-slate-500 font-bold">جميع منشآت القطاع تحتوي على إحداثيات!</p>
                </div>
             ) : (
               establishmentsNeedsLocation.slice(0, 15).map(est => (
@@ -661,7 +661,7 @@ export const TrackerDashboard = () => {
                             type="text"
                             value={updateManualAddress}
                             onChange={(e) => setUpdateManualAddress(e.target.value)}
-                            placeholder="اكتب أقرب نقطة دالة للمطعم..."
+                            placeholder="اكتب أقرب نقطة دالة للمنشأة..."
                             className="w-full p-3 text-xs bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 outline-none focus:border-amber-500"
                           />
                         </div>
