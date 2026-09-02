@@ -352,9 +352,7 @@ export const EstablishmentModal = ({ isOpen, mode, initialData, onClose, onSave,
 
         {/* Footer Actions */}
         <div className="p-6 border-t border-slate-200 dark:border-white/5 bg-white/50 dark:bg-slate-900/40 flex items-center justify-end gap-3 shrink-0 backdrop-blur-sm">
-          {mode === 'edit' && initialData?.id && (
-            
-          )}
+          
           <button
             type="button"
             onClick={onClose}

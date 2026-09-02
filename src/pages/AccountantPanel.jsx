@@ -775,10 +775,6 @@ export const AccountantPanel = () => {
         )}
 
         {/* --- Tab: Directives --- */}
-        
-          </div>
-        </div>
-      )}
 {activeTab === 'directives' && (
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">

@@ -1105,7 +1105,6 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               </table>
             </div>
           </div>
-            )}
           </div>
         ) : activeTab === 'complaints' && (hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) ? (
           <div className="grid grid-cols-1 gap-6 items-start">

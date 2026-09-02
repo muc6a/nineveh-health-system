@@ -1,16 +1,26 @@
 import re
 
-file_path = "src/pages/AccountantPanel.jsx"
-with open(file_path, "r", encoding="utf-8") as f:
+# Fix EstablishmentModal.jsx
+with open('src/components/EstablishmentModal.jsx', 'r', encoding='utf-8') as f:
     content = f.read()
+    
+# Find the empty condition and remove it, or add null
+pattern = r"\{mode === 'edit' && initialData\?\.id && \(\s*\)\}"
+content = re.sub(pattern, "", content)
 
-# Fix the commented out code
-content = content.replace("onClick={() => { // setActiveTab('dashboard'); setIsSidebarOpen(false); }}", "onClick={() => { setIsSidebarOpen(false); }}")
-
-# There was another occurrence in handleCloseRegister:
-content = content.replace("// setActiveTab('dashboard');", "")
-
-with open(file_path, "w", encoding="utf-8") as f:
+with open('src/components/EstablishmentModal.jsx', 'w', encoding='utf-8') as f:
     f.write(content)
 
-print("Syntax fixed")
+# Fix ExecutivePortal.jsx
+# Let's see what is wrong in ExecutivePortal.jsx
+with open('src/pages/ExecutivePortal.jsx', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# Let's find line 1106-1110
+lines = content.split('\n')
+start = max(0, 1106 - 5)
+end = min(len(lines), 1110 + 5)
+print("ExecutivePortal snippet around 1108:")
+for i in range(start, end):
+    print(f"{i+1}: {lines[i]}")
+
