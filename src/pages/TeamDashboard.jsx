@@ -480,7 +480,11 @@ export const TeamDashboard = ({ embeddedTab }) => {
             {hasPerm('showDirectivesPage') && (
               <button
                 onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-slate-200 dark:border-slate-700 mt-2`}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                  activeTab === 'directives'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <Mail className="w-4.5 h-4.5 text-slate-500" />
@@ -492,7 +496,11 @@ export const TeamDashboard = ({ embeddedTab }) => {
             {(hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) && (
               <button
                 onClick={() => { setActiveTab('complaints'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-rose-500/20 mt-2`}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                  activeTab === 'complaints'
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <Compass className="w-4.5 h-4.5 text-rose-500" />
@@ -504,7 +512,11 @@ export const TeamDashboard = ({ embeddedTab }) => {
             {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
               <button
                 onClick={() => { setActiveTab('lab_results'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-fuchsia-500/20 mt-2`}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                  activeTab === 'lab_results'
+                    ? 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <Activity className="w-4.5 h-4.5 text-fuchsia-500" />
