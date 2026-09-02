@@ -1,4 +1,4 @@
-import { ROLE_CORE_BASICS } from '../utils/constants';
+import { ROLE_CORE_BASICS, PERMISSIONS_TABS } from '../utils/constants';
 import React, { useState, useContext, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { AppContext } from '../context/AppContext';
@@ -410,7 +410,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 }`}
               >
                 <Database className="w-4.5 h-4.5" />
-                <span>إدارة المنشآت</span>
+                <span>{PERMISSIONS_TABS.find(t => t.id === 'establishments')?.label || 'المنشآت'}</span>
               </button>
             )}
 
@@ -453,7 +453,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               >
                 <div className="flex items-center gap-3">
                   <ShieldAlert className="w-4.5 h-4.5" />
-                  <span>غرفة العمليات المركزية</span>
+                  <span>{PERMISSIONS_TABS.find(t => t.id === 'operations_room')?.label || 'غرفة العمليات المركزية'}</span>
                 </div>
               </button>
             )}
@@ -469,7 +469,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               >
                 <div className="flex items-center gap-3">
                   <DollarSign className="w-4.5 h-4.5" />
-                  <span>المالية والحسابات</span>
+                  <span>{PERMISSIONS_TABS.find(t => t.id === 'financials')?.label || 'المالية'}</span>
                 </div>
               </button>
             )}
@@ -484,7 +484,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               >
                 <div className="flex items-center gap-3">
                   <Mail className="w-4.5 h-4.5 text-slate-500" />
-                  <span>التبليغات</span>
+                  <span>{PERMISSIONS_TABS.find(t => t.id === 'directives')?.label || 'التبليغات'}</span>
                 </div>
               </button>
             )}
@@ -496,7 +496,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               >
                 <div className="flex items-center gap-3">
                   <Compass className="w-4.5 h-4.5 text-rose-500" />
-                  <span>الشكاوى</span>
+                  <span>{PERMISSIONS_TABS.find(t => t.id === 'complaints')?.label || 'الشكاوى'}</span>
                 </div>
               </button>
             )}
@@ -508,7 +508,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               >
                 <div className="flex items-center gap-3">
                   <Activity className="w-4.5 h-4.5 text-fuchsia-500" />
-                  <span>قرارات المختبر</span>
+                  <span>{PERMISSIONS_TABS.find(t => t.id === 'lab')?.label || 'المختبر'}</span>
                 </div>
               </button>
             )}

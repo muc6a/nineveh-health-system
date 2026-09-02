@@ -1,4 +1,4 @@
-import { ROLE_CORE_BASICS } from '../utils/constants';
+import { ROLE_CORE_BASICS, PERMISSIONS_TABS } from '../utils/constants';
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
@@ -377,7 +377,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             {(() => {
               const tabConfig = {
                 strategic: {
-                  label: 'الرئيسية',
+                  label: PERMISSIONS_TABS.find(t => t.id === 'advanced')?.label || 'الإدارة المتقدمة',
                   icon: TrendingUp,
                   iconColorClass: '',
                   activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20',
@@ -403,7 +403,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: allowedTeams.length > 0
                 },
                 operations_room: {
-                  label: 'غرفة العمليات المركزية',
+                  label: PERMISSIONS_TABS.find(t => t.id === 'operations_room')?.label || 'غرفة العمليات المركزية',
                   icon: ShieldAlert,
                   iconColorClass: 'text-fuchsia-500',
                   activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
@@ -423,7 +423,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: true
                 },
                 directives: {
-                  label: 'التبليغات',
+                  label: PERMISSIONS_TABS.find(t => t.id === 'directives')?.label || 'التبليغات',
                   icon: Mail,
                   iconColorClass: 'text-amber-500',
                   activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10',
@@ -433,7 +433,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: true
                 },
                 complaints: {
-                  label: 'شكاوى المواطنين',
+                  label: PERMISSIONS_TABS.find(t => t.id === 'complaints')?.label || 'الشكاوى',
                   icon: ShieldAlert,
                   iconColorClass: 'text-red-500',
                   activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
@@ -443,7 +443,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')
                 },
                 lab_results: {
-                  label: 'قرارات المختبر',
+                  label: PERMISSIONS_TABS.find(t => t.id === 'lab')?.label || 'المختبر',
                   icon: FlaskConical,
                   iconColorClass: 'text-fuchsia-500',
                   activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
@@ -453,7 +453,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')
                 },
                 financials: {
-                  label: 'المالية',
+                  label: PERMISSIONS_TABS.find(t => t.id === 'financials')?.label || 'المالية',
                   icon: Database,
                   iconColorClass: 'text-emerald-500',
                   activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
@@ -595,17 +595,17 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         <div className="relative z-40 flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">
-              {activeTab === 'strategic' ? '💼' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_results' ? '🧪' : '💼'}
+              {activeTab === 'strategic' ? '⚙️' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_results' ? '🧪' : '💼'}
             </span>
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">
-                {activeTab === 'establishments' ? 'إدارة المنشآت والـ QR' : 
+                {activeTab === 'establishments' ? (PERMISSIONS_TABS.find(t => t.id === 'establishments')?.label || 'المنشآت') : 
                  activeTab === 'directives' ? 'التبليغات' : 
                  activeTab === 'complaints' ? 'شكاوى المواطنين' :
                  activeTab === 'geographic' ? 'الخريطة التفاعلية' :
                  activeTab === 'lab_results' ? 'قرارات المختبر' :
                  activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
-                 (activeTab === 'none' ? 'بوابة المدير العام' : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'المنظومة'}`))}
+                 (activeTab === 'none' ? (PERMISSIONS_TABS.find(t => t.id === 'advanced')?.label || 'الإدارة المتقدمة') : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'المنظومة'}`))}
               </h2>
               <p className="text-[10px] text-slate-400 mt-1">
                 {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 

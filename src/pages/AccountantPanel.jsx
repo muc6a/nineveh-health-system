@@ -24,6 +24,7 @@ export const AccountantPanel = () => {
   const [receiptType, setReceiptType] = useState('electronic');
   const [archiveSearchTerm, setArchiveSearchTerm] = useState('');
   const [inventoryArchiveDate, setInventoryArchiveDate] = useState('');
+  const [showPayFineModal, setShowPayFineModal] = useState(false);
 
   // States for Comprehensive Reports
   const [reportFilter, setReportFilter] = useState('الكل');
@@ -205,6 +206,7 @@ export const AccountantPanel = () => {
     setSearchCode('');
     setReceiptNumber('');
     setReceiptType('electronic');
+    setShowPayFineModal(false);
   };
 
   const handleCloseRegister = (status) => {
@@ -266,17 +268,7 @@ export const AccountantPanel = () => {
               <span>التقارير</span>
             </button>
             
-            <button
-              onClick={() => { setActiveTab('pay_fines'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                activeTab === 'pay_fines'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <Banknote className="w-4.5 h-4.5" />
-              <span>تسديد الغرامات</span>
-            </button>
+            
 
             <button
               onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
@@ -542,7 +534,13 @@ export const AccountantPanel = () => {
         )}
 
         {/* --- Tab: Pay Fines & Search --- */}
-        {activeTab === 'pay_fines' && (
+        {showPayFineModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm">
+          <div className="w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl relative text-right max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setShowPayFineModal(false)} className="absolute top-6 left-6 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-full text-slate-500 transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
               <Banknote className="w-5 h-5 text-emerald-500" />
@@ -777,7 +775,11 @@ export const AccountantPanel = () => {
         )}
 
         {/* --- Tab: Directives --- */}
-        {activeTab === 'directives' && (
+        
+          </div>
+        </div>
+      )}
+{activeTab === 'directives' && (
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
               <Mail className="w-5 h-5 text-blue-500" />
