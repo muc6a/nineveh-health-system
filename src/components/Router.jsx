@@ -17,6 +17,8 @@ import { LabDashboard } from '../pages/LabDashboard';
 export const Router = () => {
   const { currentRoute, user, globalLogout } = useContext(AppContext);
 
+  const baseRoute = currentRoute.split('?')[0];
+
   // Strict Role Authentication Guard
   useEffect(() => {
     if (currentRoute.startsWith('/dashboard/') || currentRoute.startsWith('/admin/') || currentRoute === '/owner') {
@@ -27,7 +29,6 @@ export const Router = () => {
       }
 
       // Check specific roles
-      const baseRoute = currentRoute.split('?')[0];
       if (baseRoute === '/dashboard/director' && !(user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector || Object.values(user.permissions || {}).some(v => v === true))) {
         globalLogout();
       } else if (baseRoute === '/dashboard/team' && !(user.role === 'team' || user.isTeam)) {
