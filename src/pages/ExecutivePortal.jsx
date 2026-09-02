@@ -36,6 +36,23 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     return user?.permissions?.[permName] === true;
   };
 
+    const { currentRoute } = useContext(AppContext);
+  const initialUrlTab = currentRoute.includes('?tab=') ? currentRoute.split('?tab=')[1].split('&')[0] : null;
+
+  useEffect(() => {
+    if (initialUrlTab && tabConfig[initialUrlTab]) {
+      const config = tabConfig[initialUrlTab];
+      if (!config.permission || hasPerm(config.permission)) {
+        if (initialUrlTab === 'establishments') {
+          setExecutiveTab('establishments');
+        } else {
+          setExecutiveTab('dashboard');
+          setActiveTab(initialUrlTab);
+        }
+      }
+    }
+  }, [initialUrlTab, user?.permissions]);
+
   const getInitialExecutiveTab = () => {
     if (hasPerm('showMainDashboard')) return 'strategic';
     if (hasPerm('showFieldTeamsStats')) return 'team_reports';

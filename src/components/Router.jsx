@@ -27,24 +27,25 @@ export const Router = () => {
       }
 
       // Check specific roles
-      if (currentRoute === '/dashboard/director' && !(user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector || Object.values(user.permissions || {}).some(v => v === true))) {
+      const baseRoute = currentRoute.split('?')[0];
+      if (baseRoute === '/dashboard/director' && !(user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector || Object.values(user.permissions || {}).some(v => v === true))) {
         globalLogout();
-      } else if (currentRoute === '/dashboard/team' && !(user.role === 'team' || user.isTeam)) {
+      } else if (baseRoute === '/dashboard/team' && !(user.role === 'team' || user.isTeam)) {
         globalLogout();
-      } else if (currentRoute === '/dashboard/tracker' && user.role !== 'tracker') {
+      } else if (baseRoute === '/dashboard/tracker' && user.role !== 'tracker') {
         globalLogout();
-      } else if (currentRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant')) {
+      } else if (baseRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant')) {
         globalLogout();
-      } else if (currentRoute === '/dashboard/lab' && user.role !== 'lab') {
+      } else if (baseRoute === '/dashboard/lab' && user.role !== 'lab') {
         globalLogout();
-      } else if (currentRoute === '/admin/control' && !(user.role === 'admin' || user.isSuperAdmin)) {
+      } else if (baseRoute === '/admin/control' && !(user.role === 'admin' || user.isSuperAdmin)) {
         globalLogout();
       }
     }
   }, [currentRoute, user]);
 
   // Simple state router rendering matching component
-  switch (currentRoute) {
+  switch (baseRoute) {
     case '/':
       return <LandingPage />;
       

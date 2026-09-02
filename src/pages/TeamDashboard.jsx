@@ -73,7 +73,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
   // Auto clear directive notifications when in reports/directives tab
   React.useEffect(() => {
-    if (activeTab === 'reports' && systemNotifications?.length > 0) {
+    if ((activeTab === 'directives' || activeTab === 'complaints') && systemNotifications?.length > 0) {
       const hasUnread = systemNotifications.some(n => !n.isRead && (n.title.includes('تبليغ') || n.title.includes('توجيه') || n.title.includes('رد') || n.title.includes('تفتيش')));
       if (hasUnread) {
         setSystemNotifications(prev => prev.map(n => 
@@ -479,7 +479,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
             
             {hasPerm('showDirectivesPage') && (
               <button
-                onClick={() => { navigate('/dashboard/director?tab=directives'); setIsSidebarOpen(false); }}
+                onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-slate-200 dark:border-slate-700 mt-2`}
               >
                 <div className="flex items-center gap-3">
@@ -491,7 +491,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
             {(hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) && (
               <button
-                onClick={() => { navigate('/dashboard/director?tab=complaints'); setIsSidebarOpen(false); }}
+                onClick={() => { setActiveTab('complaints'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-rose-500/20 mt-2`}
               >
                 <div className="flex items-center gap-3">
@@ -503,7 +503,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
             {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
               <button
-                onClick={() => { navigate('/dashboard/director?tab=lab_results'); setIsSidebarOpen(false); }}
+                onClick={() => { setActiveTab('lab_results'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-fuchsia-500/20 mt-2`}
               >
                 <div className="flex items-center gap-3">
@@ -513,27 +513,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               </button>
             )}
 
-            {hasPerm('showTeamDashboard') && (
-              <button
-                onClick={() => { setActiveTab('reports'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'reports'
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span>📑 صندوق البلاغات والتقارير</span>
-                </div>
-                {(teamReports.filter(r => r.status === 'pending').length > 0 || myDirectives.filter(d => !d.isRead).length > 0) && (
-                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
-                    activeTab === 'reports' ? 'bg-white text-teal-700' : 'bg-red-500 text-white'
-                  }`}>
-                    {teamReports.filter(r => r.status === 'pending').length + myDirectives.filter(d => !d.isRead).length}
-                  </span>
-                )}
-              </button>
-            )}
+            
 
           </div>
         </div>
@@ -595,17 +575,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         </div>
 
         {/* Welcome / No Permissions State */}
-        {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !hasPerm('showDirectivesPage') && !hasPerm('showDeliveryPage') && !hasPerm('showPublicEvalsPage') && (
-          <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
-            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
-              <ShieldAlert className="w-10 h-10 text-slate-400" />
-            </div>
-            <h2 className="text-lg font-black text-slate-800 dark:text-white">لا توجد صلاحيات مخصصة</h2>
-            <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              عذراً، لم يتم منحك أي صلاحيات لعرض الصفحات في هذا الحساب حتى الآن. جميع القوائم والمهام محجوبة. يرجى مراجعة مدير النظام (Super Admin) لتفعيل الأذونات اللازمة عبر الرئيسية.
-            </p>
-          </div>
-        )}
+        
         
         {/* Mobile Navbar Header */}
         <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
@@ -1075,88 +1045,85 @@ export const TeamDashboard = ({ embeddedTab }) => {
           </div>
         )}
 
-        {activeTab === 'reports' && hasPerm('showTeamDashboard') && (
-          <div className="space-y-6">
+        
+        {activeTab === 'directives' && hasPerm('showDirectivesPage') && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">الرد على التبليغات للقطاع</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التوجيهات الرسمية الصادرة من مدير الصحة وشكاوى المواطنين والمستهلكين لـ {userSector}</p>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">التبليغات الإدارية</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التوجيهات الرسمية الصادرة من الإدارة العليا والردود عليها</p>
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Right Side: Official Directives */}
-              <div className="glassmorphic-card p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
-                  <h3 className="text-xs font-black text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
-                    <span>📢 التبليغات الصادرة من المدير</span>
-                  </h3>
-                  <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">{myDirectives.length} توجيه</span>
-                </div>
-
-                <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
-                  {myDirectives.map((dir) => (
-                    <div key={dir.id} className={`p-4 rounded-2xl relative overflow-hidden transition-all hover:scale-[1.01] ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-900/40 border-2 border-teal-500 shadow-lg shadow-teal-500/20' : 'border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20'}`}>
-                      <div className={`absolute top-0 right-0 h-full ${dir.text.startsWith('رد على تبليغ:') ? 'w-2 bg-teal-500' : 'w-1 bg-amber-500'}`}></div>
-                      <div className="flex justify-between items-center mb-1 relative z-10">
-                        <span className={`text-[10px] text-white px-2 py-0.5 rounded-lg font-black ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-600' : 'bg-amber-500'}`}>
-                          {dir.text.startsWith('رد على تبليغ:') ? 'رد جديد 💬' : 'توجيه عاجل'}
-                        </span>
-                        <span className={`text-[9px] font-bold ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-400' : 'text-amber-600 dark:text-amber-400'}`}>{dir.date}</span>
-                      </div>
-                      <p className={`text-xs font-black leading-relaxed mt-1.5 relative z-10 ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-100' : 'text-amber-900 dark:text-amber-200'}`}>{dir.text}</p>
-                      <span className="text-[9px] text-slate-400 block mt-2">الجهة المرسلة: {dir.sender}</span>
-                    </div>
-                  ))}
-                  {myDirectives.length === 0 && (
-                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
-                      لا توجد توجيهات رسمية نشطة حالياً لهذا القطاع.
-                    </div>
-                  )}
-                </div>
+            <div className="glassmorphic-card p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
+                <h3 className="text-xs font-black text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                  <span>📢 التبليغات الصادرة من المدير</span>
+                </h3>
+                <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">{myDirectives.length} توجيه</span>
               </div>
-
-              {/* Left Side: Citizen Reports */}
-              <div className="glassmorphic-card p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-teal-500/20 pb-2">
-                  <h3 className="text-xs font-black text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
-                    <span>📩 بلاغات وشكاوى المواطنين والمستهلكين</span>
-                  </h3>
-                  <span className="text-[10px] bg-teal-500 text-white px-2 py-0.5 rounded-lg font-black">{teamReports.length} شكوى</span>
-                </div>
-
-                <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
-                  {teamReports.map((r) => (
-                    <div key={r.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-black text-slate-800 dark:text-white">{r.establishmentName}</span>
-                        <span className="text-[9px] text-slate-400 font-bold">{r.date}</span>
-                      </div>
-                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 leading-relaxed mt-1.5">{r.details}</p>
-                      
-                      <div className="mt-3 flex items-center justify-between">
-                        {r.isDelivery && (
-                          <span className="px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-[9px] flex items-center gap-1 shrink-0">
-                            <Package className="w-3 h-3" />
-                            <span>📦 توصيل منزلي</span>
-                          </span>
-                        )}
-                      </div>
+              <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                {myDirectives.map((dir) => (
+                  <div key={dir.id} className={`p-4 rounded-2xl relative overflow-hidden transition-all hover:scale-[1.01] ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-900/40 border-2 border-teal-500 shadow-lg shadow-teal-500/20' : 'border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20'}`}>
+                    <div className={`absolute top-0 right-0 h-full ${dir.text.startsWith('رد على تبليغ:') ? 'w-2 bg-teal-500' : 'w-1 bg-amber-500'}`}></div>
+                    <div className="flex justify-between items-center mb-1 relative z-10">
+                      <span className={`text-[10px] text-white px-2 py-0.5 rounded-lg font-black ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-600' : 'bg-amber-500'}`}>
+                        {dir.text.startsWith('رد على تبليغ:') ? 'رد جديد 💬' : 'توجيه عاجل'}
+                      </span>
+                      <span className={`text-[9px] font-bold ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-400' : 'text-amber-600 dark:text-amber-400'}`}>{dir.date}</span>
                     </div>
-                  ))}
-                  {teamReports.length === 0 && (
-                    <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
-                      صندوق بلاغات المواطنين خالٍ تماماً لهذا القطاع.
-                    </div>
-                  )}
-                </div>
+                    <p className={`text-xs font-black leading-relaxed mt-1.5 relative z-10 ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-100' : 'text-amber-900 dark:text-amber-200'}`}>{dir.text}</p>
+                    <span className="text-[9px] text-slate-400 block mt-2">الجهة المرسلة: {dir.sender}</span>
+                  </div>
+                ))}
+                {myDirectives.length === 0 && (
+                  <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
+                    لا توجد توجيهات رسمية نشطة حالياً لهذا القطاع.
+                  </div>
+                )}
               </div>
-
             </div>
           </div>
         )}
 
-
-      </main>
+        {activeTab === 'complaints' && (hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
+            <div>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">سجل الشكاوى</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">متابعة شكاوى المواطنين والمستهلكين ضمن قاطع المسؤولية</p>
+            </div>
+            <div className="glassmorphic-card p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-teal-500/20 pb-2">
+                <h3 className="text-xs font-black text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
+                  <span>📩 بلاغات وشكاوى المواطنين والمستهلكين</span>
+                </h3>
+                <span className="text-[10px] bg-teal-500 text-white px-2 py-0.5 rounded-lg font-black">{teamReports.length} شكوى</span>
+              </div>
+              <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                {teamReports.map((r) => (
+                  <div key={r.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs font-black text-slate-800 dark:text-white">{r.establishmentName}</span>
+                      <span className="text-[9px] text-slate-400 font-bold">{r.date}</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 leading-relaxed mt-1.5">{r.details}</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      {r.isDelivery && (
+                        <span className="px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-extrabold text-[9px] flex items-center gap-1 shrink-0">
+                          <Package className="w-3 h-3" />
+                          <span>📦 توصيل منزلي</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {teamReports.length === 0 && (
+                  <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
+                    صندوق بلاغات المواطنين خالٍ تماماً لهذا القطاع.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+</main>
 
       <EstablishmentModal 
         isOpen={establishmentModalState.isOpen}
