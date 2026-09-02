@@ -345,7 +345,7 @@ export const AccountantPanel = () => {
                     }`}
                   >
                     <LayoutDashboard className="w-4.5 h-4.5" />
-                    <span>لوحة التقارير والإحصائيات</span>
+                    <span>اللوحة الاستراتيجية</span>
                   </button>
                 )}
 

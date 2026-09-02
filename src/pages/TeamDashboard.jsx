@@ -6,7 +6,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { NotificationBell } from '../components/NotificationBell';
-import { Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send } from 'lucide-react';
+import { Compass, Mail, Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
 import { FinancialReports } from '../components/FinancialReports';
@@ -31,6 +31,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
     if (user?.role === 'admin') return true;
+    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
     return user?.permissions?.[permName] === true;
   };
 
@@ -394,7 +395,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 }`}
               >
                 <LayoutDashboard className="w-4.5 h-4.5" />
-                <span>📊 لوحة التقارير والإحصائيات</span>
+                <span>📊 اللوحة الاستراتيجية</span>
               </button>
             )}
 
@@ -511,7 +512,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               </button>
             )}
 
-            {hasPerm('showReportsPage') && (
+            {hasPerm('showTeamDashboard') && (
               <button
                 onClick={() => { setActiveTab('reports'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
@@ -1073,7 +1074,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
           </div>
         )}
 
-        {activeTab === 'reports' && hasPerm('showReportsPage') && (
+        {activeTab === 'reports' && hasPerm('showTeamDashboard') && (
           <div className="space-y-6">
             <div>
               <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">الرد على التبليغات للقطاع</h2>

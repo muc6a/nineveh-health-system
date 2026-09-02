@@ -31,6 +31,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   // User permissions logic (Default Deny)
   const hasPerm = (permName) => {
     if (user?.role === 'admin') return true;
+    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
     return user?.permissions?.[permName] === true;
   };
 
