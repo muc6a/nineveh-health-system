@@ -8,6 +8,7 @@ import { FinancialReports } from './FinancialReports';
 export default function OperationsRoom() {
   const { notify, teams, trackers, setTeams, setTrackers, penaltyRequests, setPenaltyRequests, establishments, setEstablishments, setSosAlerts, chatMessages, addChatMessage, markChatRead, user, labRequests, setLabRequests, addSystemNotification, sosAlerts, setDispatches, setClosureVerifications, closureVerifications } = useContext(AppContext);
   const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'penalties');
+  const [selectedPerfTeam, setSelectedPerfTeam] = useState('all');
   const [closureModalData, setClosureModalData] = useState(null);
   const [closureDuration, setClosureDuration] = useState('أسبوع واحد');
   const [showClosureArchive, setShowClosureArchive] = useState(false);
