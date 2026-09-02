@@ -1062,7 +1062,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
             <div className="glassmorphic-card p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
                 <h3 className="text-xs font-black text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
-                  <span>📢 التبليغات الصادرة من المدير</span>
+                  <span>📢 {[hasPerm('sendDirectives') ? 'إرسال تبليغ' : null, hasPerm('replyToDirectives') ? 'رد على التبليغات' : null, hasPerm('showDirectivesPage') ? 'رؤية التبليغات' : null].filter(Boolean).join('، ') || 'التبليغات'}</span>
                 </h3>
                 <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-lg font-black">{myDirectives.length} توجيه</span>
               </div>
@@ -1159,7 +1159,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
             <div className="glassmorphic-card p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-teal-500/20 pb-2">
                 <h3 className="text-xs font-black text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
-                  <span>📩 بلاغات وشكاوى المواطنين والمستهلكين</span>
+                  <span>📩 {[hasPerm('showPublicEvalsPage') ? 'شكاوى المواطنين' : null, hasPerm('showDeliveryPage') ? 'شكاوى خدمة التوصيل' : null].filter(Boolean).join(' و ') || 'الشكاوى'}</span>
                 </h3>
                 <span className="text-[10px] bg-teal-500 text-white px-2 py-0.5 rounded-lg font-black">{teamReports.length} شكوى</span>
               </div>

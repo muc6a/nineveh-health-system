@@ -6,6 +6,17 @@ export const FinancialReports = () => {
   const { penaltyRequests, teams } = useContext(AppContext);
   const [selectedTeamFilter, setSelectedTeamFilter] = useState('all');
 
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [payCode, setPayCode] = useState('');
+  
+  const handlePay = () => {
+    if(!payCode.trim()) return;
+    alert('تم تسديد الغرامة للمنشأة رقم: ' + payCode + ' بنجاح!');
+    setShowPayModal(false);
+    setPayCode('');
+  };
+
+
   const allFines = (penaltyRequests || []).filter(r => r.type === 'fine' || r.type === 'closure');
   const fines = selectedTeamFilter === 'all' 
     ? allFines 
@@ -28,6 +39,12 @@ export const FinancialReports = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          
+          <button onClick={() => setShowPayModal(true)} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md shadow-emerald-500/20">
+            <DollarSign className="w-4 h-4" />
+            تسديد غرامة
+          </button>
+
           <label className="text-xs font-bold text-slate-500">تصفية حسب الفريق:</label>
           <select 
             value={selectedTeamFilter}
@@ -41,6 +58,27 @@ export const FinancialReports = () => {
           </select>
         </div>
       </div>
+
+
+      {showPayModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] p-6 shadow-2xl">
+            <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">تسديد غرامة</h3>
+            <p className="text-xs text-slate-500 mb-4">أدخل كود أو اسم المنشأة لإجراء التسديد المباشر</p>
+            <input 
+              type="text" 
+              placeholder="كود المنشأة..." 
+              value={payCode}
+              onChange={e => setPayCode(e.target.value)}
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-emerald-500 mb-4"
+            />
+            <div className="flex gap-2">
+              <button onClick={() => setShowPayModal(false)} className="flex-1 py-2 rounded-xl text-slate-500 bg-slate-100 hover:bg-slate-200 font-bold text-sm">إلغاء</button>
+              <button onClick={handlePay} className="flex-1 py-2 rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 font-bold text-sm">تسديد الآن</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="glassmorphic-card p-6 border border-emerald-500/20">
@@ -79,14 +117,13 @@ export const FinancialReports = () => {
               <th className="pb-3 px-2 font-bold">حالة الدفع</th>
               <th className="pb-3 px-2 font-bold">تاريخ إصدار المخالفة</th>
               <th className="pb-3 px-2 font-bold">تاريخ التسديد (مدة التأخير)</th>
-              <th className="pb-3 px-2 font-bold">المحاسب المستلم</th>
-            </tr>
+                          </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
             {fines.length > 0 ? fines.map((fine, idx) => (
               <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
                 <td className="py-4 px-2 font-black text-slate-700 dark:text-slate-300">{fine.establishmentName}</td>
-                <td className="py-4 px-2 text-slate-600 dark:text-slate-400">{fine.reason || (fine.type === 'closure' ? 'إغلاق وغرامة' : 'غرامة')}</td>
+                <td className="py-4 px-2 text-slate-600 dark:text-slate-400">{fine.reason?.replace(/تطبيق كراس الغرامات - |تطبيق كراس الغرامة و |تطبيق كراس الغرامة /g, '') || (fine.type === 'closure' ? 'إغلاق وغرامة' : 'غرامة')}</td>
                 <td className="py-4 px-2 font-black text-red-500">{(fine.amount || 0).toLocaleString()}</td>
                 <td className="py-4 px-2">
                   {fine.paymentStatus === 'paid' ? (
@@ -106,11 +143,10 @@ export const FinancialReports = () => {
                     </div>
                   ) : '---'}
                 </td>
-                <td className="py-4 px-2 font-bold text-slate-600 dark:text-slate-400">{fine.accountantName || '---'}</td>
-              </tr>
+                              </tr>
             )) : (
               <tr>
-                <td colSpan="6" className="py-12 text-center text-slate-500">لا توجد غرامات مسجلة حالياً.</td>
+                <td colSpan="5" className="py-12 text-center text-slate-500">لا توجد غرامات مسجلة حالياً.</td>
               </tr>
             )}
           </tbody>

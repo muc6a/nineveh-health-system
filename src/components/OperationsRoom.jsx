@@ -241,20 +241,7 @@ export default function OperationsRoom() {
               </h3>
               <p className="text-xs text-slate-500 mt-1">إحصائيات الكشوفات والغرامات المسجلة لهذا الشهر</p>
             </div>
-            
-            <div className="w-full sm:w-auto flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-400">تصفية حسب الفريق:</span>
-              <select
-                value={selectedPerfTeam}
-                onChange={(e) => setSelectedPerfTeam(e.target.value)}
-                className="w-full sm:w-64 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 outline-none focus:border-indigo-500 text-xs font-bold font-mono"
-              >
-                <option value="all">كافة الفرق الميدانية 📊</option>
-                {teams.filter(t => t.active).map(t => (
-                  <option key={t.id} value={t.id}>{t.name} ({t.sector})</option>
-                ))}
-              </select>
-            </div>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
