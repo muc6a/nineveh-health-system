@@ -85,6 +85,8 @@ export const TeamDashboard = ({ embeddedTab }) => {
   
   // Mobile Sidebar Toggle
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [directiveTab, setDirectiveTab] = useState('inbox');
+  const [complaintTab, setComplaintTab] = useState('citizens');
   
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
@@ -954,7 +956,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                                 isEditLocked = diffHours > 48;
                                 lockReason = 'مغلق تلقائياً (مرور 48 ساعة)';
                               }
-                              return hasHistory && (
+                              return hasHistory && (hasPerm('editEvaluation') || hasPerm('editEst')) && (
                                 <button
                                   disabled={isEditLocked}
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}

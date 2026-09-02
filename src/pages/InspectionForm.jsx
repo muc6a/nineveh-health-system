@@ -6,32 +6,11 @@ import { ShieldCheck, Camera, AlertOctagon, MapPin, Search, Star, Edit, Save, Ar
 export const InspectionForm = () => {
   const { navigate, establishments, inspectionTemplates, addInspection, config, user, logAudit, notify: triggerAlert, finesBooklet, penaltyRequests, setPenaltyRequests, labRequests, setLabRequests } = useContext(AppContext);
 
-  const handleSendSampleToLab = () => {
-    if (!establishment) {
-      triggerAlert('يرجى تحديد المنشأة أولاً', 'error');
-      return;
-    }
-    
-    const newReq = {
-      id: 'lab_req_' + Date.now(),
-      teamId: user?.id || 'team_1',
-      teamName: user?.name || 'اللجنة الرقابية الأولى',
-      estId: establishment.id,
-      estName: establishment.name,
-      date: new Date().toISOString(),
-      status: 'pending_arrival',
-      senderNotes: 'مرسلة من الفريق الميداني أثناء الكشف'
-    };
-    
-    if (setLabRequests) {
-      setLabRequests(prev => [newReq, ...prev]);
-    }
-    triggerAlert('تم إرسال العينة افتراضياً إلى المختبر المركزي', 'success', true);
-  };
-
   // Parse establishment ID from query string
   const [establishment, setEstablishment] = useState(null);
   const [timestamp, setTimestamp] = useState('');
+  const [hasLabSample, setHasLabSample] = useState(false);
+  const [sampleType, setSampleType] = useState('');
 
   // Smart Trigger States
   const [docsChecked, setDocsChecked] = useState({});
@@ -726,15 +705,7 @@ export const InspectionForm = () => {
             </div>
             
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleSendSampleToLab}
-                disabled={isSubmitting || !establishment}
-                className="px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] sm:text-xs hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                <FlaskConical className="w-4 h-4" />
-                <span className="hidden sm:inline">إرسال عينة للمختبر</span>
-              </button>
+
 
               <button
                 type="submit"
