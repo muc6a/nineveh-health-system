@@ -144,16 +144,28 @@ export default function OperationsRoom() {
 
   return (
     <div className="space-y-6 text-right">
+      {(!user?.permissions?.authenticatePenalties && !user?.permissions?.showFieldTeamsStats && user?.role !== 'admin' && user?.role !== 'director') ? (
+        <div className="text-center p-10 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+          <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+          <h2 className="text-xl font-black text-slate-700 dark:text-slate-300">لا توجد صلاحيات لعرض هذه الغرفة</h2>
+          <p className="text-sm text-slate-500 mt-2">يرجى التواصل مع الإدارة العليا لمنحك الصلاحيات اللازمة.</p>
+        </div>
+      ) : (
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
-        <button onClick={() => setActiveTab('penalties')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <AlertCircle className="w-4 h-4" />المصادقة على العقوبات (Penalty Authentication)
-        </button>
-        <button onClick={() => setActiveTab('team_performance')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'team_performance' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-          <Target className="w-4 h-4" />أداء الفرق الميدانية (Team Performance)
-        </button>
+        {(user?.permissions?.authenticatePenalties || user?.role === 'admin' || user?.role === 'director') && (
+          <button onClick={() => setActiveTab('penalties')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+            <AlertCircle className="w-4 h-4" />المصادقة على العقوبات (Penalty Authentication)
+          </button>
+        )}
+        {(user?.permissions?.showFieldTeamsStats || user?.role === 'admin' || user?.role === 'director') && (
+          <button onClick={() => setActiveTab('team_performance')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'team_performance' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+            <Target className="w-4 h-4" />أداء الفرق الميدانية (Team Performance)
+          </button>
+        )}
       </div>
+      )}
 
-      {activeTab === 'penalties' && (
+      {(user?.permissions?.authenticatePenalties || user?.role === 'admin' || user?.role === 'director') && activeTab === 'penalties' && (
         <div className="space-y-6">
           <div className="glassmorphic-card p-6 border border-red-500/20">
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
@@ -218,7 +230,7 @@ export default function OperationsRoom() {
         </div>
       )}
 
-      {activeTab === 'team_performance' && (
+      {(user?.permissions?.showFieldTeamsStats || user?.role === 'admin' || user?.role === 'director') && activeTab === 'team_performance' && (
         <div className="glassmorphic-card p-6 border border-teal-500/20 text-center">
           <Target className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <h3 className="text-lg font-black text-slate-800 dark:text-white">أداء الفرق الميدانية</h3>

@@ -455,7 +455,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                 }
               };
 
-              const tabOrder = uiPreferences?.tabOrder || Object.keys(tabConfig);
+              const savedTabOrder = uiPreferences?.tabOrder || Object.keys(tabConfig);
+              const tabOrder = [...new Set([...savedTabOrder, ...Object.keys(tabConfig)])];
               return tabOrder.map(tabKey => {
                 const config = tabConfig[tabKey];
                 if (!config || (config.permission && !hasPerm(config.permission)) || !config.showCondition) return null;
@@ -549,7 +550,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             {hasPerm('showFieldTeamsStats') && allowedTeams.length > 0 && (
               <option value="team_reports">👥 تقارير الفرق الميدانية</option>
             )}
-            {hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') && (
+            {hasPerm('sendDirective') && (
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
             {hasPerm('showReportsPage') && (
@@ -1019,8 +1020,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             </div>
           </div>
             
-            {hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') && (
-<div className="glassmorphic-card p-6 border border-blue-500/20">
+            <div className="glassmorphic-card p-6 border border-blue-500/20">
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
               <Target className="w-5 h-5 text-blue-500" />
               الفرق الميدانية والتوجيه السريع
@@ -1088,7 +1088,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           </div>
             )}
           </div>
-        ) : activeTab === 'complaints' && hasPerm('showPublicEvalsPage') ? (
+        ) : activeTab === 'complaints' && (hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) ? (
           <div className="grid grid-cols-1 gap-6 items-start">
             {/* Public Evals / Complaints List */}
             <div className="glassmorphic-card p-5 border border-slate-700/60 bg-slate-900 rounded-3xl">

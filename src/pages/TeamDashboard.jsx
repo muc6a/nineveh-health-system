@@ -440,7 +440,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               </button>
             )}
 
-                        {hasPerm('authenticatePenalties') && (
+                        {(hasPerm('authenticatePenalties') || hasPerm('showFieldTeamsStats')) && (
               <button
                 onClick={() => { setActiveTab('operations_room'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
@@ -472,14 +472,41 @@ export const TeamDashboard = ({ embeddedTab }) => {
               </button>
             )}
 
-                        {(hasPerm('receiveSamples') || hasPerm('showPublicEvalsPage') || hasPerm('showDirectivesPage') || hasPerm('exportData')) && (
+                        
+
+            
+            {hasPerm('showDirectivesPage') && (
               <button
-                onClick={() => { navigate('/dashboard/director'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-amber-500/30 bg-amber-500/5`}
+                onClick={() => { navigate('/dashboard/director?tab=directives'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-slate-200 dark:border-slate-700 mt-2`}
               >
                 <div className="flex items-center gap-3">
-                  <ShieldAlert className="w-4.5 h-4.5 text-amber-500" />
-                  <span className="text-amber-600 font-black">بوابة الإدارة الشاملة</span>
+                  <Mail className="w-4.5 h-4.5 text-slate-500" />
+                  <span>التبليغات</span>
+                </div>
+              </button>
+            )}
+
+            {(hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) && (
+              <button
+                onClick={() => { navigate('/dashboard/director?tab=complaints'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-rose-500/20 mt-2`}
+              >
+                <div className="flex items-center gap-3">
+                  <Compass className="w-4.5 h-4.5 text-rose-500" />
+                  <span>الشكاوى</span>
+                </div>
+              </button>
+            )}
+
+            {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
+              <button
+                onClick={() => { navigate('/dashboard/director?tab=lab_results'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-fuchsia-500/20 mt-2`}
+              >
+                <div className="flex items-center gap-3">
+                  <Activity className="w-4.5 h-4.5 text-fuchsia-500" />
+                  <span>قرارات المختبر</span>
                 </div>
               </button>
             )}
@@ -1033,7 +1060,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
         {/* Tab C: Incidents Box */}
         
-        {activeTab === 'operations_room' && hasPerm('authenticatePenalties') && (
+        {activeTab === 'operations_room' && (hasPerm('authenticatePenalties') || hasPerm('showFieldTeamsStats')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
             <OperationsRoom />
           </div>
