@@ -531,6 +531,45 @@ export const InspectionForm = () => {
             </div>
           ))}
 
+          <div className="glassmorphic-card p-6 mt-8 shadow-sm border border-indigo-500/20">
+            <div className="flex items-center gap-3 mb-6 border-b border-indigo-500/20 pb-4">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                <FlaskConical className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-slate-800 dark:text-white">الفحص المختبري</h3>
+                <p className="text-xs font-bold text-slate-500">سحب عينات للتحليل المختبري (يتم إرسالها تلقائياً للمختبر المركزي)</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={hasLabSample}
+                  onChange={(e) => setHasLabSample(e.target.checked)}
+                  className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-colors cursor-pointer"
+                />
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">يوجد عينة مختبرية مسحوبة من المنشأة؟ (نعم)</span>
+              </label>
+
+              {hasLabSample && (
+                <div className="pl-8 animate-fade-in mt-4">
+                  <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2">نوع وتفاصيل العينة:</label>
+                  <input
+                    type="text"
+                    required
+                    value={sampleType}
+                    onChange={(e) => setSampleType(e.target.value)}
+                    placeholder="اكتب نوع العينة (مثال: لحوم مجمدة، مياه شرب...)"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-indigo-500 transition-colors"
+                  />
+                  <p className="text-[10px] text-slate-500 font-bold mt-2">ملاحظة: سيتم توليد طلب إرسال للمختبر المركزي بمجرد اعتماد الاستمارة.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Remarks, File Picker, Action Buttons */}
           <div className="glassmorphic-card p-6 space-y-6">
             <h3 className="text-xs font-black text-slate-800 dark:text-white">التقرير الميداني النهائي واعتماد التقييم</h3>
