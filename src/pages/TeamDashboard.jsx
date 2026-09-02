@@ -1016,12 +1016,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                                   <Trash className="w-3.5 h-3.5" />
                                   <span>حذف</span>
                                 </button>
-                                <button
-                                  onClick={() => window.open(`/dashboard/central/establishments/${est.id}`, '_blank')}
-                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px]"
-                                >
-                                  🔗 انتقال للصفحة
-                                </button>
+                                
                               </>
                             )}
                           </div>
