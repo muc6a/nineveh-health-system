@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { DollarSign, AlertCircle, CheckCircle2, FileText, Activity } from 'lucide-react';
 
 export const FinancialReports = () => {
-  const { penaltyRequests, teams, setPenaltyRequests, notify } = useContext(AppContext);
+  const { penaltyRequests, teams, setPenaltyRequests, notify, establishments } = useContext(AppContext);
   const [selectedTeamFilter, setSelectedTeamFilter] = useState('all');
 
 const [showPayModal, setShowPayModal] = useState(false);
@@ -19,17 +19,24 @@ const [showPayModal, setShowPayModal] = useState(false);
     const allFines = (penaltyRequests || []).filter(r => r.type === 'fine' || r.type === 'closure');
     // Search for a pending fine for this establishment ID or Name
     const codeLower = code.toLowerCase();
-    const fine = allFines.find(f => 
-      (
+    // Find establishment if user entered accessCode
+    const est = establishments?.find(e => e.accessCode?.toLowerCase() === codeLower);
+    
+    const fine = allFines.find(f => {
+      const matchId = 
         String(f.establishmentId).toLowerCase().includes(codeLower) || 
         String(f.targetEstId).toLowerCase().includes(codeLower) || 
         String(f.estId).toLowerCase().includes(codeLower) || 
-        String(f.id).toLowerCase().includes(codeLower) || 
+        String(f.id).toLowerCase().includes(codeLower);
+      
+      const matchName = 
         (f.establishmentName && f.establishmentName.toLowerCase().includes(codeLower)) || 
-        (f.targetEstName && f.targetEstName.toLowerCase().includes(codeLower))
-      ) 
-      && f.paymentStatus !== 'paid'
-    );
+        (f.targetEstName && f.targetEstName.toLowerCase().includes(codeLower));
+        
+      const matchAccessCode = est && (f.establishmentId === est.id || f.targetEstId === est.id || f.estId === est.id);
+      
+      return (matchId || matchName || matchAccessCode) && f.paymentStatus !== 'paid';
+    });
     
     if (fine) {
       setFoundFine(fine);
