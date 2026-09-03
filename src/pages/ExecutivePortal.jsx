@@ -14,6 +14,7 @@ import { CriticalAlertModal } from '../components/CriticalAlertModal';
 import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { FinancialReports } from '../components/FinancialReports';
+import { LabManager } from '../components/LabManager';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon } from 'lucide-react';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
@@ -443,14 +444,14 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   isActive: executiveTab === 'dashboard' && activeTab === 'lab_results',
                   showCondition: true
                 },
-                lab_dashboard: {
+                lab_management: {
                   label: 'إدارة المختبر',
                   icon: FlaskConical,
                   iconColorClass: 'text-indigo-500',
                   activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
                   permission: null,
-                  onClick: () => { navigate('/dashboard/lab'); },
-                  isActive: false,
+                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('lab_management'); },
+                  isActive: executiveTab === 'dashboard' && activeTab === 'lab_management',
                   showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')
                 },
                 financials: {

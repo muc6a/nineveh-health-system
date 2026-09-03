@@ -11,6 +11,7 @@ import { Compass, Mail, Plus, Search, FileText, LayoutDashboard, Database, Alert
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
 import { FinancialReports } from '../components/FinancialReports';
+import { LabManager } from '../components/LabManager';
 import OperationsRoom from '../components/OperationsRoom';
 import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
@@ -585,8 +586,8 @@ export const TeamDashboard = ({ embeddedTab }) => {
             
             {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
               <button
-                onClick={() => { navigate('/dashboard/lab'); setIsSidebarOpen(false); }}
-                className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
+                onClick={() => { setActiveTab('lab_management'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${activeTab === 'lab_management' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
               >
                 <FlaskConical className="w-4.5 h-4.5 text-indigo-500" />
                 <span>إدارة المختبر</span>
@@ -1140,6 +1141,10 @@ export const TeamDashboard = ({ embeddedTab }) => {
           </div>
         )}
 
+        
+        {activeTab === 'lab_management' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
+          <LabManager />
+        )}
         
         {activeTab === 'financials' && hasPerm('financialReports') && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
