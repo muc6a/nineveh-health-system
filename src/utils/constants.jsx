@@ -104,6 +104,7 @@ export const DEFAULT_PERMISSIONS = {
   // Section C: Directives
   sendDirective: false,
   replyDirective: false,
+  quickTeamDispatch: false,
   // Section D: Penalties & Enforcement
   issueFine: false,
   closeEst: false,
@@ -129,7 +130,7 @@ export const PERMISSIONS_TABS = [
   { id: 'complaints', label: 'الشكاوى', icon: <Compass className="w-4 h-4 text-rose-500"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage'] },
   { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'labArchive'] },
   { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['financialReports', 'payFines', 'dailyInventory'] },
-  { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective'] },
+  { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'quickTeamDispatch'] },
   { id: 'penalties', label: 'العقوبات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
   { id: 'notifications', label: 'الإشعارات', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
   { id: 'advanced', label: 'الإدارة المتقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'exportData', 'backupData'] },
@@ -153,6 +154,7 @@ export const PERMISSION_DETAILS = {
   dailyInventory: { title: 'الجرد اليومي والمطابقة', desc: 'يسمح بإجراء الجرد اليومي والمطابقة المالية للإيرادات.' },
   sendDirective: { title: 'إرسال تبليغ جديد', desc: 'إذا تم تفعيله، سيتمكن الحساب من كتابة وإرسال أوامر إدارية أو تبليغات للفرق واللجان الميدانية.' },
   replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
+  quickTeamDispatch: { title: 'التوجيه السريع للفرق الميدانية', desc: 'يسمح بإرسال مهام كشف صحي فورية وعاجلة للفرق الرقابية.' },
   showSectorMap: { title: 'خريطة القطاع', desc: 'يسمح للفريق برؤية خريطة المنشآت الواقعة ضمن قاطع عملهم الميداني حصراً.' },
   showSmartTasks: { title: 'مهام اليوم (المهام الذكية)', desc: 'يسمح للفريق بالوصول لجدول المهام اليومية المخصصة لهم.' },
   showFieldTeamsStats: { title: 'متابعة أداء الفرق', desc: 'يسمح برؤية تقييمات وأداء اللجان الميدانية.' },
@@ -188,6 +190,7 @@ export const PERMISSION_ROLES = {
   showReportsPage: 'management',
   showPublicEvalsPage: 'management',
   sendDirective: 'management',
+  quickTeamDispatch: 'management',
   showFieldTeamsStats: 'management',
   closeEst: 'management',
   reopenEst: 'management',
