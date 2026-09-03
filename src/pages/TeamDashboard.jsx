@@ -1177,7 +1177,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                       {directors?.filter(d => d.id !== user?.id && d.active).map(d => (
                         <option key={d.id} value={d.id}>👑 {d.title} ({d.name})</option>
                       ))}
-                      {allowedTeams.map(t => (
+                      {teams.map(t => (
                         <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
                       ))}
                     </select>
