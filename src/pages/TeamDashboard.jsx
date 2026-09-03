@@ -1151,6 +1151,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 </button>
               )}
             </div>
+            )}
 
             <div className="glassmorphic-card p-5 space-y-4">
               {directiveTab === 'inbox' && hasPerm('showDirectivesPage') && (
@@ -1269,8 +1270,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">متابعة شكاوى المواطنين والمستهلكين ضمن قاطع المسؤولية</p>
             </div>
             
-            {[hasPerm('showDirectivesPage'), hasPerm('sendDirective'), hasPerm('replyDirective')].filter(Boolean).length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
 
               {hasPerm('showPublicEvalsPage') && (
                 <button 
