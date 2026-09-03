@@ -19,7 +19,11 @@ export const LabManager = () => {
 
 
   // Filter requests
-  const safeLabRequests = labRequests || [];
+  const hasCentralView = user?.role === 'admin' || user?.permissions?.centralLabView === true;
+  const safeLabRequests = hasCentralView 
+    ? (labRequests || [])
+    : (labRequests || []).filter(r => r.teamId === user?.id || r.teamId === user?.role);
+    
   const safeEstablishments = establishments || [];
   const incomingReqs = safeLabRequests.filter(r => r.status === 'pending_arrival');
   const testingReqs = safeLabRequests.filter(r => r.status === 'under_testing');
