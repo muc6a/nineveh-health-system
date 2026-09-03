@@ -121,13 +121,14 @@ export const DEFAULT_PERMISSIONS = {
   viewAuditLogs: false,
   manageAccounts: false,
   manageSettings: false,
+  centralLabView: false,
 };
 
 export const PERMISSIONS_TABS = [
   { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: <Target className="w-4 h-4 text-red-500"/>, keys: ['authenticatePenalties', 'showFieldTeamsStats'] },
   { id: 'establishments', label: 'المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['createEst', 'addEval', 'editEst', 'deleteEst'] },
   { id: 'complaints', label: 'الشكاوى', icon: <Compass className="w-4 h-4 text-rose-500"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage'] },
-  { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'labArchive'] },
+  { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'labArchive', 'centralLabView'] },
   { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['financialReports', 'payFines', 'dailyInventory'] },
   { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'quickTeamDispatch'] },
   { id: 'penalties', label: 'العقوبات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
