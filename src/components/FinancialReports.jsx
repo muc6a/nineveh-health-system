@@ -18,8 +18,16 @@ const [showPayModal, setShowPayModal] = useState(false);
     if(!code) return;
     const allFines = (penaltyRequests || []).filter(r => r.type === 'fine' || r.type === 'closure');
     // Search for a pending fine for this establishment ID or Name
+    const codeLower = code.toLowerCase();
     const fine = allFines.find(f => 
-      (String(f.establishmentId) === code || String(f.targetEstId) === code || String(f.estId) === code || f.establishmentName?.includes(code) || f.targetEstName?.includes(code)) 
+      (
+        String(f.establishmentId).toLowerCase().includes(codeLower) || 
+        String(f.targetEstId).toLowerCase().includes(codeLower) || 
+        String(f.estId).toLowerCase().includes(codeLower) || 
+        String(f.id).toLowerCase().includes(codeLower) || 
+        (f.establishmentName && f.establishmentName.toLowerCase().includes(codeLower)) || 
+        (f.targetEstName && f.targetEstName.toLowerCase().includes(codeLower))
+      ) 
       && f.paymentStatus !== 'paid'
     );
     

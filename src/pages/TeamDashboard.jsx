@@ -93,7 +93,12 @@ export const TeamDashboard = ({ embeddedTab }) => {
   
   // Mobile Sidebar Toggle
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [directiveTab, setDirectiveTab] = useState('inbox');
+    const [directiveTab, setDirectiveTab] = useState(() => {
+    if (user?.permissions?.showDirectivesPage) return 'inbox';
+    if (user?.permissions?.sendDirective) return 'send';
+    if (user?.permissions?.replyDirective) return 'replies';
+    return 'inbox';
+  });
   const [complaintTab, setComplaintTab] = useState('citizens');
   
   // Search state
@@ -545,7 +550,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
             
             {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
               <button
-                onClick={() => { window.location.hash = '/dashboard/lab'; setIsSidebarOpen(false); }}
+                onClick={() => { navigate('/dashboard/lab'); setIsSidebarOpen(false); }}
                 className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
               >
                 <FlaskConical className="w-4.5 h-4.5 text-indigo-500" />
@@ -996,9 +1001,12 @@ export const TeamDashboard = ({ embeddedTab }) => {
                             )}
                             {(() => {
                               const hasHistory = est.history && est.history.length > 0;
-                              let isEditLocked = !hasPerm('editEval');
-                              let lockReason = 'لا تملك صلاحية التعديل';
-                              if (hasHistory && !isEditLocked) {
+                              const canEditEval = hasPerm('editEval') || hasPerm('editEvaluation');
+                              if (!canEditEval) return null;
+                              
+                              let isEditLocked = false;
+                              let lockReason = '';
+                              if (hasHistory) {
                                 const lastEval = est.history[0];
                                 const evalTime = new Date(lastEval.date).getTime();
                                 const nowTime = new Date().getTime();
@@ -1006,16 +1014,13 @@ export const TeamDashboard = ({ embeddedTab }) => {
                                 isEditLocked = diffHours > 48;
                                 lockReason = 'مغلق تلقائياً (مرور 48 ساعة)';
                               }
-                              return hasHistory && (hasPerm('editEvaluation') || hasPerm('editEst')) && (
+                              
+                              if (isEditLocked) return null; // Hide completely if locked, per user instruction
+                              
+                              return hasHistory && (
                                 <button
-                                  disabled={isEditLocked}
                                   onClick={() => navigate(`/inspection/new?id=${est.id}&edit=true`)}
-                                  className={`px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] ${
-                                    isEditLocked 
-                                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-50' 
-                                      : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400'
-                                  }`}
-                                  title={isEditLocked ? lockReason : ''}
+                                  className="px-2.5 py-1.5 flex items-center justify-center gap-1.5 rounded-lg transition-all active:scale-95 cursor-pointer no-print font-bold text-[10px] bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400"
                                 >
                                   <CheckSquare className="w-3.5 h-3.5" />
                                   <span>تعديل تقييم</span>
@@ -1108,14 +1113,16 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         
-        {activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirectives') || hasPerm('replyToDirectives')) && (
+        {activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
             <div>
               <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">التبليغات الإدارية</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">إدارة التوجيهات الرسمية والتواصل مع الإدارة</p>
             </div>
             
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {[hasPerm('showDirectivesPage'), hasPerm('sendDirective'), hasPerm('replyDirective')].filter(Boolean).length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+
               {hasPerm('showDirectivesPage') && (
                 <button 
                   onClick={() => setDirectiveTab('inbox')}
@@ -1125,7 +1132,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   صندوق الوارد ({myDirectives.length})
                 </button>
               )}
-              {hasPerm('sendDirectives') && (
+              {hasPerm('sendDirective') && (
                 <button 
                   onClick={() => setDirectiveTab('send')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${directiveTab === 'send' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
@@ -1134,7 +1141,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   إرسال تبليغ
                 </button>
               )}
-              {hasPerm('replyToDirectives') && (
+              {hasPerm('replyDirective') && (
                 <button 
                   onClick={() => setDirectiveTab('replies')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${directiveTab === 'replies' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
@@ -1175,7 +1182,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   </div>
                 </>
               )}
-              {directiveTab === 'send' && hasPerm('sendDirectives') && (
+              {directiveTab === 'send' && hasPerm('sendDirective') && (
                 <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700">
                   <Mail className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                   <h4 className="font-black text-slate-700 dark:text-slate-300 mb-2">إرسال تبليغ للإدارة المركزية</h4>
@@ -1184,7 +1191,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   <button className="px-6 py-3 rounded-xl bg-amber-600 text-white font-black text-xs shadow-md shadow-amber-500/20 hover:bg-amber-700 transition-colors w-full sm:w-auto">إرسال التبليغ</button>
                 </div>
               )}
-              {directiveTab === 'replies' && hasPerm('replyToDirectives') && (
+              {directiveTab === 'replies' && hasPerm('replyDirective') && (
                 <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700">
                   <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                   <h4 className="font-black text-slate-700 dark:text-slate-300 mb-2">سجل الردود والمناقشات</h4>
@@ -1262,7 +1269,9 @@ export const TeamDashboard = ({ embeddedTab }) => {
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">متابعة شكاوى المواطنين والمستهلكين ضمن قاطع المسؤولية</p>
             </div>
             
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {[hasPerm('showDirectivesPage'), hasPerm('sendDirective'), hasPerm('replyDirective')].filter(Boolean).length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+
               {hasPerm('showPublicEvalsPage') && (
                 <button 
                   onClick={() => setComplaintTab('citizens')}

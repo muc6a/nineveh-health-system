@@ -412,16 +412,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   isActive: executiveTab === 'dashboard' && activeTab === 'operations_room',
                   showCondition: true
                 },
-                geographic: {
-                  label: 'الخريطة الجغرافية',
-                  icon: Map,
-                  iconColorClass: 'text-emerald-500',
-                  activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/10',
-                  permission: 'showReportsPage',
-                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('geographic'); },
-                  isActive: executiveTab === 'dashboard' && activeTab === 'geographic',
-                  showCondition: true
-                },
+                
                 directives: {
                   label: PERMISSIONS_TABS.find(t => t.id === 'directives')?.label || 'التبليغات',
                   icon: Mail,
@@ -458,7 +449,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   iconColorClass: 'text-indigo-500',
                   activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
                   permission: null,
-                  onClick: () => { window.location.hash = '/dashboard/lab'; },
+                  onClick: () => { navigate('/dashboard/lab'); },
                   isActive: false,
                   showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')
                 },

@@ -30,9 +30,11 @@ export const LabDashboard = () => {
   if (!user) return null;
 
   // Filter requests
-  const incomingReqs = labRequests.filter(r => r.status === 'pending_arrival');
-  const testingReqs = labRequests.filter(r => r.status === 'under_testing');
-  const archivedReqs = labRequests.filter(r => r.status === 'finished');
+  const safeLabRequests = labRequests || [];
+  const safeEstablishments = establishments || [];
+  const incomingReqs = safeLabRequests.filter(r => r.status === 'pending_arrival');
+  const testingReqs = safeLabRequests.filter(r => r.status === 'under_testing');
+  const archivedReqs = safeLabRequests.filter(r => r.status === 'finished');
 
   
 
@@ -474,7 +476,7 @@ export const LabDashboard = () => {
                 </div>
                 {searchEst.length > 1 && !selectedEstForSample && (
                   <div className="mt-2 max-h-40 overflow-y-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 shadow-lg">
-                    {establishments.filter(e => e.name.includes(searchEst) || e.id.includes(searchEst)).slice(0,10).map(e => (
+                    {safeEstablishments.filter(e => e.name.includes(searchEst) || e.id.includes(searchEst)).slice(0,10).map(e => (
                       <div 
                         key={e.id}
                         onClick={() => {
