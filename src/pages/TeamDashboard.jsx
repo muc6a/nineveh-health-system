@@ -96,7 +96,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
     const [directiveTab, setDirectiveTab] = useState(() => {
     if (user?.permissions?.showDirectivesPage) return 'inbox';
     if (user?.permissions?.sendDirective) return 'send';
-    if (user?.permissions?.replyDirective) return 'replies';
+    
     return 'inbox';
   });
   const [complaintTab, setComplaintTab] = useState('citizens');
@@ -1141,15 +1141,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   إرسال تبليغ
                 </button>
               )}
-              {hasPerm('replyDirective') && (
-                <button 
-                  onClick={() => setDirectiveTab('replies')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${directiveTab === 'replies' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  سجل الردود
-                </button>
-              )}
+              
             </div>
             )}
 
@@ -1173,6 +1165,19 @@ export const TeamDashboard = ({ embeddedTab }) => {
                         </div>
                         <p className={`text-xs font-black leading-relaxed mt-1.5 relative z-10 ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-100' : 'text-amber-900 dark:text-amber-200'}`}>{dir.text}</p>
                         <span className="text-[9px] text-slate-400 block mt-2">الجهة المرسلة: {dir.sender}</span>
+                        {hasPerm('replyDirective') && (
+                          <button
+                            onClick={() => {
+                              const msg = window.prompt("اكتب ردك على هذا التبليغ:");
+                              if (msg) {
+                                if (typeof notify !== 'undefined') notify('تم إرسال الرد بنجاح', 'success');
+                              }
+                            }}
+                            className="mt-3 px-4 py-2 bg-slate-700/50 hover:bg-slate-600 text-white text-xs font-bold rounded-xl transition-all w-fit border border-slate-600"
+                          >
+                            💬 إضافة رد
+                          </button>
+                        )}
                       </div>
                     ))}
                     {myDirectives.length === 0 && (
@@ -1192,13 +1197,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   <button className="px-6 py-3 rounded-xl bg-amber-600 text-white font-black text-xs shadow-md shadow-amber-500/20 hover:bg-amber-700 transition-colors w-full sm:w-auto">إرسال التبليغ</button>
                 </div>
               )}
-              {directiveTab === 'replies' && hasPerm('replyDirective') && (
-                <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700">
-                  <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                  <h4 className="font-black text-slate-700 dark:text-slate-300 mb-2">سجل الردود والمناقشات</h4>
-                  <p className="text-xs text-slate-500">لا توجد ردود مسجلة حالياً.</p>
-                </div>
-              )}
+              
             </div>
           </div>
         )}
