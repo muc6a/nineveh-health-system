@@ -121,7 +121,6 @@ export const DEFAULT_PERMISSIONS = {
   viewAuditLogs: false,
   manageAccounts: false,
   manageSettings: false,
-  backupData: false
 };
 
 export const PERMISSIONS_TABS = [
@@ -133,7 +132,7 @@ export const PERMISSIONS_TABS = [
   { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'quickTeamDispatch'] },
   { id: 'penalties', label: 'العقوبات', icon: <ShieldAlert className="w-4 h-4 text-red-400"/>, keys: ['issueFine', 'closeEst', 'reopenEst'] },
   { id: 'notifications', label: 'الإشعارات', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
-  { id: 'advanced', label: 'الإدارة المتقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'exportData', 'backupData'] },
+  { id: 'advanced', label: 'الإدارة المتقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'exportData'] },
 ];
 
 export const PERMISSION_DETAILS = {
@@ -166,7 +165,6 @@ export const PERMISSION_DETAILS = {
   notify_inspections: { title: 'إشعارات الكشوفات والمهام', desc: 'يسمح بوصول إشعارات إضافة كشف جديد أو طلبات إعادة الكشف.' },
   notify_directives: { title: 'إشعارات التبليغات الإدارية', desc: 'يسمح بوصول إشعارات القرارات الإدارية واجتماعات المجلس.' },
   exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المنشآت على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
-  backupData: { title: 'النسخ الاحتياطي', desc: 'يسمح للحساب بأخذ نسخة احتياطية من كامل قاعدة بيانات المنظومة وتنزيلها.' },
   showTeamDashboard: { title: 'اللوحة الميدانية', desc: 'يسمح للحساب بالوصول إلى لوحة المتابعة الميدانية والعمليات اليومية.' },
   monitorClosures: { title: 'لوحة الرصد والمتابعة', desc: 'مراقبة التزام المنشآت بقرارات الإغلاق والتشميع.' },
   searchAndAddPreliminaryEst: { title: 'الاستعلام والرصد', desc: 'البحث عن المنشآت، وإضافة منشأة أولية/غير مسجلة مع تحديد موقعها وصورها ليتم تفتيشها لاحقاً.' }
@@ -198,7 +196,6 @@ export const PERMISSION_ROLES = {
   viewAuditLogs: 'management',
   manageAccounts: 'management',
   manageSettings: 'management',
-  backupData: 'management',
   manageComplaints: 'management',
   
   // 'team' only permissions

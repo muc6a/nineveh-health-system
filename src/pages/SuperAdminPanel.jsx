@@ -2132,46 +2132,7 @@ export const SuperAdminPanel = () => {
           <section className="glassmorphic-card p-6">
                 <div className="glassmorphic-card p-6 space-y-6">
                   {/* Backup and Restore Database Panel */}
-              <h2 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Database className="w-5 h-5 text-teal-600 animate-pulse" />
-                <span>إدارة النسخ الاحتياطي واستعادة البيانات</span>
-              </h2>
 
-              <p className="text-[10px] text-slate-400 leading-relaxed text-right">
-                تتيح لك هذه الخدمة سحب نسخة احتياطية كاملة من قاعدة بيانات المنظومة بما تشمله من حسابات مدراء، لجان تفتيش، منشآت غذائية، بنود التقييم، وشكاوى، وتخزينها في ملف بصيغة JSON لاستعادتها أو دمجها بأي وقت.
-              </p>
-
-              <div className="space-y-4">
-                {/* Export Action */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 text-right">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-800 dark:text-slate-200">تصدير قاعدة البيانات (.JSON)</span>
-                    <span className="text-[9px] text-slate-400 font-medium">تحميل نسخة احتياطية كاملة وحفظها على حاسوبك</span>
-                  </div>
-                  <button
-                    onClick={handleBackupExport}
-                    className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[11px] transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    📥 عمل نسخة احتياطية
-                  </button>
-                </div>
-
-                {/* Import Action */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-right">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-800 dark:text-slate-200">استيراد ودمج البيانات</span>
-                    <span className="text-[9px] text-slate-400 font-medium font-bold">استرجاع البيانات من ملف نسخة احتياطية سابق</span>
-                  </div>
-                  <label className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-650 text-white font-extrabold text-[11px] transition-all cursor-pointer text-center whitespace-nowrap">
-                    📤 رفع واستعادة
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleBackupImport}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
 
                 {/* Auto Delete Images */}
                 <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10 text-right mt-4">
@@ -2210,7 +2171,6 @@ export const SuperAdminPanel = () => {
 
                   
                 </div>
-              </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
                 <div className="flex gap-2 justify-between flex-wrap">
