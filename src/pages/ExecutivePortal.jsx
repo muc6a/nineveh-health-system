@@ -58,7 +58,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     if (hasPerm('showFieldTeamsStats')) return 'team_reports';
     if (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) return 'operations_room';
     if (hasPerm('manageEstablishments')) return 'establishments';
-    if (hasPerm('showReportsPage')) return 'geographic';
+    
     if (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) return 'unified_inbox';
     return null;
   };
@@ -72,7 +72,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
     if (activeTab === 'team_reports' && !hasPerm('showFieldTeamsStats')) needsRedirect = true;
     if (activeTab === 'operations_room' && !hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) needsRedirect = true;
-    if (activeTab === 'geographic' && !hasPerm('showReportsPage')) needsRedirect = true;
+    
     if (activeTab === 'directives' && !hasPerm('showDirectivesPage')) needsRedirect = true;
     if (activeTab === 'complaints' && !hasPerm('showPublicEvalsPage')) needsRedirect = true;
 
@@ -550,7 +550,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               const val = e.target.value;
               if (val === 'establishments') {
                 setExecutiveTab('establishments');
-              } else if (val === 'operations_room' || val === 'geographic' || val === 'directives' || val === 'complaints' || val === 'team_reports') {
+              } else if (val === 'operations_room' || val === 'directives' || val === 'complaints' || val === 'team_reports') {
                 setExecutiveTab('dashboard');
                 setActiveTab(val);
                 if (val === 'team_reports' && (!selectedTeamId || selectedTeamId === 'all')) {
@@ -573,9 +573,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             {hasPerm('sendDirective') && (
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
-            {hasPerm('showReportsPage') && (
-              <option value="geographic">🗺️ الخريطة الجغرافية</option>
-            )}
+
             {hasPerm('showDirectivesPage') && (
               <option value="directives">📢 التبليغات</option>
             )}
@@ -596,14 +594,14 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         <div className="relative z-40 flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">
-              {activeTab === 'strategic' ? '⚙️' : activeTab === 'establishments' ? '🏢' : activeTab === 'geographic' ? '🗺️' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_results' ? '🧪' : '💼'}
+              {activeTab === 'strategic' ? '⚙️' : activeTab === 'establishments' ? '🏢' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_results' ? '🧪' : '💼'}
             </span>
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">
                 {activeTab === 'establishments' ? (PERMISSIONS_TABS.find(t => t.id === 'establishments')?.label || 'المنشآت') : 
                  activeTab === 'directives' ? 'التبليغات' : 
                  activeTab === 'complaints' ? 'شكاوى المواطنين' :
-                 activeTab === 'geographic' ? 'الخريطة التفاعلية' :
+                 
                  activeTab === 'lab_results' ? 'قرارات المختبر' :
                  activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
                  (activeTab === 'none' ? (PERMISSIONS_TABS.find(t => t.id === 'advanced')?.label || 'الإدارة المتقدمة') : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'المنظومة'}`))}
@@ -612,7 +610,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                 {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 
                  activeTab === 'directives' ? 'إرسال الأوامر والتعميمات للفرق الرقابية' :
                  activeTab === 'complaints' ? 'عرض شكاوى وملاحظات المواطنين الواردة من خلال مسح QR' :
-                 activeTab === 'geographic' ? 'عرض المواقع الجغرافية للمنشآت حسب القطاع' :
+                 
                  (activeTab === 'none' ? 'نظام إدارة الرقابة الصحية الموحد - محافظة نينوى' : 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة')}
               </p>
             </div>
@@ -810,20 +808,18 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               </div>
             </div>
 
+            {/* Strategic Map Integration */}
+            {hasPerm('showReportsPage') && (
+              <div className="w-full h-[70vh] min-h-[600px] rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/20 relative z-10 bg-slate-50 dark:bg-slate-900 flex flex-col p-6 mt-8">
+                <NinevehMap
+                  establishments={establishments}
+                  selectedSector={targetSector}
+                  onSectorSelect={handleMapSectorSelect}
+                  fullHeight={true}
+                />
+              </div>
+            )}
 
-
-
-
-
-          </div>
-        ) : activeTab === 'geographic' && hasPerm('showReportsPage') ? (
-          <div className="w-full h-[85vh] min-h-[800px] rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/20 relative z-10 bg-slate-50 dark:bg-slate-900 flex flex-col p-6">
-            <NinevehMap
-              establishments={establishments}
-              selectedSector={targetSector}
-              onSectorSelect={handleMapSectorSelect}
-              fullHeight={true}
-            />
           </div>
         ) : activeTab === 'lab_results' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) ? (
           <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
