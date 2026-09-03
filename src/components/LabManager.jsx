@@ -27,6 +27,40 @@ export const LabManager = () => {
 
   
 
+  const handleCreateManualSample = () => {
+    if (!selectedEstForSample || !manualSampleType) return;
+    
+    const newReq = {
+      id: 'lab_' + Date.now(),
+      status: 'pending_arrival',
+      estId: selectedEstForSample.id,
+      estName: selectedEstForSample.name,
+      teamId: user?.id || 'manual',
+      teamName: user?.name || 'إدخال يدوي - المختبر',
+      date: new Date().toISOString(),
+      senderNotes: `نوع العينة: ${manualSampleType}` + (manualSampleRemarks ? ` | ملاحظات: ${manualSampleRemarks}` : '')
+    };
+    
+    setLabRequests(prev => [newReq, ...prev]);
+    setSystemNotifications(prev => [{
+      id: Date.now().toString(),
+      type: 'info',
+      title: 'عينة يدوية',
+      message: `تم تسجيل عينة جديدة يدوياً للمنشأة: ${selectedEstForSample.name}`,
+      date: new Date().toISOString(),
+      read: false
+    }, ...prev]);
+    
+    if (playBeep) playBeep('success');
+    
+    // Reset form
+    setSelectedEstForSample(null);
+    setSearchEst('');
+    setManualSampleType('');
+    setManualSampleRemarks('');
+    setNewSampleModal({ isOpen: false });
+  };
+
   const handleReceiveSample = (id) => {
     setLabRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'under_testing', receivedAt: new Date().toISOString() } : r));
     playBeep && playBeep('success');
