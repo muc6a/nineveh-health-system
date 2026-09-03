@@ -1148,8 +1148,9 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         
-        
 
+
+        
         {activeTab === 'lab_results' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
             <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
