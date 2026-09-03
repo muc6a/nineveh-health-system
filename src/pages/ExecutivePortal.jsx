@@ -73,7 +73,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     if (activeTab === 'team_reports' && !hasPerm('showFieldTeamsStats')) needsRedirect = true;
     if (activeTab === 'operations_room' && !hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) needsRedirect = true;
     
-    if (activeTab === 'directives' && !hasPerm('showDirectivesPage')) needsRedirect = true;
+    if (activeTab === 'directives' && !(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch'))) needsRedirect = true;
     if (activeTab === 'complaints' && !hasPerm('showPublicEvalsPage')) needsRedirect = true;
 
     if (needsRedirect) {
@@ -418,10 +418,10 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   icon: Mail,
                   iconColorClass: 'text-amber-500',
                   activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10',
-                  permission: 'showDirectivesPage',
+                  permission: null,
                   onClick: () => { setExecutiveTab('dashboard'); setActiveTab('directives'); },
                   isActive: executiveTab === 'dashboard' && activeTab === 'directives',
-                  showCondition: true
+                  showCondition: hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')
                 },
                 complaints: {
                   label: 'الشكاوى',
@@ -574,7 +574,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               <option value="operations_room">🚨 غرفة العمليات المركزية</option>
             )}
 
-            {hasPerm('showDirectivesPage') && (
+            {(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) && (
               <option value="directives">📢 التبليغات</option>
             )}
             {hasPerm('showPublicEvalsPage') && (
@@ -651,7 +651,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         {activeTab !== 'operations_room' && activeTab !== 'financials' && (
           <>
             {/* Welcome / No Permissions State */}
-        {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !hasPerm('showDirectivesPage') && !hasPerm('showPublicEvalsPage') && (
+        {!hasPerm('showMainDashboard') && !hasPerm('manageEstablishments') && !hasPerm('showReportsPage') && !(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) && !hasPerm('showPublicEvalsPage') && (
           <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
             <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-inner">
               <ShieldAlert className="w-10 h-10 text-slate-400" />
@@ -885,7 +885,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               )}
             </div>
           </div>
-        ) : activeTab === 'directives' && hasPerm('showDirectivesPage') ? (
+        ) : activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) ? (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Direct Command Directive Form */}
