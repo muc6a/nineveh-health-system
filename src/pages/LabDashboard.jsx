@@ -21,7 +21,8 @@ export const LabDashboard = () => {
 
   // Protect route
   useEffect(() => {
-    if (!user || user.role !== 'lab') {
+    const hasLabAccess = user && (user.role === 'lab' || user.permissions?.receiveSamples || user.permissions?.enterLabResults || user.permissions?.labArchive);
+    if (!hasLabAccess) {
       navigate('/login');
     }
   }, [user, navigate]);

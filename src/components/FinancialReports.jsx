@@ -19,7 +19,7 @@ const [showPayModal, setShowPayModal] = useState(false);
     const allFines = (penaltyRequests || []).filter(r => r.type === 'fine' || r.type === 'closure');
     // Search for a pending fine for this establishment ID or Name
     const fine = allFines.find(f => 
-      (String(f.establishmentId) === code || f.establishmentName?.includes(code)) 
+      (String(f.establishmentId) === code || String(f.targetEstId) === code || String(f.estId) === code || f.establishmentName?.includes(code) || f.targetEstName?.includes(code)) 
       && f.paymentStatus !== 'paid'
     );
     
@@ -129,7 +129,7 @@ const [showPayModal, setShowPayModal] = useState(false);
 
             {foundFine && (
               <div className="mb-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-900/10">
-                <h4 className="font-black text-emerald-800 dark:text-emerald-400 mb-2">{foundFine.establishmentName}</h4>
+                <h4 className="font-black text-emerald-800 dark:text-emerald-400 mb-2">{foundFine.establishmentName || foundFine.targetEstName || 'منشأة غير محددة'}</h4>
                 <div className="space-y-1 text-xs text-slate-600 dark:text-slate-300 font-bold">
                   <p>المبلغ المطلوب: <span className="text-red-500 font-black">{(foundFine.amount || 0).toLocaleString()} د.ع</span></p>
                   <p>نوع المخالفة: {foundFine.reason?.replace(/تطبيق كراس الغرامات - |تطبيق كراس الغرامة و |تطبيق كراس الغرامة /g, '') || (foundFine.type === 'closure' ? 'إغلاق وغرامة' : 'غرامة')}</p>

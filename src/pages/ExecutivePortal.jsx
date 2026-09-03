@@ -432,25 +432,15 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   isActive: executiveTab === 'dashboard' && activeTab === 'directives',
                   showCondition: true
                 },
-                complaints_public: {
-                  label: 'شكاوى المواطنين',
+                complaints: {
+                  label: 'الشكاوى',
                   icon: ShieldAlert,
                   iconColorClass: 'text-red-500',
                   activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
-                  permission: 'showPublicEvalsPage',
+                  permission: null,
                   onClick: () => { setExecutiveTab('dashboard'); setActiveTab('complaints'); },
                   isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
-                  showCondition: true
-                },
-                complaints_delivery: {
-                  label: 'شكاوى خدمة التوصيل',
-                  icon: ShieldAlert,
-                  iconColorClass: 'text-red-500',
-                  activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
-                  permission: 'showDeliveryPage',
-                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('complaints'); },
-                  isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
-                  showCondition: true
+                  showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')
                 },
                 lab_decisions: {
                   label: 'قرارات المختبر',
