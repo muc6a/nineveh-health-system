@@ -16,7 +16,7 @@ import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 export const TeamDashboard = ({ embeddedTab }) => {
-  const { navigate, establishments, addEstablishment, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -111,6 +111,41 @@ export const TeamDashboard = ({ embeddedTab }) => {
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showMetricModal, setShowMetricModal] = useState(false);
   const [metricModalType, setMetricModalType] = useState('all');
+
+  const [targetRecipient, setTargetRecipient] = useState('all');
+  const [directiveText, setDirectiveText] = useState('');
+  const [directiveSuccessMsg, setDirectiveSuccessMsg] = useState('');
+  const [replyText, setReplyText] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [dispatchTeamId, setDispatchTeamId] = useState('');
+  const [dispatchEstId, setDispatchEstId] = useState('');
+
+  const handleSendDirective = (e) => {
+    e.preventDefault();
+    if (directiveText.trim()) {
+      addDirective(targetRecipient, directiveText, user?.role === 'director' ? `المدير العام (${user?.name})` : (user?.name || 'الفريق الميداني'), user?.id || user?.role);
+      setDirectiveText('');
+      setTargetRecipient('all');
+      setDirectiveSuccessMsg('تم تعميم وإرسال التبليغ بنجاح!');
+      setTimeout(() => setDirectiveSuccessMsg(''), 3000);
+      notify('تم إرسال التبليغ بنجاح', 'success');
+    }
+  };
+
+  const handleDispatch = (tId, eId) => {
+    if(!tId || !eId) return notify('يرجى تحديد المنشأة المستهدفة للتوجيه', 'error');
+    
+    // Create directive to the specific team
+    const est = establishments.find(e => e.id === parseInt(eId) || e.id === eId);
+    if(!est) return;
+    
+    const text = `توجيه ميداني عاجل: يرجى التوجه فوراً لإجراء كشف صحي على المنشأة (${est.name})`;
+    addDirective(tId, text, user?.role === 'director' ? `المدير العام (${user?.name})` : (user?.name || 'الجهة الإدارية'), user?.id || user?.role);
+    notify('تم إرسال التوجيه للفريق الميداني بنجاح', 'success');
+    
+    setDispatchEstId('');
+  };
+
   
   // Selected establishment for inline edits
   const [selectedEstDetails, setSelectedEstDetails] = useState(null);
@@ -1113,96 +1148,8 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         
-        {activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective')) && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
-            <div>
-              <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">التبليغات الإدارية</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">إدارة التوجيهات الرسمية والتواصل مع الإدارة</p>
-            </div>
-            
-            {[hasPerm('showDirectivesPage'), hasPerm('sendDirective'), hasPerm('replyDirective')].filter(Boolean).length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-
-              {hasPerm('showDirectivesPage') && (
-                <button 
-                  onClick={() => setDirectiveTab('inbox')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${directiveTab === 'inbox' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  <Mail className="w-4 h-4" />
-                  صندوق الوارد ({myDirectives.length})
-                </button>
-              )}
-              {hasPerm('sendDirective') && (
-                <button 
-                  onClick={() => setDirectiveTab('send')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${directiveTab === 'send' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  <Send className="w-4 h-4" />
-                  إرسال تبليغ
-                </button>
-              )}
-              
-            </div>
-            )}
-
-            <div className="glassmorphic-card p-5 space-y-4">
-              {directiveTab === 'inbox' && hasPerm('showDirectivesPage') && (
-                <>
-                  <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
-                    <h3 className="text-xs font-black text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
-                      <span>📢 التبليغات الواردة</span>
-                    </h3>
-                  </div>
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
-                    {myDirectives.map((dir) => (
-                      <div key={dir.id} className={`p-4 rounded-2xl relative overflow-hidden transition-all hover:scale-[1.01] ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-900/40 border-2 border-teal-500 shadow-lg shadow-teal-500/20' : 'border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20'}`}>
-                        <div className={`absolute top-0 right-0 h-full ${dir.text.startsWith('رد على تبليغ:') ? 'w-2 bg-teal-500' : 'w-1 bg-amber-500'}`}></div>
-                        <div className="flex justify-between items-center mb-1 relative z-10">
-                          <span className={`text-[10px] text-white px-2 py-0.5 rounded-lg font-black ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-600' : 'bg-amber-500'}`}>
-                            {dir.text.startsWith('رد على تبليغ:') ? 'رد جديد 💬' : 'توجيه عاجل'}
-                          </span>
-                          <span className={`text-[9px] font-bold ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-400' : 'text-amber-600 dark:text-amber-400'}`}>{dir.date}</span>
-                        </div>
-                        <p className={`text-xs font-black leading-relaxed mt-1.5 relative z-10 ${dir.text.startsWith('رد على تبليغ:') ? 'text-teal-100' : 'text-amber-900 dark:text-amber-200'}`}>{dir.text}</p>
-                        <span className="text-[9px] text-slate-400 block mt-2">الجهة المرسلة: {dir.sender}</span>
-                        {hasPerm('replyDirective') && (
-                          <button
-                            onClick={() => {
-                              const msg = window.prompt("اكتب ردك على هذا التبليغ:");
-                              if (msg) {
-                                if (typeof notify !== 'undefined') notify('تم إرسال الرد بنجاح', 'success');
-                              }
-                            }}
-                            className="mt-3 px-4 py-2 bg-slate-700/50 hover:bg-slate-600 text-white text-xs font-bold rounded-xl transition-all w-fit border border-slate-600"
-                          >
-                            💬 إضافة رد
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    {myDirectives.length === 0 && (
-                      <div className="text-center p-8 text-slate-400 font-bold text-xs bg-slate-100/50 dark:bg-slate-900/50 rounded-2xl">
-                        لا توجد توجيهات رسمية نشطة حالياً.
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-              {directiveTab === 'send' && hasPerm('sendDirective') && (
-                <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700">
-                  <Mail className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                  <h4 className="font-black text-slate-700 dark:text-slate-300 mb-2">إرسال تبليغ للإدارة المركزية</h4>
-                  <p className="text-xs text-slate-500 mb-4">اكتب التبليغ أو الاستفسار الموجه لغرفة العمليات المركزية.</p>
-                  <textarea className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-bold resize-none h-32 outline-none focus:border-amber-500 mb-4" placeholder="اكتب نص التبليغ هنا..."></textarea>
-                  <button className="px-6 py-3 rounded-xl bg-amber-600 text-white font-black text-xs shadow-md shadow-amber-500/20 hover:bg-amber-700 transition-colors w-full sm:w-auto">إرسال التبليغ</button>
-                </div>
-              )}
-              
-            </div>
-          </div>
-        )}
-
         
+
         {activeTab === 'lab_results' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
             <div className="glassmorphic-card p-6 border border-fuchsia-500/20">

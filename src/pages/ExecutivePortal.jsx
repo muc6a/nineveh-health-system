@@ -1036,10 +1036,11 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             </div>
           </div>
             
-            <div className="glassmorphic-card p-6 border border-blue-500/20">
+            {hasPerm('quickTeamDispatch') && (
+            <div className="glassmorphic-card p-6 border border-blue-500/20 mt-6 lg:col-span-2">
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
               <Target className="w-5 h-5 text-blue-500" />
-              الفرق الميدانية والتوجيه السريع
+              التوجيه السريع للفرق الميدانية
             </h3>
             
             <div className="overflow-x-auto mt-4">
@@ -1102,6 +1103,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               </table>
             </div>
           </div>
+            )}
           </div>
         ) : activeTab === 'complaints' && (hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) ? (
           <div className="grid grid-cols-1 gap-6 items-start">
