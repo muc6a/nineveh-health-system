@@ -432,24 +432,44 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   isActive: executiveTab === 'dashboard' && activeTab === 'directives',
                   showCondition: true
                 },
-                complaints: {
-                  label: PERMISSIONS_TABS.find(t => t.id === 'complaints')?.label || 'الشكاوى',
+                complaints_public: {
+                  label: 'شكاوى المواطنين',
                   icon: ShieldAlert,
                   iconColorClass: 'text-red-500',
                   activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
-                  permission: null,
+                  permission: 'showPublicEvalsPage',
                   onClick: () => { setExecutiveTab('dashboard'); setActiveTab('complaints'); },
                   isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
-                  showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')
+                  showCondition: true
                 },
-                lab_results: {
-                  label: PERMISSIONS_TABS.find(t => t.id === 'lab')?.label || 'المختبر',
+                complaints_delivery: {
+                  label: 'شكاوى خدمة التوصيل',
+                  icon: ShieldAlert,
+                  iconColorClass: 'text-red-500',
+                  activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
+                  permission: 'showDeliveryPage',
+                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('complaints'); },
+                  isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
+                  showCondition: true
+                },
+                lab_decisions: {
+                  label: 'قرارات المختبر',
                   icon: FlaskConical,
                   iconColorClass: 'text-fuchsia-500',
                   activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
-                  permission: null,
+                  permission: 'authenticatePenalties',
                   onClick: () => { setExecutiveTab('dashboard'); setActiveTab('lab_results'); },
                   isActive: executiveTab === 'dashboard' && activeTab === 'lab_results',
+                  showCondition: true
+                },
+                lab_dashboard: {
+                  label: 'إدارة المختبر',
+                  icon: FlaskConical,
+                  iconColorClass: 'text-indigo-500',
+                  activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
+                  permission: null,
+                  onClick: () => { window.location.hash = '/dashboard/lab'; },
+                  isActive: false,
                   showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')
                 },
                 financials: {
@@ -626,7 +646,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
               <WeatherWidget variant="full" />
             </div>
-            {isDirectorGeneral && hasPerm('exportData') && (
+            {hasPerm('exportData') && (
               <button 
                 onClick={() => window.print()}
                 className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"

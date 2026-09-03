@@ -14,10 +14,14 @@ const [showPayModal, setShowPayModal] = useState(false);
 
   
   const handleSearchFine = () => {
-    if(!payCode.trim()) return;
-    const allFines = penaltyRequests || [];
+    const code = payCode.trim();
+    if(!code) return;
+    const allFines = (penaltyRequests || []).filter(r => r.type === 'fine' || r.type === 'closure');
     // Search for a pending fine for this establishment ID or Name
-    const fine = allFines.find(f => (f.establishmentId === payCode || f.establishmentName?.includes(payCode)) && f.paymentStatus !== 'paid');
+    const fine = allFines.find(f => 
+      (String(f.establishmentId) === code || f.establishmentName?.includes(code)) 
+      && f.paymentStatus !== 'paid'
+    );
     
     if (fine) {
       setFoundFine(fine);

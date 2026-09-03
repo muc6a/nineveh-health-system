@@ -37,7 +37,7 @@ export const Router = () => {
         globalLogout();
       } else if (baseRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant')) {
         globalLogout();
-      } else if (baseRoute === '/dashboard/lab' && user.role !== 'lab') {
+      } else if (baseRoute === '/dashboard/lab' && user.role !== 'lab' && !user.permissions?.receiveSamples && !user.permissions?.enterLabResults && !user.permissions?.labArchive) {
         globalLogout();
       } else if (baseRoute === '/admin/control' && !(user.role === 'admin' || user.isSuperAdmin)) {
         globalLogout();
@@ -66,7 +66,7 @@ export const Router = () => {
       return user && (user.role === 'accountant' || user.role === 'financial_accountant') ? <AccountantPanel /> : null;
       
     case '/dashboard/lab':
-      return user && user.role === 'lab' ? <LabDashboard /> : null;
+      return user && (user.role === 'lab' || user.permissions?.receiveSamples || user.permissions?.enterLabResults || user.permissions?.labArchive) ? <LabDashboard /> : null;
     
     case '/inspection/new':
       return <InspectionForm />;

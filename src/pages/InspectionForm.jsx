@@ -11,6 +11,8 @@ export const InspectionForm = () => {
   const [timestamp, setTimestamp] = useState('');
   const [hasLabSample, setHasLabSample] = useState(false);
   const [sampleType, setSampleType] = useState('');
+  const [sampleCode, setSampleCode] = useState('');
+  const [sampleRemarks, setSampleRemarks] = useState('');
 
   // Smart Trigger States
   const [docsChecked, setDocsChecked] = useState({});
@@ -360,8 +362,23 @@ export const InspectionForm = () => {
         triggerAlert(`تم تسجيل ${pendingFines.length} غرامة وثائق تلقائياً!`, 'warning', true);
       }
 
+      if (hasLabSample && setLabRequests) {
+        const newLabRequest = {
+          id: 'lab_' + Date.now(),
+          establishmentId: establishment.id,
+          establishmentName: establishment.name,
+          teamId: user?.id || 'team_1',
+          teamName: user?.name || 'اللجنة الرقابية الأولى',
+          sampleCode: sampleCode,
+          sampleType: sampleType,
+          remarks: sampleRemarks,
+          date: new Date().toISOString(),
+          status: 'pending'
+        };
+        setLabRequests(prev => [newLabRequest, ...prev]);
+      }
+
       if (isOffline) {
-        localStorage.setItem('has_offline_data', 'true');
         triggerAlert('تم الحفظ في وضع عدم الاتصال (أوفلاين). ستتم المزامنة التلقائية فور عودة الإنترنت.', 'warning', true);
       } else {
         triggerAlert(isEdit ? 'تم تعديل التقييم بنجاح' : 'تم إضافة التقييم بنجاح', 'success', true);
@@ -547,23 +564,50 @@ export const InspectionForm = () => {
                 <input 
                   type="checkbox" 
                   checked={hasLabSample}
-                  onChange={(e) => setHasLabSample(e.target.checked)}
+                  onChange={(e) => {
+                    setHasLabSample(e.target.checked);
+                    if (e.target.checked && !sampleCode) {
+                      setSampleCode(Date.now().toString());
+                    }
+                  }}
                   className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-colors cursor-pointer"
                 />
                 <span className="text-sm font-bold text-slate-700 dark:text-slate-300">يوجد عينة مختبرية مسحوبة من المنشأة؟ (نعم)</span>
               </label>
 
               {hasLabSample && (
-                <div className="pl-8 animate-fade-in mt-4">
-                  <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2">نوع وتفاصيل العينة:</label>
-                  <input
-                    type="text"
-                    required
-                    value={sampleType}
-                    onChange={(e) => setSampleType(e.target.value)}
-                    placeholder="اكتب نوع العينة (مثال: لحوم مجمدة، مياه شرب...)"
-                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-indigo-500 transition-colors"
-                  />
+                <div className="pl-8 animate-fade-in mt-4 space-y-4 border-r-2 border-indigo-500 pr-4">
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2">نوع وتفاصيل العينة:</label>
+                    <input
+                      type="text"
+                      required
+                      value={sampleType}
+                      onChange={(e) => setSampleType(e.target.value)}
+                      placeholder="اكتب نوع العينة (مثال: لحوم مجمدة، مياه شرب...)"
+                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-indigo-500 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2">كود العينة (تلقائي ورقمي فقط):</label>
+                    <input
+                      type="text"
+                      required
+                      readOnly
+                      value={sampleCode}
+                      className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-black outline-none text-indigo-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-2">ملاحظات إضافية (اختياري):</label>
+                    <textarea
+                      value={sampleRemarks}
+                      onChange={(e) => setSampleRemarks(e.target.value)}
+                      placeholder="أية ملاحظات للمختبر..."
+                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-indigo-500 transition-colors"
+                      rows={2}
+                    />
+                  </div>
                   <p className="text-[10px] text-slate-500 font-bold mt-2">ملاحظة: سيتم توليد طلب إرسال للمختبر المركزي بمجرد اعتماد الاستمارة.</p>
                 </div>
               )}

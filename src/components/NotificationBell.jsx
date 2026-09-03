@@ -122,11 +122,14 @@ export const NotificationBell = () => {
                       }
                       setTimeout(() => window.dispatchEvent(new CustomEvent('navToDirectives')), 100);
                     } else if (notif.title?.includes('تلوث') || notif.title?.includes('مختبر') || notif.title?.includes('عينة')) {
-                      if (user.role === 'operations' || user.role === 'central_director') {
+                      if (user.role === 'operations' || user.role === 'central_director' || user.role === 'director' || user.isDirector) {
                         window.location.hash = '/dashboard/director';
                         setTimeout(() => window.dispatchEvent(new CustomEvent('navToLabResults')), 100);
                       } else if (user.role === 'lab') {
                          window.location.hash = '/dashboard/lab';
+                      } else if (user.role === 'team' || user.isTeam) {
+                         window.location.hash = '/dashboard/team';
+                         setTimeout(() => window.dispatchEvent(new CustomEvent('navToLabResults')), 100);
                       }
                     }
                   }}

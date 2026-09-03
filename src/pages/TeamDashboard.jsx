@@ -67,8 +67,16 @@ export const TeamDashboard = ({ embeddedTab }) => {
         setActiveTab('reports');
       }
     };
+    const handleNavLabResults = () => {
+      setActiveTab('lab_results');
+    };
+    
     window.addEventListener('navToDirectives', handleNavDirectives);
-    return () => window.removeEventListener('navToDirectives', handleNavDirectives);
+    window.addEventListener('navToLabResults', handleNavLabResults);
+    return () => {
+      window.removeEventListener('navToDirectives', handleNavDirectives);
+      window.removeEventListener('navToLabResults', handleNavLabResults);
+    };
   }, [user?.permissions]);
 
   // Auto clear directive notifications when in reports/directives tab
@@ -157,7 +165,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
     if (statusFilter === 'closed') {
       matchesStatus = e.status === 'closed';
     } else if (statusFilter === 'fined') {
-      matchesStatus = (penaltyRequests || []).some(req => req.estId === e.id && req.type === 'fine' && req.status === 'approved');
+      matchesStatus = (penaltyRequests || []).some(req => req.establishmentId === e.id && (req.type === 'fine' || req.type === 'closure'));
     }
 
     return matchesSearch && matchesExpired && matchesStatus;
@@ -430,6 +438,20 @@ export const TeamDashboard = ({ embeddedTab }) => {
               </button>
             )}
 
+            {hasPerm('showReportsPage') && (
+              <button
+                onClick={() => { setActiveTab('geographic'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'geographic'
+                    ? 'bg-teal-600 text-white shadow-md shadow-teal-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Map className="w-4.5 h-4.5" />
+                <span>الخريطة الجغرافية</span>
+              </button>
+            )}
+
             {hasPerm('showSmartTasks') && (
               <button
                 onClick={() => { setActiveTab('smart_tasks'); setIsSidebarOpen(false); }}
@@ -479,51 +501,95 @@ export const TeamDashboard = ({ embeddedTab }) => {
                         
 
             
-            {hasPerm('showDirectivesPage') && (
+            {hasPerm('sendDirective') && (
               <button
                 onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'directives'
                     ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Mail className="w-4.5 h-4.5 text-slate-500" />
-                  <span>{PERMISSIONS_TABS.find(t => t.id === 'directives')?.label || 'التبليغات'}</span>
-                </div>
+                <Mail className={`w-4.5 h-4.5 ${activeTab === 'directives' ? '' : 'text-amber-500'}`} />
+                <span>إرسال تبليغ</span>
+              </button>
+            )}
+            {hasPerm('replyDirective') && (
+              <button
+                onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'directives'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Mail className={`w-4.5 h-4.5 ${activeTab === 'directives' ? '' : 'text-amber-500'}`} />
+                <span>رد على التبليغات</span>
+              </button>
+            )}
+            {hasPerm('showDirectivesPage') && (
+              <button
+                onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'directives'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Mail className={`w-4.5 h-4.5 ${activeTab === 'directives' ? '' : 'text-amber-500'}`} />
+                <span>رؤية التبليغات</span>
               </button>
             )}
 
-            {(hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) && (
+            {hasPerm('showPublicEvalsPage') && (
               <button
-                onClick={() => { setActiveTab('complaints'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'complaints'
+                onClick={() => { setActiveTab('complaints'); setComplaintTab('citizens'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'complaints' && complaintTab === 'citizens'
                     ? 'bg-rose-600 text-white shadow-md shadow-rose-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Compass className="w-4.5 h-4.5 text-rose-500" />
-                  <span>{PERMISSIONS_TABS.find(t => t.id === 'complaints')?.label || 'الشكاوى'}</span>
-                </div>
+                <Compass className={`w-4.5 h-4.5 ${activeTab === 'complaints' && complaintTab === 'citizens' ? '' : 'text-rose-500'}`} />
+                <span>شكاوى المواطنين</span>
+              </button>
+            )}
+            
+            {hasPerm('showDeliveryPage') && (
+              <button
+                onClick={() => { setActiveTab('complaints'); setComplaintTab('delivery'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'complaints' && complaintTab === 'delivery'
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-500/10'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                }`}
+              >
+                <Package className={`w-4.5 h-4.5 ${activeTab === 'complaints' && complaintTab === 'delivery' ? '' : 'text-rose-500'}`} />
+                <span>شكاوى خدمة التوصيل</span>
               </button>
             )}
 
-            {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
+            {hasPerm('authenticatePenalties') && (
               <button
                 onClick={() => { setActiveTab('lab_results'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                   activeTab === 'lab_results'
                     ? 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Activity className="w-4.5 h-4.5 text-fuchsia-500" />
-                  <span>{PERMISSIONS_TABS.find(t => t.id === 'lab')?.label || 'المختبر'}</span>
-                </div>
+                <Activity className={`w-4.5 h-4.5 ${activeTab === 'lab_results' ? '' : 'text-fuchsia-500'}`} />
+                <span>قرارات المختبر</span>
+              </button>
+            )}
+            
+            {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
+              <button
+                onClick={() => { window.location.hash = '/dashboard/lab'; setIsSidebarOpen(false); }}
+                className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
+              >
+                <FlaskConical className="w-4.5 h-4.5 text-indigo-500" />
+                <span>إدارة المختبر</span>
               </button>
             )}
 
@@ -585,6 +651,14 @@ export const TeamDashboard = ({ embeddedTab }) => {
             <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
               <WeatherWidget variant="full" />
             </div>
+            {hasPerm('exportData') && (
+              <button 
+                onClick={() => window.print()}
+                className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
+              >
+                🖨️ تصدير التقارير / طباعة
+              </button>
+            )}
           </div>
         </div>
 
@@ -744,6 +818,22 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 establishments={establishments} 
                 isTeamView={true} 
                 teamSector={userSector} 
+                fullHeight={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Tab F: Geographic View */}
+        {activeTab === 'geographic' && hasPerm('showReportsPage') && (
+          <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
+            <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+              <Map className="text-teal-600" />
+              الخريطة الجغرافية
+            </h2>
+            <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white" style={{ borderRadius: '0' }}>
+              <NinevehMap 
+                establishments={establishments}
                 fullHeight={true}
               />
             </div>
@@ -1242,6 +1332,9 @@ export const TeamDashboard = ({ embeddedTab }) => {
                     </h3>
                     <span className="text-[10px] bg-teal-500 text-white px-2 py-0.5 rounded-lg font-black">{teamReports.length} شكوى</span>
                   </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-2">
+                    تستقبل هذه الصفحة البلاغات التي يقوم المواطنون برفعها عبر مسح رمز الاستجابة السريع (QR Code) المثبت في المنشآت.
+                  </p>
                   <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
                     {teamReports.map((r) => (
                       <div key={r.id} className="p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 relative overflow-hidden transition-all hover:scale-[1.01]">
@@ -1272,7 +1365,10 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700">
                   <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                   <h4 className="font-black text-slate-700 dark:text-slate-300 mb-2">شكاوى ومتابعة خدمة التوصيل</h4>
-                  <p className="text-xs text-slate-500">لا توجد شكاوى أو بلاغات بخصوص خدمات التوصيل والمندوبين في الوقت الحالي.</p>
+                  <p className="text-xs text-slate-500 font-bold mb-4">
+                    هذا القسم مخصص لمتابعة الشكاوى المتعلقة بمندوبي وخدمات التوصيل المنزلي لضمان الالتزام بالشروط الصحية.
+                  </p>
+                  <p className="text-xs text-slate-400">لا توجد شكاوى أو بلاغات بخصوص خدمات التوصيل والمندوبين في الوقت الحالي.</p>
                 </div>
               )}
             </div>
