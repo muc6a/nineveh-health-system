@@ -1151,6 +1151,227 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
 
         
+        {activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective')) && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            {/* Direct Command Directive Form */}
+            {hasPerm('sendDirective') && (
+              <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl sticky top-6">
+                <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
+                  <ShieldAlert className="w-5 h-5 text-amber-500" />
+                  <div>
+                    <h3 className="text-xs font-black text-slate-800 dark:text-white">📢 بوابة الأوامر والتعميمات الإدارية</h3>
+                    <p className="text-[10px] text-slate-500 mt-0.5">توجيه اللجان الميدانية أو شعب الرقابة بمختلف القطاعات</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSendDirective} className="space-y-4 text-xs font-bold">
+                  <div className="space-y-1">
+                    <label className="text-slate-600 dark:text-slate-400">الجهة الإدارية المعنية بالأمر</label>
+                    <select
+                      value={targetRecipient}
+                      onChange={(e) => setTargetRecipient(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-bold"
+                    >
+                      <option value="all">📢 كافة شعب ولجان التفتيش بالمحافظة</option>
+                      {directors?.filter(d => d.id !== user?.id && d.active).map(d => (
+                        <option key={d.id} value={d.id}>👑 {d.title} ({d.name})</option>
+                      ))}
+                      {allowedTeams.map(t => (
+                        <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-600 dark:text-slate-400">الأولوية ودرجة الإلحاح</label>
+                    <select
+                      className="w-full p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"
+                    >
+                      <option value="high">🚨 عاجل وهام جداً - تنفيذ فوري</option>
+                      <option value="medium">⚠️ متابعة روتينية يومية</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-600 dark:text-slate-400">نص التوجيه / الأمر الرقابي والتعليمات الوزارية</label>
+                    <textarea
+                      rows="4"
+                      required
+                      placeholder="اكتب التوجيه هنا..."
+                      value={directiveText}
+                      onChange={(e) => setDirectiveText(e.target.value)}
+                      className="w-full p-3 rounded-2xl bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500 font-medium"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-amber-500/10 active:scale-95 transition-all"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>إرسال وتعميم الأمر الإداري فوراً 🚀</span>
+                  </button>
+                </form>
+
+                {directiveSuccessMsg && (
+                  <div className="mt-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-center font-bold text-[10px] animate-pulse">
+                    {directiveSuccessMsg}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Directives Inbox/Outbox List */}
+            <div className="glassmorphic-card p-5 border border-amber-500/20 bg-slate-900 rounded-3xl max-h-[600px] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
+                <h3 className="text-sm font-black text-amber-500 flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  التبليغات
+                </h3>
+              </div>
+              <div className="space-y-4 text-right pr-1">
+                {(directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).length > 0 ? (
+                  (directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).map((dir, idx) => (
+                    <div key={idx} className={`${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-900/40 border-teal-500 border-2 shadow-teal-500/20' : 'bg-slate-800 border-slate-700/60'} p-4 rounded-2xl border shadow-md transition-all relative overflow-hidden`}>
+                      {dir.text.startsWith('رد على تبليغ:') && (
+                        <div className="absolute top-0 right-0 h-full w-1.5 bg-teal-500"></div>
+                      )}
+                      <div className="flex justify-between items-start mb-2 relative z-10">
+                        <div>
+                          <h4 className="text-xs font-black text-white">من: {dir.sender}</h4>
+                          <span className="text-[10px] text-slate-400">إلى: {dir.teamId === 'all' ? 'جميع الجهات والفرق' : (teams.find(t => t.id === dir.teamId)?.name || directors.find(d => d.id === dir.teamId)?.title || dir.teamId)}</span>
+                        </div>
+                        <span className="bg-slate-900 text-slate-300 text-[9px] font-bold px-2 py-1 rounded-md border border-slate-700/50">
+                          {dir.date || 'تاريخ غير محدد'}
+                        </span>
+                      </div>
+                      <p className={`text-xs font-bold p-3 rounded-xl border mt-2 ${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-950/50 border-teal-800/50 text-teal-100' : 'bg-slate-900/50 border-slate-700 text-slate-300'}`}>
+                        {dir.text}
+                      </p>
+                      
+                      {/* Reply button for received directives */}
+                      {dir.senderId !== user?.id && dir.senderId !== user?.role && hasPerm('replyDirective') && (
+                        <div className="mt-3">
+                          {replyingTo === dir.id ? (
+                            <div className="flex gap-2 items-center bg-slate-900 p-2 rounded-xl border border-slate-700/50">
+                              <input 
+                                type="text"
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="اكتب ردك هنا..."
+                                className="flex-1 bg-transparent border-none outline-none text-xs text-slate-200"
+                              />
+                              <button 
+                                onClick={() => {
+                                  if (replyText.trim()) {
+                                    const senderName = user?.role === 'director' ? `المدير العام (${user?.name})` : `الإدارة (${user?.name})`;
+                                    addDirective(dir.senderId || 'admin', `رد على تبليغ: ${replyText}`, senderName, user?.id || user?.role);
+                                    setReplyingTo(null);
+                                    setReplyText('');
+                                    notify('تم إرسال الرد بنجاح', 'success');
+                                  }
+                                }}
+                                className="p-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg shadow cursor-pointer transition-all"
+                              >
+                                <Send className="w-3 h-3" />
+                              </button>
+                              <button 
+                                onClick={() => { setReplyingTo(null); setReplyText(''); }}
+                                className="p-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg cursor-pointer transition-all"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button 
+                              onClick={() => { setReplyingTo(dir.id); setReplyText(''); }}
+                              className="text-[10px] font-bold text-amber-500 hover:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-1.5 rounded-lg transition-all cursor-pointer border border-amber-500/20"
+                            >
+                              رد / تأكيد استلام
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center p-8 text-slate-500 font-bold text-xs">لا توجد تبليغات مسجلة حالياً</div>
+                )}
+              </div>
+            </div>
+          </div>
+            
+            {hasPerm('quickTeamDispatch') && (
+            <div className="glassmorphic-card p-6 border border-blue-500/20 mt-6 lg:col-span-2">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+              <Target className="w-5 h-5 text-blue-500" />
+              التوجيه السريع للفرق الميدانية
+            </h3>
+            
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-right border-collapse text-xs font-bold">
+                <thead>
+                  <tr className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                    <th className="p-3">الفريق / القطاع</th>
+                    <th className="p-3">آخر تواجد مسجل</th>
+                    <th className="p-3">المنشأة المستهدفة للتوجيه</th>
+                    <th className="p-3 text-center">إجراء التوجيه</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+                  {teams.map(t => {
+                    const teamInspections = establishments
+                      .filter(e => e.lastInspection !== 'لم يزر بعد' && e.lastInspectorId === t.id)
+                      .sort((a, b) => new Date(b.lastInspectionDate || 0) - new Date(a.lastInspectionDate || 0));
+                    const lastEst = teamInspections[0];
+                    
+                    return (
+                      <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10">
+                        <td className="p-3">
+                          <span className="text-slate-800 dark:text-slate-200 block">{t.name}</span>
+                          <span className="text-[10px] text-teal-600">{t.sector}</span>
+                        </td>
+                        <td className="p-3 text-slate-500">
+                          <span className="block text-slate-700 dark:text-slate-300">
+                            {lastEst ? `${lastEst.name}` : 'غير متوفر'}
+                          </span>
+                          <span className="text-[10px]">
+                            {lastEst ? new Date(lastEst.lastInspectionDate).toLocaleString('ar-IQ') : 'لا يوجد نشاط'}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <select 
+                            onChange={(e) => {
+                              setDispatchEstId(e.target.value);
+                              setDispatchTeamId(t.id);
+                            }}
+                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          >
+                            <option value="">-- اختر المنشأة --</option>
+                            {establishments.filter(e => e.sector === t.sector).map(est => (
+                              <option key={est.id} value={est.id}>{est.name}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="p-3 text-center">
+                          <button
+                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId)}
+                            className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
+                          >
+                            🚀 إرسال التوجيه
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+            )}
+          </div>)}
+
         {activeTab === 'lab_results' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
             <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
