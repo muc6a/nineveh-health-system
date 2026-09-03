@@ -958,6 +958,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             )}
             
             {/* Directives Inbox/Outbox List */}
+            {hasPerm('showDirectivesPage') && (
             <div className="glassmorphic-card p-5 border border-amber-500/20 bg-slate-900 rounded-3xl max-h-[600px] overflow-y-auto">
               <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
                 <h3 className="text-sm font-black text-amber-500 flex items-center gap-2">
@@ -1035,6 +1036,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                 )}
               </div>
             </div>
+            )}
           </div>
             
             {hasPerm('quickTeamDispatch') && (
