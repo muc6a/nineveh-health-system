@@ -327,15 +327,15 @@ export const InspectionForm = () => {
     const newLabReq = {
       id: 'lab_' + Date.now() + Math.random().toString(36).substring(7),
       establishmentId: establishment?.id,
-      establishmentName: establishment?.name || 'غير معروف',
+      estName: establishment?.name || 'غير معروف',
       teamId: user?.teamId || 'team_1',
+      teamName: user?.name || 'مفتش',
       date: new Date().toISOString().split('T')[0],
       time: new Date().toLocaleTimeString('ar-IQ'),
       status: 'pending_arrival',
       sampleType: labSampleType,
       sampleCode: labSampleCode,
-      notes: labSampleNotes,
-      inspectorName: user?.name || 'مفتش',
+      senderNotes: labSampleNotes,
       result: null,
       decision: null,
       attachments: []

@@ -1328,6 +1328,8 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { if (isMountedFineTrans.current) syncToCloud('nineveh_fine_transactions', fineTransactions); else isMountedFineTrans.current = true; }, [fineTransactions]);
   const isMountedInv = useRef(false);
   useEffect(() => { if (isMountedInv.current) syncToCloud('nineveh_daily_inventories', dailyInventories); else isMountedInv.current = true; }, [dailyInventories]);
+  const isMountedLabReqs = useRef(false);
+  useEffect(() => { if (isMountedLabReqs.current) syncToCloud('nineveh_lab_requests', labRequests); else isMountedLabReqs.current = true; }, [labRequests]);
 
 
   const globalLogout = () => {

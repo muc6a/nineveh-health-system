@@ -3,24 +3,7 @@ import re
 with open('src/pages/TeamDashboard.jsx', 'r', encoding='utf-8') as f:
     content = f.read()
 
-# Replace single button for complaints with two buttons for Public and Delivery Evals
-old_complaints = """            {(hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) && (
-              <button
-                onClick={() => { setActiveTab('complaints'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'complaints'
-                    ? 'bg-rose-600 text-white shadow-md shadow-rose-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Compass className="w-4.5 h-4.5 text-rose-500" />
-                  <span>{PERMISSIONS_TABS.find(t => t.id === 'complaints')?.label || 'الشكاوى'}</span>
-                </div>
-              </button>
-            )}"""
-
-new_complaints = """            {hasPerm('showPublicEvalsPage') && (
+old_complaints = """            {hasPerm('showPublicEvalsPage') && (
               <button
                 onClick={() => { setActiveTab('complaints'); setComplaintTab('citizens'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
@@ -47,29 +30,24 @@ new_complaints = """            {hasPerm('showPublicEvalsPage') && (
                 <span>شكاوى خدمة التوصيل</span>
               </button>
             )}"""
-            
-# Also I need to add Package to lucide-react imports if it's missing in TeamDashboard, wait, Package is already there? Let me check imports.
 
-content = content.replace(old_complaints, new_complaints)
-
-# Directives mapping fix:
-old_directives = """            {hasPerm('showDirectivesPage') && (
+new_complaints = """            {(hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) && (
               <button
-                onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'directives'
-                    ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
+                onClick={() => { setActiveTab('complaints'); setIsSidebarOpen(false); }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === 'complaints'
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Mail className="w-4.5 h-4.5 text-slate-500" />
-                  <span>{PERMISSIONS_TABS.find(t => t.id === 'directives')?.label || 'التبليغات'}</span>
-                </div>
+                <Compass className={`w-4.5 h-4.5 ${activeTab === 'complaints' ? '' : 'text-rose-500'}`} />
+                <span>الشكاوى</span>
               </button>
             )}"""
 
-new_directives = """            {hasPerm('sendDirective') && (
+content = content.replace(old_complaints, new_complaints)
+
+old_directives = """            {hasPerm('sendDirective') && (
               <button
                 onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
@@ -109,50 +87,21 @@ new_directives = """            {hasPerm('sendDirective') && (
               </button>
             )}"""
 
-content = content.replace(old_directives, new_directives)
-
-# Lab Results Button Fix (Remove Borders/Outlines - meaning removing justify-between and making it gap-3 like the others)
-old_lab_res = """            {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
+new_directives = """            {(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective')) && (
               <button
-                onClick={() => { setActiveTab('lab_results'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'lab_results'
-                    ? 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Activity className="w-4.5 h-4.5 text-fuchsia-500" />
-                  <span>{PERMISSIONS_TABS.find(t => t.id === 'lab')?.label || 'المختبر'}</span>
-                </div>
-              </button>
-            )}"""
-
-new_lab_res = """            {hasPerm('authenticatePenalties') && (
-              <button
-                onClick={() => { setActiveTab('lab_results'); setIsSidebarOpen(false); }}
+                onClick={() => { setActiveTab('directives'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  activeTab === 'lab_results'
-                    ? 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10'
+                  activeTab === 'directives'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-500/10'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                 }`}
               >
-                <Activity className={`w-4.5 h-4.5 ${activeTab === 'lab_results' ? '' : 'text-fuchsia-500'}`} />
-                <span>قرارات المختبر</span>
-              </button>
-            )}
-            
-            {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
-              <button
-                onClick={() => { window.location.hash = '/dashboard/lab'; setIsSidebarOpen(false); }}
-                className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-              >
-                <FlaskConical className="w-4.5 h-4.5 text-indigo-500" />
-                <span>إدارة المختبر</span>
+                <Mail className={`w-4.5 h-4.5 ${activeTab === 'directives' ? '' : 'text-amber-500'}`} />
+                <span>التبليغات</span>
               </button>
             )}"""
 
-content = content.replace(old_lab_res, new_lab_res)
+content = content.replace(old_directives, new_directives)
 
 with open('src/pages/TeamDashboard.jsx', 'w', encoding='utf-8') as f:
     f.write(content)
