@@ -1,7 +1,7 @@
 import { ROLE_CORE_BASICS } from '../utils/constants';
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Search, Filter } from 'lucide-react';
+import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Search, Filter , Plus, Database } from 'lucide-react';
 
 export const LabManager = () => {
 
