@@ -1,3 +1,4 @@
+import { ROLE_CORE_BASICS } from '../utils/constants';
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut } from 'lucide-react';
@@ -5,7 +6,21 @@ import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Che
 export const LabManager = () => {
 
   const { user, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences } = useContext(AppContext);
-  const [labTab, setLabTab] = useState('stats'); // 'stats', 'incoming', 'testing', 'archive'
+
+  const hasPerm = (permName) => {
+    if (user?.role === 'admin') return true;
+    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
+    return user?.permissions?.[permName] === true;
+  };
+
+  const getInitialTab = () => {
+    if (hasPerm('centralLabView')) return 'stats';
+    if (hasPerm('receiveSamples')) return 'incoming';
+    if (hasPerm('enterLabResults')) return 'testing';
+    if (hasPerm('labArchive')) return 'archive';
+    return 'stats';
+  };
+  const [labTab, setLabTab] = useState(getInitialTab); // 'stats', 'incoming', 'testing', 'archive'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null });
   const [resultStatus, setResultStatus] = useState('safe');
   const [resultNotes, setResultNotes] = useState('');
@@ -130,32 +145,32 @@ export const LabManager = () => {
 
       {/* Top Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-200 dark:border-slate-800 custom-scrollbar">
-        <button
+        {(hasPerm("centralLabView") || hasPerm("receiveSamples") || hasPerm("enterLabResults")) && <button
           onClick={() => setLabTab('stats')}
           className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'stats' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
         >
           <BarChart3 className="w-4 h-4" /> الرئيسية والتقارير
-        </button>
-        <button
+        </button>}
+        {hasPerm("receiveSamples") && <button
           onClick={() => setLabTab('incoming')}
           className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'incoming' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
         >
           <Clock className="w-4 h-4" /> الطلبات الواردة
           {incomingReqs.length > 0 && <span className="bg-amber-100 text-amber-700 px-1.5 rounded-md text-[10px]">{incomingReqs.length}</span>}
-        </button>
-        <button
+        </button>}
+        {hasPerm("enterLabResults") && <button
           onClick={() => setLabTab('testing')}
           className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'testing' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
         >
           <FlaskConical className="w-4 h-4" /> قيد الفحص
           {testingReqs.length > 0 && <span className="bg-indigo-100 text-indigo-700 px-1.5 rounded-md text-[10px]">{testingReqs.length}</span>}
-        </button>
-        <button
+        </button>}
+        {hasPerm("labArchive") && <button
           onClick={() => setLabTab('archive')}
           className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'archive' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
         >
           <Archive className="w-4 h-4" /> الأرشيف المختبري
-        </button>
+        </button>}
         
         {labTab === 'incoming' && (
           <div className="mr-auto">

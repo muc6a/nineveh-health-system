@@ -523,7 +523,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
               </button>
             )}
 
-                        {hasPerm('financialReports') && (
+                        {(hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory')) && (
               <button
                 onClick={() => { setActiveTab('financials'); setIsSidebarOpen(false); }}
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
@@ -1146,7 +1146,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
           <LabManager />
         )}
         
-        {activeTab === 'financials' && hasPerm('financialReports') && (
+        {activeTab === 'financials' && (hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
             <FinancialReports />
           </div>

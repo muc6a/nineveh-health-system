@@ -1,3 +1,4 @@
+import { ROLE_CORE_BASICS } from '../utils/constants';
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { DollarSign, AlertCircle, CheckCircle2, FileText, Activity } from 'lucide-react';
@@ -97,10 +98,10 @@ const [showPayModal, setShowPayModal] = useState(false);
         </div>
         <div className="flex items-center gap-2">
           
-          <button onClick={() => setShowPayModal(true)} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md shadow-emerald-500/20">
+          {hasPerm('payFines') && <button onClick={() => setShowPayModal(true)} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md shadow-emerald-500/20">
             <DollarSign className="w-4 h-4" />
             تسديد غرامة
-          </button>
+          </button>}
 
           <label className="text-xs font-bold text-slate-500">تصفية حسب الفريق:</label>
           <select 
@@ -219,7 +220,7 @@ const [showPayModal, setShowPayModal] = useState(false);
         </div>
       </div>
 
-      <div className="glassmorphic-card p-6 mt-8 overflow-x-auto">
+      {hasPerm('financialReports') && <div className="glassmorphic-card p-6 mt-8 overflow-x-auto">
         <h3 className="text-sm font-black text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">السجل التفصيلي للمنوضات المالية</h3>
         <table className="w-full text-right text-xs">
           <thead>
@@ -268,7 +269,7 @@ const [showPayModal, setShowPayModal] = useState(false);
             )}
           </tbody>
         </table>
-      </div>
+      </div>}
     </div>
   );
 };
