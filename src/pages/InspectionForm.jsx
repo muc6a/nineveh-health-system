@@ -316,6 +316,36 @@ export const InspectionForm = () => {
     }
   };
 
+  const handleIndependentSampleSubmit = () => {
+    if (!labSampleType.trim()) {
+      triggerAlert('يرجى تحديد نوع العينة أولاً', 'warning');
+      return;
+    }
+    if (isSampleSent) return;
+    if (!setLabRequests) return;
+    
+    const newLabReq = {
+      id: 'lab_' + Date.now() + Math.random().toString(36).substring(7),
+      establishmentId: establishment?.id,
+      establishmentName: establishment?.name || 'غير معروف',
+      teamId: user?.teamId || 'team_1',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString('ar-IQ'),
+      status: 'pending_arrival',
+      sampleType: labSampleType,
+      sampleCode: labSampleCode,
+      notes: labSampleNotes,
+      inspectorName: user?.name || 'مفتش',
+      result: null,
+      decision: null,
+      attachments: []
+    };
+
+    setLabRequests(prev => [newLabReq, ...prev]);
+    setIsSampleSent(true);
+    triggerAlert('تم إرسال العينة إلى المختبر بنجاح', 'success', true);
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const params = new URLSearchParams(window.location.search);
@@ -548,6 +578,20 @@ export const InspectionForm = () => {
                     className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold text-right focus:outline-none focus:border-fuchsia-500 transition-all text-slate-800 dark:text-slate-200 resize-none"
                   />
                 </div>
+
+                {/* Independent Submit Button */}
+                <button
+                  type="button"
+                  onClick={handleIndependentSampleSubmit}
+                  disabled={isSampleSent}
+                  className={`w-full py-3 rounded-xl font-black text-sm flex items-center justify-center gap-2 transition-all mt-4 ${
+                    isSampleSent 
+                      ? 'bg-emerald-500 text-white cursor-not-allowed shadow-lg shadow-emerald-500/30' 
+                      : 'bg-fuchsia-500 hover:bg-fuchsia-600 text-white shadow-lg shadow-fuchsia-500/30 active:scale-95'
+                  }`}
+                >
+                  {isSampleSent ? 'تم إرسال العينة بنجاح' : 'إرسال العينة إلى المختبر'}
+                </button>
               </div>
             )}
           </div>
