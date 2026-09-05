@@ -86,6 +86,7 @@ export const InspectionForm = () => {
   const [labSampleType, setLabSampleType] = useState('');
   const [labSampleCode, setLabSampleCode] = useState('');
   const [labSampleNotes, setLabSampleNotes] = useState('');
+  const [isSampleSent, setIsSampleSent] = useState(false);
 
   const handleLabSampleToggle = () => {
     const newStatus = !needsLabSample;
@@ -359,27 +360,6 @@ export const InspectionForm = () => {
       addInspection(establishment.id, scorePercentage, remarks || 'تم إجراء التقييم الصحي الدوري.', ratings, user?.name || 'اللجنة الرقابية الأولى', liveLocation, isEdit, user?.id, selectedPhoto, aiReport, signatureData, ownerPhoto);
 
       
-      // Submit Lab Request if needed
-      if (needsLabSample && labSampleType && labSampleCode && setLabRequests) {
-        const newLabReq = {
-          id: 'lab_' + Date.now() + Math.random().toString(36).substring(7),
-          establishmentId: establishment.id,
-          establishmentName: establishment.name,
-          teamId: user?.teamId || 'team_1',
-          date: new Date().toISOString().split('T')[0],
-          time: new Date().toLocaleTimeString('ar-IQ'),
-          status: 'pending_arrival',
-          sampleType: labSampleType,
-          sampleCode: labSampleCode,
-          notes: labSampleNotes,
-          inspectorName: user?.name || 'مفتش',
-          result: null,
-          decision: null,
-          attachments: []
-        };
-        setLabRequests(prev => [...prev, newLabReq]);
-      }
-
       // Submit any pending document fines
       if (pendingFines.length > 0 && setPenaltyRequests) {
         const newRequests = pendingFines.map(fine => ({
@@ -397,22 +377,6 @@ export const InspectionForm = () => {
         }));
         setPenaltyRequests(prev => [...newRequests, ...prev]);
         triggerAlert(`تم تسجيل ${pendingFines.length} غرامة وثائق تلقائياً!`, 'warning', true);
-      }
-
-      if (hasLabSample && setLabRequests) {
-        const newLabRequest = {
-          id: 'lab_' + Date.now(),
-          establishmentId: establishment.id,
-          establishmentName: establishment.name,
-          teamId: user?.id || 'team_1',
-          teamName: user?.name || 'اللجنة الرقابية الأولى',
-          sampleCode: sampleCode,
-          sampleType: sampleType,
-          remarks: sampleRemarks,
-          date: new Date().toISOString(),
-          status: 'pending'
-        };
-        setLabRequests(prev => [newLabRequest, ...prev]);
       }
 
       if (isOffline) {
