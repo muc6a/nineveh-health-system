@@ -1,7 +1,7 @@
 import { ROLE_CORE_BASICS } from '../utils/constants';
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut } from 'lucide-react';
+import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Search, Filter } from 'lucide-react';
 
 export const LabManager = () => {
 
@@ -13,25 +13,16 @@ export const LabManager = () => {
     return user?.permissions?.[permName] === true;
   };
 
-  const getInitialTab = () => {
-    if (hasPerm('centralLabView')) return 'stats';
-    if (hasPerm('receiveSamples')) return 'incoming';
-    if (hasPerm('enterLabResults')) return 'testing';
-    if (hasPerm('labArchive')) return 'archive';
-    return 'stats';
-  };
-  const [labTab, setLabTab] = useState(getInitialTab); // 'stats', 'incoming', 'testing', 'archive'
+  const [filterTab, setFilterTab] = useState('all'); // 'all', 'pending_arrival', 'under_testing', 'finished'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null });
   const [resultStatus, setResultStatus] = useState('safe');
   const [resultNotes, setResultNotes] = useState('');
-  const [newSampleModal, setNewSampleModal] = useState({ isOpen: false });
+  
+  const [receiveModal, setReceiveModal] = useState({ isOpen: false, code: '' });
+  const [manualSampleModal, setManualSampleModal] = useState({ isOpen: false });
   const [searchEst, setSearchEst] = useState('');
   const [selectedEstForSample, setSelectedEstForSample] = useState(null);
   const [manualSampleType, setManualSampleType] = useState('');
-  const [manualSampleRemarks, setManualSampleRemarks] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-
 
   // Filter requests
   const hasCentralView = user?.role === 'admin' || user?.permissions?.centralLabView === true;
@@ -40,11 +31,15 @@ export const LabManager = () => {
     : (labRequests || []).filter(r => r.teamId === user?.id || r.teamId === user?.role);
     
   const safeEstablishments = establishments || [];
+  
+  // Stats
   const incomingReqs = safeLabRequests.filter(r => r.status === 'pending_arrival');
   const testingReqs = safeLabRequests.filter(r => r.status === 'under_testing');
   const archivedReqs = safeLabRequests.filter(r => r.status === 'finished');
 
-  
+  const filteredReqs = filterTab === 'all' 
+    ? safeLabRequests 
+    : safeLabRequests.filter(r => r.status === filterTab);
 
   const handleCreateManualSample = () => {
     if (!selectedEstForSample || !manualSampleType) return;
@@ -57,41 +52,46 @@ export const LabManager = () => {
       teamId: user?.id || 'manual',
       teamName: user?.name || 'إدخال يدوي - المختبر',
       date: new Date().toISOString(),
-      senderNotes: `نوع العينة: ${manualSampleType}` + (manualSampleRemarks ? ` | ملاحظات: ${manualSampleRemarks}` : '')
+      senderNotes: `نوع العينة: ${manualSampleType}`
     };
     
     setLabRequests(prev => [newReq, ...prev]);
-    setSystemNotifications(prev => [{
-      id: Date.now().toString(),
-      type: 'info',
-      title: 'عينة يدوية',
-      message: `تم تسجيل عينة جديدة يدوياً للمنشأة: ${selectedEstForSample.name}`,
-      date: new Date().toISOString(),
-      read: false
-    }, ...prev]);
-    
     if (playBeep) playBeep('success');
     
-    // Reset form
+    setManualSampleModal({ isOpen: false });
     setSelectedEstForSample(null);
     setSearchEst('');
     setManualSampleType('');
-    setManualSampleRemarks('');
-    setNewSampleModal({ isOpen: false });
   };
 
-  const handleReceiveSample = (id) => {
-    setLabRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'under_testing', receivedAt: new Date().toISOString() } : r));
+  const handleReceiveSampleCode = () => {
+    if (!receiveModal.code) return;
+    const reqIndex = labRequests.findIndex(r => r.id === receiveModal.code || r.id.includes(receiveModal.code));
+    if (reqIndex === -1) {
+      alert('لم يتم العثور على عينة بهذا الكود!');
+      return;
+    }
+    
+    setLabRequests(prev => prev.map(r => 
+      (r.id === receiveModal.code || r.id.includes(receiveModal.code))
+        ? { ...r, status: 'under_testing', receivedAt: new Date().toISOString() } 
+        : r
+    ));
     playBeep && playBeep('success');
+    setReceiveModal({ isOpen: false, code: '' });
+  };
+
+  const toggleStatusManually = (req) => {
+    if (req.status === 'pending_arrival' && hasPerm('receiveSamples')) {
+      setLabRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'under_testing', receivedAt: new Date().toISOString() } : r));
+      playBeep && playBeep('success');
+    }
   };
 
   const handleSaveResult = () => {
     if (!resultModal.request) return;
-
     const reqId = resultModal.request.id;
-    const isContaminated = resultStatus === 'contaminated';
-
-    // Update request
+    
     setLabRequests(prev => prev.map(r => r.id === reqId ? { 
       ...r, 
       status: 'finished', 
@@ -100,242 +100,205 @@ export const LabManager = () => {
       finishedAt: new Date().toISOString()
     } : r));
 
-    // Notify operations if contaminated
-    if (isContaminated) {
-      setSystemNotifications(prev => [{
-        id: 'notif_' + Date.now() + '1',
-        title: '🚨 عينة ملوثة مختبرياً!',
-        message: `تم ثبوت تلوث العينة المرسلة من ${resultModal.request.teamName} للمنشأة (${resultModal.request.estName}). يرجى اتخاذ القرار الإداري بالغلق أو الغرامة.`,
-        date: new Date().toISOString(),
-        isRead: false,
-        targetRole: 'operations',
-        relatedLabRequestId: reqId
-      },
-      {
-        id: 'notif_' + Date.now() + '2',
-        title: '🚨 عينة ملوثة مختبرياً!',
-        message: `تم ثبوت تلوث العينة المرسلة من قبلكم للمنشأة (${resultModal.request.estName}).`,
-        date: new Date().toISOString(),
-        isRead: false,
-        targetRole: resultModal.request.teamId,
-        relatedLabRequestId: reqId
-      }, ...prev]);
-    } else {
-      // Notify team that it is safe
-      setSystemNotifications(prev => [{
-        id: 'notif_' + Date.now(),
-        title: '✅ نتيجة عينة سليمة',
-        message: `عينات المنشأة (${resultModal.request.estName}) سليمة ومطابقة للمواصفات.`,
-        date: new Date().toISOString(),
-        isRead: false,
-        targetRole: resultModal.request.teamId
-      }, ...prev]);
-    }
-
     setResultModal({ isOpen: false, request: null });
     setResultStatus('safe');
     setResultNotes('');
     playBeep && playBeep('success');
   };
 
-
+  const getStatusBadge = (status, req) => {
+    if (status === 'pending_arrival') return (
+      <span onClick={() => toggleStatusManually(req)} className="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-[10px] flex items-center gap-1 w-fit cursor-pointer hover:bg-amber-200 transition-colors">
+        <Clock className="w-3 h-3" /> قيد التوصيل
+      </span>
+    );
+    if (status === 'under_testing') return (
+      <span className="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-700 font-bold text-[10px] flex items-center gap-1 w-fit">
+        <FlaskConical className="w-3 h-3" /> قيد الفحص
+      </span>
+    );
+    if (status === 'finished') return (
+      <span className={`px-2.5 py-1 rounded-lg font-bold text-[10px] flex items-center gap-1 w-fit ${req.result === 'safe' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+        {req.result === 'safe' ? <CheckCircle className="w-3 h-3" /> : <ShieldAlert className="w-3 h-3" />}
+        منجزة ({req.result === 'safe' ? 'سليمة' : 'ملوثة'})
+      </span>
+    );
+    return null;
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
-
-      {/* Top Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-200 dark:border-slate-800 custom-scrollbar">
-        {(hasPerm("centralLabView") || hasPerm("receiveSamples") || hasPerm("enterLabResults")) && <button
-          onClick={() => setLabTab('stats')}
-          className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'stats' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-        >
-          <BarChart3 className="w-4 h-4" /> الرئيسية والتقارير
-        </button>}
-        {hasPerm("receiveSamples") && <button
-          onClick={() => setLabTab('incoming')}
-          className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'incoming' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-        >
-          <Clock className="w-4 h-4" /> الطلبات الواردة
-          {incomingReqs.length > 0 && <span className="bg-amber-100 text-amber-700 px-1.5 rounded-md text-[10px]">{incomingReqs.length}</span>}
-        </button>}
-        {hasPerm("enterLabResults") && <button
-          onClick={() => setLabTab('testing')}
-          className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'testing' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-        >
-          <FlaskConical className="w-4 h-4" /> قيد الفحص
-          {testingReqs.length > 0 && <span className="bg-indigo-100 text-indigo-700 px-1.5 rounded-md text-[10px]">{testingReqs.length}</span>}
-        </button>}
-        {hasPerm("labArchive") && <button
-          onClick={() => setLabTab('archive')}
-          className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${labTab === 'archive' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-        >
-          <Archive className="w-4 h-4" /> الأرشيف المختبري
-        </button>}
-        
-        {labTab === 'incoming' && (
-          <div className="mr-auto">
-            <button 
-              onClick={() => setNewSampleModal({ isOpen: true })}
-              className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
-            >
-              ➕ إنشاء عينة جديدة
-            </button>
+      
+      {/* Top Stats Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div>
+            <h3 className="text-slate-500 dark:text-slate-400 font-bold text-xs mb-1">إجمالي العينات (السجل الكلي)</h3>
+            <p className="text-2xl font-black text-slate-800 dark:text-white">{safeLabRequests.length}</p>
           </div>
-        )}
-        {labTab === 'testing' && (
-          <div className="mr-auto">
-            <button 
-              onClick={() => setNewSampleModal({ isOpen: true })}
-              className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
-            >
-              ➕ إنشاء عينة جديدة
-            </button>
+          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+            <Archive className="w-6 h-6" />
           </div>
-        )}
+        </div>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div>
+            <h3 className="text-slate-500 dark:text-slate-400 font-bold text-xs mb-1">عينات قيد الفحص (بانتظار نتيجة)</h3>
+            <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{testingReqs.length}</p>
+          </div>
+          <div className="w-12 h-12 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600">
+            <FlaskConical className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div>
+            <h3 className="text-slate-500 dark:text-slate-400 font-bold text-xs mb-1">عينات منجزة (مؤرشفة)</h3>
+            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{archivedReqs.length}</p>
+          </div>
+          <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600">
+            <CheckCircle className="w-6 h-6" />
+          </div>
+        </div>
       </div>
 
-<div className="max-w-6xl mx-auto space-y-6">
+      {/* Central Ledger Actions & Filters */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 custom-scrollbar">
+          <button 
+            onClick={() => setFilterTab('all')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${filterTab === 'all' ? 'bg-slate-800 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+          >
+            الكل
+          </button>
+          <button 
+            onClick={() => setFilterTab('pending_arrival')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${filterTab === 'pending_arrival' ? 'bg-slate-800 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+          >
+            قيد التوصيل
+          </button>
+          <button 
+            onClick={() => setFilterTab('under_testing')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${filterTab === 'under_testing' ? 'bg-slate-800 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+          >
+            قيد الفحص
+          </button>
+          <button 
+            onClick={() => setFilterTab('finished')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${filterTab === 'finished' ? 'bg-slate-800 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+          >
+            منجزة
+          </button>
+        </div>
 
-            {/* STATS */}
-            {labTab === 'stats' && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
-                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">إجمالي العينات المستلمة</h3>
-                    <p className="text-4xl font-black text-indigo-600 dark:text-indigo-400">{labRequests.length}</p>
-                  </div>
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
-                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات قيد الفحص</h3>
-                    <p className="text-4xl font-black text-amber-600 dark:text-amber-400">{testingReqs.length}</p>
-                  </div>
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
-                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات منجزة</h3>
-                    <p className="text-4xl font-black text-emerald-600 dark:text-emerald-400">{archivedReqs.length}</p>
-                  </div>
-                </div>
+        <div className="flex gap-2 w-full md:w-auto">
+          {hasPerm('receiveSamples') && (
+            <button 
+              onClick={() => setReceiveModal({ isOpen: true, code: '' })}
+              className="flex-1 md:flex-none px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 whitespace-nowrap"
+            >
+              <FileSearch className="w-4 h-4" /> استلام عينة بالباركود
+            </button>
+          )}
+          
+          {(hasPerm('receiveSamples') || hasPerm('enterLabResults')) && (
+            <button 
+              onClick={() => setManualSampleModal({ isOpen: true })}
+              className="flex-1 md:flex-none px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap border border-slate-200 dark:border-slate-700"
+            >
+              <Plus className="w-4 h-4" /> إنشاء يدوي
+            </button>
+          )}
+        </div>
+      </div>
 
-                <div className="bg-indigo-600 text-white rounded-[2rem] p-8 relative overflow-hidden shadow-xl shadow-indigo-600/20">
-                  <div className="relative z-10 max-w-2xl">
-                    <h2 className="text-2xl font-black mb-2">بوابة المختبر المركزي جاهزة</h2>
-                    <p className="text-indigo-100 leading-relaxed">
-                      يمكنك استلام العينات الميدانية، إجراء الفحوصات، واعتماد النتائج. 
-                      سيتم إشعار الفرق الرقابية أو الرقابة المركزية بالنتائج فور اعتمادها للمتابعة الميدانية أو اتخاذ الإجراءات القانونية بحق المخالفين.
-                    </p>
-                  </div>
-                  <FlaskConical className="w-48 h-48 absolute -left-12 -bottom-12 text-white/10 transform -rotate-12" />
-                </div>
-              </div>
-            )}
-
-            {/* INCOMING */}
-            {labTab === 'incoming' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
-                <div className="space-y-4">
-                  {incomingReqs.length === 0 ? (
-                    <div className="text-center p-12 flex flex-col items-center">
-                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4">
-                        <CheckCircle className="w-8 h-8" />
-                      </div>
-                      <h3 className="text-slate-600 dark:text-slate-300 font-bold text-lg mb-1">لا توجد عينات قيد الوصول</h3>
-                      <p className="text-slate-400 text-sm">تم استلام جميع العينات بنجاح.</p>
-                    </div>
-                  ) : (
-                    incomingReqs.map(req => (
-                      <div key={req.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5 gap-4 transition-all hover:border-indigo-300 dark:hover:border-indigo-700/50">
-                        <div className="flex gap-4 items-center">
-                          <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/20 text-amber-600 flex items-center justify-center">
-                            <Clock className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-slate-800 dark:text-white">{req.estName}</h4>
-                            <p className="text-xs text-slate-500 mt-1">مرسلة من: {req.teamName} - {new Date(req.date).toLocaleString('ar-IQ')}</p>
-                            {req.senderNotes && <p className="text-xs text-slate-400 mt-1 bg-white dark:bg-slate-800 px-2 py-1 rounded inline-block">ملاحظة: {req.senderNotes}</p>}
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => handleReceiveSample(req.id)}
-                          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
-                        >
-                          <CheckCircle className="w-4 h-4" /> تأكيد الاستلام المادي
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* TESTING */}
-            {labTab === 'testing' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
-                <div className="space-y-4">
-                  {testingReqs.length === 0 ? (
-                    <div className="text-center p-12 flex flex-col items-center">
-                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4">
-                        <FlaskConical className="w-8 h-8" />
-                      </div>
-                      <h3 className="text-slate-600 dark:text-slate-300 font-bold text-lg mb-1">لا توجد عينات قيد الفحص</h3>
-                      <p className="text-slate-400 text-sm">جميع العينات المستلمة تم فحصها.</p>
-                    </div>
-                  ) : (
-                    testingReqs.map(req => (
-                      <div key={req.id} className="flex flex-col md:flex-row items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5 gap-4 transition-all hover:border-indigo-300 dark:hover:border-indigo-700/50">
-                        <div className="flex gap-4 items-center">
-                          <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 flex items-center justify-center animate-pulse">
-                            <FlaskConical className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-slate-800 dark:text-white text-lg">{req.estName}</h4>
-                            <p className="text-xs text-slate-500 mt-1">مرسلة من: {req.teamName} - تم الاستلام: {new Date(req.receivedAt).toLocaleTimeString('ar-IQ')}</p>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => setResultModal({ isOpen: true, request: req })}
-                          className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-teal-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
-                        >
-                          <FileText className="w-4 h-4" /> إدخال النتيجة
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* ARCHIVE */}
-            {labTab === 'archive' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
-                <div className="space-y-4">
-                  {archivedReqs.length === 0 ? (
-                    <div className="text-center p-12 text-slate-400 font-bold">الأرشيف فارغ.</div>
-                  ) : (
-                    archivedReqs.map(req => (
-                      <div key={req.id} className={`flex items-center p-4 rounded-2xl border gap-4 ${req.result === 'safe' ? 'bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30'}`}>
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${req.result === 'safe' ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600' : 'bg-red-100 dark:bg-red-900/20 text-red-600'}`}>
-                          {req.result === 'safe' ? <CheckCircle className="w-6 h-6" /> : <ShieldAlert className="w-6 h-6" />}
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-slate-800 dark:text-white">{req.estName}</h4>
-                          <p className="text-sm font-bold mt-1 text-slate-700 dark:text-slate-300">النتيجة: {req.result === 'safe' ? <span className="text-emerald-600 dark:text-emerald-400">سليمة ومطابقة للمواصفات</span> : <span className="text-red-600 dark:text-red-400">ملوثة / غير مطابقة</span>}</p>
-                          <div className="flex gap-3 text-[10px] text-slate-400 mt-2">
-                            <span>الفريق: {req.teamName}</span>
-                            <span>&bull;</span>
-                            <span>تاريخ الفحص: {new Date(req.finishedAt).toLocaleString('ar-IQ')}</span>
-                          </div>
-                          {req.notes && (
-                            <p className="mt-2 text-xs p-2 bg-white/50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700">ملاحظات: {req.notes}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-
-          </div>
+      {/* Main Unified Table */}
+      <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
+        <h3 className="text-lg font-black text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+          <Database className="w-5 h-5 text-indigo-500" /> السجل المركزي للعينات
+        </h3>
         
-{/* Result Modal */}
+        <table className="w-full text-right text-xs">
+          <thead>
+            <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+              <th className="pb-3 px-2 font-bold">كود العينة</th>
+              <th className="pb-3 px-2 font-bold">المنشأة</th>
+              <th className="pb-3 px-2 font-bold">الجهة المرسلة</th>
+              <th className="pb-3 px-2 font-bold">تاريخ التسجيل</th>
+              <th className="pb-3 px-2 font-bold">الحالة</th>
+              <th className="pb-3 px-2 font-bold">الإجراءات التشغيلية</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+            {filteredReqs.length > 0 ? filteredReqs.map(req => (
+              <tr key={req.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors group">
+                <td className="py-4 px-2 font-black text-slate-400 text-[10px]">{req.id}</td>
+                <td className="py-4 px-2 font-black text-slate-700 dark:text-slate-300">{req.estName}</td>
+                <td className="py-4 px-2 font-bold text-slate-600 dark:text-slate-400">{req.teamName}</td>
+                <td className="py-4 px-2 font-bold text-slate-500">{new Date(req.date).toLocaleDateString('en-GB')}</td>
+                <td className="py-4 px-2">
+                  {getStatusBadge(req.status, req)}
+                </td>
+                <td className="py-4 px-2">
+                  {req.status === 'under_testing' && hasPerm('enterLabResults') && (
+                    <button 
+                      onClick={() => setResultModal({ isOpen: true, request: req })}
+                      className="px-3 py-1.5 bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-400 rounded-lg text-[10px] font-black transition-colors flex items-center gap-1 w-fit border border-teal-200 dark:border-teal-800/30"
+                    >
+                      <FileText className="w-3 h-3" /> إدخال النتيجة
+                    </button>
+                  )}
+                  {req.status === 'finished' && (
+                    <span className="text-[10px] text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">مؤرشفة</span>
+                  )}
+                  {req.status === 'pending_arrival' && hasPerm('receiveSamples') && (
+                    <button 
+                      onClick={() => toggleStatusManually(req)}
+                      className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 rounded-lg text-[10px] font-black transition-colors flex items-center gap-1 w-fit border border-indigo-200 dark:border-indigo-800/30"
+                    >
+                      <CheckCircle className="w-3 h-3" /> استلام يدوي
+                    </button>
+                  )}
+                </td>
+              </tr>
+            )) : (
+              <tr>
+                <td colSpan="6" className="py-12 text-center text-slate-500 font-bold">لا توجد عينات مسجلة تطابق الفلتر الحالي.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Receive Sample by Code Modal */}
+      {receiveModal.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-2xl p-6">
+            <h2 className="text-lg font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+              <FileSearch className="w-5 h-5 text-indigo-500" /> استلام عينة
+            </h2>
+            <p className="text-xs text-slate-500 font-bold mb-4">أدخل كود العينة (الباركود) الواردة مع المندوب لتحويلها فوراً إلى قيد الفحص.</p>
+            <input 
+              type="text" 
+              placeholder="كود العينة..." 
+              value={receiveModal.code}
+              onChange={(e) => setReceiveModal({...receiveModal, code: e.target.value})}
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 outline-none text-sm font-bold text-slate-800 dark:text-white focus:border-indigo-500 mb-6"
+              autoFocus
+            />
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setReceiveModal({ isOpen: false, code: '' })}
+                className="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm"
+              >إلغاء</button>
+              <button 
+                onClick={handleReceiveSampleCode}
+                className="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm"
+              >استلام</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Result Modal */}
       {resultModal.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md">
           <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
@@ -390,20 +353,19 @@ export const LabManager = () => {
         </div>
       )}
 
-      {/* New Sample Modal */}
-      {newSampleModal.isOpen && (
+      {/* Manual Sample Modal */}
+      {manualSampleModal.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-md">
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
               <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
-                <FlaskConical className="w-5 h-5 text-indigo-500" /> تسجيل عينة مختبرية جديدة
+                <FlaskConical className="w-5 h-5 text-indigo-500" /> إنشاء عينة يدوياً
               </h2>
-              <button onClick={() => setNewSampleModal({isOpen: false})} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 rounded-full cursor-pointer transition-colors">
+              <button onClick={() => setManualSampleModal({isOpen: false})} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 rounded-full cursor-pointer transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-5">
-              
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-2">البحث عن المنشأة المعنية</label>
                 <div className="relative">
@@ -439,13 +401,13 @@ export const LabManager = () => {
                       <CheckCircle className="w-4 h-4" />
                       تم اختيار: {selectedEstForSample.name}
                     </div>
-                    <button onClick={() => setSelectedEstForSample(null)} className="text-xs text-red-500 hover:underline">تغيير</button>
+                    <button onClick={() => setSelectedEstForSample(null)} className="text-xs text-red-500 hover:underline cursor-pointer">تغيير</button>
                   </div>
                 )}
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-2">نوع وتفاصيل العينة</label>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-2">نوع العينة</label>
                 <input
                   type="text"
                   value={manualSampleType}
@@ -454,18 +416,6 @@ export const LabManager = () => {
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 outline-none text-sm font-bold text-slate-800 dark:text-white focus:border-indigo-500"
                 />
               </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-2">ملاحظات إضافية</label>
-                <textarea
-                  value={manualSampleRemarks}
-                  onChange={(e) => setManualSampleRemarks(e.target.value)}
-                  placeholder="أي ملاحظات حول حالة العينة..."
-                  rows={2}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 outline-none text-sm font-bold text-slate-800 dark:text-white focus:border-indigo-500 resize-none"
-                />
-              </div>
-
             </div>
             <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
               <button 
@@ -473,14 +423,12 @@ export const LabManager = () => {
                 disabled={!selectedEstForSample || !manualSampleType}
                 className="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-black text-sm transition-all shadow-lg shadow-indigo-600/20 cursor-pointer"
               >
-                تسجيل العينة وإدخالها للفحص
+                تسجيل وإنشاء
               </button>
             </div>
           </div>
         </div>
       )}
-
-
     </div>
   );
 };

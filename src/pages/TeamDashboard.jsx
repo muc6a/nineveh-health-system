@@ -590,7 +590,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${activeTab === 'lab_management' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
               >
                 <FlaskConical className="w-4.5 h-4.5 text-indigo-500" />
-                <span>إدارة المختبر</span>
+                <span>المختبر</span>
               </button>
             )}
 

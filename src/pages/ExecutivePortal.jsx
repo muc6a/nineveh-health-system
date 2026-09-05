@@ -445,7 +445,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   showCondition: true
                 },
                 lab_management: {
-                  label: 'إدارة المختبر',
+                  label: 'المختبر',
                   icon: FlaskConical,
                   iconColorClass: 'text-indigo-500',
                   activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
