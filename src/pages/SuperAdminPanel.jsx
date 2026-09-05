@@ -956,7 +956,7 @@ export const SuperAdminPanel = () => {
             }`}
           >
             <Database className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
-            <span>التخزين</span>
+            <span>مساحة التخزين</span>
           </button>
         )}
 
@@ -2147,7 +2147,7 @@ export const SuperAdminPanel = () => {
                   <div className="flex justify-between items-end mb-2">
                     <div className="flex flex-col text-right">
                       <span className="text-sm font-black text-slate-800 dark:text-slate-200">مساحة التخزين الإجمالية</span>
-                      <span className="text-xs text-slate-500 font-bold">750 GB / 1000 GB مستخدمة</span>
+                      <span className="text-xs text-slate-500 font-bold"><span dir="ltr" className="inline-block">750 GB / 1000 GB</span> مستخدمة</span>
                     </div>
                     <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">75%</span>
                   </div>
