@@ -280,6 +280,59 @@ const DEFAULT_PERMISSIONS = {
   notify_directives: true
 };
 
+
+export const ROLE_PERMISSIONS = {
+  director: {
+    ...DEFAULT_PERMISSIONS,
+    showMainDashboard: true,
+    showReportsPage: true,
+    showPublicEvalsPage: true,
+    showDirectivesPage: true,
+    sendDirective: true,
+    replyDirective: true,
+    notify_closures: false,
+    notify_inspections: false,
+    notify_directives: true,
+    financialReports: true,
+    receiveSamples: true,
+    enterLabResults: true,
+    labArchive: true
+  },
+  central_director: {
+    ...DEFAULT_PERMISSIONS,
+    showMainDashboard: true,
+    showReportsPage: true,
+    showDirectivesPage: true,
+    sendDirective: true,
+    manageEstablishments: true,
+    notify_closures: true,
+    notify_inspections: true,
+    notify_directives: true,
+    financialReports: true,
+    receiveSamples: true,
+    enterLabResults: true,
+    labArchive: true
+  },
+  team: {
+    ...DEFAULT_PERMISSIONS,
+    showFieldTeamsStats: true,
+    showDirectivesPage: true,
+    replyDirective: true,
+    addEval: true,
+    editEst: true
+  },
+  lab: {
+    receiveSamples: true,
+    enterLabResults: true,
+    labArchive: true
+  },
+  accountant: {
+    financialReports: true,
+    payFines: true,
+    dailyInventory: true
+  }
+};
+
 const INITIAL_TEAMS = [
   { 
     id: 'team_left', 
@@ -717,6 +770,15 @@ export const AppProvider = ({ children }) => {
     window.addEventListener('online', handleOnline);
     
   
+  // Role-Based Access Control Check
+  const hasPerm = (permName) => {
+    if (!user) return false;
+    // Check if there is an override in localStorage
+    const savedRoles = JSON.parse(localStorage.getItem('nineveh_role_permissions') || '{}');
+    const rolePerms = savedRoles[user.role] || ROLE_PERMISSIONS[user.role] || {};
+    return rolePerms[permName] === true;
+  };
+
   const globalLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
@@ -1168,6 +1230,15 @@ export const AppProvider = ({ children }) => {
     navigate(initialPath || '/');
     
   
+  // Role-Based Access Control Check
+  const hasPerm = (permName) => {
+    if (!user) return false;
+    // Check if there is an override in localStorage
+    const savedRoles = JSON.parse(localStorage.getItem('nineveh_role_permissions') || '{}');
+    const rolePerms = savedRoles[user.role] || ROLE_PERMISSIONS[user.role] || {};
+    return rolePerms[permName] === true;
+  };
+
   const globalLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
@@ -1331,6 +1402,15 @@ export const AppProvider = ({ children }) => {
   const isMountedLabReqs = useRef(false);
   useEffect(() => { if (isMountedLabReqs.current) syncToCloud('nineveh_lab_requests', labRequests); else isMountedLabReqs.current = true; }, [labRequests]);
 
+
+  // Role-Based Access Control Check
+  const hasPerm = (permName) => {
+    if (!user) return false;
+    // Check if there is an override in localStorage
+    const savedRoles = JSON.parse(localStorage.getItem('nineveh_role_permissions') || '{}');
+    const rolePerms = savedRoles[user.role] || ROLE_PERMISSIONS[user.role] || {};
+    return rolePerms[permName] === true;
+  };
 
   const globalLogout = () => {
     localStorage.clear();
