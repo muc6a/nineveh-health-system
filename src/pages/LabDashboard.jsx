@@ -90,6 +90,25 @@ export const LabDashboard = () => {
       }, ...prev]);
     }
 
+    // Attach lab document to establishment
+    if (resultModal.request.establishmentId) {
+      setEstablishments(prev => prev.map(est => {
+        if (est.id === resultModal.request.establishmentId) {
+          const doc = {
+            id: 'doc_' + Date.now(),
+            name: `نتيجة فحص مختبري - ${resultModal.request.sampleType || 'عينة'}`,
+            type: 'وثيقة رسمية',
+            url: '#',
+            date: new Date().toISOString().split('T')[0],
+            isLabResult: true,
+            status: isContaminated ? 'سلبية' : 'سليمة'
+          };
+          return { ...est, documents: [...(est.documents || []), doc] };
+        }
+        return est;
+      }));
+    }
+
     setResultModal({ isOpen: false, request: null });
     setResultStatus('safe');
     setResultNotes('');

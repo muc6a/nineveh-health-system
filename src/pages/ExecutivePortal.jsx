@@ -72,7 +72,9 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     let needsRedirect = false;
     if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
     if (activeTab === 'team_reports' && !hasPerm('showFieldTeamsStats')) needsRedirect = true;
-    if (activeTab === 'operations_room' && !hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) needsRedirect = true;
+    if (activeTab === 'operations_room' && !hasPerm('showOperationsRoom')) needsRedirect = true;
+    if (activeTab === 'lab_management' && !(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'))) needsRedirect = true;
+    if (activeTab === 'financials' && !(hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory'))) needsRedirect = true;
     
     if (activeTab === 'directives' && !(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch'))) needsRedirect = true;
     if (activeTab === 'complaints' && !hasPerm('showPublicEvalsPage')) needsRedirect = true;
@@ -434,16 +436,6 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                   isActive: executiveTab === 'dashboard' && activeTab === 'complaints',
                   showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')
                 },
-                lab_decisions: {
-                  label: 'قرارات المختبر',
-                  icon: FlaskConical,
-                  iconColorClass: 'text-fuchsia-500',
-                  activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
-                  permission: 'authenticatePenalties',
-                  onClick: () => { setExecutiveTab('dashboard'); setActiveTab('lab_results'); },
-                  isActive: executiveTab === 'dashboard' && activeTab === 'lab_results',
-                  showCondition: true
-                },
                 lab_management: {
                   label: 'المختبر',
                   icon: FlaskConical,
@@ -582,7 +574,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               <option value="complaints">⚠️ شكاوى المواطنين</option>
             )}
             {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
-              <option value="lab_results">🧪 قرارات المختبر</option>
+              <option value="lab_management">🧪 قرارات المختبر</option>
             )}
             {(hasPerm('createEst') || hasPerm('editEst') || hasPerm('deleteEst')) && (
               <option value="establishments">🏢 إدارة المنشآت</option>
@@ -595,7 +587,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         <div className="relative z-40 flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
           <div className="flex items-center gap-3">
             <span className="text-xl">
-              {activeTab === 'strategic' ? '⚙️' : activeTab === 'establishments' ? '🏢' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_results' ? '🧪' : '💼'}
+              {activeTab === 'strategic' ? '⚙️' : activeTab === 'establishments' ? '🏢' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_management' ? '🧪' : '💼'}
             </span>
             <div>
               <h2 className="text-xs font-black text-slate-800 dark:text-white">
@@ -603,7 +595,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                  activeTab === 'directives' ? 'التبليغات' : 
                  activeTab === 'complaints' ? 'شكاوى المواطنين' :
                  
-                 activeTab === 'lab_results' ? 'قرارات المختبر' :
+                 activeTab === 'lab_management' ? 'قرارات المختبر' :
                  activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
                  (activeTab === 'none' ? (PERMISSIONS_TABS.find(t => t.id === 'advanced')?.label || 'الإدارة المتقدمة') : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'المنظومة'}`))}
               </h2>
@@ -822,7 +814,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             )}
 
           </div>
-        ) : activeTab === 'lab_results' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) ? (
+        ) : activeTab === 'lab_management' && (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) ? (
           <div className="glassmorphic-card p-6 border border-fuchsia-500/20">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
               <div>
