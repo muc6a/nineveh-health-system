@@ -22,6 +22,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [executiveTab, setExecutiveTab] = usePersistentTab('executiveTab', 'dashboard');
   const [showUninspectedModal, setShowUninspectedModal] = useState(false);
   const [showCategoryBreakdownModal, setShowCategoryBreakdownModal] = useState(false);
