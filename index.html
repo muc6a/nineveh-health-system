@@ -30,7 +30,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  </head>
+  
+    <script>
+      window.addEventListener('error', function(e) {
+        if (e.message && e.message.includes('UnifiedSidebar is not defined')) {
+          console.error("Cache issue detected, clearing caches...");
+          caches.keys().then(function(names) {
+            for (let name of names) caches.delete(name);
+          });
+          setTimeout(() => window.location.reload(true), 500);
+        }
+      });
+    </script>
+</head>
   <body class="font-cairo bg-slatebg-light text-slate-800 transition-colors duration-300 dark:bg-slatebg-dark dark:text-slate-100 antialiased overflow-x-hidden">
 
     <div id="root"></div>
