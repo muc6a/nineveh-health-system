@@ -4,7 +4,7 @@ import {
 } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
 import ThemeToggle from './ThemeToggle';
-import { useAppContext } from '../context/AppContext';
+import { AppContext } from '../context/AppContext';
 
 const UnifiedSidebar = ({ 
   activeTab, setActiveTab, 
@@ -13,7 +13,7 @@ const UnifiedSidebar = ({
   allowedTeams = [], selectedTeamId, setSelectedTeamId,
   incomingReqs = [], testingReqs = [] 
 }) => {
-  const { user, hasPerm, globalLogout, uiPreferences } = useAppContext();
+  const { user, hasPerm, globalLogout, uiPreferences } = React.useContext(AppContext);
 
   // Definition of all possible tabs
   const tabConfig = {
@@ -133,7 +133,7 @@ const UnifiedSidebar = ({
               const config = tabConfig[tabKey];
               if (!config || !config.showCondition) return null;
 
-              const isCurrentlyActive = (executiveTab && activeTab) 
+              let isCurrentlyActive = (executiveTab && activeTab) 
                 ? (config.isActive ? config.isActive : (executiveTab === 'dashboard' && activeTab === tabKey) || (executiveTab === tabKey && activeTab === tabKey)) 
                 : activeTab === tabKey;
               

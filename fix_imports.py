@@ -1,11 +1,13 @@
 import re
 
-with open('src/pages/TeamDashboard.jsx', 'r', encoding='utf-8') as f:
-    content = f.read()
-
-content = content.replace("import { Compass, Mail, Activity, useState, useContext, useMemo } from 'react';", "import React, { useState, useContext, useMemo } from 'react';")
-content = content.replace("import { Plus, Search", "import { Compass, Mail, Plus, Search")
-
-with open('src/pages/TeamDashboard.jsx', 'w', encoding='utf-8') as f:
-    f.write(content)
+for filename in ["src/pages/ExecutivePortal.jsx", "src/pages/TeamDashboard.jsx"]:
+    with open(filename, "r", encoding="utf-8") as f:
+        content = f.read()
+    
+    if "import UnifiedSidebar from" not in content:
+        # Just inject it after the first import React
+        content = content.replace("import React", "import UnifiedSidebar from '../components/UnifiedSidebar';\nimport React", 1)
+        
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(content)
 
