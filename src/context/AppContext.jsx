@@ -770,14 +770,7 @@ export const AppProvider = ({ children }) => {
     window.addEventListener('online', handleOnline);
     
   
-  // Role-Based Access Control Check
-  const hasPerm = (permName) => {
-    if (!user) return false;
-    // Check if there is an override in localStorage
-    const savedRoles = JSON.parse(localStorage.getItem('nineveh_role_permissions') || '{}');
-    const rolePerms = savedRoles[user.role] || ROLE_PERMISSIONS[user.role] || {};
-    return rolePerms[permName] === true;
-  };
+
 
   const globalLogout = () => {
     localStorage.clear();
@@ -1230,14 +1223,7 @@ export const AppProvider = ({ children }) => {
     navigate(initialPath || '/');
     
   
-  // Role-Based Access Control Check
-  const hasPerm = (permName) => {
-    if (!user) return false;
-    // Check if there is an override in localStorage
-    const savedRoles = JSON.parse(localStorage.getItem('nineveh_role_permissions') || '{}');
-    const rolePerms = savedRoles[user.role] || ROLE_PERMISSIONS[user.role] || {};
-    return rolePerms[permName] === true;
-  };
+
 
   const globalLogout = () => {
     localStorage.clear();
@@ -1495,7 +1481,7 @@ export const AppProvider = ({ children }) => {
       labRequests,
       setLabRequests,
       finesBooklet, setFinesBooklet,
-      dailyInventories, setDailyInventories, fineTransactions, setFineTransactions}}>
+      dailyInventories, setDailyInventories, fineTransactions, setFineTransactions, hasPerm, ROLE_PERMISSIONS}}>
       {children}
     </AppContext.Provider>
   );
