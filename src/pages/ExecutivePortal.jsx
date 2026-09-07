@@ -19,6 +19,14 @@ import { LabManager } from '../components/LabManager';
 import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon } from 'lucide-react';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
+
+  // User permissions logic (Default Deny)
+  const hasPerm = (permName) => {
+    if (user?.role === 'admin') return true;
+    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
+    return user?.permissions?.[permName] === true;
+  };
+
   const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
@@ -33,12 +41,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   const [replyText, setReplyText] = useState('');
   const [dispatchEstId, setDispatchEstId] = useState('');
   const [dispatchTeamId, setDispatchTeamId] = useState('');
-  // User permissions logic (Default Deny)
-  const hasPerm = (permName) => {
-    if (user?.role === 'admin') return true;
-    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
-    return user?.permissions?.[permName] === true;
-  };
+
 
     const { currentRoute } = useContext(AppContext);
   const initialUrlTab = currentRoute.includes('?tab=') ? currentRoute.split('?tab=')[1].split('&')[0] : null;
