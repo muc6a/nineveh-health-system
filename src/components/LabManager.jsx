@@ -5,13 +5,7 @@ import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Che
 
 export const LabManager = () => {
 
-  const { user, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences } = useContext(AppContext);
-
-  const hasPerm = (permName) => {
-    if (user?.role === 'admin') return true;
-    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
-    return user?.permissions?.[permName] === true;
-  };
+  const { user, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , hasPerm } = useContext(AppContext);
 
   const [filterTab, setFilterTab] = useState('all'); // 'all', 'pending_arrival', 'under_testing', 'finished'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null });

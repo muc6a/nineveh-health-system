@@ -25,20 +25,6 @@ const UnifiedSidebar = ({
       showCondition: hasPerm('showMainDashboard'),
       onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('strategic'); }
     },
-    team_reports: {
-      label: 'تقارير الفرق الميدانية',
-      icon: Users,
-      iconColorClass: '',
-      activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
-      showCondition: hasPerm('showFieldTeamsStats') || user?.role === 'team',
-      onClick: () => { 
-        if(setExecutiveTab) setExecutiveTab('dashboard'); 
-        setActiveTab('team_reports'); 
-        if (setSelectedTeamId && (!selectedTeamId || selectedTeamId === 'all')) {
-          setSelectedTeamId(allowedTeams[0]?.id || user?.id);
-        }
-      }
-    },
     operations_room: {
       label: 'غرفة العمليات المركزية',
       icon: ShieldAlert,

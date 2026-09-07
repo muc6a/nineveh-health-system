@@ -20,14 +20,7 @@ import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, Shiel
 
 export const ExecutivePortal = ({ embeddedTab }) => {
 
-  // User permissions logic (Default Deny)
-  const hasPerm = (permName) => {
-    if (user?.role === 'admin') return true;
-    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
-    return user?.permissions?.[permName] === true;
-  };
-
-  const { navigate, establishments, teams, user, setUser, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, hasPerm, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [complaintTab, setComplaintTab] = useState(hasPerm('showPublicEvalsPage') ? 'citizens' : 'delivery');
@@ -77,7 +70,6 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   React.useEffect(() => {
     let needsRedirect = false;
     if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
-    if (activeTab === 'team_reports' && !hasPerm('showFieldTeamsStats')) needsRedirect = true;
     if (activeTab === 'operations_room' && !(hasPerm('showOperationsRoom') || hasPerm('showPublicEvalsPage'))) needsRedirect = true;
     if (activeTab === 'lab_management' && !(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('authenticatePenalties'))) needsRedirect = true;
     if (activeTab === 'financials' && !(hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory'))) needsRedirect = true;
@@ -393,7 +385,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
               const val = e.target.value;
               if (val === 'establishments') {
                 setExecutiveTab('establishments');
-              } else if (val === 'operations_room' || val === 'directives' || val === 'complaints' || val === 'team_reports') {
+              } else if (val === 'operations_room' || val === 'directives' || val === 'complaints') {
                 setExecutiveTab('dashboard');
                 setActiveTab(val);
                 if (val === 'team_reports' && (!selectedTeamId || selectedTeamId === 'all')) {
@@ -508,7 +500,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         )}
 
         {/* Dynamic Tab Switching Content */}
-        {(activeTab === 'strategic' && hasPerm('showMainDashboard')) || (activeTab === 'team_reports' && hasPerm('showFieldTeamsStats')) ? (
+        {(activeTab === 'strategic' && hasPerm('showMainDashboard')) ? (
           <div className="space-y-6">
             
             {activeTab === 'team_reports' && (

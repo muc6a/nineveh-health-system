@@ -4,13 +4,7 @@ import { AppContext } from '../context/AppContext';
 import { DollarSign, AlertCircle, CheckCircle2, FileText, Activity } from 'lucide-react';
 
 export const FinancialReports = () => {
-  const { user, penaltyRequests, teams, setPenaltyRequests, notify, establishments } = useContext(AppContext);
-
-  const hasPerm = (permName) => {
-    if (user?.role === 'admin') return true;
-    if (ROLE_CORE_BASICS[user?.role]?.includes(permName)) return true;
-    return user?.permissions?.[permName] === true;
-  };
+  const { user, penaltyRequests, teams, setPenaltyRequests, notify, establishments , hasPerm } = useContext(AppContext);
 
   const [selectedTeamFilter, setSelectedTeamFilter] = useState('all');
 

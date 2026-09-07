@@ -1392,9 +1392,17 @@ export const AppProvider = ({ children }) => {
   // Role-Based Access Control Check
   const hasPerm = (permName) => {
     if (!user) return false;
-    // Check if there is an override in localStorage
+    if (user.role === 'admin' || user.isSuperAdmin) return true;
+    
+    // User-specific permissions override role permissions
+    if (user.permissions && typeof user.permissions[permName] !== 'undefined') {
+       return user.permissions[permName] === true;
+    }
+    
+    // Otherwise fallback to Role permissions
     const savedRoles = JSON.parse(localStorage.getItem('nineveh_role_permissions') || '{}');
     const rolePerms = savedRoles[user.role] || ROLE_PERMISSIONS[user.role] || {};
+    
     return rolePerms[permName] === true;
   };
 
