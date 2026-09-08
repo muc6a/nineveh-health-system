@@ -773,7 +773,8 @@ export const AppProvider = ({ children }) => {
 
 
   const globalLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem('user');
+    localStorage.removeItem('currentRoute');
     sessionStorage.clear();
     setUser(null);
     window.location.replace('/');
@@ -797,6 +798,7 @@ export const AppProvider = ({ children }) => {
         onValue(dbRef, (snapshot) => {
           const data = snapshot.val();
           if (data) {
+            skipSyncRef.current[key] = true;
             setter(data);
             localStorage.setItem(key, JSON.stringify(data));
           } else if (isFirstLoad && localFallback && (!Array.isArray(localFallback) || localFallback.length > 0)) {
@@ -805,6 +807,7 @@ export const AppProvider = ({ children }) => {
           } else {
             // Firebase node was deleted or is genuinely empty
             const emptyData = Array.isArray(localFallback) ? [] : null;
+            skipSyncRef.current[key] = true;
             setter(emptyData);
             localStorage.setItem(key, JSON.stringify(emptyData));
           }
@@ -813,7 +816,10 @@ export const AppProvider = ({ children }) => {
           console.error('Firebase Sync Error for', key, error);
           // Fallback to local storage
           const saved = localStorage.getItem(key);
-          if (saved) setter(JSON.parse(saved));
+          if (saved) {
+            skipSyncRef.current[key] = true;
+            setter(JSON.parse(saved));
+          }
         });
       };
 
@@ -1107,6 +1113,7 @@ export const AppProvider = ({ children }) => {
   const isMountedLabs = React.useRef(false);
   const isMountedFinesBooklet = React.useRef(false);
   const isMountedFineTrans = React.useRef(false);
+  const skipSyncRef = React.useRef({});
   const isMountedEst = React.useRef(false);
   const isMountedRep = React.useRef(false);
   const isMountedTeam = React.useRef(false);
@@ -1226,7 +1233,8 @@ export const AppProvider = ({ children }) => {
 
 
   const globalLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem('user');
+    localStorage.removeItem('currentRoute');
     sessionStorage.clear();
     setUser(null);
     window.location.replace('/');
@@ -1359,34 +1367,34 @@ export const AppProvider = ({ children }) => {
   };
 
   // Sync state to Firebase whenever local state changes (after initial load)
-  useEffect(() => { if (isMountedEst.current) syncToCloud('establishments', establishments); else isMountedEst.current = true; }, [establishments]);
-  useEffect(() => { if (isMountedRep.current) syncToCloud('reports', reports); else isMountedRep.current = true; }, [reports]);
-  useEffect(() => { if (isMountedTeam.current) syncToCloud('teams_v2', teams); else isMountedTeam.current = true; }, [teams]);
-  useEffect(() => { if (isMountedTrack.current) syncToCloud('trackers_v1', trackers); else isMountedTrack.current = true; }, [trackers]);
-  useEffect(() => { if (isMountedClosure.current) syncToCloud('closureVerifications_v1', closureVerifications); else isMountedClosure.current = true; }, [closureVerifications]);
-  useEffect(() => { if (isMountedInsp.current) syncToCloud('inspectionTemplates_v3', inspectionTemplates); else isMountedInsp.current = true; }, [inspectionTemplates]);
-  useEffect(() => { if (isMountedConf.current) syncToCloud('systemConfig', config); else isMountedConf.current = true; }, [config]);
-  useEffect(() => { if (isMountedTick.current) syncToCloud('systemTickets', tickets); else isMountedTick.current = true; }, [tickets]);
-  useEffect(() => { if (isMountedNotif.current) syncToCloud('sysNotifs', systemNotifications); else isMountedNotif.current = true; }, [systemNotifications]);
+  useEffect(() => { if (isMountedEst.current) { if (skipSyncRef.current['establishments']) { skipSyncRef.current['establishments'] = false; return; } syncToCloud('establishments', establishments); } else isMountedEst.current = true; }, [establishments]);
+  useEffect(() => { if (isMountedRep.current) { if (skipSyncRef.current['reports']) { skipSyncRef.current['reports'] = false; return; } syncToCloud('reports', reports); } else isMountedRep.current = true; }, [reports]);
+  useEffect(() => { if (isMountedTeam.current) { if (skipSyncRef.current['teams_v2']) { skipSyncRef.current['teams_v2'] = false; return; } syncToCloud('teams_v2', teams); } else isMountedTeam.current = true; }, [teams]);
+  useEffect(() => { if (isMountedTrack.current) { if (skipSyncRef.current['trackers_v1']) { skipSyncRef.current['trackers_v1'] = false; return; } syncToCloud('trackers_v1', trackers); } else isMountedTrack.current = true; }, [trackers]);
+  useEffect(() => { if (isMountedClosure.current) { if (skipSyncRef.current['closureVerifications_v1']) { skipSyncRef.current['closureVerifications_v1'] = false; return; } syncToCloud('closureVerifications_v1', closureVerifications); } else isMountedClosure.current = true; }, [closureVerifications]);
+  useEffect(() => { if (isMountedInsp.current) { if (skipSyncRef.current['inspectionTemplates_v3']) { skipSyncRef.current['inspectionTemplates_v3'] = false; return; } syncToCloud('inspectionTemplates_v3', inspectionTemplates); } else isMountedInsp.current = true; }, [inspectionTemplates]);
+  useEffect(() => { if (isMountedConf.current) { if (skipSyncRef.current['systemConfig']) { skipSyncRef.current['systemConfig'] = false; return; } syncToCloud('systemConfig', config); } else isMountedConf.current = true; }, [config]);
+  useEffect(() => { if (isMountedTick.current) { if (skipSyncRef.current['systemTickets']) { skipSyncRef.current['systemTickets'] = false; return; } syncToCloud('systemTickets', tickets); } else isMountedTick.current = true; }, [tickets]);
+  useEffect(() => { if (isMountedNotif.current) { if (skipSyncRef.current['sysNotifs']) { skipSyncRef.current['sysNotifs'] = false; return; } syncToCloud('sysNotifs', systemNotifications); } else isMountedNotif.current = true; }, [systemNotifications]);
   const isMountedChat = useRef(false);
-  useEffect(() => { if (isMountedChat.current) syncToCloud('chatMessages', chatMessages); else isMountedChat.current = true; }, [chatMessages]);
-  useEffect(() => { if (isMountedTasks.current) syncToCloud('trackerTasks_v1', tasks); else isMountedTasks.current = true; }, [tasks]);
+  useEffect(() => { if (isMountedChat.current) { if (skipSyncRef.current['chatMessages']) { skipSyncRef.current['chatMessages'] = false; return; } syncToCloud('chatMessages', chatMessages); } else isMountedChat.current = true; }, [chatMessages]);
+  useEffect(() => { if (isMountedTasks.current) { if (skipSyncRef.current['trackerTasks_v1']) { skipSyncRef.current['trackerTasks_v1'] = false; return; } syncToCloud('trackerTasks_v1', tasks); } else isMountedTasks.current = true; }, [tasks]);
 
-  useEffect(() => { if (isMountedDir.current) syncToCloud('directives', directives); else isMountedDir.current = true; }, [directives]);
-  useEffect(() => { if (isMountedDirst.current) syncToCloud('directors', directors); else isMountedDirst.current = true; }, [directors]);
-  useEffect(() => { if (isMountedDeliv.current) syncToCloud('deliveries', deliveries); else isMountedDeliv.current = true; }, [deliveries]);
-  useEffect(() => { if (isMountedPen.current) syncToCloud('penaltyRequests_v2', penaltyRequests); else isMountedPen.current = true; }, [penaltyRequests]);
-  useEffect(() => { if (isMountedDisp.current) syncToCloud('dispatches', dispatches); else isMountedDisp.current = true; }, [dispatches]);
+  useEffect(() => { if (isMountedDir.current) { if (skipSyncRef.current['directives']) { skipSyncRef.current['directives'] = false; return; } syncToCloud('directives', directives); } else isMountedDir.current = true; }, [directives]);
+  useEffect(() => { if (isMountedDirst.current) { if (skipSyncRef.current['directors']) { skipSyncRef.current['directors'] = false; return; } syncToCloud('directors', directors); } else isMountedDirst.current = true; }, [directors]);
+  useEffect(() => { if (isMountedDeliv.current) { if (skipSyncRef.current['deliveries']) { skipSyncRef.current['deliveries'] = false; return; } syncToCloud('deliveries', deliveries); } else isMountedDeliv.current = true; }, [deliveries]);
+  useEffect(() => { if (isMountedPen.current) { if (skipSyncRef.current['penaltyRequests_v2']) { skipSyncRef.current['penaltyRequests_v2'] = false; return; } syncToCloud('penaltyRequests_v2', penaltyRequests); } else isMountedPen.current = true; }, [penaltyRequests]);
+  useEffect(() => { if (isMountedDisp.current) { if (skipSyncRef.current['dispatches']) { skipSyncRef.current['dispatches'] = false; return; } syncToCloud('dispatches', dispatches); } else isMountedDisp.current = true; }, [dispatches]);
 
   // Persist new states to Firebase Cloud
-  useEffect(() => { if (isMountedAcc.current) syncToCloud('nineveh_accountants', accountants); else isMountedAcc.current = true; }, [accountants]);
-  useEffect(() => { if (isMountedLabs.current) syncToCloud('nineveh_labs', labs); else isMountedLabs.current = true; }, [labs]);
-  useEffect(() => { if (isMountedFinesBooklet.current) syncToCloud('nineveh_fines_booklet', finesBooklet); else isMountedFinesBooklet.current = true; }, [finesBooklet]);
-  useEffect(() => { if (isMountedFineTrans.current) syncToCloud('nineveh_fine_transactions', fineTransactions); else isMountedFineTrans.current = true; }, [fineTransactions]);
+  useEffect(() => { if (isMountedAcc.current) { if (skipSyncRef.current['nineveh_accountants']) { skipSyncRef.current['nineveh_accountants'] = false; return; } syncToCloud('nineveh_accountants', accountants); } else isMountedAcc.current = true; }, [accountants]);
+  useEffect(() => { if (isMountedLabs.current) { if (skipSyncRef.current['nineveh_labs']) { skipSyncRef.current['nineveh_labs'] = false; return; } syncToCloud('nineveh_labs', labs); } else isMountedLabs.current = true; }, [labs]);
+  useEffect(() => { if (isMountedFinesBooklet.current) { if (skipSyncRef.current['nineveh_fines_booklet']) { skipSyncRef.current['nineveh_fines_booklet'] = false; return; } syncToCloud('nineveh_fines_booklet', finesBooklet); } else isMountedFinesBooklet.current = true; }, [finesBooklet]);
+  useEffect(() => { if (isMountedFineTrans.current) { if (skipSyncRef.current['nineveh_fine_transactions']) { skipSyncRef.current['nineveh_fine_transactions'] = false; return; } syncToCloud('nineveh_fine_transactions', fineTransactions); } else isMountedFineTrans.current = true; }, [fineTransactions]);
   const isMountedInv = useRef(false);
-  useEffect(() => { if (isMountedInv.current) syncToCloud('nineveh_daily_inventories', dailyInventories); else isMountedInv.current = true; }, [dailyInventories]);
+  useEffect(() => { if (isMountedInv.current) { if (skipSyncRef.current['nineveh_daily_inventories']) { skipSyncRef.current['nineveh_daily_inventories'] = false; return; } syncToCloud('nineveh_daily_inventories', dailyInventories); } else isMountedInv.current = true; }, [dailyInventories]);
   const isMountedLabReqs = useRef(false);
-  useEffect(() => { if (isMountedLabReqs.current) syncToCloud('nineveh_lab_requests', labRequests); else isMountedLabReqs.current = true; }, [labRequests]);
+  useEffect(() => { if (isMountedLabReqs.current) { if (skipSyncRef.current['nineveh_lab_requests']) { skipSyncRef.current['nineveh_lab_requests'] = false; return; } syncToCloud('nineveh_lab_requests', labRequests); } else isMountedLabReqs.current = true; }, [labRequests]);
 
 
   // Role-Based Access Control Check
@@ -1407,7 +1415,8 @@ export const AppProvider = ({ children }) => {
   };
 
   const globalLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem('user');
+    localStorage.removeItem('currentRoute');
     sessionStorage.clear();
     setUser(null);
     window.location.replace('/');

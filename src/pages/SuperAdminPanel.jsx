@@ -1313,6 +1313,12 @@ export const SuperAdminPanel = () => {
               >
                 💼 إدارة المحاسبين
               </button>
+              <button
+                onClick={() => setSubRosterTab('trackers')}
+                className={`px-4 py-2 rounded-xl text-sm font-black transition-all cursor-pointer ${subRosterTab === 'trackers' ? 'bg-teal-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'}`}
+              >
+                🕵️ إدارة المتابعين الميدانيين
+              </button>
             </div>
 
             {subRosterTab === 'committees' && (
