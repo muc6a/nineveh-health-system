@@ -155,12 +155,12 @@ export default function OperationsRoom() {
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
         {(user?.permissions?.authenticatePenalties || user?.role === 'admin' || user?.role === 'director') && (
           <button onClick={() => setActiveTab('penalties')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-            <AlertCircle className="w-4 h-4" />المصادقة على العقوبات (Penalty Authentication)
+            <AlertCircle className="w-4 h-4" />المصادقة على العقوبات
           </button>
         )}
         {(user?.permissions?.showFieldTeamsStats || user?.role === 'admin' || user?.role === 'director') && (
           <button onClick={() => setActiveTab('team_performance')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'team_performance' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
-            <Target className="w-4 h-4" />أداء الفرق الميدانية (Team Performance)
+            <Target className="w-4 h-4" />أداء الفرق الميدانية
           </button>
         )}
       </div>

@@ -723,10 +723,10 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           </div>
         ) : activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) ? (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
             {/* Direct Command Directive Form */}
             {hasPerm('sendDirective') && (
-              <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl sticky top-6">
+              <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl h-full flex flex-col justify-start">
                 <div className="flex items-center gap-2 border-b border-amber-500/10 pb-3 mb-4">
                   <ShieldAlert className="w-5 h-5 text-amber-500" />
                   <div>
@@ -794,14 +794,14 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             
             {/* Directives Inbox/Outbox List */}
             {hasPerm('showDirectivesPage') && (
-            <div className="glassmorphic-card p-5 border border-amber-500/20 bg-slate-900 rounded-3xl max-h-[600px] overflow-y-auto">
+            <div className="glassmorphic-card p-5 border border-amber-500/20 bg-slate-900 rounded-3xl flex flex-col h-full overflow-hidden">
               <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-right">
                 <h3 className="text-sm font-black text-amber-500 flex items-center gap-2">
                   <Mail className="w-5 h-5" />
                   التبليغات
                 </h3>
               </div>
-              <div className="space-y-4 text-right pr-1">
+              <div className="space-y-4 text-right pr-1 flex-1 overflow-y-auto custom-scrollbar">
                 {(directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).length > 0 ? (
                   (directives || []).filter(d => d.teamId === user?.role || d.teamId === user?.id || d.teamId === 'all' || d.sender?.includes(user?.name)).map((dir, idx) => (
                     <div key={idx} className={`${dir.text.startsWith('رد على تبليغ:') ? 'bg-teal-900/40 border-teal-500 border-2 shadow-teal-500/20' : 'bg-slate-800 border-slate-700/60'} p-4 rounded-2xl border shadow-md transition-all relative overflow-hidden`}>
