@@ -328,7 +328,7 @@ export const InspectionForm = () => {
       id: 'lab_' + Date.now() + Math.random().toString(36).substring(7),
       establishmentId: establishment?.id,
       estName: establishment?.name || 'غير معروف',
-      teamId: user?.teamId || 'team_1',
+      teamId: user?.id || 'team_1',
       teamName: user?.name || 'مفتش',
       date: new Date().toISOString().split('T')[0],
       time: new Date().toLocaleTimeString('ar-IQ'),

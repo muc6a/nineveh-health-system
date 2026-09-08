@@ -1,5 +1,6 @@
 import { ROLE_CORE_BASICS, PERMISSIONS_TABS } from '../utils/constants';
 import UnifiedSidebar from '../components/UnifiedSidebar';
+import { GlobalHeader } from '../components/GlobalHeader';
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';

@@ -228,43 +228,36 @@ export const LabDashboard = () => {
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
         
         {/* Header */}
-        <header className="h-16 shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between px-4 sticky top-0 z-30">
-          <div className="flex items-center gap-3">
+        <header className="shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex flex-col p-4 sticky top-0 z-30">
+          <div className="flex items-center gap-3 md:hidden mb-4">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="p-2 -mr-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden cursor-pointer"
+              className="p-2 -mr-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-lg font-black text-slate-800 dark:text-white hidden md:block">
-              {activeTab === 'stats' && 'الرئيسية والتقارير'}
-              {activeTab === 'incoming' && 'الطلبات الواردة'}
-              {activeTab === 'incoming' && (
-                <button 
-                  onClick={() => setNewSampleModal({ isOpen: true })}
-                  className="mr-4 px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
-                >
-                  ➕ إنشاء عينة جديدة
-                </button>
-              )}
-              {activeTab === 'testing' && 'عينات قيد الفحص'}
-              {activeTab === 'testing' && (
-                <button 
-                  onClick={() => setNewSampleModal({ isOpen: true })}
-                  className="mr-4 px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
-                >
-                  ➕ إنشاء عينة جديدة
-                </button>
-              )}
-              {activeTab === 'archive' && 'الأرشيف المختبري'}
-            </h1>
           </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <WeatherWidget />
-            <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 hidden md:block mx-1"></div>
-            <NotificationBell />
-            <ThemeToggle />
-          </div>
+          <GlobalHeader
+            icon="🧪"
+            title={
+              activeTab === 'stats' ? 'الرئيسية والتقارير' :
+              activeTab === 'incoming' ? 'الطلبات الواردة' :
+              activeTab === 'testing' ? 'عينات قيد الفحص' :
+              activeTab === 'archive' ? 'الأرشيف المختبري' : 'المختبر المركزي'
+            }
+            subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
+            showPrintButton={false}
+          />
+          {(activeTab === 'incoming' || activeTab === 'testing') && (
+            <div className="mt-2">
+              <button 
+                onClick={() => setNewSampleModal({ isOpen: true })}
+                className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 cursor-pointer w-fit"
+              >
+                ➕ إنشاء عينة جديدة يدويًا
+              </button>
+            </div>
+          )}
         </header>
 
         {/* Scrollable Content Area */}

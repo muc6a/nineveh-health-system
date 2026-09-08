@@ -889,7 +889,7 @@ export const SuperAdminPanel = () => {
       </header>
 
       {/* Tabs navigation */}
-      <div className="w-full max-w-full mx-auto flex flex-nowrap justify-between items-center gap-0.5 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-2 sticky top-0 z-[999] bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2 overflow-x-hidden">
+      <div className="w-full max-w-full mx-auto flex flex-nowrap justify-between items-center gap-0.5 mb-6 border-b border-slate-200/50 dark:border-slate-800/50 pb-2 sticky top-0 z-40 bg-slatebg-light dark:bg-slatebg-dark pt-2 -mt-2 overflow-x-hidden">
         {(user?.role === 'admin' || user?.role === 'central_director') && (
           <button
             onClick={() => setActiveTab('roster')}
