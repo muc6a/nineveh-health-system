@@ -3,11 +3,12 @@ import { AppContext } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
+import { GlobalHeader } from '../components/GlobalHeader';
 import { NotificationBell } from '../components/NotificationBell';
 import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut } from 'lucide-react';
 
 export const LabDashboard = () => {
-  const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , globalLogout } = useContext(AppContext);
+  const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , globalLogout, hasPerm } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('stats'); // 'stats', 'incoming', 'testing', 'archive'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null });
   const [resultStatus, setResultStatus] = useState('safe');
