@@ -325,7 +325,7 @@ export const InspectionForm = () => {
     if (!setLabRequests) return;
     
     const newLabReq = {
-      id: 'lab_' + Date.now() + Math.random().toString(36).substring(7),
+      id: Math.floor(10000 + Math.random() * 90000).toString(),
       establishmentId: establishment?.id,
       estName: establishment?.name || 'غير معروف',
       teamId: user?.id || 'team_1',

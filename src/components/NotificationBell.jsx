@@ -50,7 +50,7 @@ export const NotificationBell = () => {
   const prevUnreadCountRef = useRef(unreadCount);
   useEffect(() => {
     if (unreadCount > prevUnreadCountRef.current) {
-      if (playBeep) playBeep('info'); // Play sound on new notification
+      if (playBeep) playBeep('notification'); // Play sound on new notification
     }
     prevUnreadCountRef.current = unreadCount;
   }, [unreadCount, playBeep]);

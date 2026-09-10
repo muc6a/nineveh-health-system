@@ -10,7 +10,7 @@ import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Che
 export const LabDashboard = () => {
   const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , globalLogout, hasPerm } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('stats'); // 'stats', 'incoming', 'testing', 'archive'
-  const [resultModal, setResultModal] = useState({ isOpen: false, request: null });
+  const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });
   const [resultStatus, setResultStatus] = useState('safe');
   const [resultNotes, setResultNotes] = useState('');
   const [newSampleModal, setNewSampleModal] = useState({ isOpen: false });
@@ -19,6 +19,24 @@ export const LabDashboard = () => {
   const [manualSampleType, setManualSampleType] = useState('');
   const [manualSampleRemarks, setManualSampleRemarks] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Listen for navigation events from NotificationBell
+  React.useEffect(() => {
+    const handleNav = () => {
+      setActiveTab('incoming');
+      setIsSidebarOpen(false);
+    };
+    const handleNavResults = () => {
+      setActiveTab('testing');
+      setIsSidebarOpen(false);
+    };
+    window.addEventListener('navToLabRequests', handleNav);
+    window.addEventListener('navToLabResults', handleNavResults);
+    return () => {
+      window.removeEventListener('navToLabRequests', handleNav);
+      window.removeEventListener('navToLabResults', handleNavResults);
+    };
+  }, []);
+
 
   // Protect route
   useEffect(() => {
@@ -39,6 +57,30 @@ export const LabDashboard = () => {
 
   
 
+  
+  const handleCreateManualSample = () => {
+    if (!selectedEstForSample || !manualSampleType) return;
+    const newLabReq = {
+      id: Math.floor(10000 + Math.random() * 90000).toString(),
+      establishmentId: selectedEstForSample.id,
+      estName: selectedEstForSample.name || 'غير معروف',
+      teamId: user?.id || 'lab_manual',
+      teamName: user?.name || 'مختبر',
+      date: new Date().toISOString().split('T')[0],
+      status: 'under_testing', // Automatically in testing if created manually
+      receivedAt: new Date().toISOString(),
+      sampleCode: Math.floor(10000 + Math.random() * 90000).toString(),
+      sampleType: manualSampleType,
+      senderNotes: manualSampleRemarks
+    };
+    setLabRequests(prev => [newLabReq, ...prev]);
+    setNewSampleModal({ isOpen: false });
+    setSelectedEstForSample(null);
+    setManualSampleType('');
+    setManualSampleRemarks('');
+    playBeep && playBeep('success');
+  };
+
   const handleReceiveSample = (id) => {
     setLabRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'under_testing', receivedAt: new Date().toISOString() } : r));
     playBeep && playBeep('success');
@@ -49,68 +91,81 @@ export const LabDashboard = () => {
 
     const reqId = resultModal.request.id;
     const isContaminated = resultStatus === 'contaminated';
+    const isEditMode = resultModal.mode === 'edit';
 
     // Update request
-    setLabRequests(prev => prev.map(r => r.id === reqId ? { 
-      ...r, 
-      status: 'finished', 
-      result: resultStatus, 
-      notes: resultNotes,
-      finishedAt: new Date().toISOString()
-    } : r));
-
-    // Notify operations if contaminated
-    if (isContaminated) {
-      setSystemNotifications(prev => [{
-        id: 'notif_' + Date.now() + '1',
-        title: '🚨 عينة ملوثة مختبرياً!',
-        message: `تم ثبوت تلوث العينة المرسلة من ${resultModal.request.teamName} للمنشأة (${resultModal.request.estName}). يرجى اتخاذ القرار الإداري بالغلق أو الغرامة.`,
-        date: new Date().toISOString(),
-        isRead: false,
-        targetRole: 'operations',
-        relatedLabRequestId: reqId
-      },
-      {
-        id: 'notif_' + Date.now() + '2',
-        title: '🚨 عينة ملوثة مختبرياً!',
-        message: `تم ثبوت تلوث العينة المرسلة من قبلكم للمنشأة (${resultModal.request.estName}).`,
-        date: new Date().toISOString(),
-        isRead: false,
-        targetRole: resultModal.request.teamId,
-        relatedLabRequestId: reqId
-      }, ...prev]);
-    } else {
-      // Notify team that it is safe
-      setSystemNotifications(prev => [{
-        id: 'notif_' + Date.now(),
-        title: '✅ نتيجة عينة سليمة',
-        message: `عينات المنشأة (${resultModal.request.estName}) سليمة ومطابقة للمواصفات.`,
-        date: new Date().toISOString(),
-        isRead: false,
-        targetRole: resultModal.request.teamId
-      }, ...prev]);
-    }
-
-    // Attach lab document to establishment
-    if (resultModal.request.establishmentId) {
-      setEstablishments(prev => prev.map(est => {
-        if (est.id === resultModal.request.establishmentId) {
-          const doc = {
-            id: 'doc_' + Date.now(),
-            name: `نتيجة فحص مختبري - ${resultModal.request.sampleType || 'عينة'}`,
-            type: 'وثيقة رسمية',
-            url: '#',
-            date: new Date().toISOString().split('T')[0],
-            isLabResult: true,
-            status: isContaminated ? 'سلبية' : 'سليمة'
-          };
-          return { ...est, documents: [...(est.documents || []), doc] };
+    setLabRequests(prev => prev.map(r => {
+      if (r.id === reqId) {
+        const updatedReq = { 
+          ...r, 
+          status: 'finished', 
+          result: resultStatus, 
+          notes: resultNotes
+        };
+        if (!isEditMode) {
+          updatedReq.finishedAt = new Date().toISOString();
+        } else {
+          updatedReq.editedBy = user?.name;
+          updatedReq.editedAt = new Date().toISOString();
         }
-        return est;
-      }));
+        return updatedReq;
+      }
+      return r;
+    }));
+
+    // Notify operations if contaminated (only if not editing, or maybe if edit changed it)
+    if (!isEditMode) {
+      if (isContaminated) {
+        setSystemNotifications(prev => [{
+          id: 'notif_' + Date.now() + '1',
+          title: '🚨 عينة ملوثة مختبرياً!',
+          message: `تم ثبوت تلوث العينة المرسلة من ${resultModal.request.teamName} للمنشأة (${resultModal.request.estName}). يرجى اتخاذ القرار الإداري بالغلق أو الغرامة.`,
+          date: new Date().toISOString(),
+          isRead: false,
+          targetRole: 'operations',
+          relatedLabRequestId: reqId
+        },
+        {
+          id: 'notif_' + Date.now() + '2',
+          title: '🚨 عينة ملوثة مختبرياً!',
+          message: `تم ثبوت تلوث العينة المرسلة من قبلكم للمنشأة (${resultModal.request.estName}).`,
+          date: new Date().toISOString(),
+          isRead: false,
+          targetRole: resultModal.request.teamId,
+          relatedLabRequestId: reqId
+        }, ...prev]);
+      } else {
+        setSystemNotifications(prev => [{
+          id: 'notif_' + Date.now(),
+          title: '✅ نتيجة عينة سليمة',
+          message: `عينات المنشأة (${resultModal.request.estName}) سليمة ومطابقة للمواصفات.`,
+          date: new Date().toISOString(),
+          isRead: false,
+          targetRole: resultModal.request.teamId
+        }, ...prev]);
+      }
+      
+      // Attach lab document to establishment
+      if (resultModal.request.establishmentId) {
+        setEstablishments(prev => prev.map(est => {
+          if (est.id === resultModal.request.establishmentId) {
+            const doc = {
+              id: 'doc_' + Date.now(),
+              name: `نتيجة فحص مختبري - ${resultModal.request.sampleType || 'عينة'}`,
+              type: 'وثيقة رسمية',
+              url: '#',
+              date: new Date().toISOString().split('T')[0],
+              isLabResult: true,
+              status: isContaminated ? 'سلبية' : 'سليمة'
+            };
+            return { ...est, documents: [...(est.documents || []), doc] };
+          }
+          return est;
+        }));
+      }
     }
 
-    setResultModal({ isOpen: false, request: null });
+    setResultModal({ isOpen: false, request: null, mode: 'create' });
     setResultStatus('safe');
     setResultNotes('');
     playBeep && playBeep('success');

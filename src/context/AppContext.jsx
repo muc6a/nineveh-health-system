@@ -848,6 +848,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('fines', setFines, fines);
       setupFirebaseSync('nineveh_accountants', setAccountants, accountants);
       setupFirebaseSync('nineveh_labs', setLabs, labs);
+      setupFirebaseSync('nineveh_lab_requests', setLabRequests, labRequests);
       setupFirebaseSync('nineveh_fines_booklet', setFinesBooklet, finesBooklet);
       setupFirebaseSync('nineveh_fine_transactions', setFineTransactions, fineTransactions);
       setupFirebaseSync('nineveh_daily_inventories', setDailyInventories, dailyInventories);
