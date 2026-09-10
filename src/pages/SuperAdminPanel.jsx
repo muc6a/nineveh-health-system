@@ -948,6 +948,20 @@ export const SuperAdminPanel = () => {
 
         {user?.role === 'admin' && (
           <button
+            onClick={() => setActiveTab('sounds')}
+            className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
+              activeTab === 'sounds'
+                ? 'bg-teal-600 text-white shadow-md'
+                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+            }`}
+          >
+            <Bell className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
+            <span>الإشعارات والأصوات</span>
+          </button>
+        )}
+        
+        {user?.role === 'admin' && (
+          <button
             onClick={() => setActiveTab('settings')}
             className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
               activeTab === 'settings'

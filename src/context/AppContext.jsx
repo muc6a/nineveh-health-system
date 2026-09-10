@@ -994,6 +994,20 @@ export const AppProvider = ({ children }) => {
     };
   });
 
+  const [soundPreferences, setSoundPreferences] = useState(() => {
+    try {
+      const stored = localStorage.getItem('soundPreferences');
+      return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('soundPreferences', JSON.stringify(soundPreferences));
+  }, [soundPreferences]);
+
+
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
 
   useEffect(() => {
@@ -1061,6 +1075,11 @@ export const AppProvider = ({ children }) => {
 
   const playBeep = (type) => {
     try {
+      if (soundPreferences && soundPreferences[type]) {
+        const audio = new Audio(soundPreferences[type]);
+        audio.play().catch(e => console.error("Error playing custom sound:", e));
+        return;
+      }
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioCtx.createOscillator();
       const gainNode = audioCtx.createGain();
@@ -1488,7 +1507,9 @@ export const AppProvider = ({ children }) => {
       
       // Settings
       uiPreferences,
-      setUiPreferences,
+    setUiPreferences,
+    soundPreferences,
+    setSoundPreferences,
       showDisplayPrefsModal,
       setShowDisplayPrefsModal,
       activityTypes,
