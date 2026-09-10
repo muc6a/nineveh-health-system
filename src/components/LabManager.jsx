@@ -5,7 +5,7 @@ import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Che
 
 export const LabManager = () => {
 
-  const { user, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , hasPerm } = useContext(AppContext);
+  const { user, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , hasPerm, notify } = useContext(AppContext);
 
   const [filterTab, setFilterTab] = useState('all'); // 'all', 'pending_arrival', 'under_testing', 'finished'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });
@@ -63,7 +63,8 @@ export const LabManager = () => {
     if (!receiveModal.code) return;
     const reqIndex = labRequests.findIndex(r => r.id === receiveModal.code || r.id.includes(receiveModal.code));
     if (reqIndex === -1) {
-      alert('لم يتم العثور على عينة بهذا الكود!');
+      if (notify) notify('error', 'الكود المدخل غير موجود في قائمة الانتظار، أو أن العينة أُنجزت مسبقاً.');
+      else alert('الكود المدخل غير موجود في قائمة الانتظار، أو أن العينة أُنجزت مسبقاً.');
       return;
     }
     
