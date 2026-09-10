@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { NotificationBell } from '../components/NotificationBell';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
-import { Archive, Image, FileText, ArrowRight, ArrowLeft, Plus, Trash2, DollarSign, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity, Bell, Lock, Unlock, Gavel, Save, ChevronLeft, ChevronRight, HardDrive } from 'lucide-react';
+import { Archive, Image, FileText, ArrowRight, ArrowLeft, Plus, Trash2, DollarSign, Edit, X, Power, ShieldAlert, Check, Users, Settings, Database, Shield, Eye, EyeOff, Info, UserPlus, Compass, Building, Search, Mail, AlertTriangle, BarChart3, BellRing, Globe, Activity, Bell, Lock, Unlock, Gavel, Save, ChevronLeft, ChevronRight, HardDrive, CheckCircle, Play, Upload, RefreshCcw } from 'lucide-react';
 import { AccountModal } from '../components/AccountModal';
 import { EvaluationManager } from '../components/EvaluationManager';
 import { FinesManager } from '../components/FinesManager';
