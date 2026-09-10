@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { Search, X, ShieldAlert, Send } from 'lucide-react';
 
 export const EstablishmentsManager = () => {
-  const { establishments, setEstablishments, teams, user, addDirective, notify, penaltyRequests, activityTypes, reports } = useContext(AppContext);
+  const { establishments, setEstablishments, teams, user, addDirective, notify, penaltyRequests, activityTypes, reports, labRequests } = useContext(AppContext);
   const [estSearchTerm, setEstSearchTerm] = useState('');
   const [sectorFilter, setSectorFilter] = useState('all');
   const [smartFilter, setSmartFilter] = useState('all');
@@ -11,6 +11,29 @@ export const EstablishmentsManager = () => {
   const [editingEst, setEditingEst] = useState(null);
   const [correctiveEst, setCorrectiveEst] = useState(null);
   const [correctiveText, setCorrectiveText] = useState('');
+
+  
+  const getLiveStatus = (est) => {
+    if (est.status === 'closed') return { text: 'مغلق بالشمع الأحمر 🚫', color: 'bg-red-600 text-white animate-pulse' };
+    
+    if (est.lastInspection === 'تحت المعالجة ⏳') return { text: 'تحت المعالجة ⏳', color: 'bg-amber-100 text-amber-700' };
+
+    // Check for active legal action (pending penalties)
+    const hasPendingPenalty = penaltyRequests && penaltyRequests.some(pr => pr.establishmentId === est.id && pr.status === 'pending');
+    if (hasPendingPenalty) return { text: 'قيد الإجراء القانوني ⚖️', color: 'bg-rose-100 text-rose-700 font-bold' };
+
+    // Check for active lab requests
+    const hasActiveLab = labRequests && labRequests.some(lr => lr.establishmentId === est.id && lr.status !== 'finished');
+    if (hasActiveLab) return { text: 'بانتظار النتيجة المخبرية 🧪', color: 'bg-indigo-100 text-indigo-700 font-bold' };
+
+    if (est.lastInspection === 'لم يزر بعد') return { text: 'معلق (لم يزر بعد) ⏳', color: 'bg-slate-100 text-slate-500' };
+
+    // Default based on score if recently visited
+    if (est.score >= 90) return { text: 'مطابق للمواصفات ✅', color: 'bg-emerald-100 text-emerald-700' };
+    if (est.score >= 50) return { text: 'متابعة مستمرة ⚠️', color: 'bg-amber-100 text-amber-700' };
+    
+    return { text: 'مخالف للشروط ❌', color: 'bg-red-100 text-red-700' };
+  };
 
   const uniqueSectors = [...new Set(establishments.map(e => e.sector))].filter(Boolean).sort((a, b) => {
     const order = ['مركز المحافظة - الجانب الأيسر', 'مركز المحافظة - الجانب الأيمن', 'قضاء تلعفر'];
@@ -106,7 +129,10 @@ export const EstablishmentsManager = () => {
                 <th className="p-3.5 font-bold">صنف النشاط</th>
                 <th className="p-3.5 font-bold">القطاع</th>
                 {user?.role !== 'admin' && (
-                  <th className="p-3.5 font-bold text-center">التقييم والحالة</th>
+                  <>
+                    <th className="p-3.5 font-bold text-center">تقييم المنشأة</th>
+                    <th className="p-3.5 font-bold text-center">الحالة الحية</th>
+                  </>
                 )}
                 <th className="p-3.5 font-bold text-center">الإجراءات</th>
               </tr>
@@ -147,20 +173,26 @@ export const EstablishmentsManager = () => {
                       </div>
                     </td>
                     {user?.role !== 'admin' && (
-                      <td className="p-3.5 text-center">
-                        {est.status === 'closed' ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-red-600 text-white animate-pulse">
-                            مغلق بالشمع الأحمر 🚫
-                          </span>
-                        ) : (
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-black inline-block min-w-[50px] text-center ${
-                            est.score >= 90 ? 'bg-emerald-500/10 text-emerald-600' :
-                            est.score >= 50 ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
+                      <>
+                        <td className="p-3.5 text-center">
+                          <div className={`text-xl font-black ${
+                            est.score >= 90 ? 'text-emerald-600 dark:text-emerald-400' :
+                            est.score >= 50 ? 'text-amber-500 dark:text-amber-400' : 'text-red-600 dark:text-red-500'
                           }`}>
-                            {est.lastInspection === 'تحت المعالجة ⏳' ? 'تحت المعالجة ⏳' : est.lastInspection === 'لم يزر بعد' ? 'معلق ⏳' : `${est.score}%`}
-                          </span>
-                        )}
-                      </td>
+                            {est.lastInspection === 'لم يزر بعد' ? '-' : `${est.score}%`}
+                          </div>
+                        </td>
+                        <td className="p-3.5 text-center">
+                          {(() => {
+                            const statusObj = getLiveStatus(est);
+                            return (
+                              <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black inline-block text-center shadow-sm ${statusObj.color}`}>
+                                {statusObj.text}
+                              </span>
+                            );
+                          })()}
+                        </td>
+                      </>
                     )}
                     <td className="p-3.5">
                       <div className="flex justify-center flex-wrap gap-2">
