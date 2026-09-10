@@ -115,7 +115,7 @@ export const LabManager = () => {
 
   const getStatusBadge = (status, req) => {
     if (status === 'pending_arrival') return (
-      <span onClick={() => toggleStatusManually(req)} className="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-[10px] flex items-center gap-1 w-fit cursor-pointer hover:bg-amber-200 transition-colors">
+      <span className="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 font-bold text-[10px] flex items-center gap-1 w-fit">
         <Clock className="w-3 h-3" /> قيد التوصيل
       </span>
     );
