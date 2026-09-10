@@ -948,15 +948,15 @@ export const SuperAdminPanel = () => {
 
         {user?.role === 'admin' && (
           <button
-            onClick={() => setActiveTab('sounds')}
+            onClick={() => setActiveTab('notifications')}
             className={`px-1.5 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-[11px] font-black whitespace-nowrap transition-all flex flex-1 justify-center items-center gap-1 cursor-pointer ${
-              activeTab === 'sounds'
+              activeTab === 'notifications'
                 ? 'bg-teal-600 text-white shadow-md'
                 : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/40'
             }`}
           >
             <Bell className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" />
-            <span>الإشعارات والأصوات</span>
+            <span>الإشعارات</span>
           </button>
         )}
         
@@ -2149,6 +2149,90 @@ export const SuperAdminPanel = () => {
         )}
 
         {/* Tab 2: Settings & Parameters (Storage - Nested Routing) */}
+        {activeTab === 'notifications' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 sm:p-8 border border-slate-200/50 dark:border-white/5 shadow-sm">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 flex items-center justify-center shadow-inner">
+                  <Bell className="w-7 h-7" />
+                </div>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white">مركز الإشعارات</h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">تخصيص النغمات وأصوات النظام المسموعة عند وقوع الأحداث.</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { id: 'notification', label: 'إشعار جديد (رسالة، تنبيه عام)', defaultIcon: <Bell className="w-5 h-5"/> },
+                  { id: 'success', label: 'إجراء ناجح (حفظ، إرسال، إنجاز)', defaultIcon: <CheckCircle className="w-5 h-5"/> },
+                  { id: 'error', label: 'خطأ أو تنبيه هام (تلوث، رفض)', defaultIcon: <ShieldAlert className="w-5 h-5"/> },
+                  { id: 'login', label: 'تسجيل الدخول للنظام', defaultIcon: <Power className="w-5 h-5"/> },
+                ].map(event => (
+                  <div key={event.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 shadow-sm">
+                        {event.defaultIcon}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-800 dark:text-white text-sm">{event.label}</h4>
+                        <p className="text-xs text-slate-500">{soundPreferences?.[event.id] ? 'نغمة مخصصة' : 'النغمة الافتراضية للنظام'}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => playBeep(event.id)}
+                        className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded-xl transition-colors cursor-pointer"
+                        title="تجربة الصوت"
+                      >
+                        <Play className="w-4 h-4" />
+                      </button>
+                      
+                      <label className="px-4 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-2">
+                        <Upload className="w-4 h-4" /> رفع ملف
+                        <input 
+                          type="file" 
+                          accept="audio/*" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              if (file.size > 1024 * 1024) {
+                                notify('حجم الملف كبير جداً، يرجى اختيار ملف أقل من 1 ميغابايت', 'error');
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = (loadEvent) => {
+                                setSoundPreferences(prev => ({ ...prev, [event.id]: loadEvent.target.result }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }} 
+                        />
+                      </label>
+
+                      {soundPreferences?.[event.id] && (
+                        <button 
+                          onClick={() => {
+                            const newPrefs = { ...soundPreferences };
+                            delete newPrefs[event.id];
+                            setSoundPreferences(newPrefs);
+                          }}
+                          className="p-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-xl transition-colors cursor-pointer"
+                          title="استعادة الافتراضي"
+                        >
+                          <RefreshCcw className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'settings' && (
           <section className="animate-fade-in">
             {!selectedStorageTeam ? (
