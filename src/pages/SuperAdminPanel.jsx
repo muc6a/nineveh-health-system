@@ -12,7 +12,7 @@ import { FinesManager } from '../components/FinesManager';
 import { ROLES_DICTIONARY, ROLE_CORE_BASICS, PERMISSIONS_TABS, PERMISSION_DETAILS, PERMISSION_ROLES } from '../utils/constants';
 
 export const SuperAdminPanel = () => {
-  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, labs, setLabs, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions , globalLogout } = useContext(AppContext);
+  const { navigate, teams, setTeams, trackers, setTrackers, inspectionTemplates, setInspectionTemplates, config, setConfig, user, setUser, directors, setDirectors, setEstablishments, setReports, setDirectives, establishments, reports, directives, tickets, setTickets, auditLogs, logAudit, publicCMS, setPublicCMS, notify, globalBroadcast, setGlobalBroadcast, uiPreferences, setUiPreferences, loginCMS, setLoginCMS, ownerCMS, setOwnerCMS, activityTypes, setShowDisplayPrefsModal, accountants, setAccountants, labs, setLabs, finesBooklet, setFinesBooklet, fineTransactions, setFineTransactions , globalLogout, soundPreferences, setSoundPreferences, playBeep } = useContext(AppContext);
 
   // Layout Tab State: 'roster' (إدارة الحسابات), 'settings' (إعدادات النظام والبنود)
   const [permissionsSelectedAccountId, setPermissionsSelectedAccountId] = useState('');
