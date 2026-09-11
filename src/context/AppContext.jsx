@@ -578,7 +578,17 @@ export const AppProvider = ({ children }) => {
 
   const [labs, setLabs] = useState(() => {
     const saved = localStorage.getItem('nineveh_labs');
-    return saved ? JSON.parse(saved) : [];
+    let parsedLabs = saved ? JSON.parse(saved) : [];
+    if (parsedLabs.length === 0) {
+      parsedLabs = [{
+        id: 'lab-1',
+        name: 'المختبر المركزي العام',
+        email: 'lab@ninveh.health.gov.iq',
+        password: 'lab',
+        permissions: { receiveSamples: true, enterLabResults: true, editLabResults: true, labArchive: true, centralLabView: true }
+      }];
+    }
+    return parsedLabs;
   });
 
   const [labRequests, setLabRequests] = useState(() => {

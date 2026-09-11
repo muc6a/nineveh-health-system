@@ -8,7 +8,7 @@ import { NotificationBell } from '../components/NotificationBell';
 import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut } from 'lucide-react';
 
 export const LabDashboard = () => {
-  const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences , globalLogout, hasPerm } = useContext(AppContext);
+    const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('stats'); // 'stats', 'incoming', 'testing', 'archive'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });
   const [resultStatus, setResultStatus] = useState('safe');
@@ -304,7 +304,7 @@ export const LabDashboard = () => {
             subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
             showPrintButton={false}
           />
-          {(activeTab === 'incoming' || activeTab === 'testing') && (
+          {(activeTab === 'incoming' || activeTab === 'testing') && hasPerm('receiveSamples') && (
             <div className="mt-2">
               <button 
                 onClick={() => setNewSampleModal({ isOpen: true })}
@@ -338,16 +338,36 @@ export const LabDashboard = () => {
                   </div>
                 </div>
 
-                <div className="bg-indigo-600 text-white rounded-[2rem] p-8 relative overflow-hidden shadow-xl shadow-indigo-600/20">
-                  <div className="relative z-10 max-w-2xl">
-                    <h2 className="text-2xl font-black mb-2">بوابة المختبر المركزي جاهزة</h2>
-                    <p className="text-indigo-100 leading-relaxed">
-                      يمكنك استلام العينات الميدانية، إجراء الفحوصات، واعتماد النتائج. 
-                      سيتم إشعار الفرق الرقابية أو الرقابة المركزية بالنتائج فور اعتمادها للمتابعة الميدانية أو اتخاذ الإجراءات القانونية بحق المخالفين.
-                    </p>
+                <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/20 text-teal-600 flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5" />
                   </div>
-                  <FlaskConical className="w-48 h-48 absolute -left-12 -bottom-12 text-white/10 transform -rotate-12" />
+                  <div>
+                    <h3 className="font-black text-slate-800 dark:text-white text-lg">إحصائيات العينات الواردة</h3>
+                    <p className="text-xs text-slate-500">عدد العينات المرسلة من الفرق الميدانية</p>
+                  </div>
                 </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(teams || []).map(team => {
+                    const teamSamplesCount = (labRequests || []).filter(r => r.teamId === team.id || r.senderName === team.name).length;
+                    return (
+                      <div key={team.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{team.name}</span>
+                        <div className="flex items-end justify-between">
+                          <span className="text-2xl font-black text-slate-800 dark:text-white">{teamSamplesCount}</span>
+                          <span className="text-[10px] text-teal-600 bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-full font-bold">عينة</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {(teams?.length === 0) && (
+                    <div className="col-span-full p-4 text-center text-slate-400 text-sm">
+                      لا توجد فرق ميدانية مسجلة حتى الآن.
+                    </div>
+                  )}
+                </div>
+              </div>
               </div>
             )}
 
@@ -380,12 +400,14 @@ export const LabDashboard = () => {
                             {req.senderNotes && <p className="text-xs text-slate-400 mt-1 bg-white dark:bg-slate-800 px-2 py-1 rounded inline-block">ملاحظة: {req.senderNotes}</p>}
                           </div>
                         </div>
-                        <button 
-                          onClick={() => handleReceiveSample(req.id)}
-                          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
-                        >
-                          <CheckCircle className="w-4 h-4" /> تأكيد الاستلام المادي
-                        </button>
+                        {hasPerm('receiveSamples') && (
+                          <button 
+                            onClick={() => handleReceiveSample(req.id)}
+                            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
+                          >
+                            <CheckCircle className="w-4 h-4" /> تأكيد الاستلام المادي
+                          </button>
+                        )}
                       </div>
                     ))
                   )}
@@ -421,12 +443,14 @@ export const LabDashboard = () => {
                             <p className="text-xs text-slate-500 mt-1">مرسلة من: {req.teamName} - تم الاستلام: {new Date(req.receivedAt).toLocaleTimeString('ar-IQ')}</p>
                           </div>
                         </div>
-                        <button 
-                          onClick={() => setResultModal({ isOpen: true, request: req })}
-                          className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-teal-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
-                        >
-                          <FileText className="w-4 h-4" /> إدخال النتيجة
-                        </button>
+                        {hasPerm('enterLabResults') && (
+                          <button 
+                            onClick={() => setResultModal({ isOpen: true, request: req })}
+                            className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-teal-600/20 flex items-center gap-2 cursor-pointer w-full md:w-auto justify-center whitespace-nowrap"
+                          >
+                            <FileText className="w-4 h-4" /> إدخال النتيجة
+                          </button>
+                        )}
                       </div>
                     ))
                   )}
