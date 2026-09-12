@@ -382,7 +382,8 @@ export const AccountantPanel = () => {
           <div className="space-y-1 mb-6">
             
 
-            <button
+            {hasPerm("financialReports") && (
+              <button
               onClick={() => {
                 setActiveTab("dashboard");
                 setIsSidebarOpen(false);
@@ -396,8 +397,10 @@ export const AccountantPanel = () => {
               <LayoutDashboard className="w-4.5 h-4.5" />
               <span>التقارير</span>
             </button>
+            )}
 
-            <button
+            {(hasPerm("showDirectivesPage") || hasPerm("sendDirective") || hasPerm("replyDirective")) && (
+              <button
               onClick={() => {
                 setActiveTab("directives");
                 setIsSidebarOpen(false);
@@ -418,8 +421,10 @@ export const AccountantPanel = () => {
                 </span>
               )}
             </button>
+            )}
 
-            <button
+            {hasPerm("dailyInventory") && (
+              <button
               onClick={() => {
                 setActiveTab("reconciliation");
                 setIsSidebarOpen(false);
@@ -433,6 +438,24 @@ export const AccountantPanel = () => {
               <ClipboardList className="w-4.5 h-4.5" />
               <span>جرد اليومية والمطابقة</span>
             </button>
+            )}
+
+            {hasPerm("payFines") && (
+              <button
+                onClick={() => {
+                  setActiveTab("ext_financials");
+                  setIsSidebarOpen(false);
+                }}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                  activeTab === "ext_financials"
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/10"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
+                }`}
+              >
+                <CreditCard className="w-4.5 h-4.5" />
+                <span>الغرامات والإيرادات</span>
+              </button>
+            )}
 
             {hasPerm("viewComprehensiveFinancialReports") && (
               <>
@@ -1451,6 +1474,12 @@ export const AccountantPanel = () => {
         {activeTab === "ext_reports" && (
           <div className="w-full h-full min-h-[85vh]">
             <TeamDashboard embeddedTab="geographic" />
+          </div>
+        )}
+
+        {activeTab === "ext_financials" && (
+          <div className="w-full h-full min-h-[85vh]">
+            <TeamDashboard embeddedTab="financials" />
           </div>
         )}
 
