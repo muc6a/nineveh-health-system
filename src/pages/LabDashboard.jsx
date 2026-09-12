@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { GlobalHeader } from '../components/GlobalHeader';
 import { NotificationBell } from '../components/NotificationBell';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut } from 'lucide-react';
+import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Plus } from 'lucide-react';
 
 export const LabDashboard = () => {
     const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams } = useContext(AppContext);
@@ -203,10 +203,6 @@ export const LabDashboard = () => {
                 <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
                 {user?.name}
               </span>
-              <span className="text-[9px] text-teal-650 dark:text-teal-400 font-extrabold uppercase mt-0.5">
-                {user?.title || user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
-              </span>
-              <span className="text-[8px] text-slate-400 font-normal dir-ltr">{user?.email}</span>
             </div>
             <ThemeToggle />
           </div>
