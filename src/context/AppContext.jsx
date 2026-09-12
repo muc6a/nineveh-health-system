@@ -464,6 +464,37 @@ const DEFAULT_INSPECTION_TEMPLATES = {
 const INITIAL_DELIVERIES = [];
 
 export const AppProvider = ({ children }) => {
+  // Run once on load to clean up manageEstablishments from central_director in localStorage
+  React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem('nineveh_directors');
+      if (stored) {
+        let dirs = JSON.parse(stored);
+        let updated = false;
+        dirs = dirs.map(d => {
+          if (d.role === 'central_director' && d.permissions?.manageEstablishments) {
+            d.permissions.manageEstablishments = false;
+            updated = true;
+          }
+          return d;
+        });
+        if (updated) {
+          localStorage.setItem('nineveh_directors', JSON.stringify(dirs));
+          
+          // If the currently logged in user is central_director, update their session too
+          const activeUser = JSON.parse(localStorage.getItem('nineveh_user') || 'null');
+          if (activeUser?.role === 'central_director' && activeUser?.permissions?.manageEstablishments) {
+             activeUser.permissions.manageEstablishments = false;
+             localStorage.setItem('nineveh_user', JSON.stringify(activeUser));
+             setUser(activeUser);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Migration error:", e);
+    }
+  }, []);
+
   // Theme State
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
@@ -554,7 +585,7 @@ export const AppProvider = ({ children }) => {
       parsed = parsed.map(d => {
         if (d.id === 'dir_acc_2' && hasJassim) {
           needsMigration = true;
-          return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, manageEstablishments: true } };
+          return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true } };
         }
         return d;
       });
@@ -567,7 +598,7 @@ export const AppProvider = ({ children }) => {
 
     return [
       { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDirectivesPage: true, sendDirective: true, replyDirective: true, notify_closures: false, notify_inspections: false, notify_directives: true } },
-      { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, manageEstablishments: true, notify_closures: true, notify_inspections: true, notify_directives: true } }
+      { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, notify_closures: true, notify_inspections: true, notify_directives: true } }
     ];
   });
 
