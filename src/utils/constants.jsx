@@ -125,7 +125,7 @@ export const DEFAULT_PERMISSIONS = {
 };
 
 export const PERMISSIONS_TABS = [
-  { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: <Target className="w-4 h-4 text-red-500"/>, keys: ['showOperationsRoom', 'authenticatePenalties', 'showFieldTeamsStats', 'issueFine', 'closeEst', 'reopenEst'] },
+  { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: <Target className="w-4 h-4 text-red-500"/>, keys: ['showOperationsRoom', 'manageSmartTasks', 'authenticatePenalties', 'showFieldTeamsStats', 'issueFine', 'closeEst', 'reopenEst'] },
   { id: 'establishments', label: 'المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'addEval', 'editEst', 'deleteEst'] },
   { id: 'complaints', label: 'الشكاوى', icon: <Compass className="w-4 h-4 text-rose-500"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage'] },
   { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive', 'centralLabView'] },
@@ -161,7 +161,8 @@ export const PERMISSION_DETAILS = {
   replyDirective: { title: 'الرد على التبليغات', desc: 'يسمح للحساب بالرد المباشر والتعليق على التبليغات الواردة من الإدارة.' },
   quickTeamDispatch: { title: 'التوجيه السريع للفرق الميدانية', desc: 'يسمح بإرسال مهام كشف صحي فورية وعاجلة للفرق الرقابية.' },
   showSectorMap: { title: 'خريطة القطاع', desc: 'يسمح للفريق برؤية خريطة المنشآت الواقعة ضمن قاطع عملهم الميداني حصراً.' },
-  showSmartTasks: { title: 'مهام اليوم (المهام الذكية)', desc: 'يسمح للفريق بالوصول لجدول المهام اليومية المخصصة لهم.' },
+  manageSmartTasks: { title: 'إدارة وتوجيه المهام', desc: 'يسمح بتوجيه أوامر تفتيش مركزية للفرق الميدانية وتتبع إنجازها.' },
+  executeSmartTasks: { title: 'تنفيذ المهام الذكية', desc: 'يسمح للفرقة باستقبال المهام الموجهة من غرفة العمليات وإنجازها.' },
   showFieldTeamsStats: { title: 'متابعة أداء الفرق', desc: 'يسمح برؤية تقييمات وأداء اللجان الميدانية.' },
   authenticatePenalties: { title: 'المصادقة على العقوبات', desc: 'يسمح بالاطلاع على طلبات الإغلاق والغرامات المرفوعة من الفرق والمصادقة عليها.' },
   issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المنشآت المخالفة وتوثيقها.' },
@@ -178,10 +179,10 @@ export const PERMISSION_DETAILS = {
 
 export const ROLE_CORE_BASICS = {
   director: ['showMainDashboard'],
-  central_director: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'showPublicEvalsPage', 'showDeliveryPage', 'showOperationsRoom', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'financialReports'],
+  central_director: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'showPublicEvalsPage', 'showDeliveryPage', 'showOperationsRoom', 'manageSmartTasks', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'financialReports'],
   accountant: ['financialReports', 'payFines', 'dailyInventory'],
   financial_accountant: ['financialReports', 'payFines', 'dailyInventory'],
-  team: ['showTeamDashboard', 'showSmartTasks', 'showSectorMap', 'createEst', 'addEval', 'manageEstablishments'],
+  team: ['showTeamDashboard', 'executeSmartTasks', 'showSectorMap', 'createEst', 'addEval', 'manageEstablishments'],
   lab: ['receiveSamples', 'enterLabResults', 'labArchive', 'centralLabView'],
   tracker: ['monitorClosures', 'searchAndAddPreliminaryEst']
 };
@@ -190,6 +191,7 @@ export const PERMISSION_ROLES = {
   // 'management' only permissions
   deleteEst: 'management',
   showMainDashboard: 'management',
+  manageSmartTasks: 'management',
   showOperationsRoom: 'management',
   showReportsPage: 'management',
   showPublicEvalsPage: 'management',

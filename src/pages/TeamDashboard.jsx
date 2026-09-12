@@ -660,7 +660,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         {/* Tab B: Smart Tasks (Today's Tasks) */}
-        {activeTab === 'smart_tasks' && hasPerm('showSmartTasks') && (
+        {activeTab === 'smart_tasks' && hasPerm('executeSmartTasks') && (
           <div className="space-y-6 animate-fade-in-up">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30">
               <div className="flex items-center gap-3">
@@ -953,7 +953,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
         {/* Tab C: Incidents Box */}
         
-        {activeTab === 'operations_room' && (hasPerm('authenticatePenalties') || hasPerm('showFieldTeamsStats')) && (
+        {activeTab === 'operations_room' && (hasPerm('showOperationsRoom') || hasPerm('executeSmartTasks') || hasPerm('showSectorMap') || hasPerm('manageSmartTasks')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
             <OperationsRoom />
           </div>
