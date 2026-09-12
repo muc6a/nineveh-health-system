@@ -274,15 +274,6 @@ export const LabDashboard = () => {
         </div>
 
         <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
-          <div className="flex items-center gap-3 px-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md">
-              {user?.name?.charAt(0) || 'م'}
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <h4 className="text-sm font-bold text-slate-800 dark:text-white truncate">{user?.name}</h4>
-              <p className="text-xs text-slate-500 truncate">{user?.sector || 'نطاق غير محدد'}</p>
-            </div>
-          </div>
           <button 
             onClick={globalLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors cursor-pointer"
@@ -316,16 +307,6 @@ export const LabDashboard = () => {
             subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
             showPrintButton={false}
           />
-          {(activeTab === 'incoming' || activeTab === 'testing') && hasPerm('receiveSamples') && (
-            <div className="mt-2">
-              <button 
-                onClick={() => setNewSampleModal({ isOpen: true })}
-                className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 cursor-pointer w-fit"
-              >
-                ➕ إنشاء عينة جديدة يدويًا
-              </button>
-            </div>
-          )}
         </header>
 
         {/* Scrollable Content Area */}
@@ -386,6 +367,16 @@ export const LabDashboard = () => {
             {/* INCOMING */}
             {activeTab === 'incoming' && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="flex justify-end mb-6">
+                  {hasPerm('receiveSamples') && (
+                    <button 
+                      onClick={() => setNewSampleModal({ isOpen: true })}
+                      className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                    >
+                      <Plus className="w-5 h-5" /> إنشاء عينة جديدة يدويًا
+                    </button>
+                  )}
+                </div>
                 <div className="space-y-4">
                   {incomingReqs.length === 0 ? (
                     <div className="text-center p-12 flex flex-col items-center">
@@ -430,6 +421,16 @@ export const LabDashboard = () => {
             {/* TESTING */}
             {activeTab === 'testing' && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="flex justify-end mb-6">
+                  {hasPerm('receiveSamples') && (
+                    <button 
+                      onClick={() => setNewSampleModal({ isOpen: true })}
+                      className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                    >
+                      <Plus className="w-5 h-5" /> إنشاء عينة جديدة يدويًا
+                    </button>
+                  )}
+                </div>
                 <div className="space-y-4">
                   {testingReqs.length === 0 ? (
                     <div className="text-center p-12 flex flex-col items-center">

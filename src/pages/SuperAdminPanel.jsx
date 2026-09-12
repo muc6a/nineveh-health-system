@@ -1840,6 +1840,15 @@ export const SuperAdminPanel = () => {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  handleOpenPermissions({ ...t, role: 'lab' });
+                                }}
+                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
+                              >
+                                <Shield className="w-3.5 h-3.5" /> الصلاحيات
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setAccountModalState({ isOpen: true, mode: 'edit', data: t, accountType: 'lab' });
                                 }}
                                 className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer text-[10px] flex items-center gap-1"
