@@ -95,19 +95,28 @@ const UnifiedSidebar = ({
         <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2 flex flex-col">
           <AnimatedLogo variant="sidebar" className="mb-6" />
 
-          {/* User Profile */}
-          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                {user?.name}
-              </span>
-              <span className="text-[9px] text-teal-650 dark:text-teal-400 font-extrabold uppercase mt-0.5">
-                {user?.title || user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
-              </span>
-              <span className="text-[8px] text-slate-400 font-normal dir-ltr">{user?.email}</span>
+                    {/* User Profile */}
+          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  {user?.name}
+                </span>
+                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
+                  {user?.title || user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
+                </span>
+              </div>
+              <ThemeToggle />
             </div>
-            <ThemeToggle />
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <button 
+                onClick={globalLogout}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+              >
+                تسجيل الخروج
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 mb-4 pr-1 pl-2">
@@ -145,15 +154,7 @@ const UnifiedSidebar = ({
           </div>
         </div>
 
-        <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
-          <button 
-            onClick={globalLogout}
-            className="w-full text-right px-4 py-3 rounded-2xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-3"
-          >
-            <LogOut className="w-4.5 h-4.5" />
-            <span>تسجيل الخروج</span>
-          </button>
-        </div>
+        
       </aside>
     </>
   );

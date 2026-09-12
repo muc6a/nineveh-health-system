@@ -428,68 +428,74 @@ export const TeamDashboard = ({ embeddedTab }) => {
       )}
 
       {/* Fixed Sticky Sidebar */}
-      <UnifiedSidebar 
+      {!embeddedTab && (
+        <UnifiedSidebar 
           activeTab={activeTab} setActiveTab={setActiveTab} 
           isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}
         />
+      )}
 
       {/* Main Panel Canvas */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         
         {/* Welcome Headers with Date/Time and Mosul Weather */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">👥</span>
-            <div>
-              <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
-              <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم {userSector}</p>
+        {!embeddedTab && (
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
+            <div className="flex items-center gap-3">
+              <span className="text-xl">👥</span>
+              <div>
+                <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
+                <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم {userSector}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+              <NotificationBell />
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
+                <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span className="text-slate-300">|</span>
+                <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+              <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
+                <WeatherWidget variant="full" />
+              </div>
+              {hasPerm('exportData') && (
+                <button 
+                  onClick={() => window.print()}
+                  className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
+                >
+                  🖨️ تصدير التقارير / طباعة
+                </button>
+              )}
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-            <NotificationBell />
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-              <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              <span className="text-slate-300">|</span>
-              <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-              <WeatherWidget variant="full" />
-            </div>
-            {hasPerm('exportData') && (
-              <button 
-                onClick={() => window.print()}
-                className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
-              >
-                🖨️ تصدير التقارير / طباعة
-              </button>
-            )}
-          </div>
-        </div>
+        )}
 
         {/* Welcome / No Permissions State */}
         
         
         {/* Mobile Navbar Header */}
-        <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
-          <button 
-            onClick={() => setIsSidebarOpen(true)}
-            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-          <AnimatedLogo variant="sidebar" className="border-none p-0 scale-75 transform origin-center" />
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setShowDisplayPrefsModal(true)}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
-                title="تخصيص العرض والمظهر"
-              >
-                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-              </button>
-              <NotificationBell />
-              <ThemeToggle />
+        {!embeddedTab && (
+          <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <AnimatedLogo variant="sidebar" className="border-none p-0 scale-75 transform origin-center" />
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowDisplayPrefsModal(true)}
+                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
+                  title="تخصيص العرض والمظهر"
+                >
+                  <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+                </button>
+                <NotificationBell />
+                <ThemeToggle />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tab A: Summary Dashboard */}
         {activeTab === 'summary' && hasPerm('showMainDashboard') && (

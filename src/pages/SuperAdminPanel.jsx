@@ -852,13 +852,18 @@ export const SuperAdminPanel = () => {
     <div className="min-h-screen bg-slatebg-light dark:bg-slatebg-dark p-4 md:p-8 transition-colors duration-300">
       
       {/* Top Header bar */}
-      <header className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 glassmorphic-card p-4 text-right">
+      <header className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm text-right">
         <div className="flex items-center gap-3">
           <AnimatedLogo variant="sidebar" className="border-none p-0" />
           <div className="h-8 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
-          <div>
-            <h1 className="text-xs font-black text-slate-800 dark:text-white">شاشة المسؤول المركزي للنظام</h1>
-            <p className="text-[10px] text-slate-400">أهلاً بك سيدي مسؤول المنظومة المركزي 👋</p>
+          <div className="flex flex-col">
+            <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              {user?.name || "مدير النظام"}
+            </span>
+            <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
+              المسؤول المركزي للنظام
+            </span>
           </div>
         </div>
 
@@ -873,12 +878,6 @@ export const SuperAdminPanel = () => {
           </div>
           
           <ThemeToggle />
-          <button
-            onClick={() => setShowDisplayPrefsModal(true)}
-            className="px-3 py-1.5 rounded-xl border border-teal-500/20 bg-teal-500/5 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10 transition-all cursor-pointer font-black"
-          >
-            🎨 تخصيص العرض
-          </button>
           <button
             onClick={globalLogout}
             className="px-3 py-1.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer font-black"

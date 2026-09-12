@@ -55,6 +55,7 @@ export const AccountantPanel = () => {
     dailyInventories,
     setDailyInventories,
     globalLogout,
+    hasPerm
   } = useContext(AppContext);
 
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -79,11 +80,7 @@ export const AccountantPanel = () => {
 
   const targetSector = user?.linkedTeamSector || user?.sector || "الكل";
 
-  const hasPerm = (permName) => {
-    if (user?.role === "admin" || user?.role === "financial_accountant")
-      return true;
-    return user?.permissions?.[permName] === true;
-  };
+  
 
   const getEstablishmentSector = (estId) => {
     const est = establishments.find(
@@ -366,6 +363,30 @@ export const AccountantPanel = () => {
         <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
           <AnimatedLogo variant="sidebar" className="mb-6" />
 
+          {/* User Profile */}
+          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  {user?.name}
+                </span>
+                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
+                  {user?.role === "financial_accountant" ? "محاسب مالي" : "محاسب الدائرة"} {user?.sector ? ` - قطاع ${user.sector}` : ''}
+                </span>
+              </div>
+              <ThemeToggle />
+            </div>
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <button 
+                onClick={globalLogout}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+              >
+                تسجيل الخروج
+              </button>
+            </div>
+          </div>
+
           <div className="space-y-1 mb-6">
             <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
               بوابة المحاسبين (الإدارة المالية)
@@ -549,48 +570,7 @@ export const AccountantPanel = () => {
           </div>
         </div>
 
-        {/* User context footer */}
-        <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50 shrink-0 bg-white/95 dark:bg-slate-900/95 md:bg-transparent">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex flex-col flex-1 truncate text-right mr-3">
-              <span className="text-xs font-black text-slate-700 dark:text-slate-300">
-                {user?.name || "سيدي المحاسب"}
-              </span>
-              <span className="text-[9px] font-bold text-slate-400 mt-0.5 truncate">
-                {user?.role === "financial_accountant"
-                  ? "محاسب مالي"
-                  : "محاسب الدائرة"}
-              </span>
-              <span className="text-[8px] font-bold text-teal-500 mt-0.5 truncate">
-                الصلاحيات المفعلة:{" "}
-                {user?.role === "admin" || user?.role === "financial_accountant"
-                  ? "كاملة"
-                  : Object.keys(user?.permissions || {}).filter(
-                      (k) => user?.permissions[k],
-                    ).length}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowDisplayPrefsModal(true)}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group relative"
-                title="تخصيص العرض والمظهر"
-              >
-                <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-                <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-slate-800 text-white text-[10px] py-1 px-2 rounded-lg whitespace-nowrap">
-                  تخصيص العرض
-                </span>
-              </button>
-              <ThemeToggle />
-            </div>
-          </div>
-          <button
-            onClick={globalLogout}
-            className="w-full py-2.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400 hover:bg-red-500/10 text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
-          >
-            <span>تسجيل الخروج</span>
-          </button>
-        </div>
+        
       </aside>
 
       {/* Main Panel Canvas */}
@@ -1542,7 +1522,7 @@ export const AccountantPanel = () => {
 
         {activeTab === "ext_reports" && (
           <div className="w-full h-full min-h-[85vh]">
-            <ExecutivePortal embeddedTab="reports" />
+            <TeamDashboard embeddedTab="reports" />
           </div>
         )}
 

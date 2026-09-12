@@ -196,15 +196,28 @@ export const LabDashboard = () => {
         <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
           <AnimatedLogo variant="sidebar" className="mb-6" />
 
-          {/* User Profile */}
-          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                {user?.name}
-              </span>
+                    {/* User Profile */}
+          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  {user?.name}
+                </span>
+                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
+                  {user?.title || user?.role === 'lab' ? 'المختبر المركزي العام' : user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
+                </span>
+              </div>
+              <ThemeToggle />
             </div>
-            <ThemeToggle />
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <button 
+                onClick={globalLogout}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+              >
+                تسجيل الخروج
+              </button>
+            </div>
           </div>
 
           <div className="space-y-1 mb-6">
@@ -269,14 +282,7 @@ export const LabDashboard = () => {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
-          <button 
-            onClick={globalLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors cursor-pointer"
-          >
-            <LogOut className="w-4 h-4" /> تسجيل الخروج
-          </button>
-        </div>
+        
       </aside>
 
       {/* Main Content */}
