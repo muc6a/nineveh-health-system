@@ -22,7 +22,7 @@ const UnifiedSidebar = ({
       icon: TrendingUp,
       iconColorClass: '',
       activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20',
-      showCondition: hasPerm('showMainDashboard'),
+      showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') || hasPerm('exportData'),
       onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('strategic'); }
     },
     operations_room: {

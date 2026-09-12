@@ -137,6 +137,8 @@ export const PERMISSIONS_TABS = [
 
 export const PERMISSION_DETAILS = {
   manageEstablishments: { title: 'إدارة المنشآت', desc: 'صلاحية أساسية للتعامل مع المنشآت وتعديل حالاتها.' },
+  showLabPage: { title: 'لوحة المختبر', desc: 'الوصول المباشر إلى واجهات المختبر المركزي.' },
+  showOperationsRoom: { title: 'الوصول لغرفة العمليات', desc: 'يسمح للحساب بالوصول إلى لوحة غرفة العمليات المركزية.' },
 
   createEst: { title: 'إضافة منشأة جديدة', desc: 'هذا الإذن يتيح للحساب إمكانية تسجيل وإضافة منشآت جديدة إلى النظام.' },
   editEst: { title: 'تعديل بيانات المنشأة', desc: 'يتيح للحساب صلاحية الدخول لبيانات أي منشأة مسجلة وتحديث معلوماتها (كاسم المدير، رقم الهاتف، والتراخيص).' },
@@ -180,7 +182,7 @@ export const ROLE_CORE_BASICS = {
   accountant: ['financialReports', 'payFines', 'dailyInventory'],
   financial_accountant: ['financialReports', 'payFines', 'dailyInventory'],
   team: ['showTeamDashboard', 'showSmartTasks', 'showSectorMap', 'createEst', 'addEval', 'manageEstablishments'],
-  lab: ['receiveSamples', 'enterLabResults', 'labArchive'],
+  lab: ['receiveSamples', 'enterLabResults', 'labArchive', 'centralLabView'],
   tracker: ['monitorClosures', 'searchAndAddPreliminaryEst']
 };
 
