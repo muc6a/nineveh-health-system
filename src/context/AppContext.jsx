@@ -464,36 +464,7 @@ const DEFAULT_INSPECTION_TEMPLATES = {
 const INITIAL_DELIVERIES = [];
 
 export const AppProvider = ({ children }) => {
-  // Run once on load to clean up manageEstablishments from central_director in localStorage
-  React.useEffect(() => {
-    try {
-      const stored = localStorage.getItem('nineveh_directors');
-      if (stored) {
-        let dirs = JSON.parse(stored);
-        let updated = false;
-        dirs = dirs.map(d => {
-          if (d.role === 'central_director' && d.permissions?.manageEstablishments) {
-            d.permissions.manageEstablishments = false;
-            updated = true;
-          }
-          return d;
-        });
-        if (updated) {
-          localStorage.setItem('nineveh_directors', JSON.stringify(dirs));
-          
-          // If the currently logged in user is central_director, update their session too
-          const activeUser = JSON.parse(localStorage.getItem('nineveh_user') || 'null');
-          if (activeUser?.role === 'central_director' && activeUser?.permissions?.manageEstablishments) {
-             activeUser.permissions.manageEstablishments = false;
-             localStorage.setItem('nineveh_user', JSON.stringify(activeUser));
-             setUser(activeUser);
-          }
-        }
-      }
-    } catch (e) {
-      console.error("Migration error:", e);
-    }
-  }, []);
+
 
   // Theme State
   const [darkMode, setDarkMode] = useState(() => {
