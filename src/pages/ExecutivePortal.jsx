@@ -73,8 +73,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
   React.useEffect(() => {
     let needsRedirect = false;
-    if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
-    if (activeTab === 'operations_room' && !(hasPerm('showOperationsRoom') || hasPerm('executeSmartTasks') || hasPerm('showSectorMap') || hasPerm('manageSmartTasks'))) needsRedirect = true;
+    if (activeTab === 'strategic' && !(hasPerm('showMainDashboard') || hasPerm('showReportsPage') || hasPerm('exportData'))) needsRedirect = true;
+    if (activeTab === 'operations_room' && !(hasPerm('authenticatePenalties'))) needsRedirect = true;
     if (activeTab === 'lab_management' && !(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'))) needsRedirect = true;
     if (activeTab === 'financials' && !(hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory'))) needsRedirect = true;
     

@@ -51,7 +51,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
   // Watch for permission changes to set initial tab if it was null
   React.useEffect(() => {
-    if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) {
+    if (activeTab === 'strategic' && !(hasPerm('showMainDashboard') || hasPerm('showReportsPage') || hasPerm('exportData'))) {
       const newTab = getInitialTab();
       if (newTab) setActiveTab(newTab);
     }
@@ -508,7 +508,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         {/* Tab A: Summary Dashboard */}
-        {activeTab === 'strategic' && hasPerm('showMainDashboard') && (
+        {activeTab === 'strategic' && (hasPerm('showMainDashboard') || hasPerm('showReportsPage') || hasPerm('exportData')) && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
@@ -955,7 +955,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         {/* Tab C: Incidents Box */}
         
         {activeTab === 'smart_tasks' && <SmartTasks />}
-            {activeTab === 'operations_room' && (hasPerm('showOperationsRoom') || hasPerm('executeSmartTasks') || hasPerm('showSectorMap') || hasPerm('manageSmartTasks')) && (
+            {activeTab === 'operations_room' && (hasPerm('authenticatePenalties')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
             <OperationsRoom />
           </div>

@@ -39,7 +39,7 @@ const UnifiedSidebar = ({
       icon: ShieldAlert,
       iconColorClass: 'text-fuchsia-500',
       activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
-      showCondition: hasPerm('showOperationsRoom') || hasPerm('executeSmartTasks') || hasPerm('showSectorMap') || hasPerm('manageSmartTasks'),
+      showCondition: hasPerm('authenticatePenalties'),
       onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('operations_room'); }
     },
     directives: {
