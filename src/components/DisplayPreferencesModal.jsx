@@ -3,30 +3,18 @@ import { Eye, X, ChevronUp, ChevronDown, ListOrdered } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
-  const { uiPreferences, setUiPreferences, notify, user } = useContext(AppContext);
+  const { uiPreferences, setUiPreferences, notify, user, activeSidebarTabs } = useContext(AppContext);
   const [draftUiPreferences, setDraftUiPreferences] = useState(uiPreferences);
 
   const hasPerm = (p) => user?.permissions?.[p] === true;
 
-  const getAvailableTabs = () => {
-    const tabs = {};
-    if (hasPerm('showMainDashboard') || hasPerm('financialReports')) tabs.strategic = 'اللوحة الرئيسية (الاستراتيجية)';
-    if (hasPerm('financialReports')) tabs.dashboard = 'التقارير';
-    if (hasPerm('showFieldTeamsStats')) tabs.team_reports = 'تقارير الفرق الميدانية';
-    if (hasPerm('showOperationsRoom') || hasPerm('authenticatePenalties') || hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) tabs.operations_room = 'غرفة العمليات المركزية';
-    if (hasPerm('showReportsPage')) tabs.geographic = 'الخريطة الجغرافية';
-    if (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) tabs.directives = 'التبليغات والتوجيهات';
-    if (hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) tabs.complaints = 'شكاوى المواطنين';
-    if (hasPerm('showLabPage')) tabs.lab_results = 'قرارات المختبر';
-    if (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('authenticatePenalties')) tabs.lab_management = 'المختبر';
-    if (hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory')) tabs.financials = 'المالية';
-    if (hasPerm('manageEstablishments')) tabs.establishments = 'إدارة المنشآت';
-    if (hasPerm('payFines')) tabs.ext_financials = 'الغرامات والإيرادات';
-    if (hasPerm('dailyInventory')) tabs.reconciliation = 'جرد اليومية والمطابقة';
-    return tabs;
-  };
+  
+  // Use activeSidebarTabs provided by the currently rendered dashboard
+  const availableTabsMap = activeSidebarTabs.reduce((acc, tab) => {
+    acc[tab.id] = tab.label;
+    return acc;
+  }, {});
 
-  const availableTabsMap = getAvailableTabs();
   
   const activeTabKeys = (draftUiPreferences?.tabOrder || Object.keys(availableTabsMap)).filter(k => availableTabsMap[k]);
   Object.keys(availableTabsMap).forEach(k => {

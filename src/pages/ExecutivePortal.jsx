@@ -421,7 +421,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             {(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) && (
               <option value="lab_management">🧪 قرارات المختبر</option>
             )}
-            {(hasPerm('createEst') || hasPerm('editEst') || hasPerm('deleteEst')) && (
+            {hasPerm('manageEstablishments') && (
               <option value="establishments">🏢 إدارة المنشآت</option>
             )}
 

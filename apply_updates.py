@@ -1,107 +1,166 @@
 import re
+import os
 
-filepath = "/Users/admin/web/منظومة الرقابة الصحية الرقمية/src/pages/SuperAdminPanel.jsx"
-with open(filepath, "r", encoding="utf-8") as f:
-    content = f.read()
+def update_app_context():
+    filepath = "src/context/AppContext.jsx"
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
 
-# 1. Rename 'الأذينات' and 'الأذونات' to 'الصلاحيات'
-content = content.replace("الأذونات", "الصلاحيات")
-content = content.replace("الأذينات", "الصلاحيات")
-content = content.replace("أذونات", "صلاحيات")
-content = content.replace("أذينات", "صلاحيات")
+    if "activeSidebarTabs" not in content:
+        # Insert state right after showDisplayPrefsModal
+        content = content.replace(
+            "const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);",
+            "const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);\n  const [activeSidebarTabs, setActiveSidebarTabs] = useState([]);"
+        )
+        
+        # Add to AppContext.Provider value
+        content = content.replace(
+            "setShowDisplayPrefsModal,",
+            "setShowDisplayPrefsModal,\n    activeSidebarTabs,\n    setActiveSidebarTabs,"
+        )
 
-# 2. Add Info (ⓘ) icon to names in Directors, Trackers, Accountants
-# Directors Name Column
-target_director_name = """<td className="p-4 text-slate-800 dark:text-slate-200">{d.name}</td>"""
-replacement_director_name = """<td 
-                            onClick={() => setSelectedTeamDetails(d)}
-                            className="p-4 text-slate-800 dark:text-slate-200 cursor-pointer hover:text-teal-600 transition-colors flex items-center gap-1.5"
-                          >
-                            <Info className="w-4 h-4 text-slate-400 shrink-0" />
-                            <span className="underline decoration-dotted">{d.name}</span>
-                          </td>"""
-content = content.replace(target_director_name, replacement_director_name)
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content)
+        print("Updated AppContext.jsx")
 
-# Trackers Name Column
-target_tracker_name = """<td className="p-4 font-black text-slate-800 dark:text-white">{t.name}</td>"""
-replacement_tracker_name = """<td 
-                            onClick={() => setSelectedTeamDetails(t)}
-                            className="p-4 font-black text-slate-800 dark:text-white cursor-pointer hover:text-teal-600 transition-colors flex items-center gap-1.5"
-                          >
-                            <Info className="w-4 h-4 text-slate-400 shrink-0" />
-                            <span className="underline decoration-dotted">{t.name}</span>
-                          </td>"""
-content = content.replace(target_tracker_name, replacement_tracker_name)
+def update_display_prefs_modal():
+    filepath = "src/components/DisplayPreferencesModal.jsx"
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
 
-# Accountants Name Column
-# Wait, Accountants use `t` just like Trackers, and the line is identical to Trackers. Let's make sure it replaces both.
-# If they are identical, `replace` will replace both.
+    # We want to replace getAvailableTabs logic with using activeSidebarTabs
+    pattern = r"const getAvailableTabs = \(\) => \{.*?\};\s*const availableTabsMap = getAvailableTabs\(\);"
+    replacement = """
+  // Use activeSidebarTabs provided by the currently rendered dashboard
+  const availableTabsMap = activeSidebarTabs.reduce((acc, tab) => {
+    acc[tab.id] = tab.label;
+    return acc;
+  }, {});
+"""
+    new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+    
+    # Also add activeSidebarTabs to context destruction
+    new_content = new_content.replace(
+        "const { uiPreferences, setUiPreferences, notify, user } = useContext(AppContext);",
+        "const { uiPreferences, setUiPreferences, notify, user, activeSidebarTabs } = useContext(AppContext);"
+    )
 
-# Let's fix Trackers buttons to include Permissions (الصلاحيات)
-target_tracker_buttons = """<button
-                                onClick={() => handleOpenEditAccount(t, 'tracker')}"""
-replacement_tracker_buttons = """<button
-                                onClick={() => handleOpenPermissions({ ...t, role: 'tracker' })}
-                                className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 transition-all cursor-pointer text-[10px] flex items-center gap-1"
-                              >
-                                <Shield className="w-3.5 h-3.5" /> الصلاحيات
-                              </button>
-                              <button
-                                onClick={() => handleOpenEditAccount(t, 'tracker')}"""
-# Wait, Accountants also have `handleOpenEditAccount(t, 'accountant')`
-# I should ensure I only replace the tracker one if it's unique, or just rely on the 'tracker' string.
-content = content.replace(target_tracker_buttons, replacement_tracker_buttons)
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(new_content)
+    print("Updated DisplayPreferencesModal.jsx")
 
-# Modify the SelectedTeamDetails Modal to hide Members if not a team
-target_members_div = """{/* Members listing */}
-              <div className="pt-4 border-t border-slate-800">
-                <span className="text-[11px] font-black text-teal-600 dark:text-teal-400 block mb-3">👥 الكادر الإشرافي وأعضاء اللجنة الميدانية</span>"""
-replacement_members_div = """{/* Members listing */}
-              {(selectedTeamDetails.isTeam || selectedTeamDetails.role === 'team' || selectedTeamDetails.role === 'field_team') && (
-              <div className="pt-4 border-t border-slate-800">
-                <span className="text-[11px] font-black text-teal-600 dark:text-teal-400 block mb-3">👥 الكادر الإشرافي وأعضاء اللجنة الميدانية</span>"""
+def update_unified_sidebar():
+    filepath = "src/components/UnifiedSidebar.jsx"
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
 
-content = content.replace(target_members_div, replacement_members_div)
+    # Add setActiveSidebarTabs to context destruction
+    content = content.replace(
+        "const { user, hasPerm, globalLogout, uiPreferences } = React.useContext(AppContext);",
+        "const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs } = React.useContext(AppContext);"
+    )
 
-target_members_end = """</div>
-              </div>
-            </div>
+    # Insert useEffect to sync visible tabs
+    use_effect_code = """
+  React.useEffect(() => {
+    if (setActiveSidebarTabs) {
+      const visibleTabs = tabOrder
+        .filter(key => tabConfig[key] && tabConfig[key].showCondition)
+        .map(key => ({ id: key, label: tabConfig[key].label }));
+      setActiveSidebarTabs(visibleTabs);
+    }
+  }, [user?.permissions, uiPreferences?.tabOrder]);
+"""
+    if "setActiveSidebarTabs(visibleTabs)" not in content:
+        content = content.replace(
+            "const tabOrder = [...new Set([...savedTabOrder, ...Object.keys(tabConfig)])];",
+            "const tabOrder = [...new Set([...savedTabOrder, ...Object.keys(tabConfig)])];\n" + use_effect_code
+        )
 
-            <button
-              onClick={() => setSelectedTeamDetails(null)}"""
-replacement_members_end = """</div>
-              </div>
-              )}
-            </div>
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("Updated UnifiedSidebar.jsx")
 
-            <button
-              onClick={() => setSelectedTeamDetails(null)}"""
-content = content.replace(target_members_end, replacement_members_end)
+def update_accountant_panel():
+    filepath = "src/pages/AccountantPanel.jsx"
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
+    
+    # Add setActiveSidebarTabs to context destruction
+    content = content.replace(
+        "const { user, globalLogout, notify, setActiveSystem, hasPerm, directives, uiPreferences, setShowDisplayPrefsModal, establishments } = React.useContext(AppContext);",
+        "const { user, globalLogout, notify, setActiveSystem, hasPerm, directives, uiPreferences, setShowDisplayPrefsModal, establishments, setActiveSidebarTabs } = React.useContext(AppContext);"
+    )
 
-# Also let's rename the title of the modal
-target_modal_title = """<h3 className="text-sm font-black text-teal-600 dark:text-teal-400">🔍 بطاقة معلومات فريق التفتيش بالتفصيل</h3>"""
-replacement_modal_title = """<h3 className="text-sm font-black text-teal-600 dark:text-teal-400">🔍 بطاقة معلومات الحساب بالتفصيل</h3>"""
-content = content.replace(target_modal_title, replacement_modal_title)
+    # Insert useEffect to sync visible tabs
+    use_effect_code = """
+  React.useEffect(() => {
+    if (setActiveSidebarTabs) {
+      setActiveSidebarTabs(sortedTabs);
+    }
+  }, [user?.permissions, uiPreferences?.tabOrder]);
+"""
+    if "setActiveSidebarTabs(sortedTabs)" not in content:
+        content = content.replace(
+            "const sortedTabs = [...visibleTabs].sort((a, b) => {",
+            use_effect_code + "\n  const sortedTabs = [...visibleTabs].sort((a, b) => {"
+        )
+        
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("Updated AccountantPanel.jsx")
 
-# Let's change the labels in the modal to be generic
-target_modal_label1 = """<span className="text-[10px] text-slate-400 block mb-1">اسم اللجنة</span>"""
-replacement_modal_label1 = """<span className="text-[10px] text-slate-400 block mb-1">اسم الحساب</span>"""
-content = content.replace(target_modal_label1, replacement_modal_label1)
+def update_constants():
+    filepath = "src/utils/constants.jsx"
+    if not os.path.exists(filepath):
+        print("constants.jsx not found")
+        return
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
 
-# Ensure AccountModal.jsx also renames 'الأذونات'
-filepath_modal = "/Users/admin/web/منظومة الرقابة الصحية الرقمية/src/components/AccountModal.jsx"
-with open(filepath_modal, "r", encoding="utf-8") as f:
-    modal_content = f.read()
+    old_central_director = "central_director: ['authenticatePenalties', 'showFieldTeamsStats', 'editEst', 'deleteEst'],"
+    new_central_director = "central_director: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'showPublicEvalsPage', 'showDeliveryPage', 'showOperationsRoom', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'manageEstablishments', 'financialReports'],"
+    
+    content = content.replace(old_central_director, new_central_director)
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("Updated constants.jsx")
 
-modal_content = modal_content.replace("الأذونات", "الصلاحيات")
-modal_content = modal_content.replace("الأذينات", "الصلاحيات")
-modal_content = modal_content.replace("أذونات", "صلاحيات")
-modal_content = modal_content.replace("أذينات", "صلاحيات")
+def update_super_admin_panel():
+    filepath = "src/pages/SuperAdminPanel.jsx"
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
+    
+    # Remove the condition that hides 'establishments' tab for director/central_director
+    content = re.sub(
+        r"if\s*\(\s*tab\.id\s*===\s*'establishments'\s*&&\s*\(\s*selectedPermissionsAccount\?\.role\s*===\s*'director'\s*\|\|\s*selectedPermissionsAccount\?\.role\s*===\s*'central_director'\s*\)\s*\)\s*\{\s*return\s*false;\s*\}",
+        "",
+        content
+    )
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("Updated SuperAdminPanel.jsx")
 
-with open(filepath_modal, "w", encoding="utf-8") as f:
-    f.write(modal_content)
+def update_executive_portal():
+    filepath = "src/pages/ExecutivePortal.jsx"
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
 
-with open(filepath, "w", encoding="utf-8") as f:
-    f.write(content)
+    # Replace the dropdown option condition for establishments
+    content = content.replace(
+        "{(hasPerm('createEst') || hasPerm('editEst') || hasPerm('deleteEst')) && (",
+        "{hasPerm('manageEstablishments') && ("
+    )
 
-print("Done")
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("Updated ExecutivePortal.jsx")
+
+if __name__ == "__main__":
+    update_app_context()
+    update_display_prefs_modal()
+    update_unified_sidebar()
+    update_accountant_panel()
+    update_constants()
+    update_super_admin_panel()
+    update_executive_portal()

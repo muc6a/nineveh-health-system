@@ -1101,9 +1101,7 @@ export const SuperAdminPanel = () => {
 
                   <div className="flex-1 space-y-2">
                     {PERMISSIONS_TABS.filter(tab => {
-                      if (tab.id === 'establishments' && (selectedPermissionsAccount?.role === 'director' || selectedPermissionsAccount?.role === 'central_director')) {
-                        return false;
-                      }
+                      
                       return true;
                     }).map(tab => (
                       <button
@@ -2917,9 +2915,7 @@ export const SuperAdminPanel = () => {
 
                 <div className="flex-1 space-y-2">
                   {PERMISSIONS_TABS.filter(tab => {
-                    if (tab.id === 'establishments' && (selectedPermissionsAccount?.role === 'director' || selectedPermissionsAccount?.role === 'central_director')) {
-                      return false;
-                    }
+                    
                     return true;
                   }).map(tab => (
                     <button

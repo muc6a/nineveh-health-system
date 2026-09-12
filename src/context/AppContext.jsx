@@ -1019,6 +1019,7 @@ export const AppProvider = ({ children }) => {
 
 
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false);
+  const [activeSidebarTabs, setActiveSidebarTabs] = useState([]);
 
   useEffect(() => {
     localStorage.setItem('uiPreferences', JSON.stringify(uiPreferences));
@@ -1522,6 +1523,8 @@ export const AppProvider = ({ children }) => {
     setSoundPreferences,
       showDisplayPrefsModal,
       setShowDisplayPrefsModal,
+    activeSidebarTabs,
+    setActiveSidebarTabs,
       activityTypes,
       accountants,
       setAccountants,

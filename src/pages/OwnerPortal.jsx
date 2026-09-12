@@ -29,6 +29,18 @@ export const OwnerPortal = () => {
   const [isPrintingCert, setIsPrintingCert] = useState(false);
   
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  React.useEffect(() => {
+    if (setActiveSidebarTabs) {
+      setActiveSidebarTabs([
+        { id: 'dashboard', label: 'الرئيسية' },
+        { id: 'profile', label: 'بيانات المنشأة' },
+        { id: 'fines', label: 'المخالفات والغرامات' },
+        { id: 'history', label: 'سجل الزيارات' }
+      ]);
+    }
+  }, []);
+
   
   // Action Plan State
   const [resolvedTasks, setResolvedTasks] = useState([]);

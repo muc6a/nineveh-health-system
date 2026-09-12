@@ -13,7 +13,7 @@ const UnifiedSidebar = ({
   allowedTeams = [], selectedTeamId, setSelectedTeamId,
   incomingReqs = [], testingReqs = [] 
 }) => {
-  const { user, hasPerm, globalLogout, uiPreferences } = React.useContext(AppContext);
+  const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs } = React.useContext(AppContext);
 
   // Definition of all possible tabs
   const tabConfig = {
@@ -77,6 +77,16 @@ const UnifiedSidebar = ({
 
   const savedTabOrder = uiPreferences?.tabOrder || Object.keys(tabConfig);
   const tabOrder = [...new Set([...savedTabOrder, ...Object.keys(tabConfig)])];
+
+  React.useEffect(() => {
+    if (setActiveSidebarTabs) {
+      const visibleTabs = tabOrder
+        .filter(key => tabConfig[key] && tabConfig[key].showCondition)
+        .map(key => ({ id: key, label: tabConfig[key].label }));
+      setActiveSidebarTabs(visibleTabs);
+    }
+  }, [user?.permissions, uiPreferences?.tabOrder]);
+
 
   return (
     <>

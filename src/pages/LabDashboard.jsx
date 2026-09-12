@@ -21,6 +21,16 @@ export const LabDashboard = () => {
   const [manualSampleType, setManualSampleType] = useState('');
   const [manualSampleRemarks, setManualSampleRemarks] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  React.useEffect(() => {
+    if (setActiveSidebarTabs) {
+      setActiveSidebarTabs([
+        { id: 'stats', label: 'الرئيسية والتقارير' },
+        { id: 'testing', label: 'فحص العينات' }
+      ]);
+    }
+  }, []);
+
   // Listen for navigation events from NotificationBell
   React.useEffect(() => {
     const handleNav = () => {

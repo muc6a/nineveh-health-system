@@ -177,7 +177,7 @@ export const PERMISSION_DETAILS = {
 
 export const ROLE_CORE_BASICS = {
   director: ['showMainDashboard'],
-  central_director: ['authenticatePenalties', 'showFieldTeamsStats', 'editEst', 'deleteEst'],
+  central_director: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'showPublicEvalsPage', 'showDeliveryPage', 'showOperationsRoom', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'manageEstablishments', 'financialReports'],
   accountant: ['financialReports', 'payFines', 'dailyInventory'],
   financial_accountant: ['financialReports', 'payFines', 'dailyInventory'],
   team: ['showTeamDashboard', 'showSmartTasks', 'showSectorMap', 'createEst', 'addEval', 'manageEstablishments'],

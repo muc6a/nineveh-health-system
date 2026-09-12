@@ -351,6 +351,13 @@ export const AccountantPanel = () => {
     return tab.perm.some(p => hasPerm(p));
   });
 
+  
+  React.useEffect(() => {
+    if (setActiveSidebarTabs) {
+      setActiveSidebarTabs(sortedTabs);
+    }
+  }, [user?.permissions, uiPreferences?.tabOrder]);
+
   const sortedTabs = [...visibleTabs].sort((a, b) => {
     const order = uiPreferences?.tabOrder || [];
     const indexA = order.indexOf(a.id);
