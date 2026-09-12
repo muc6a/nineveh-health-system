@@ -11,6 +11,7 @@ import { ThreeDPieChart } from '../components/ThreeDPieChart';
 import { ThreeDBarChart } from '../components/ThreeDBarChart';
 import { NinevehMap } from '../components/NinevehMap';
 import OperationsRoom from '../components/OperationsRoom';
+import SmartTasks from '../components/SmartTasks';
 import { NotificationBell } from '../components/NotificationBell';
 import { CriticalAlertModal } from '../components/CriticalAlertModal';
 import { PrintableDailyReport } from '../components/PrintableDailyReport';
@@ -488,6 +489,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           <EstablishmentsManager />
         ) : (
           <>
+        {activeTab === 'smart_tasks' && <SmartTasks />}
         {activeTab === 'operations_room' && <OperationsRoom />}
 
         

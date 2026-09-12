@@ -25,6 +25,12 @@ const UnifiedSidebar = ({
       showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') || hasPerm('exportData'),
       onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('strategic'); }
     },
+    
+    smart_tasks: { 
+      label: 'المهام الذكية', 
+      icon: <CheckCircle className="w-4 h-4"/>, 
+      showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks')
+    },
     operations_room: {
       label: 'غرفة العمليات المركزية',
       icon: ShieldAlert,

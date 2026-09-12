@@ -14,6 +14,7 @@ import { EstablishmentModal } from '../components/EstablishmentModal';
 import { FinancialReports } from '../components/FinancialReports';
 import { LabManager } from '../components/LabManager';
 import OperationsRoom from '../components/OperationsRoom';
+import SmartTasks from '../components/SmartTasks';
 import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
@@ -953,7 +954,8 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
         {/* Tab C: Incidents Box */}
         
-        {activeTab === 'operations_room' && (hasPerm('showOperationsRoom') || hasPerm('executeSmartTasks') || hasPerm('showSectorMap') || hasPerm('manageSmartTasks')) && (
+        {activeTab === 'smart_tasks' && <SmartTasks />}
+            {activeTab === 'operations_room' && (hasPerm('showOperationsRoom') || hasPerm('executeSmartTasks') || hasPerm('showSectorMap') || hasPerm('manageSmartTasks')) && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
             <OperationsRoom />
           </div>
