@@ -471,7 +471,7 @@ export const AccountantPanel = () => {
                       setIsSidebarOpen(false);
                     }}
                     className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_summary"
+                      activeTab === "strategic"
                         ? "bg-teal-600 text-white shadow-md"
                         : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
                     }`}
@@ -488,7 +488,7 @@ export const AccountantPanel = () => {
                       setIsSidebarOpen(false);
                     }}
                     className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_directory"
+                      activeTab === "establishments"
                         ? "bg-teal-600 text-white shadow-md"
                         : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
                     }`}
@@ -644,7 +644,7 @@ export const AccountantPanel = () => {
         </div>
 
         {/* --- Tab: Dashboard & Reports --- */}
-        {activeTab === "dashboard" && (
+        {activeTab === "financials" && (
           <div className="space-y-6 animate-fade-in-up">
             <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
               <LayoutDashboard className="w-5 h-5 text-teal-500" />
@@ -1449,21 +1449,21 @@ export const AccountantPanel = () => {
           )}
 
         {/* Embedded Tabs */}
-        {activeTab === "ext_summary" && (
+        {activeTab === "strategic" && (
           <div className="w-full h-full min-h-[85vh]">
-            <TeamDashboard embeddedTab="summary" />
+            <TeamDashboard embeddedTab="strategic" />
           </div>
         )}
 
-        {activeTab === "ext_directory" && (
+        {activeTab === "establishments" && (
           <div className="w-full h-full min-h-[85vh]">
-            <TeamDashboard embeddedTab="directory" />
+            <TeamDashboard embeddedTab="establishments" />
           </div>
         )}
 
         {activeTab === "ext_reports" && (
           <div className="w-full h-full min-h-[85vh]">
-            <TeamDashboard embeddedTab="geographic" />
+            <TeamDashboard embeddedTab="team_reports" />
           </div>
         )}
 

@@ -50,7 +50,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
 
   // Watch for permission changes to set initial tab if it was null
   React.useEffect(() => {
-    if (activeTab === 'summary' && !hasPerm('showMainDashboard')) {
+    if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) {
       const newTab = getInitialTab();
       if (newTab) setActiveTab(newTab);
     }
@@ -507,7 +507,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         {/* Tab A: Summary Dashboard */}
-        {activeTab === 'summary' && hasPerm('showMainDashboard') && (
+        {activeTab === 'strategic' && hasPerm('showMainDashboard') && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
@@ -644,7 +644,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         {/* Tab F: Geographic View */}
-        {activeTab === 'geographic' && hasPerm('showReportsPage') && (
+        {activeTab === 'team_reports' && hasPerm('showReportsPage') && (
           <div className="h-full glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
             <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
               <Map className="text-teal-600" />
@@ -721,7 +721,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         )}
 
         {/* Tab C: Establishments Directory */}
-        {activeTab === 'directory' && hasPerm('manageEstablishments') && (
+        {activeTab === 'establishments' && hasPerm('manageEstablishments') && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>

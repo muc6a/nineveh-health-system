@@ -49,6 +49,30 @@ const UnifiedSidebar = ({
       showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage'),
       onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('complaints'); }
     },
+        team_reports: {
+      label: 'إحصائيات الميدان',
+      icon: Users,
+      iconColorClass: 'text-orange-500',
+      activeBgClass: 'bg-orange-600 text-white shadow-md shadow-orange-500/10',
+      showCondition: hasPerm('showFieldTeamsStats'),
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('team_reports'); }
+    },
+    map: {
+      label: 'الخريطة الرقابية',
+      icon: Database,
+      iconColorClass: 'text-emerald-500',
+      activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
+      showCondition: hasPerm('showSectorMap'),
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('map'); }
+    },
+    smart_tasks: {
+      label: 'المهام الذكية',
+      icon: CheckCircle,
+      iconColorClass: 'text-blue-500',
+      activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
+      showCondition: hasPerm('showSmartTasks'),
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('smart_tasks'); }
+    },
     lab_management: {
       label: 'المختبر',
       icon: FlaskConical,
