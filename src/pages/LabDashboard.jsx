@@ -196,10 +196,22 @@ export const LabDashboard = () => {
         <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
           <AnimatedLogo variant="sidebar" className="mb-6" />
 
+          {/* User Profile */}
+          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+                {user?.name}
+              </span>
+              <span className="text-[9px] text-teal-650 dark:text-teal-400 font-extrabold uppercase mt-0.5">
+                {user?.title || user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
+              </span>
+              <span className="text-[8px] text-slate-400 font-normal dir-ltr">{user?.email}</span>
+            </div>
+            <ThemeToggle />
+          </div>
+
           <div className="space-y-1 mb-6">
-            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
-              بوابة المختبر المركزي
-            </span>
             
             <button
               onClick={() => { setActiveTab('stats'); setIsSidebarOpen(false); }}
@@ -318,7 +330,7 @@ export const LabDashboard = () => {
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 custom-scrollbar">
-          <div className="max-w-6xl mx-auto space-y-6">
+          <div className="w-full max-w-full mx-auto space-y-6">
 
             {/* STATS */}
             {activeTab === 'stats' && (
