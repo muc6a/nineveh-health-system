@@ -29,7 +29,10 @@ const UnifiedSidebar = ({
     smart_tasks: { 
       label: 'المهام الذكية', 
       icon: CheckCircle, 
-      showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks')
+      iconColorClass: 'text-blue-500',
+      activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
+      showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks'),
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('smart_tasks'); }
     },
     operations_room: {
       label: 'غرفة العمليات المركزية',
