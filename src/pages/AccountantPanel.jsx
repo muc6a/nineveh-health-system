@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { TeamDashboard } from "./TeamDashboard";
 import { ExecutivePortal } from "./ExecutivePortal";
+import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const AccountantPanel = () => {
   const {
@@ -602,6 +603,13 @@ export const AccountantPanel = () => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+            <button 
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              <span className="font-bold text-[10px]">تخصيص العرض</span>
+            </button>
             <NotificationBell />
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>
@@ -642,11 +650,13 @@ export const AccountantPanel = () => {
             className="border-none p-0 scale-75 transform origin-center"
           />
           <div className="flex items-center gap-2">
-            <button
+            
+            <button 
               onClick={() => setShowDisplayPrefsModal(true)}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
               <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              <span className="font-bold text-[10px]">تخصيص العرض</span>
             </button>
             <NotificationBell />
             <ThemeToggle />

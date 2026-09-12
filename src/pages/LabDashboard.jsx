@@ -5,11 +5,13 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { GlobalHeader } from '../components/GlobalHeader';
 import { NotificationBell } from '../components/NotificationBell';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Plus } from 'lucide-react';
+import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Plus , Eye } from 'lucide-react';
+import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const LabDashboard = () => {
     const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('stats'); // 'stats', 'incoming', 'testing', 'archive'
+  const [activeTab, setActiveTab] = useState('stats');
+  const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false); // 'stats', 'incoming', 'testing', 'archive'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });
   const [resultStatus, setResultStatus] = useState('safe');
   const [resultNotes, setResultNotes] = useState('');

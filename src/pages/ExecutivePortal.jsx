@@ -17,7 +17,8 @@ import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { FinancialReports } from '../components/FinancialReports';
 import { LabManager } from '../components/LabManager';
-import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon } from 'lucide-react';
+import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon , Eye } from 'lucide-react';
+import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
 
@@ -452,6 +453,13 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+            <button 
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              <span className="font-bold text-[10px]">تخصيص العرض</span>
+            </button>
             <NotificationBell />
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
               <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>

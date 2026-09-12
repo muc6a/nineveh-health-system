@@ -7,10 +7,11 @@ import {
   Info, ArrowLeft, Download, Brain, TrendingUp, Award, Image as ImageIcon,
   CheckCircle2, XCircle, QrCode, Camera, FileText, ChevronRight, RefreshCw, Send,
   Settings, User, MapPin, Receipt, Activity, ShieldAlert, History
-} from 'lucide-react';
+, Eye } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { QRCodeSVG } from 'qrcode.react';
+import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const OwnerPortal = () => {
   const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, fines, penaltyRequests , globalLogout } = useContext(AppContext);

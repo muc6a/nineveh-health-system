@@ -4,7 +4,8 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { NotificationBell } from '../components/NotificationBell';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { usePersistentTab } from '../hooks/usePersistentTab';
-import { LogOut, Settings, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Target, Building, Save, ScanLine, Radar, RefreshCw, Search, ClipboardList, Clock } from 'lucide-react';
+import { LogOut, Settings, Camera, ShieldAlert, CheckCircle2, MapPin, X, Plus, Target, Building, Save, ScanLine, Radar, RefreshCw, Search, ClipboardList, Clock , Eye } from 'lucide-react';
+import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const TrackerDashboard = () => {
   const { user, establishments, addEstablishment, updateEstablishment, closureVerifications, setClosureVerifications, navigate, notify, addSystemNotification, setShowDisplayPrefsModal, tasks, setTasks , globalLogout } = useContext(AppContext);
@@ -280,6 +281,13 @@ export const TrackerDashboard = () => {
               <span className="text-slate-300 dark:text-slate-600">|</span>
               <WeatherWidget variant="minimal" />
             </div>
+            <button 
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              <span className="font-bold text-[10px]">تخصيص العرض</span>
+            </button>
             <NotificationBell />
             <ThemeToggle />
             <button 

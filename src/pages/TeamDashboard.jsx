@@ -16,6 +16,7 @@ import { LabManager } from '../components/LabManager';
 import OperationsRoom from '../components/OperationsRoom';
 import { FinesBookletModal } from '../components/FinesBookletModal';
 import { QRScannerModal } from '../components/QRScannerModal';
+import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const TeamDashboard = ({ embeddedTab }) => {
   const { navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests , hasPerm , tasks } = useContext(AppContext);
@@ -449,7 +450,14 @@ export const TeamDashboard = ({ embeddedTab }) => {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-              <NotificationBell />
+              <button 
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              <span className="font-bold text-[10px]">تخصيص العرض</span>
+            </button>
+            <NotificationBell />
               <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
                 <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 <span className="text-slate-300">|</span>
@@ -484,14 +492,15 @@ export const TeamDashboard = ({ embeddedTab }) => {
             </button>
             <AnimatedLogo variant="sidebar" className="border-none p-0 scale-75 transform origin-center" />
               <div className="flex items-center gap-2">
+                
                 <button 
-                  onClick={() => setShowDisplayPrefsModal(true)}
-                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group"
-                  title="تخصيص العرض والمظهر"
-                >
-                  <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-                </button>
-                <NotificationBell />
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
+              <span className="font-bold text-[10px]">تخصيص العرض</span>
+            </button>
+            <NotificationBell />
                 <ThemeToggle />
             </div>
           </div>
