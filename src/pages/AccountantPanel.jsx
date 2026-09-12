@@ -56,7 +56,8 @@ export const AccountantPanel = () => {
     dailyInventories,
     setDailyInventories,
     globalLogout,
-    hasPerm
+    hasPerm,
+    setActiveSidebarTabs
   } = useContext(AppContext);
 
   const [activeTab, setActiveTab] = useState("dashboard");
