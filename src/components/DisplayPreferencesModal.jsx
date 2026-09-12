@@ -10,15 +10,19 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
 
   const getAvailableTabs = () => {
     const tabs = {};
-    if (hasPerm('showMainDashboard')) tabs.strategic = 'اللوحة الرئيسية (الاستراتيجية)';
-    if (user?.teams?.length > 0 || hasPerm('showFieldTeamsStats')) tabs.team_reports = 'تقارير الفرق الميدانية';
-    if (hasPerm('authenticatePenalties')) tabs.operations_room = 'غرفة العمليات المركزية';
+    if (hasPerm('showMainDashboard') || hasPerm('financialReports')) tabs.strategic = 'اللوحة الرئيسية (الاستراتيجية)';
+    if (hasPerm('financialReports')) tabs.dashboard = 'التقارير';
+    if (hasPerm('showFieldTeamsStats')) tabs.team_reports = 'تقارير الفرق الميدانية';
+    if (hasPerm('showOperationsRoom') || hasPerm('authenticatePenalties') || hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) tabs.operations_room = 'غرفة العمليات المركزية';
     if (hasPerm('showReportsPage')) tabs.geographic = 'الخريطة الجغرافية';
-    if (hasPerm('showDirectivesPage')) tabs.directives = 'التبليغات والتوجيهات';
+    if (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) tabs.directives = 'التبليغات والتوجيهات';
     if (hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage')) tabs.complaints = 'شكاوى المواطنين';
     if (hasPerm('showLabPage')) tabs.lab_results = 'قرارات المختبر';
-    if (['director', 'central_director', 'admin'].includes(user?.role) && hasPerm('showMainDashboard')) tabs.financials = 'المالية';
-    if (hasPerm('createEst') || hasPerm('editEst') || hasPerm('deleteEst')) tabs.establishments = 'إدارة المنشآت';
+    if (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('authenticatePenalties')) tabs.lab_management = 'المختبر';
+    if (hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory')) tabs.financials = 'المالية';
+    if (hasPerm('manageEstablishments')) tabs.establishments = 'إدارة المنشآت';
+    if (hasPerm('payFines')) tabs.ext_financials = 'الغرامات والإيرادات';
+    if (hasPerm('dailyInventory')) tabs.reconciliation = 'جرد اليومية والمطابقة';
     return tabs;
   };
 

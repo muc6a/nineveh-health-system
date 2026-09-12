@@ -58,7 +58,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   const getInitialExecutiveTab = () => {
     if (hasPerm('showMainDashboard')) return 'strategic';
     if (hasPerm('showFieldTeamsStats')) return 'team_reports';
-    if (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) return 'operations_room';
+    if (hasPerm('showOperationsRoom')) return 'operations_room';
+    if (hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')) return 'lab_management';
     if (hasPerm('manageEstablishments')) return 'establishments';
     
     if (hasPerm('showDirectivesPage') || hasPerm('showPublicEvalsPage')) return 'unified_inbox';
@@ -72,8 +73,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   React.useEffect(() => {
     let needsRedirect = false;
     if (activeTab === 'strategic' && !hasPerm('showMainDashboard')) needsRedirect = true;
-    if (activeTab === 'operations_room' && !(hasPerm('showOperationsRoom') || hasPerm('showPublicEvalsPage'))) needsRedirect = true;
-    if (activeTab === 'lab_management' && !(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('authenticatePenalties'))) needsRedirect = true;
+    if (activeTab === 'operations_room' && !hasPerm('showOperationsRoom')) needsRedirect = true;
+    if (activeTab === 'lab_management' && !(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'))) needsRedirect = true;
     if (activeTab === 'financials' && !(hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory'))) needsRedirect = true;
     
     if (activeTab === 'directives' && !(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch'))) needsRedirect = true;

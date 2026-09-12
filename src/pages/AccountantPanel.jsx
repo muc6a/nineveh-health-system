@@ -340,6 +340,27 @@ export const AccountantPanel = () => {
     }
   };
 
+  const AVAILABLE_TABS = [
+    { id: 'dashboard', label: 'التقارير', icon: LayoutDashboard, perm: ['financialReports'] },
+    { id: 'ext_financials', label: 'الغرامات والإيرادات', icon: CreditCard, perm: ['payFines'] },
+    { id: 'reconciliation', label: 'جرد اليومية والمطابقة', icon: ClipboardList, perm: ['dailyInventory'] },
+    { id: 'directives', label: 'التبليغات', icon: Mail, perm: ['showDirectivesPage', 'sendDirective', 'replyDirective'] }
+  ];
+
+  const visibleTabs = AVAILABLE_TABS.filter(tab => {
+    return tab.perm.some(p => hasPerm(p));
+  });
+
+  const sortedTabs = [...visibleTabs].sort((a, b) => {
+    const order = uiPreferences?.tabOrder || [];
+    const indexA = order.indexOf(a.id);
+    const indexB = order.indexOf(b.id);
+    if (indexA === -1 && indexB === -1) return 0;
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+
   return (
     <div
       className={`min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 ${uiPreferences?.density === "compact" ? "ui-compact" : "ui-comfortable"}`}
@@ -381,82 +402,33 @@ export const AccountantPanel = () => {
           </div>
 
           <div className="space-y-1 mb-6">
-            
-
-            {hasPerm("financialReports") && (
-              <button
-              onClick={() => {
-                setActiveTab("dashboard");
-                setIsSidebarOpen(false);
-              }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                activeTab === "dashboard"
-                  ? "bg-teal-600 text-white shadow-md shadow-teal-500/10"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-              }`}
-            >
-              <LayoutDashboard className="w-4.5 h-4.5" />
-              <span>التقارير</span>
-            </button>
-            )}
-
-            {(hasPerm("showDirectivesPage") || hasPerm("sendDirective") || hasPerm("replyDirective")) && (
-              <button
-              onClick={() => {
-                setActiveTab("directives");
-                setIsSidebarOpen(false);
-              }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                activeTab === "directives"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/10"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Mail className="w-4.5 h-4.5" />
-                <span>التبليغات</span>
-              </div>
-              {unreadDirectivesCount > 0 && (
-                <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">
-                  {unreadDirectivesCount}
-                </span>
-              )}
-            </button>
-            )}
-
-            {hasPerm("dailyInventory") && (
-              <button
-              onClick={() => {
-                setActiveTab("reconciliation");
-                setIsSidebarOpen(false);
-              }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                activeTab === "reconciliation"
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-              }`}
-            >
-              <ClipboardList className="w-4.5 h-4.5" />
-              <span>جرد اليومية والمطابقة</span>
-            </button>
-            )}
-
-            {hasPerm("payFines") && (
-              <button
-                onClick={() => {
-                  setActiveTab("ext_financials");
-                  setIsSidebarOpen(false);
-                }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                  activeTab === "ext_financials"
-                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/10"
-                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                }`}
-              >
-                <CreditCard className="w-4.5 h-4.5" />
-                <span>الغرامات والإيرادات</span>
-              </button>
-            )}
+            {sortedTabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                    activeTab === tab.id
+                      ? "bg-teal-600 text-white shadow-md shadow-teal-500/10"
+                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-4.5 h-4.5" />
+                    <span>{tab.label}</span>
+                  </div>
+                  {tab.id === 'directives' && unreadDirectivesCount > 0 && (
+                    <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">
+                      {unreadDirectivesCount}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
 
             {hasPerm("viewComprehensiveFinancialReports") && (
               <>

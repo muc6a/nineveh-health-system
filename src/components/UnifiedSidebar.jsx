@@ -30,7 +30,7 @@ const UnifiedSidebar = ({
       icon: ShieldAlert,
       iconColorClass: 'text-fuchsia-500',
       activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
-      showCondition: hasPerm('showOperationsRoom') || hasPerm('showPublicEvalsPage'),
+      showCondition: hasPerm('showOperationsRoom'),
       onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('operations_room'); }
     },
     directives: {
@@ -54,7 +54,7 @@ const UnifiedSidebar = ({
       icon: FlaskConical,
       iconColorClass: 'text-indigo-500',
       activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
-      showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('authenticatePenalties'),
+      showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'),
       onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('lab_management'); }
     },
     financials: {
