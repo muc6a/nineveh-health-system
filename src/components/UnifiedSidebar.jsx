@@ -28,7 +28,7 @@ const UnifiedSidebar = ({
     
     smart_tasks: { 
       label: 'المهام الذكية', 
-      icon: <CheckCircle className="w-4 h-4"/>, 
+      icon: CheckCircle, 
       showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks')
     },
     operations_room: {
