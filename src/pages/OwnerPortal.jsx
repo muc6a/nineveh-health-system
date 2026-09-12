@@ -14,7 +14,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const OwnerPortal = () => {
-  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, fines, penaltyRequests , globalLogout } = useContext(AppContext);
+  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, fines, penaltyRequests , globalLogout, setActiveSidebarTabs } = useContext(AppContext);
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);

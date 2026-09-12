@@ -9,7 +9,7 @@ import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Che
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const LabDashboard = () => {
-    const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams } = useContext(AppContext);
+    const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams, setActiveSidebarTabs } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('stats');
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false); // 'stats', 'incoming', 'testing', 'archive'
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });
