@@ -36,8 +36,13 @@ function MapBounds({ establishments }) {
   const map = useMap();
   useEffect(() => {
     if (establishments && establishments.length > 0) {
-      const bounds = L.latLngBounds(establishments.map(e => [e.lat, e.lng]));
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      const validEsts = establishments.filter(e => e.lat && e.lng);
+      if (validEsts.length > 0) {
+        const bounds = L.latLngBounds(validEsts.map(e => [e.lat, e.lng]));
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      } else {
+        map.setView([36.34, 43.13], 10);
+      }
     } else {
       map.setView([36.34, 43.13], 10);
     }

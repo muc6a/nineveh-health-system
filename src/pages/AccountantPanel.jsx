@@ -380,9 +380,7 @@ export const AccountantPanel = () => {
           </div>
 
           <div className="space-y-1 mb-6">
-            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
-              بوابة المحاسبين (الإدارة المالية)
-            </span>
+            
 
             <button
               onClick={() => {
@@ -1101,70 +1099,8 @@ export const AccountantPanel = () => {
 
         {/* --- Tab: Directives --- */}
         {activeTab === "directives" && (
-          <div className="space-y-6 animate-fade-in-up">
-            <h3 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2 mb-4">
-              <Mail className="w-5 h-5 text-blue-500" />
-              التبليغات
-            </h3>
-
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm min-h-[50vh]">
-              {myDirectives.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center py-20">
-                  <Inbox className="w-16 h-16 text-slate-200 dark:text-slate-700 mb-4" />
-                  <p className="text-slate-500 font-bold">
-                    لا توجد تبليغات واردة حالياً.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {myDirectives.map((dir) => (
-                    <div
-                      key={dir.id}
-                      onClick={() => !dir.isRead && markDirectiveRead(dir.id)}
-                      className={`p-5 rounded-2xl border transition-all cursor-pointer ${
-                        !dir.isRead
-                          ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-md"
-                          : "bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 opacity-75"
-                      }`}
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-center gap-2">
-                          {!dir.isRead && (
-                            <span className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.8)]"></span>
-                          )}
-                          <h4
-                            className={`text-sm font-black ${!dir.isRead ? "text-blue-700 dark:text-blue-300" : "text-slate-700 dark:text-slate-300"}`}
-                          >
-                            {dir.subject}
-                          </h4>
-                        </div>
-                        <span className="text-[10px] text-slate-400 font-bold bg-white dark:bg-slate-800 px-2 py-1 rounded border border-slate-100 dark:border-slate-700 shadow-sm">
-                          {new Date(dir.date).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-white/50 dark:border-slate-700/50">
-                        {dir.content}
-                      </p>
-                      <div className="mt-3 flex items-center justify-between text-[10px] font-bold">
-                        <span className="text-slate-500">
-                          المرسل: الإدارة المركزية (
-                          {dir.senderName || "غير معروف"})
-                        </span>
-                        {dir.isRead && (
-                          <span className="text-emerald-500 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> مقروء
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div className="w-full h-full min-h-[85vh]">
+            <TeamDashboard embeddedTab="directives" />
           </div>
         )}
 
