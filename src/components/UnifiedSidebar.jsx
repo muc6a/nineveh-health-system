@@ -107,15 +107,6 @@ const UnifiedSidebar = ({
                   {user?.title || user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
                 </span>
               </div>
-              <ThemeToggle />
-            </div>
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-              <button 
-                onClick={globalLogout}
-                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
-              >
-                تسجيل الخروج
-              </button>
             </div>
           </div>
 
@@ -155,6 +146,18 @@ const UnifiedSidebar = ({
         </div>
 
         
+        {/* Bottom Controls */}
+          <div className="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between gap-2">
+            <button 
+              onClick={globalLogout}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border border-rose-100 dark:border-rose-900/30"
+            >
+              تسجيل الخروج
+            </button>
+            <div className="p-1 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50">
+              <ThemeToggle />
+            </div>
+          </div>
       </aside>
     </>
   );

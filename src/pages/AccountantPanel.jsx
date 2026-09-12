@@ -150,6 +150,7 @@ export const AccountantPanel = () => {
   const myDirectives = (directives || []).filter((d) => {
     if (d.target === "all") return true;
     if (d.target === "teams" && user?.role === "team_leader") return true;
+    if (d.target === "accountants" || d.target === "accountant" || d.target === "financial") return true;
     if (d.target === "specific" && d.targetSectors?.includes(targetSector))
       return true;
     return false;
@@ -375,15 +376,6 @@ export const AccountantPanel = () => {
                   {user?.role === "financial_accountant" ? "محاسب مالي" : "محاسب الدائرة"} {user?.sector ? ` - قطاع ${user.sector}` : ''}
                 </span>
               </div>
-              <ThemeToggle />
-            </div>
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-              <button 
-                onClick={globalLogout}
-                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
-              >
-                تسجيل الخروج
-              </button>
             </div>
           </div>
 
@@ -394,6 +386,7 @@ export const AccountantPanel = () => {
 
             <button
               onClick={() => {
+                setActiveTab("dashboard");
                 setIsSidebarOpen(false);
               }}
               className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
@@ -467,19 +460,7 @@ export const AccountantPanel = () => {
               </>
             )}
 
-            {/* Dynamic Extra Permissions Tabs */}
-            {(hasPerm("manageEstablishments") ||
-              hasPerm("showReportsPage") ||
-              hasPerm("showMainDashboard") ||
-              hasPerm("showSectorMap") ||
-              hasPerm("showSmartTasks") ||
-              hasPerm("showDeliveryPage")) && (
-              <>
-                <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
-                <span className="text-[11px] font-bold text-teal-500 dark:text-teal-400 uppercase tracking-wider block px-3 mb-2 flex items-center gap-2">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  صلاحيات إضافية (ممنوحة)
-                </span>
+            
 
                 {hasPerm("showMainDashboard") && (
                   <button
@@ -565,12 +546,23 @@ export const AccountantPanel = () => {
                     <span>مهام اليوم الذكية</span>
                   </button>
                 )}
-              </>
-            )}
+
           </div>
         </div>
 
         
+        {/* Bottom Controls */}
+          <div className="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between gap-2">
+            <button 
+              onClick={globalLogout}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border border-rose-100 dark:border-rose-900/30"
+            >
+              تسجيل الخروج
+            </button>
+            <div className="p-1 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50">
+              <ThemeToggle />
+            </div>
+          </div>
       </aside>
 
       {/* Main Panel Canvas */}
@@ -1522,7 +1514,7 @@ export const AccountantPanel = () => {
 
         {activeTab === "ext_reports" && (
           <div className="w-full h-full min-h-[85vh]">
-            <TeamDashboard embeddedTab="reports" />
+            <TeamDashboard embeddedTab="geographic" />
           </div>
         )}
 
