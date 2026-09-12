@@ -258,7 +258,7 @@ const INITIAL_REPORTS = [
   }
 ];
 const DEFAULT_PERMISSIONS = {
-  manageEstablishments: true,
+  manageEstablishments: false,
   createEst: true,
   editEst: true,
   deleteEst: false,
@@ -304,7 +304,6 @@ export const ROLE_PERMISSIONS = {
     showReportsPage: true,
     showDirectivesPage: true,
     sendDirective: true,
-    manageEstablishments: true,
     notify_closures: true,
     notify_inspections: true,
     notify_directives: true,
@@ -315,6 +314,7 @@ export const ROLE_PERMISSIONS = {
   },
   team: {
     ...DEFAULT_PERMISSIONS,
+    manageEstablishments: true,
     showFieldTeamsStats: true,
     showDirectivesPage: true,
     replyDirective: true,
