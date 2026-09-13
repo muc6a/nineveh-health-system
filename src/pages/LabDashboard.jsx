@@ -22,26 +22,54 @@ export const LabDashboard = () => {
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false); // 'stats', 'incoming', 'testing', 'archive'
 
   React.useEffect(() => {
-    // If activeTab is no longer permitted, fallback
+    let isAllowed = false;
     const canSeeStats = hasPerm('viewLabReports');
     const canSeeIncoming = hasPerm('receiveSamples');
     const canSeeTesting = hasPerm('enterLabResults');
-    
     const canSeeArchive = hasPerm('labArchive');
     
-    let isAllowed = false;
+    const canSeeDashboard = hasPerm('financialReports');
+    const canSeeFines = hasPerm('payFines');
+    const canSeeInventory = hasPerm('dailyInventory');
+    const canSeeCompReports = hasPerm('viewComprehensiveFinancialReports');
+    
+    const canSeeStrategic = hasPerm('showMainDashboard') || hasPerm('showReportsPage');
+    const canSeeSmartTasks = hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks');
+    const canSeeOps = hasPerm('authenticatePenalties');
+    const canSeeDirectives = hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective');
+    const canSeeComplaints = hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage');
+    const canSeeEst = hasPerm('manageEstablishments');
+
     if (activeTab === 'stats' && canSeeStats) isAllowed = true;
     if (activeTab === 'incoming' && canSeeIncoming) isAllowed = true;
     if (activeTab === 'testing' && canSeeTesting) isAllowed = true;
-    
     if (activeTab === 'archive' && canSeeArchive) isAllowed = true;
+    if (activeTab === 'financials' && canSeeDashboard) isAllowed = true;
+    if (activeTab === 'ext_financials' && canSeeFines) isAllowed = true;
+    if (activeTab === 'reconciliation' && canSeeInventory) isAllowed = true;
+    if (activeTab === 'comprehensive_reports' && canSeeCompReports) isAllowed = true;
+    if (activeTab === 'strategic' && canSeeStrategic) isAllowed = true;
+    if (activeTab === 'smart_tasks' && canSeeSmartTasks) isAllowed = true;
+    if (activeTab === 'operations_room' && canSeeOps) isAllowed = true;
+    if (activeTab === 'directives' && canSeeDirectives) isAllowed = true;
+    if (activeTab === 'complaints' && canSeeComplaints) isAllowed = true;
+    if (activeTab === 'establishments' && canSeeEst) isAllowed = true;
 
     if (!isAllowed) {
        if (canSeeStats) setActiveTab('stats');
        else if (canSeeIncoming) setActiveTab('incoming');
        else if (canSeeTesting) setActiveTab('testing');
-       
        else if (canSeeArchive) setActiveTab('archive');
+       else if (canSeeDashboard) setActiveTab('financials');
+       else if (canSeeFines) setActiveTab('ext_financials');
+       else if (canSeeInventory) setActiveTab('reconciliation');
+       else if (canSeeCompReports) setActiveTab('comprehensive_reports');
+       else if (canSeeStrategic) setActiveTab('strategic');
+       else if (canSeeSmartTasks) setActiveTab('smart_tasks');
+       else if (canSeeOps) setActiveTab('operations_room');
+       else if (canSeeDirectives) setActiveTab('directives');
+       else if (canSeeComplaints) setActiveTab('complaints');
+       else if (canSeeEst) setActiveTab('establishments');
     }
   }, [user?.permissions, activeTab]);
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });

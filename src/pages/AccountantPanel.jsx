@@ -62,7 +62,7 @@ export const AccountantPanel = () => {
     if (activeTab === 'incoming' && canSeeIncoming) isAllowed = true;
     if (activeTab === 'testing' && canSeeTesting) isAllowed = true;
     if (activeTab === 'archive' && canSeeArchive) isAllowed = true;
-    if (activeTab === 'dashboard' && canSeeDashboard) isAllowed = true;
+    if (activeTab === 'financials' && canSeeDashboard) isAllowed = true;
     if (activeTab === 'ext_financials' && canSeeFines) isAllowed = true;
     if (activeTab === 'reconciliation' && canSeeInventory) isAllowed = true;
     if (activeTab === 'comprehensive_reports' && canSeeCompReports) isAllowed = true;
@@ -78,10 +78,12 @@ export const AccountantPanel = () => {
        else if (canSeeIncoming) setActiveTab('incoming');
        else if (canSeeTesting) setActiveTab('testing');
        else if (canSeeArchive) setActiveTab('archive');
-       else if (canSeeDashboard) setActiveTab('dashboard');
+       else if (canSeeDashboard) setActiveTab('financials');
        else if (canSeeFines) setActiveTab('ext_financials');
        else if (canSeeInventory) setActiveTab('reconciliation');
+       else if (canSeeCompReports) setActiveTab('comprehensive_reports');
        else if (canSeeStrategic) setActiveTab('strategic');
+       else if (canSeeSmartTasks) setActiveTab('smart_tasks');
        else if (canSeeOps) setActiveTab('operations_room');
        else if (canSeeDirectives) setActiveTab('directives');
        else if (canSeeComplaints) setActiveTab('complaints');
