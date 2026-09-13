@@ -6,6 +6,9 @@ import { TeamDashboard } from '../pages/TeamDashboard';
 import SmartTasks from '../components/SmartTasks';
 import OperationsRoom from '../components/OperationsRoom';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
+
+import { FinancialReports } from '../components/FinancialReports';
+
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';

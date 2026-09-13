@@ -5,6 +5,13 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { WeatherWidget } from "../components/WeatherWidget";
 import { NotificationBell } from "../components/NotificationBell";
 import UnifiedSidebar from '../components/UnifiedSidebar';
+
+import SmartTasks from '../components/SmartTasks';
+import OperationsRoom from '../components/OperationsRoom';
+import { EstablishmentsManager } from '../components/EstablishmentsManager';
+import { FinancialReports } from '../components/FinancialReports';
+import { LabManager } from '../components/LabManager';
+
 import { AnimatedLogo } from "../components/AnimatedLogo";
 import { TeamDashboard } from "./TeamDashboard";
 import { ExecutivePortal } from "./ExecutivePortal";
