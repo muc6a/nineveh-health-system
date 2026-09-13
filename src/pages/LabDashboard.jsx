@@ -5,7 +5,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { GlobalHeader } from '../components/GlobalHeader';
 import { NotificationBell } from '../components/NotificationBell';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Plus , Eye } from 'lucide-react';
+import { FileEdit, FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Plus , Eye } from 'lucide-react';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const LabDashboard = () => {
