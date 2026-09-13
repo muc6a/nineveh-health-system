@@ -3,6 +3,7 @@ import { AppContext } from "../context/AppContext";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { WeatherWidget } from "../components/WeatherWidget";
 import { NotificationBell } from "../components/NotificationBell";
+import UnifiedSidebar from '../components/UnifiedSidebar';
 import { AnimatedLogo } from "../components/AnimatedLogo";
 import {
   LogOut,
@@ -404,195 +405,21 @@ export const AccountantPanel = () => {
         "--ui-body-size": uiPreferences?.bodySize || "12px",
       }}
     >
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Fixed Sticky Sidebar */}
-      <aside
-        className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
-        } right-0`}
-      >
-        <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
-          <AnimatedLogo variant="sidebar" className="mb-6" />
-
-          {/* User Profile */}
-          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {user?.name}
-                </span>
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
-                  {user?.role === "financial_accountant" ? "محاسب مالي" : "محاسب الدائرة"} {user?.sector ? ` - قطاع ${user.sector}` : ''}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-1 mb-6">
-            {sortedTabs.map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setIsSidebarOpen(false);
-                  }}
-                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                    activeTab === tab.id
-                      ? "bg-teal-600 text-white shadow-md shadow-teal-500/10"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4.5 h-4.5" />
-                    <span>{tab.label}</span>
-                  </div>
-                  {tab.id === 'directives' && unreadDirectivesCount > 0 && (
-                    <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">
-                      {unreadDirectivesCount}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-
-            {hasPerm("viewComprehensiveFinancialReports") && (
-              <>
-                <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
-                <span className="text-[11px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider block px-3 mb-2 flex items-center gap-2">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  صلاحيات رقابية متقدمة
-                </span>
-                <button
-                  onClick={() => {
-                    setActiveTab("comprehensive_reports");
-                    setIsSidebarOpen(false);
-                  }}
-                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                    activeTab === "comprehensive_reports"
-                      ? "bg-amber-600 text-white shadow-md shadow-amber-500/10"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  }`}
-                >
-                  <Activity className="w-4.5 h-4.5" />
-                  <span>التقارير المالية الشاملة</span>
-                </button>
-              </>
-            )}
-
-            
-
-                {hasPerm("showMainDashboard") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_summary");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "strategic"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4.5 h-4.5" />
-                    <span>اللوحة الاستراتيجية</span>
-                  </button>
-                )}
-
-                {hasPerm("manageEstablishments") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_directory");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "establishments"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <Building className="w-4.5 h-4.5" />
-                    <span>إدارة المنشآت</span>
-                  </button>
-                )}
-
-                {hasPerm("showReportsPage") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_reports");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_reports"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <Compass className="w-4.5 h-4.5" />
-                    <span>التقارير الجغرافية</span>
-                  </button>
-                )}
-
-                {hasPerm("showSectorMap") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_map");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_map"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <Map className="w-4.5 h-4.5" />
-                    <span>خريطة القطاع</span>
-                  </button>
-                )}
-
-                {hasPerm("showSmartTasks") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_smart_tasks");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_smart_tasks"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <CheckSquare className="w-4.5 h-4.5" />
-                    <span>مهام اليوم الذكية</span>
-                  </button>
-                )}
-
-          </div>
-        </div>
-
-        
-        {/* Bottom Controls */}
-          <div className="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between gap-2">
-            <button 
-              onClick={globalLogout}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border border-rose-100 dark:border-rose-900/30"
-            >
-              تسجيل الخروج
-            </button>
-            <div className="p-1 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50">
-              <ThemeToggle />
-            </div>
-          </div>
-      </aside>
+      <UnifiedSidebar 
+        isSidebarOpen={isSidebarOpen} 
+        setIsSidebarOpen={setIsSidebarOpen} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        customTabs={[
+          ...sortedTabs.map(t => ({ id: t.id, label: t.label, icon: t.icon, activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/10', onClick: () => setActiveTab(t.id), showCondition: true, badge: t.id === 'directives' ? unreadDirectivesCount : 0 })),
+          { id: 'comprehensive_reports', label: 'التقارير المالية الشاملة', icon: FileSearch, activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', iconColorClass: 'text-amber-500', onClick: () => setActiveTab('comprehensive_reports'), showCondition: hasPerm('viewComprehensiveFinancialReports') },
+          { id: 'strategic', label: 'اللوحة الاستراتيجية', icon: TrendingUp, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('strategic'), showCondition: hasPerm('showMainDashboard') },
+          { id: 'establishments', label: 'إدارة المنشآت', icon: Building, activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', iconColorClass: 'text-blue-500', onClick: () => setActiveTab('establishments'), showCondition: hasPerm('manageEstablishments') },
+          { id: 'ext_reports', label: 'تقارير الفرق الشاملة', icon: BarChart3, activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10', iconColorClass: 'text-fuchsia-500', onClick: () => setActiveTab('ext_reports'), showCondition: hasPerm('showReportsPage') },
+          { id: 'ext_map', label: 'الخارطة الجغرافية', icon: FileSearch, activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('ext_map'), showCondition: hasPerm('showSectorMap') },
+          { id: 'ext_smart_tasks', label: 'المهام الذكية', icon: CheckCircle, activeBgClass: 'bg-violet-600 text-white shadow-md shadow-violet-500/10', iconColorClass: 'text-violet-500', onClick: () => setActiveTab('ext_smart_tasks'), showCondition: hasPerm('showSmartTasks') }
+        ]}
+      />
 
       {/* Main Panel Canvas */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">

@@ -11,7 +11,8 @@ const UnifiedSidebar = ({
   executiveTab, setExecutiveTab, 
   isSidebarOpen, setIsSidebarOpen,
   allowedTeams = [], selectedTeamId, setSelectedTeamId,
-  incomingReqs = [], testingReqs = [] 
+  incomingReqs = [], testingReqs = [],
+  customTabs = null
 }) => {
   const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs } = React.useContext(AppContext);
 
@@ -134,8 +135,32 @@ const UnifiedSidebar = ({
               الرئيسية
             </span>
 
-            {tabOrder.map(tabKey => {
-              const config = tabConfig[tabKey];
+            {(customTabs ? customTabs : tabOrder.map(k => ({ id: k, ...tabConfig[k] }))).map(tab => {
+              if (customTabs) {
+                 if (tab.showCondition === false) return null;
+                 const isCurrentlyActive = activeTab === tab.id;
+                 return (
+                  <button
+                    key={tab.id}
+                    onClick={() => { tab.onClick(); setIsSidebarOpen(false); }}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+                      isCurrentlyActive
+                        ? tab.activeBgClass || 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    {tab.icon && <tab.icon className={`w-4.5 h-4.5 ${isCurrentlyActive ? '' : (tab.iconColorClass || '')}`} />}
+                    <span>{tab.label}</span>
+                    {tab.badge > 0 && (
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full mr-auto ${isCurrentlyActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>{tab.badge}</span>
+                    )}
+                  </button>
+                 );
+              }
+
+              // Normal tabConfig rendering
+              const tabKey = tab.id;
+              const config = tab;
               if (!config || !config.showCondition) return null;
 
               let isCurrentlyActive = (executiveTab && activeTab) 

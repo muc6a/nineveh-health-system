@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
+import UnifiedSidebar from '../components/UnifiedSidebar';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
@@ -18,21 +19,21 @@ export const LabDashboard = () => {
     const canSeeStats = hasPerm('viewLabReports');
     const canSeeIncoming = hasPerm('receiveSamples');
     const canSeeTesting = hasPerm('enterLabResults');
-    const canSeeEdit = hasPerm('editLabResults');
+    
     const canSeeArchive = hasPerm('labArchive');
     
     let isAllowed = false;
     if (activeTab === 'stats' && canSeeStats) isAllowed = true;
     if (activeTab === 'incoming' && canSeeIncoming) isAllowed = true;
     if (activeTab === 'testing' && canSeeTesting) isAllowed = true;
-    if (activeTab === 'edit' && canSeeEdit) isAllowed = true;
+    
     if (activeTab === 'archive' && canSeeArchive) isAllowed = true;
 
     if (!isAllowed) {
        if (canSeeStats) setActiveTab('stats');
        else if (canSeeIncoming) setActiveTab('incoming');
        else if (canSeeTesting) setActiveTab('testing');
-       else if (canSeeEdit) setActiveTab('edit');
+       
        else if (canSeeArchive) setActiveTab('archive');
     }
   }, [user?.permissions, activeTab]);
@@ -217,129 +218,18 @@ export const LabDashboard = () => {
       dir="rtl"
     >
       
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Fixed Sticky Sidebar */}
-      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
-        isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
-      } right-0`}>
-        <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
-          <AnimatedLogo variant="sidebar" className="mb-6" />
-
-                    {/* User Profile */}
-          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {user?.name}
-                </span>
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
-                  {user?.title || user?.role === 'lab' ? 'المختبر المركزي العام' : user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-1 mb-6">
-            
-            {hasPerm('viewLabReports') && (<button
-              onClick={() => { setActiveTab('stats'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                activeTab === 'stats'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <BarChart3 className="w-4.5 h-4.5" />
-              <span>التقارير المختبرية والرقابية للعينات</span>
-            </button>)}
-            
-            {hasPerm('receiveSamples') && (<button
-              onClick={() => { setActiveTab('incoming'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                activeTab === 'incoming'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Clock className="w-4.5 h-4.5" />
-                <span>الطلبات الواردة</span>
-              </div>
-              {incomingReqs.length > 0 && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'incoming' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700'}`}>{incomingReqs.length}</span>
-              )}
-            </button>)}
-
-            {hasPerm('enterLabResults') && (<button
-              onClick={() => { setActiveTab('testing'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                activeTab === 'testing'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <FlaskConical className="w-4.5 h-4.5" />
-                <span>إدخال نتائج الفحص</span>
-              </div>
-              {testingReqs.length > 0 && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'testing' ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-700'}`}>{testingReqs.length}</span>
-              )}
-            </button>)}
-
-            
-            {hasPerm('editLabResults') && (
-            <button
-              onClick={() => { setActiveTab('edit'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                activeTab === 'edit'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <FileEdit className="w-4.5 h-4.5" />
-                <span>تعديل النتائج</span>
-              </div>
-            </button>
-            )}
-
-            {hasPerm('labArchive') && (<button
-              onClick={() => { setActiveTab('archive'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                activeTab === 'archive'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <Archive className="w-4.5 h-4.5" />
-              <span>الأرشيف المختبري</span>
-            </button>)}
-          </div>
-        </div>
-
-        
-        {/* Bottom Controls */}
-          <div className="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between gap-2">
-            <button 
-              onClick={globalLogout}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border border-rose-100 dark:border-rose-900/30"
-            >
-              تسجيل الخروج
-            </button>
-            <div className="p-1 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50">
-              <ThemeToggle />
-            </div>
-          </div>
-      </aside>
+      <UnifiedSidebar 
+        isSidebarOpen={isSidebarOpen} 
+        setIsSidebarOpen={setIsSidebarOpen} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        customTabs={[
+          { id: 'stats', label: 'التقارير المختبرية والرقابية للعينات', icon: BarChart3, perm: 'viewLabReports', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('stats'), showCondition: hasPerm('viewLabReports') },
+          { id: 'incoming', label: 'استلام العينات', icon: Clock, perm: 'receiveSamples', badge: incomingReqs.length, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-amber-500', onClick: () => setActiveTab('incoming'), showCondition: hasPerm('receiveSamples') },
+          { id: 'testing', label: 'إدخال نتائج الفحص', icon: FlaskConical, perm: 'enterLabResults', badge: testingReqs.length, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('testing'), showCondition: hasPerm('enterLabResults') },
+          { id: 'archive', label: 'الأرشيف المختبري', icon: Archive, perm: 'labArchive', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-slate-500', onClick: () => setActiveTab('archive'), showCondition: hasPerm('labArchive') }
+        ]}
+      />
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
@@ -360,7 +250,6 @@ export const LabDashboard = () => {
               activeTab === 'stats' ? 'التقارير المختبرية والرقابية للعينات' :
               activeTab === 'incoming' ? 'الطلبات الواردة' :
               activeTab === 'testing' ? 'إدخال نتائج الفحص' :
-              activeTab === 'edit' ? 'تعديل النتائج' :
               activeTab === 'archive' ? 'الأرشيف المختبري' : 'المختبر المركزي'
             }
             subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
@@ -532,14 +421,7 @@ export const LabDashboard = () => {
 
             {/* ARCHIVE */}
             
-            {activeTab === 'edit' && hasPerm('editLabResults') && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
-                <div className="text-center p-12 text-slate-400 font-bold bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5">
-                  <FileEdit className="w-12 h-12 mx-auto mb-4 text-indigo-500/50" />
-                  <p>قسم تعديل النتائج قيد التطوير...</p>
-                </div>
-              </div>
-            )}
+            
     
             {activeTab === 'archive' && hasPerm('labArchive') && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">

@@ -1,33 +1,40 @@
 import re
 
-def patch_lab():
+def patch():
     path = "src/pages/LabDashboard.jsx"
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Add Edit Tab button to sidebar
-    edit_btn = """
-            {hasPerm('editLabResults') && (
-              <button
-                onClick={() => { setActiveTab('edit'); setIsSidebarOpen(false); }}
-                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                  activeTab === 'edit'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <FileEdit className="w-4.5 h-4.5" />
-                  <span>تعديل النتائج</span>
-                </div>
-              </button>
-            )}
-    """
+    # Import UnifiedSidebar and icons (if not imported)
+    if "import UnifiedSidebar" not in content:
+        content = content.replace("import { AppContext }", "import { AppContext } from '../context/AppContext';\nimport UnifiedSidebar from '../components/UnifiedSidebar';")
+
+    # Replace <aside> ... </aside>
+    sidebar_pattern = r"\{\/\* Mobile Overlay \*\/\}.*?</aside>"
     
-    # We need to wrap each button with {hasPerm(...)}
-    # Let's just use a regex to replace the whole sidebar buttons section.
-    # To do this safely, I will write a Node script to replace it precisely or use multi_replace_file_content if I can find the precise block.
-    pass
+    # We must provide the correct icons from lucide-react. The unified sidebar imports them?
+    # Wait, UnifiedSidebar renders `<tab.icon />`. We need to pass the actual React components in customTabs!
+    # Let's import the icons in UnifiedSidebar? No, customTabs can just pass the components.
+    # In LabDashboard, we have BarChart3, Clock, FlaskConical, Archive.
+    
+    new_sidebar = """
+      <UnifiedSidebar 
+        isSidebarOpen={isSidebarOpen} 
+        setIsSidebarOpen={setIsSidebarOpen} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        customTabs={[
+          { id: 'stats', label: 'التقارير المختبرية والرقابية للعينات', icon: BarChart3, perm: 'viewLabReports', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('stats'), showCondition: hasPerm('viewLabReports') },
+          { id: 'incoming', label: 'استلام العينات', icon: Clock, perm: 'receiveSamples', badge: incomingReqs.length, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-amber-500', onClick: () => setActiveTab('incoming'), showCondition: hasPerm('receiveSamples') },
+          { id: 'testing', label: 'إدخال نتائج الفحص', icon: FlaskConical, perm: 'enterLabResults', badge: testingReqs.length, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('testing'), showCondition: hasPerm('enterLabResults') },
+          { id: 'archive', label: 'الأرشيف المختبري', icon: Archive, perm: 'labArchive', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-slate-500', onClick: () => setActiveTab('archive'), showCondition: hasPerm('labArchive') }
+        ]}
+      />
+"""
+    content = re.sub(sidebar_pattern, new_sidebar.strip(), content, flags=re.DOTALL)
+    
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
 
 if __name__ == "__main__":
-    patch_lab()
+    patch()
