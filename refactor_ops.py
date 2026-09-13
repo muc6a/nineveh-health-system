@@ -1,19 +1,18 @@
 import re
 
-def update_ops():
+def update_operations_room():
     path = "src/components/OperationsRoom.jsx"
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
 
+    # 1. Add imports
     if "import NinevehMap" not in content:
         content = content.replace(
             "import { FinancialReports } from './FinancialReports';",
             "import { FinancialReports } from './FinancialReports';\nimport NinevehMap from './NinevehMap';"
         )
-
-    # We need to insert the new tabs inside the `flex gap-4` div.
-    # The div ends with `</div>` just before `)}`
     
+    # 2. Add Tab buttons for map and smart_tasks
     tabs_html = """
         {(user?.permissions?.showSectorMap || user?.role === 'admin' || user?.role === 'director') && (
           <button onClick={() => setActiveTab('map')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'map' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
@@ -26,16 +25,19 @@ def update_ops():
           </button>
         )}
       </div>
-      )}"""
-      
-    # Replace the closing of the tabs div
-    content = content.replace("</div>\n      )}", tabs_html)
+    """
     
+    # Replace the end of the tabs div with our new tabs
+    if "الخريطة الشاملة" not in content:
+        content = content.replace("</div>\n      )}", tabs_html)
+    
+    # 3. Add Content for map and smart_tasks
+    # Add map content
     map_content = """
       {(user?.permissions?.showSectorMap || user?.role === 'admin' || user?.role === 'director') && activeTab === 'map' && (
         <div className="space-y-6">
           <div className="glassmorphic-card p-6 border border-indigo-500/20 h-[800px]">
-            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4">الخريطة الرقابية والتفاعلية الموحدة</h3>
+            <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4">الخريطة الرقابية والتفاعلية המوحدة</h3>
             <NinevehMap 
               establishments={user?.sector ? establishments.filter(e => e.sector === user.sector) : establishments} 
               teams={teams}
@@ -49,6 +51,7 @@ def update_ops():
           <div className="glassmorphic-card p-6 border border-blue-500/20">
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-4">نظام توجيه المهام (Task Dispatch)</h3>
             
+            {/* If user is management, show dispatch UI */}
             {(user?.permissions?.manageSmartTasks || user?.role === 'admin' || user?.role === 'director') ? (
               <div className="space-y-4">
                 <p className="text-xs font-bold text-slate-500">قم بتوجيه أوامر التفتيش المباشرة للفرق الميدانية</p>
@@ -82,6 +85,7 @@ def update_ops():
             ) : (
               <div className="space-y-4">
                 <p className="text-xs font-bold text-slate-500">المهام الموجهة إليك من غرفة العمليات</p>
+                {/* Mock tasks for team */}
                 <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-2xl border border-red-200 dark:border-red-900/30 flex justify-between items-center">
                    <div>
                       <h4 className="font-black text-red-700 dark:text-red-400 text-sm">مهمة تفتيش عاجلة: مطعم وكافيه الأمراء</h4>
@@ -96,22 +100,16 @@ def update_ops():
           </div>
         </div>
       )}
-"""
+    """
     
-    # Insert new content before the final closing div and brace
     if "نظام توجيه المهام" not in content:
+        # Insert before the closing tag of OperationsRoom
         content = content.replace("</div>\n    </div>\n  );\n}", map_content + "\n    </div>\n  );\n}")
-        # if the above didn't match:
-        content = content.replace("</div>\n  );\n}", map_content + "\n    </div>\n  );\n}")
-
-    # Also fix the permission check at the very top of OperationsRoom
-    old_top = "(!user?.permissions?.authenticatePenalties && !user?.permissions?.showFieldTeamsStats && user?.role !== 'admin' && user?.role !== 'director')"
-    new_top = "(!user?.permissions?.authenticatePenalties && !user?.permissions?.showFieldTeamsStats && !user?.permissions?.showSectorMap && !user?.permissions?.executeSmartTasks && !user?.permissions?.manageSmartTasks && user?.role !== 'admin' && user?.role !== 'director')"
-    content = content.replace(old_top, new_top)
-
+        content = content.replace("</div>\n  );\n}", map_content + "\n  );\n}")
+        
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
-    print("Fixed OperationsRoom.jsx")
+    print("Updated OperationsRoom.jsx")
 
 if __name__ == "__main__":
-    update_ops()
+    update_operations_room()

@@ -127,7 +127,7 @@ export const PERMISSIONS_TABS = [
   { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: <Target className="w-4 h-4 text-red-500"/>, keys: ['manageSmartTasks', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst'] },
   { id: 'establishments', label: 'المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'addEval', 'editEst', 'deleteEst'] },
   { id: 'complaints', label: 'الشكاوى', icon: <Compass className="w-4 h-4 text-rose-500"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage'] },
-  { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive'] },
+  { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive', 'viewLabReports'] },
   { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['financialReports', 'payFines', 'dailyInventory'] },
   { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'quickTeamDispatch'] },
   { id: 'notifications', label: 'الإشعارات', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
@@ -150,6 +150,7 @@ export const PERMISSION_DETAILS = {
   receiveSamples: { title: 'استلام العينات', desc: 'يسمح للمختبر باستلام وجدولة العينات المسحوبة من المنشآت.' },
   enterLabResults: { title: 'إدخال نتائج الفحص', desc: 'يسمح بإدخال وتوثيق نتائج الفحوصات المختبرية.' },
   editLabResults: { title: 'تعديل نتائج المختبر المنجزة', desc: 'يسمح للمختبر بتعديل نتائج العينات بعد إنجازها وتوثيقها لتدارك الأخطاء البشرية.' },
+  viewLabReports: { title: 'عرض التقارير المختبرية والرقابية للعينات', desc: 'يسمح للجهات المختصة بالاطلاع على الإحصائيات ونتائج الفحوصات دون التدخل المباشر في إدخال النتائج.' },
   labArchive: { title: 'أرشيف المختبر', desc: 'يسمح بالاطلاع على السجل التاريخي لكافة الفحوصات المختبرية السابقة.' },
   centralLabView: { title: 'الرؤية المركزية لعينات المحافظة', desc: 'يسمح للحساب بالاطلاع على الإحصائيات الكلية وكافة العينات المسحوبة من جميع الفرق في المحافظة' },
   financialReports: { title: 'التقارير المالية', desc: 'يسمح للحساب بعرض التقارير المالية والإحصائيات الخاصة بالغرامات والواردات.' },
@@ -180,7 +181,7 @@ export const ROLE_CORE_BASICS = {
   accountant: ['financialReports', 'payFines', 'dailyInventory'],
   financial_accountant: ['financialReports', 'payFines', 'dailyInventory'],
   team: ['showTeamDashboard', 'executeSmartTasks', 'showSectorMap', 'createEst', 'addEval', 'manageEstablishments'],
-  lab: ['receiveSamples', 'enterLabResults', 'labArchive'],
+  lab: ['viewLabReports', 'receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive'],
   tracker: ['monitorClosures', 'searchAndAddPreliminaryEst']
 };
 

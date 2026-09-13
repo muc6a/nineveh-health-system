@@ -61,6 +61,33 @@ export const AccountantPanel = () => {
   } = useContext(AppContext);
 
   const [activeTab, setActiveTab] = useState("dashboard");
+
+  React.useEffect(() => {
+    let isAllowed = false;
+    if (activeTab === 'dashboard' && hasPerm('financialReports')) isAllowed = true;
+    if (activeTab === 'ext_financials' && hasPerm('payFines')) isAllowed = true;
+    if (activeTab === 'reconciliation' && hasPerm('dailyInventory')) isAllowed = true;
+    if (activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective'))) isAllowed = true;
+    if (activeTab === 'comprehensive_reports' && hasPerm('viewComprehensiveFinancialReports')) isAllowed = true;
+    if (activeTab === 'strategic' && hasPerm('showMainDashboard')) isAllowed = true;
+    if (activeTab === 'establishments' && hasPerm('manageEstablishments')) isAllowed = true;
+    if (activeTab === 'ext_reports' && hasPerm('showReportsPage')) isAllowed = true;
+    if (activeTab === 'ext_map' && hasPerm('showSectorMap')) isAllowed = true;
+    if (activeTab === 'ext_smart_tasks' && hasPerm('showSmartTasks')) isAllowed = true;
+
+    if (!isAllowed) {
+       if (hasPerm('financialReports')) setActiveTab('dashboard');
+       else if (hasPerm('payFines')) setActiveTab('ext_financials');
+       else if (hasPerm('dailyInventory')) setActiveTab('reconciliation');
+       else if (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective')) setActiveTab('directives');
+       else if (hasPerm('viewComprehensiveFinancialReports')) setActiveTab('comprehensive_reports');
+       else if (hasPerm('showMainDashboard')) setActiveTab('strategic');
+       else if (hasPerm('manageEstablishments')) setActiveTab('establishments');
+       else if (hasPerm('showReportsPage')) setActiveTab('ext_reports');
+       else if (hasPerm('showSectorMap')) setActiveTab('ext_map');
+       else if (hasPerm('showSmartTasks')) setActiveTab('ext_smart_tasks');
+    }
+  }, [user?.permissions, activeTab]);
   const [selectedReportType, setSelectedReportType] = useState(null); // 'dashboard', 'pay_fines', 'directives', 'reconciliation', 'comprehensive_reports'
 
   // States for Pay Fines

@@ -12,6 +12,30 @@ export const LabDashboard = () => {
     const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams, setActiveSidebarTabs } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('stats');
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false); // 'stats', 'incoming', 'testing', 'archive'
+
+  React.useEffect(() => {
+    // If activeTab is no longer permitted, fallback
+    const canSeeStats = hasPerm('viewLabReports');
+    const canSeeIncoming = hasPerm('receiveSamples');
+    const canSeeTesting = hasPerm('enterLabResults');
+    const canSeeEdit = hasPerm('editLabResults');
+    const canSeeArchive = hasPerm('labArchive');
+    
+    let isAllowed = false;
+    if (activeTab === 'stats' && canSeeStats) isAllowed = true;
+    if (activeTab === 'incoming' && canSeeIncoming) isAllowed = true;
+    if (activeTab === 'testing' && canSeeTesting) isAllowed = true;
+    if (activeTab === 'edit' && canSeeEdit) isAllowed = true;
+    if (activeTab === 'archive' && canSeeArchive) isAllowed = true;
+
+    if (!isAllowed) {
+       if (canSeeStats) setActiveTab('stats');
+       else if (canSeeIncoming) setActiveTab('incoming');
+       else if (canSeeTesting) setActiveTab('testing');
+       else if (canSeeEdit) setActiveTab('edit');
+       else if (canSeeArchive) setActiveTab('archive');
+    }
+  }, [user?.permissions, activeTab]);
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });
   const [resultStatus, setResultStatus] = useState('safe');
   const [resultNotes, setResultNotes] = useState('');
@@ -225,7 +249,7 @@ export const LabDashboard = () => {
 
           <div className="space-y-1 mb-6">
             
-            <button
+            {hasPerm('viewLabReports') && (<button
               onClick={() => { setActiveTab('stats'); setIsSidebarOpen(false); }}
               className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                 activeTab === 'stats'
@@ -234,10 +258,10 @@ export const LabDashboard = () => {
               }`}
             >
               <BarChart3 className="w-4.5 h-4.5" />
-              <span>الرئيسية والتقارير</span>
-            </button>
+              <span>التقارير المختبرية والرقابية للعينات</span>
+            </button>)}
             
-            <button
+            {hasPerm('receiveSamples') && (<button
               onClick={() => { setActiveTab('incoming'); setIsSidebarOpen(false); }}
               className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
                 activeTab === 'incoming'
@@ -252,9 +276,9 @@ export const LabDashboard = () => {
               {incomingReqs.length > 0 && (
                 <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'incoming' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700'}`}>{incomingReqs.length}</span>
               )}
-            </button>
+            </button>)}
 
-            <button
+            {hasPerm('enterLabResults') && (<button
               onClick={() => { setActiveTab('testing'); setIsSidebarOpen(false); }}
               className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
                 activeTab === 'testing'
@@ -264,14 +288,31 @@ export const LabDashboard = () => {
             >
               <div className="flex items-center gap-3">
                 <FlaskConical className="w-4.5 h-4.5" />
-                <span>قيد الفحص</span>
+                <span>إدخال نتائج الفحص</span>
               </div>
               {testingReqs.length > 0 && (
                 <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'testing' ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-700'}`}>{testingReqs.length}</span>
               )}
-            </button>
+            </button>)}
 
+            
+            {hasPerm('editLabResults') && (
             <button
+              onClick={() => { setActiveTab('edit'); setIsSidebarOpen(false); }}
+              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
+                activeTab === 'edit'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <FileEdit className="w-4.5 h-4.5" />
+                <span>تعديل النتائج</span>
+              </div>
+            </button>
+            )}
+
+            {hasPerm('labArchive') && (<button
               onClick={() => { setActiveTab('archive'); setIsSidebarOpen(false); }}
               className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
                 activeTab === 'archive'
@@ -281,7 +322,7 @@ export const LabDashboard = () => {
             >
               <Archive className="w-4.5 h-4.5" />
               <span>الأرشيف المختبري</span>
-            </button>
+            </button>)}
           </div>
         </div>
 
@@ -316,9 +357,10 @@ export const LabDashboard = () => {
           <GlobalHeader
             icon="🧪"
             title={
-              activeTab === 'stats' ? 'الرئيسية والتقارير' :
+              activeTab === 'stats' ? 'التقارير المختبرية والرقابية للعينات' :
               activeTab === 'incoming' ? 'الطلبات الواردة' :
-              activeTab === 'testing' ? 'عينات قيد الفحص' :
+              activeTab === 'testing' ? 'إدخال نتائج الفحص' :
+              activeTab === 'edit' ? 'تعديل النتائج' :
               activeTab === 'archive' ? 'الأرشيف المختبري' : 'المختبر المركزي'
             }
             subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
@@ -331,7 +373,7 @@ export const LabDashboard = () => {
           <div className="w-full max-w-full mx-auto space-y-6">
 
             {/* STATS */}
-            {activeTab === 'stats' && (
+            {activeTab === 'stats' && hasPerm('viewLabReports') && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
@@ -382,7 +424,7 @@ export const LabDashboard = () => {
             )}
 
             {/* INCOMING */}
-            {activeTab === 'incoming' && (
+            {activeTab === 'incoming' && hasPerm('receiveSamples') && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex justify-end mb-6">
                   {hasPerm('receiveSamples') && (
@@ -436,7 +478,7 @@ export const LabDashboard = () => {
             )}
 
             {/* TESTING */}
-            {activeTab === 'testing' && (
+            {activeTab === 'testing' && hasPerm('enterLabResults') && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex justify-end mb-6">
                   {hasPerm('receiveSamples') && (
@@ -489,7 +531,17 @@ export const LabDashboard = () => {
             )}
 
             {/* ARCHIVE */}
-            {activeTab === 'archive' && (
+            
+            {activeTab === 'edit' && hasPerm('editLabResults') && (
+              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="text-center p-12 text-slate-400 font-bold bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-white/5">
+                  <FileEdit className="w-12 h-12 mx-auto mb-4 text-indigo-500/50" />
+                  <p>قسم تعديل النتائج قيد التطوير...</p>
+                </div>
+              </div>
+            )}
+    
+            {activeTab === 'archive' && hasPerm('labArchive') && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
                 <div className="space-y-4">
                   {archivedReqs.length === 0 ? (

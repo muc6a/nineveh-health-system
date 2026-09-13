@@ -57,6 +57,23 @@ export default function OperationsRoom() {
 
   const [selectedEstId, setSelectedEstId] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
+
+  // Smart Auto-Routing: Auto-select team based on establishment's sector
+  React.useEffect(() => {
+    if (selectedEstId && establishments && teams) {
+      const est = establishments.find(e => e.id === selectedEstId);
+      if (est && est.sector) {
+        const matchedTeam = teams.find(t => 
+           (t.name && t.name.includes(est.sector)) || 
+           (t.sector && t.sector === est.sector) ||
+           (t.sector && est.sector.includes(t.sector))
+        );
+        if (matchedTeam) {
+          setSelectedTeamId(matchedTeam.id);
+        }
+      }
+    }
+  }, [selectedEstId, establishments, teams]);
   
   const [accountModalState, setAccountModalState] = useState({ isOpen: false, mode: 'add', data: null, accountType: 'team' });
   const [activeChatTarget, setActiveChatTarget] = useState(null);
