@@ -25,7 +25,7 @@ const UnifiedSidebar = ({
   incomingReqs = [], testingReqs = [],
   customTabs = null
 }) => {
-  const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs } = React.useContext(AppContext);
+  const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs, navigate } = React.useContext(AppContext);
 
   // Definition of all possible tabs
   const tabConfig = {
@@ -76,7 +76,7 @@ const UnifiedSidebar = ({
       iconColorClass: 'text-indigo-500',
       activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
       showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'),
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('lab_management'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('lab_management'); if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=lab_management'); }
     },
     financials: {
       label: 'المالية',
@@ -84,7 +84,7 @@ const UnifiedSidebar = ({
       iconColorClass: 'text-emerald-500',
       activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
       showCondition: hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory'),
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('financials'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('financials'); if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=financials'); }
     },
     establishments: {
       label: 'إدارة المنشآت',

@@ -35,9 +35,9 @@ export const Router = () => {
         globalLogout();
       } else if (baseRoute === '/dashboard/tracker' && user.role !== 'tracker') {
         globalLogout();
-      } else if (baseRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant')) {
+      } else if (baseRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant' || user.permissions?.financialReports || user.permissions?.payFines || user.permissions?.dailyInventory || user.permissions?.viewComprehensiveFinancialReports)) {
         globalLogout();
-      } else if (baseRoute === '/dashboard/lab' && user.role !== 'lab' && !user.permissions?.receiveSamples && !user.permissions?.enterLabResults && !user.permissions?.labArchive) {
+      } else if (baseRoute === '/dashboard/lab' && user.role !== 'lab' && !user.permissions?.viewLabReports && !user.permissions?.receiveSamples && !user.permissions?.enterLabResults && !user.permissions?.labArchive) {
         globalLogout();
       } else if (baseRoute === '/admin/control' && !(user.role === 'admin' || user.isSuperAdmin)) {
         globalLogout();
@@ -63,10 +63,10 @@ export const Router = () => {
       return user && user.role === 'tracker' ? <TrackerDashboard /> : null;
       
     case '/dashboard/accountant':
-      return user && (user.role === 'accountant' || user.role === 'financial_accountant') ? <AccountantPanel /> : null;
+      return user && (user.role === 'accountant' || user.role === 'financial_accountant' || user.permissions?.financialReports || user.permissions?.payFines || user.permissions?.dailyInventory || user.permissions?.viewComprehensiveFinancialReports) ? <AccountantPanel /> : null;
       
     case '/dashboard/lab':
-      return user && (user.role === 'lab' || user.permissions?.receiveSamples || user.permissions?.enterLabResults || user.permissions?.labArchive) ? <LabDashboard /> : null;
+      return user && (user.role === 'lab' || user.permissions?.viewLabReports || user.permissions?.receiveSamples || user.permissions?.enterLabResults || user.permissions?.labArchive) ? <LabDashboard /> : null;
     
     case '/inspection/new':
       return <InspectionForm />;
