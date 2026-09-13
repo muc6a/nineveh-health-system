@@ -6,6 +6,17 @@ import AnimatedLogo from './AnimatedLogo';
 import ThemeToggle from './ThemeToggle';
 import { AppContext } from '../context/AppContext';
 
+const getRoleNameInArabic = (role) => {
+  const roles = {
+    'admin': 'مدير النظام',
+    'executive': 'مدير قسم الرقابة',
+    'team_leader': 'مدير فريق ميداني',
+    'accountant': 'محاسب الوحدة',
+    'lab': 'مدير المختبر',
+  };
+  return roles[role] || role;
+};
+
 const UnifiedSidebar = ({ 
   activeTab, setActiveTab, 
   executiveTab, setExecutiveTab, 
