@@ -1,4 +1,4 @@
-import {  } from 'lucide-react';
+import { Activity, AlertCircle, Archive, BadgeInfo, Banknote, BarChart3, BellRing, Building, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ClipboardList, Clock, Cloud, Compass, CreditCard, DollarSign, Eye, FileSearch, FileText, Filter, FlaskConical, Inbox, LayoutDashboard, LogOut, Mail, Map, Menu, Moon, Printer, Search, ShieldAlert, Sun, TrendingUp, X } from 'lucide-react';
 import React, { useContext, useState, useMemo } from "react";
 import { AppContext } from "../context/AppContext";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -6,38 +6,6 @@ import { WeatherWidget } from "../components/WeatherWidget";
 import { NotificationBell } from "../components/NotificationBell";
 import UnifiedSidebar from '../components/UnifiedSidebar';
 import { AnimatedLogo } from "../components/AnimatedLogo";
-import {
-  LogOut,
-  DollarSign,
-  Activity,
-  FileText,
-  CheckCircle2,
-  ShieldAlert,
-  BadgeInfo,
-  BellRing,
-  Sun,
-  Moon,
-  Cloud,
-  ChevronLeft,
-  CreditCard,
-  Banknote,
-  Search,
-  AlertCircle,
-  Eye,
-  ClipboardList,
-  Menu,
-  LayoutDashboard,
-  Printer,
-  Mail,
-  Inbox,
-  Archive,
-  Filter,
-  Building,
-  Compass,
-  Map,
-  CheckSquare,
-  X,
-} from "lucide-react";
 import { TeamDashboard } from "./TeamDashboard";
 import { ExecutivePortal } from "./ExecutivePortal";
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';

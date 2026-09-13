@@ -1,4 +1,4 @@
-import { AlertTriangle, Archive, BarChart3, Building, Check, CheckCircle, Clock, Database, Eye, FileEdit, FileSearch, FileText, FlaskConical, LayoutDashboard, LogOut, Mail, Menu, Plus, Power, ShieldAlert, TrendingUp, X } from 'lucide-react';
+import { AlertTriangle, Archive, BarChart3, Building, Check, CheckCircle, ClipboardList, Clock, CreditCard, Database, Eye, FileEdit, FileSearch, FileText, FlaskConical, LayoutDashboard, LogOut, Mail, Menu, Plus, Power, ShieldAlert, TrendingUp, X } from 'lucide-react';
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import UnifiedSidebar from '../components/UnifiedSidebar';
