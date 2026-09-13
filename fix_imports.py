@@ -1,13 +1,28 @@
 import re
 
-for filename in ["src/pages/ExecutivePortal.jsx", "src/pages/TeamDashboard.jsx"]:
-    with open(filename, "r", encoding="utf-8") as f:
+def fix_imports(path):
+    with open(path, "r", encoding="utf-8") as f:
         content = f.read()
+
+    # Find all lucide-react imports
+    lucide_matches = re.findall(r"import \{([^}]+)\} from 'lucide-react';", content)
     
-    if "import UnifiedSidebar from" not in content:
-        # Just inject it after the first import React
-        content = content.replace("import React", "import UnifiedSidebar from '../components/UnifiedSidebar';\nimport React", 1)
+    all_icons = set()
+    for match in lucide_matches:
+        icons = [i.strip() for i in match.split(',')]
+        all_icons.update(icons)
         
-    with open(filename, "w", encoding="utf-8") as f:
+    # Remove all lucide-react imports
+    content = re.sub(r"import \{[^}]+\} from 'lucide-react';\n?", "", content)
+    
+    # Re-insert a single clean import
+    clean_icons = ", ".join(sorted([i for i in all_icons if i]))
+    new_import = f"import {{ {clean_icons} }} from 'lucide-react';\n"
+    
+    content = new_import + content
+    
+    with open(path, "w", encoding="utf-8") as f:
         f.write(content)
 
+fix_imports("src/pages/LabDashboard.jsx")
+fix_imports("src/pages/AccountantPanel.jsx")

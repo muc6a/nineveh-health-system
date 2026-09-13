@@ -1,3 +1,4 @@
+import {  } from 'lucide-react';
 import React, { useContext, useState, useMemo } from "react";
 import { AppContext } from "../context/AppContext";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -65,28 +66,51 @@ export const AccountantPanel = () => {
 
   React.useEffect(() => {
     let isAllowed = false;
-    if (activeTab === 'dashboard' && hasPerm('financialReports')) isAllowed = true;
-    if (activeTab === 'ext_financials' && hasPerm('payFines')) isAllowed = true;
-    if (activeTab === 'reconciliation' && hasPerm('dailyInventory')) isAllowed = true;
-    if (activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective'))) isAllowed = true;
-    if (activeTab === 'comprehensive_reports' && hasPerm('viewComprehensiveFinancialReports')) isAllowed = true;
-    if (activeTab === 'strategic' && hasPerm('showMainDashboard')) isAllowed = true;
-    if (activeTab === 'establishments' && hasPerm('manageEstablishments')) isAllowed = true;
-    if (activeTab === 'ext_reports' && hasPerm('showReportsPage')) isAllowed = true;
-    if (activeTab === 'ext_map' && hasPerm('showSectorMap')) isAllowed = true;
-    if (activeTab === 'ext_smart_tasks' && hasPerm('showSmartTasks')) isAllowed = true;
+    const canSeeStats = hasPerm('viewLabReports');
+    const canSeeIncoming = hasPerm('receiveSamples');
+    const canSeeTesting = hasPerm('enterLabResults');
+    const canSeeArchive = hasPerm('labArchive');
+    
+    const canSeeDashboard = hasPerm('financialReports');
+    const canSeeFines = hasPerm('payFines');
+    const canSeeInventory = hasPerm('dailyInventory');
+    const canSeeCompReports = hasPerm('viewComprehensiveFinancialReports');
+    
+    const canSeeStrategic = hasPerm('showMainDashboard') || hasPerm('showReportsPage');
+    const canSeeSmartTasks = hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks');
+    const canSeeOps = hasPerm('authenticatePenalties');
+    const canSeeDirectives = hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective');
+    const canSeeComplaints = hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage');
+    const canSeeEst = hasPerm('manageEstablishments');
+
+    if (activeTab === 'stats' && canSeeStats) isAllowed = true;
+    if (activeTab === 'incoming' && canSeeIncoming) isAllowed = true;
+    if (activeTab === 'testing' && canSeeTesting) isAllowed = true;
+    if (activeTab === 'archive' && canSeeArchive) isAllowed = true;
+    if (activeTab === 'dashboard' && canSeeDashboard) isAllowed = true;
+    if (activeTab === 'ext_financials' && canSeeFines) isAllowed = true;
+    if (activeTab === 'reconciliation' && canSeeInventory) isAllowed = true;
+    if (activeTab === 'comprehensive_reports' && canSeeCompReports) isAllowed = true;
+    if (activeTab === 'strategic' && canSeeStrategic) isAllowed = true;
+    if (activeTab === 'smart_tasks' && canSeeSmartTasks) isAllowed = true;
+    if (activeTab === 'operations_room' && canSeeOps) isAllowed = true;
+    if (activeTab === 'directives' && canSeeDirectives) isAllowed = true;
+    if (activeTab === 'complaints' && canSeeComplaints) isAllowed = true;
+    if (activeTab === 'establishments' && canSeeEst) isAllowed = true;
 
     if (!isAllowed) {
-       if (hasPerm('financialReports')) setActiveTab('dashboard');
-       else if (hasPerm('payFines')) setActiveTab('ext_financials');
-       else if (hasPerm('dailyInventory')) setActiveTab('reconciliation');
-       else if (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective')) setActiveTab('directives');
-       else if (hasPerm('viewComprehensiveFinancialReports')) setActiveTab('comprehensive_reports');
-       else if (hasPerm('showMainDashboard')) setActiveTab('strategic');
-       else if (hasPerm('manageEstablishments')) setActiveTab('establishments');
-       else if (hasPerm('showReportsPage')) setActiveTab('ext_reports');
-       else if (hasPerm('showSectorMap')) setActiveTab('ext_map');
-       else if (hasPerm('showSmartTasks')) setActiveTab('ext_smart_tasks');
+       if (canSeeStats) setActiveTab('stats');
+       else if (canSeeIncoming) setActiveTab('incoming');
+       else if (canSeeTesting) setActiveTab('testing');
+       else if (canSeeArchive) setActiveTab('archive');
+       else if (canSeeDashboard) setActiveTab('dashboard');
+       else if (canSeeFines) setActiveTab('ext_financials');
+       else if (canSeeInventory) setActiveTab('reconciliation');
+       else if (canSeeStrategic) setActiveTab('strategic');
+       else if (canSeeOps) setActiveTab('operations_room');
+       else if (canSeeDirectives) setActiveTab('directives');
+       else if (canSeeComplaints) setActiveTab('complaints');
+       else if (canSeeEst) setActiveTab('establishments');
     }
   }, [user?.permissions, activeTab]);
   const [selectedReportType, setSelectedReportType] = useState(null); // 'dashboard', 'pay_fines', 'directives', 'reconciliation', 'comprehensive_reports'
@@ -411,13 +435,22 @@ export const AccountantPanel = () => {
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         customTabs={[
-          ...sortedTabs.map(t => ({ id: t.id, label: t.label, icon: t.icon, activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/10', onClick: () => setActiveTab(t.id), showCondition: true, badge: t.id === 'directives' ? unreadDirectivesCount : 0 })),
-          { id: 'comprehensive_reports', label: 'التقارير المالية الشاملة', icon: FileSearch, activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', iconColorClass: 'text-amber-500', onClick: () => setActiveTab('comprehensive_reports'), showCondition: hasPerm('viewComprehensiveFinancialReports') },
-          { id: 'strategic', label: 'اللوحة الاستراتيجية', icon: TrendingUp, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('strategic'), showCondition: hasPerm('showMainDashboard') },
-          { id: 'establishments', label: 'إدارة المنشآت', icon: Building, activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', iconColorClass: 'text-blue-500', onClick: () => setActiveTab('establishments'), showCondition: hasPerm('manageEstablishments') },
-          { id: 'ext_reports', label: 'تقارير الفرق الشاملة', icon: BarChart3, activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10', iconColorClass: 'text-fuchsia-500', onClick: () => setActiveTab('ext_reports'), showCondition: hasPerm('showReportsPage') },
-          { id: 'ext_map', label: 'الخارطة الجغرافية', icon: FileSearch, activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('ext_map'), showCondition: hasPerm('showSectorMap') },
-          { id: 'ext_smart_tasks', label: 'المهام الذكية', icon: CheckCircle, activeBgClass: 'bg-violet-600 text-white shadow-md shadow-violet-500/10', iconColorClass: 'text-violet-500', onClick: () => setActiveTab('ext_smart_tasks'), showCondition: hasPerm('showSmartTasks') }
+          { id: 'stats', label: 'التقارير المختبرية والرقابية', icon: BarChart3, perm: 'viewLabReports', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('stats'), showCondition: hasPerm('viewLabReports') },
+          { id: 'incoming', label: 'استلام العينات', icon: Clock, perm: 'receiveSamples', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-amber-500', onClick: () => setActiveTab('incoming'), showCondition: hasPerm('receiveSamples') },
+          { id: 'testing', label: 'إدخال نتائج الفحص', icon: FlaskConical, perm: 'enterLabResults', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('testing'), showCondition: hasPerm('enterLabResults') },
+          { id: 'archive', label: 'الأرشيف المختبري', icon: Archive, perm: 'labArchive', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-slate-500', onClick: () => setActiveTab('archive'), showCondition: hasPerm('labArchive') },
+          
+          { id: 'dashboard', label: 'التقارير المالية', icon: LayoutDashboard, perm: 'financialReports', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('dashboard'), showCondition: hasPerm('financialReports') },
+          { id: 'ext_financials', label: 'الغرامات والإيرادات', icon: CreditCard, perm: 'payFines', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('ext_financials'), showCondition: hasPerm('payFines') },
+          { id: 'reconciliation', label: 'جرد اليومية والمطابقة', icon: ClipboardList, perm: 'dailyInventory', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('reconciliation'), showCondition: hasPerm('dailyInventory') },
+          { id: 'comprehensive_reports', label: 'التقارير المالية الشاملة', icon: FileSearch, perm: 'viewComprehensiveFinancialReports', activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', iconColorClass: 'text-amber-500', onClick: () => setActiveTab('comprehensive_reports'), showCondition: hasPerm('viewComprehensiveFinancialReports') },
+          
+          { id: 'strategic', label: 'الإدارة المتقدمة', icon: TrendingUp, activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20', onClick: () => setActiveTab('strategic'), showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') },
+          { id: 'smart_tasks', label: 'المهام الذكية', icon: CheckCircle, iconColorClass: 'text-blue-500', activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', onClick: () => setActiveTab('smart_tasks'), showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks') },
+          { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: ShieldAlert, iconColorClass: 'text-fuchsia-500', activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10', onClick: () => setActiveTab('operations_room'), showCondition: hasPerm('authenticatePenalties') },
+          { id: 'directives', label: 'التبليغات', icon: Mail, iconColorClass: 'text-amber-500', activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', onClick: () => setActiveTab('directives'), showCondition: hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') },
+          { id: 'complaints', label: 'الشكاوى', icon: ShieldAlert, iconColorClass: 'text-red-500', activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10', onClick: () => setActiveTab('complaints'), showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage') },
+          { id: 'establishments', label: 'إدارة المنشآت', icon: Building, iconColorClass: 'text-blue-500', activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', onClick: () => setActiveTab('establishments'), showCondition: hasPerm('manageEstablishments') }
         ]}
       />
 
@@ -1338,6 +1371,19 @@ export const AccountantPanel = () => {
             <TeamDashboard embeddedTab="smart_tasks" />
           </div>
         )}
+      
+            {activeTab === 'stats' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            {activeTab === 'incoming' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            {activeTab === 'testing' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            {activeTab === 'archive' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            
+            {activeTab === 'strategic' && <TeamDashboard embeddedTab="strategic" />}
+            {activeTab === 'smart_tasks' && <div className="w-full h-full min-h-[85vh]"><SmartTasks /></div>}
+            {activeTab === 'operations_room' && <div className="w-full h-full min-h-[85vh]"><OperationsRoom /></div>}
+            {activeTab === 'establishments' && <div className="w-full h-full min-h-[85vh]"><EstablishmentsManager /></div>}
+            {activeTab === 'directives' && <TeamDashboard embeddedTab="directives" />}
+            {activeTab === 'complaints' && <TeamDashboard embeddedTab="complaints" />}
+    
       </main>
 
       {selectedReportType && (
