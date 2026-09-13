@@ -236,7 +236,7 @@ export const LabDashboard = () => {
           { id: 'testing', label: 'إدخال نتائج الفحص', icon: FlaskConical, perm: 'enterLabResults', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => setActiveTab('testing'), showCondition: hasPerm('enterLabResults') },
           { id: 'archive', label: 'الأرشيف المختبري', icon: Archive, perm: 'labArchive', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-slate-500', onClick: () => setActiveTab('archive'), showCondition: hasPerm('labArchive') },
           
-          { id: 'dashboard', label: 'التقارير المالية', icon: LayoutDashboard, perm: 'financialReports', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('dashboard'), showCondition: hasPerm('financialReports') },
+          { id: 'financials', label: 'التقارير المالية', icon: LayoutDashboard, perm: 'financialReports', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('financials'), showCondition: hasPerm('financialReports') },
           { id: 'ext_financials', label: 'الغرامات والإيرادات', icon: CreditCard, perm: 'payFines', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('ext_financials'), showCondition: hasPerm('payFines') },
           { id: 'reconciliation', label: 'جرد اليومية والمطابقة', icon: ClipboardList, perm: 'dailyInventory', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => setActiveTab('reconciliation'), showCondition: hasPerm('dailyInventory') },
           { id: 'comprehensive_reports', label: 'التقارير المالية الشاملة', icon: FileSearch, perm: 'viewComprehensiveFinancialReports', activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', iconColorClass: 'text-amber-500', onClick: () => setActiveTab('comprehensive_reports'), showCondition: hasPerm('viewComprehensiveFinancialReports') },
@@ -475,26 +475,23 @@ export const LabDashboard = () => {
           </div>
         </div>
       
-            {activeTab === 'strategic' && <TeamDashboard embeddedTab="strategic" />}
-            {activeTab === 'smart_tasks' && <div className="w-full h-full min-h-[85vh]"><SmartTasks /></div>}
-            {activeTab === 'operations_room' && <div className="w-full h-full min-h-[85vh]"><OperationsRoom /></div>}
-            {activeTab === 'establishments' && <div className="w-full h-full min-h-[85vh]"><EstablishmentsManager /></div>}
-            {activeTab === 'directives' && <TeamDashboard embeddedTab="directives" />}
-            {activeTab === 'complaints' && <TeamDashboard embeddedTab="complaints" />}
-    
+                                                                            
       
-            {activeTab === 'strategic' && <TeamDashboard embeddedTab="strategic" />}
-            {activeTab === 'smart_tasks' && <div className="w-full h-full min-h-[85vh]"><SmartTasks /></div>}
-            {activeTab === 'operations_room' && <div className="w-full h-full min-h-[85vh]"><OperationsRoom /></div>}
-            {activeTab === 'establishments' && <div className="w-full h-full min-h-[85vh]"><EstablishmentsManager /></div>}
-            {activeTab === 'directives' && <TeamDashboard embeddedTab="directives" />}
-            {activeTab === 'complaints' && <TeamDashboard embeddedTab="complaints" />}
-            
-            {activeTab === 'dashboard' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
+                                                                                    
+                                                    
+      
+            {activeTab === 'financials' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
             {activeTab === 'ext_financials' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
             {activeTab === 'reconciliation' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
             {activeTab === 'comprehensive_reports' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
-    
+            
+            {activeTab === 'strategic' && <TeamDashboard embeddedTab="strategic" />}
+            {activeTab === 'smart_tasks' && <div className="w-full h-full min-h-[85vh]"><SmartTasks /></div>}
+            {activeTab === 'operations_room' && <div className="w-full h-full min-h-[85vh]"><OperationsRoom /></div>}
+            {activeTab === 'establishments' && <div className="w-full h-full min-h-[85vh]"><EstablishmentsManager /></div>}
+            {activeTab === 'directives' && <TeamDashboard embeddedTab="directives" />}
+            {activeTab === 'complaints' && <TeamDashboard embeddedTab="complaints" />}
+
       </main>
 
       {/* Result Modal */}

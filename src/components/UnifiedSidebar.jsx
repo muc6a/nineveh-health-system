@@ -124,7 +124,7 @@ const UnifiedSidebar = ({
                   {user?.name}
                 </span>
                 <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
-                  {user?.title || user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
+                  {user?.title || getRoleNameInArabic(user?.role)} {user?.sector ? ` - قطاع ${user.sector}` : ''}
                 </span>
               </div>
             </div>
