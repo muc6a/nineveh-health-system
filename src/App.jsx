@@ -60,3 +60,5 @@ export function App() {
 }
 
 export default App;
+
+// Cache busting update: Mon Sep 14 17:50:56 +03 2026
