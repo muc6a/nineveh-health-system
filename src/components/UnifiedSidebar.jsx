@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  TrendingUp, Users, ShieldAlert, Mail, FlaskConical, Database, Building, LogOut, CheckCircle
+  TrendingUp, Users, ShieldAlert, Mail, FlaskConical, Database, Building, LogOut, CheckCircle, BarChart3, Clock, Archive, LayoutDashboard, CreditCard, ClipboardList, FileSearch
 } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
 import ThemeToggle from './ThemeToggle';
