@@ -262,20 +262,7 @@ export const LabDashboard = () => {
         setIsSidebarOpen={setIsSidebarOpen} 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        customTabs={[
-          { id: 'stats', label: 'التقارير المختبرية والرقابية', icon: BarChart3, perm: 'viewLabReports', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => { setActiveTab('stats'); }, showCondition: hasPerm('viewLabReports') },
-          { id: 'incoming', label: 'استلام العينات', icon: Clock, perm: 'receiveSamples', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-amber-500', onClick: () => { setActiveTab('incoming'); }, showCondition: hasPerm('receiveSamples') },
-          { id: 'testing', label: 'إدخال نتائج الفحص', icon: FlaskConical, perm: 'enterLabResults', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => { setActiveTab('testing'); }, showCondition: hasPerm('enterLabResults') },
-          { id: 'archive', label: 'الأرشيف المختبري', icon: Archive, perm: 'labArchive', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-slate-500', onClick: () => { setActiveTab('archive'); }, showCondition: hasPerm('labArchive') },
-          { id: 'financials', label: 'المالية', icon: Database, activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('financials'); navigate('/dashboard/accountant?tab=financials'); }, showCondition: hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory') || hasPerm('viewComprehensiveFinancialReports') },
-          
-          { id: 'strategic', label: 'الإدارة المتقدمة', icon: TrendingUp, activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20', onClick: () => setActiveTab('strategic'), showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') },
-          { id: 'smart_tasks', label: 'المهام الذكية', icon: CheckCircle, iconColorClass: 'text-blue-500', activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', onClick: () => setActiveTab('smart_tasks'), showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks') },
-          { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: ShieldAlert, iconColorClass: 'text-fuchsia-500', activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10', onClick: () => setActiveTab('operations_room'), showCondition: hasPerm('authenticatePenalties') },
-          { id: 'directives', label: 'التبليغات', icon: Mail, iconColorClass: 'text-amber-500', activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', onClick: () => setActiveTab('directives'), showCondition: hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') },
-          { id: 'complaints', label: 'الشكاوى', icon: ShieldAlert, iconColorClass: 'text-red-500', activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10', onClick: () => setActiveTab('complaints'), showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage') },
-          { id: 'establishments', label: 'إدارة المنشآت', icon: Building, iconColorClass: 'text-blue-500', activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', onClick: () => setActiveTab('establishments'), showCondition: hasPerm('manageEstablishments') }
-        ]}
+        
       />
 
       {/* Main Content */}

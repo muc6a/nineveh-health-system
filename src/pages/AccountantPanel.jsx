@@ -414,21 +414,7 @@ export const AccountantPanel = () => {
         setIsSidebarOpen={setIsSidebarOpen} 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        customTabs={[
-          { id: 'lab_management', label: 'المختبر', icon: FlaskConical, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => { setActiveTab('lab_management'); navigate('/dashboard/lab?tab=lab_management'); }, showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('viewLabReports') },
-          
-          { id: 'financials', label: 'التقارير المالية', icon: LayoutDashboard, perm: 'financialReports', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('financials'); }, showCondition: hasPerm('financialReports') },
-          { id: 'ext_financials', label: 'الغرامات والإيرادات', icon: CreditCard, perm: 'payFines', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('ext_financials'); }, showCondition: hasPerm('payFines') },
-          { id: 'reconciliation', label: 'جرد اليومية والمطابقة', icon: ClipboardList, perm: 'dailyInventory', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('reconciliation'); }, showCondition: hasPerm('dailyInventory') },
-          { id: 'comprehensive_reports', label: 'التقارير المالية الشاملة', icon: FileSearch, perm: 'viewComprehensiveFinancialReports', activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', iconColorClass: 'text-amber-500', onClick: () => { setActiveTab('comprehensive_reports'); }, showCondition: hasPerm('viewComprehensiveFinancialReports') },
-          
-          { id: 'strategic', label: 'الإدارة المتقدمة', icon: TrendingUp, activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20', onClick: () => setActiveTab('strategic'), showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') },
-          { id: 'smart_tasks', label: 'المهام الذكية', icon: CheckCircle, iconColorClass: 'text-blue-500', activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', onClick: () => setActiveTab('smart_tasks'), showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks') },
-          { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: ShieldAlert, iconColorClass: 'text-fuchsia-500', activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10', onClick: () => setActiveTab('operations_room'), showCondition: hasPerm('authenticatePenalties') },
-          { id: 'directives', label: 'التبليغات', icon: Mail, iconColorClass: 'text-amber-500', activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', onClick: () => setActiveTab('directives'), showCondition: hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') },
-          { id: 'complaints', label: 'الشكاوى', icon: ShieldAlert, iconColorClass: 'text-red-500', activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10', onClick: () => setActiveTab('complaints'), showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage') },
-          { id: 'establishments', label: 'إدارة المنشآت', icon: Building, iconColorClass: 'text-blue-500', activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', onClick: () => setActiveTab('establishments'), showCondition: hasPerm('manageEstablishments') }
-        ]}
+        
       />
 
       {/* Main Panel Canvas */}
