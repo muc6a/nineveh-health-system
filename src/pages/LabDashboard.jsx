@@ -306,22 +306,22 @@ export const LabDashboard = () => {
             {/* STATS */}
             {activeTab === 'stats' && hasPerm('viewLabReports') && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-8">
+                  <div className="glassmorphic-card p-5 relative overflow-hidden rounded-3xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500">
                     <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">إجمالي العينات المستلمة</h3>
                     <p className="text-4xl font-black text-indigo-600 dark:text-indigo-400">{labRequests.length}</p>
                   </div>
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
+                  <div className="glassmorphic-card p-5 relative overflow-hidden rounded-3xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500">
                     <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات قيد الفحص</h3>
                     <p className="text-4xl font-black text-amber-600 dark:text-amber-400">{testingReqs.length}</p>
                   </div>
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
+                  <div className="glassmorphic-card p-5 relative overflow-hidden rounded-3xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500">
                     <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات منجزة</h3>
                     <p className="text-4xl font-black text-emerald-600 dark:text-emerald-400">{archivedReqs.length}</p>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/20 text-teal-600 flex items-center justify-center">
                     <BarChart3 className="w-5 h-5" />
@@ -335,7 +335,7 @@ export const LabDashboard = () => {
                   {(teams || []).map(team => {
                     const teamSamplesCount = (labRequests || []).filter(r => r.teamId === team.id || r.senderName === team.name).length;
                     return (
-                      <div key={team.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
+                      <div key={team.id} className="bg-white/50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200/50 dark:border-slate-700/50 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all">
                         <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{team.name}</span>
                         <div className="flex items-end justify-between">
                           <span className="text-2xl font-black text-slate-800 dark:text-white">{teamSamplesCount}</span>
@@ -356,7 +356,7 @@ export const LabDashboard = () => {
 
             {/* INCOMING */}
             {activeTab === 'incoming' && hasPerm('receiveSamples') && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+              <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex justify-end mb-6">
                   {hasPerm('receiveSamples') && (
                     <button 
@@ -410,7 +410,7 @@ export const LabDashboard = () => {
 
             {/* TESTING */}
             {activeTab === 'testing' && hasPerm('enterLabResults') && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+              <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex justify-end mb-6">
                   {hasPerm('receiveSamples') && (
                     <button 
@@ -466,7 +466,7 @@ export const LabDashboard = () => {
             
     
             {activeTab === 'archive' && hasPerm('labArchive') && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+              <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="space-y-4">
                   {archivedReqs.length === 0 ? (
                     <div className="text-center p-12 text-slate-400 font-bold">الأرشيف فارغ.</div>

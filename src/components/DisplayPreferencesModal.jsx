@@ -135,7 +135,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
               {/* Tab Reordering Control */}
               <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <ListOrdered className="w-4 h-4 text-teal-600" />
+                  
                   ترتيب قوائم الشريط الجانبي (Sidebar Tabs Order)
                 </label>
                 <div className="grid grid-cols-2 gap-[10px] bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">

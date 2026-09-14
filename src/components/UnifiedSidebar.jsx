@@ -212,7 +212,7 @@ const UnifiedSidebar = ({
                         : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                     }`}
                   >
-                    {tab.icon && <tab.icon className={`w-4.5 h-4.5 ${isCurrentlyActive ? '' : (tab.iconColorClass || '')}`} />}
+                    
                     <span>{tab.label}</span>
                     {tab.badge > 0 && (
                       <span className={`text-[10px] px-2 py-0.5 rounded-full mr-auto ${isCurrentlyActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>{tab.badge}</span>
@@ -244,7 +244,7 @@ const UnifiedSidebar = ({
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                   }`}
                 >
-                  <config.icon className={`w-4.5 h-4.5 ${isCurrentlyActive ? '' : config.iconColorClass}`} />
+                  
                   <span>{config.label}</span>
                 </button>
               );
