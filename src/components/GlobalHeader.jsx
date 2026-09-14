@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { WeatherWidget } from './WeatherWidget';
 import { NotificationBell } from './NotificationBell';
 import { AppContext } from '../context/AppContext';
@@ -68,6 +68,18 @@ export const GlobalHeader = ({ title: overrideTitle, subtitle: overrideSubtitle,
   const displayTitle = dynamicInfo.title || overrideTitle;
   const displaySubtitle = dynamicInfo.subtitle || overrideSubtitle;
 
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const dayName = new Intl.DateTimeFormat('ar-IQ', { weekday: 'long' }).format(now);
+  const gregorian = new Intl.DateTimeFormat('ar-IQ', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+  const numericDate = new Intl.DateTimeFormat('en-GB').format(now);
+  const hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+  const time = new Intl.DateTimeFormat('ar-IQ', { hour: '2-digit', minute: '2-digit', hour12: true }).format(now).replace('AM', 'ص').replace('PM', 'م').replace('am', 'ص').replace('pm', 'م');
+
   return (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
       <div className="flex items-center gap-3">
@@ -85,10 +97,19 @@ export const GlobalHeader = ({ title: overrideTitle, subtitle: overrideSubtitle,
       </div>
       <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
         <NotificationBell />
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-          <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-          <span className="text-slate-300">|</span>
-          <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-col text-right">
+            <span className="text-xs font-black text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+              📅 {dayName}، {gregorian} <span className="text-slate-400 font-normal">({numericDate})</span>
+            </span>
+            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5 mt-0.5">
+              🌙 {hijri}
+            </span>
+          </div>
+          <div className="w-px h-8 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+          <div className="text-sm font-black text-slate-700 dark:text-slate-200 flex items-center gap-1.5" dir="ltr">
+            {time} ⏰
+          </div>
         </div>
         <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
           <WeatherWidget variant="full" />
