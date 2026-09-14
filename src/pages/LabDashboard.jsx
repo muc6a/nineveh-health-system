@@ -18,15 +18,10 @@ import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const LabDashboard = () => {
     const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams, setActiveSidebarTabs } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('stats');
-
-  React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tabParam = params.get('tab');
-    if (tabParam) {
-      setActiveTab(tabParam);
-    }
-  }, []);
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    return params.get('tab') || 'stats';
+  });
 
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false); // 'stats', 'incoming', 'testing', 'archive'
 
@@ -272,11 +267,7 @@ export const LabDashboard = () => {
           { id: 'incoming', label: 'استلام العينات', icon: Clock, perm: 'receiveSamples', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-amber-500', onClick: () => { setActiveTab('incoming'); }, showCondition: hasPerm('receiveSamples') },
           { id: 'testing', label: 'إدخال نتائج الفحص', icon: FlaskConical, perm: 'enterLabResults', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => { setActiveTab('testing'); }, showCondition: hasPerm('enterLabResults') },
           { id: 'archive', label: 'الأرشيف المختبري', icon: Archive, perm: 'labArchive', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-slate-500', onClick: () => { setActiveTab('archive'); }, showCondition: hasPerm('labArchive') },
-          
-          { id: 'financials', label: 'التقارير المالية', icon: LayoutDashboard, perm: 'financialReports', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('financials'); navigate('/dashboard/accountant?tab=financials'); }, showCondition: hasPerm('financialReports') },
-          { id: 'ext_financials', label: 'الغرامات والإيرادات', icon: CreditCard, perm: 'payFines', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('ext_financials'); navigate('/dashboard/accountant?tab=ext_financials'); }, showCondition: hasPerm('payFines') },
-          { id: 'reconciliation', label: 'جرد اليومية والمطابقة', icon: ClipboardList, perm: 'dailyInventory', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('reconciliation'); navigate('/dashboard/accountant?tab=reconciliation'); }, showCondition: hasPerm('dailyInventory') },
-          { id: 'comprehensive_reports', label: 'التقارير المالية الشاملة', icon: FileSearch, perm: 'viewComprehensiveFinancialReports', activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10', iconColorClass: 'text-amber-500', onClick: () => { setActiveTab('comprehensive_reports'); navigate('/dashboard/accountant?tab=comprehensive_reports'); }, showCondition: hasPerm('viewComprehensiveFinancialReports') },
+          { id: 'financials', label: 'المالية', icon: Database, activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('financials'); navigate('/dashboard/accountant?tab=financials'); }, showCondition: hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory') || hasPerm('viewComprehensiveFinancialReports') },
           
           { id: 'strategic', label: 'الإدارة المتقدمة', icon: TrendingUp, activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20', onClick: () => setActiveTab('strategic'), showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') },
           { id: 'smart_tasks', label: 'المهام الذكية', icon: CheckCircle, iconColorClass: 'text-blue-500', activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10', onClick: () => setActiveTab('smart_tasks'), showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks') },

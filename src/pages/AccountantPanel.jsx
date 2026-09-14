@@ -37,7 +37,10 @@ export const AccountantPanel = () => {
     setActiveSidebarTabs
   } = useContext(AppContext);
 
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tab') || 'financials';
+  });
 
   React.useEffect(() => {
     let isAllowed = false;
@@ -412,10 +415,7 @@ export const AccountantPanel = () => {
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         customTabs={[
-          { id: 'stats', label: 'التقارير المختبرية والرقابية', icon: BarChart3, perm: 'viewLabReports', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => { setActiveTab('stats'); navigate('/dashboard/lab?tab=stats'); }, showCondition: hasPerm('viewLabReports') },
-          { id: 'incoming', label: 'استلام العينات', icon: Clock, perm: 'receiveSamples', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-amber-500', onClick: () => { setActiveTab('incoming'); navigate('/dashboard/lab?tab=incoming'); }, showCondition: hasPerm('receiveSamples') },
-          { id: 'testing', label: 'إدخال نتائج الفحص', icon: FlaskConical, perm: 'enterLabResults', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => { setActiveTab('testing'); navigate('/dashboard/lab?tab=testing'); }, showCondition: hasPerm('enterLabResults') },
-          { id: 'archive', label: 'الأرشيف المختبري', icon: Archive, perm: 'labArchive', activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-slate-500', onClick: () => { setActiveTab('archive'); navigate('/dashboard/lab?tab=archive'); }, showCondition: hasPerm('labArchive') },
+          { id: 'lab_management', label: 'المختبر', icon: FlaskConical, activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10', iconColorClass: 'text-indigo-500', onClick: () => { setActiveTab('lab_management'); navigate('/dashboard/lab?tab=lab_management'); }, showCondition: hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('viewLabReports') },
           
           { id: 'financials', label: 'التقارير المالية', icon: LayoutDashboard, perm: 'financialReports', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('financials'); }, showCondition: hasPerm('financialReports') },
           { id: 'ext_financials', label: 'الغرامات والإيرادات', icon: CreditCard, perm: 'payFines', activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10', iconColorClass: 'text-emerald-500', onClick: () => { setActiveTab('ext_financials'); }, showCondition: hasPerm('payFines') },
