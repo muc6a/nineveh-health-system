@@ -1,9 +1,11 @@
-import React, { useContext } from 'react';
-import { WeatherWidget } from './WeatherWidget';
-import { NotificationBell } from './NotificationBell';
-import { AppContext } from '../context/AppContext';
+import re
 
-export const GlobalHeader = ({ title: overrideTitle, subtitle: overrideSubtitle, icon, showPrintButton = false, children }) => {
+path = "src/components/GlobalHeader.jsx"
+with open(path, "r", encoding="utf-8") as f:
+    content = f.read()
+
+# Replace the component definition to include user and dynamic logic
+new_comp = """export const GlobalHeader = ({ title: overrideTitle, subtitle: overrideSubtitle, icon, showPrintButton = false, children }) => {
   const { hasPerm, user } = useContext(AppContext);
 
   const getDynamicGreeting = () => {
@@ -68,41 +70,15 @@ export const GlobalHeader = ({ title: overrideTitle, subtitle: overrideSubtitle,
   const displayTitle = dynamicInfo.title || overrideTitle;
   const displaySubtitle = dynamicInfo.subtitle || overrideSubtitle;
 
-  return (
-    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
-      <div className="flex items-center gap-3">
-        <span className="w-10 h-10 rounded-2xl bg-slate-800 text-white flex items-center justify-center text-lg shadow-lg">
-          {icon || '📊'}
-        </span>
-        <div>
-          <h2 className="text-xs font-black text-slate-800 dark:text-white">
-            {displayTitle}
-          </h2>
-          <p className="text-[10px] text-slate-400 mt-1">
-            {displaySubtitle}
-          </p>
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-        <NotificationBell />
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-          <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-          <span className="text-slate-300">|</span>
-          <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
-        </div>
-        <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-          <WeatherWidget variant="full" />
-        </div>
-        {children}
-        {(showPrintButton && hasPerm('exportData')) && (
-          <button 
-            onClick={() => window.print()}
-            className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
-          >
-            🖨️ طباعة الموقف الإحصائي
-          </button>
-        )}
-      </div>
-    </div>
-  );
-};
+  return ("""
+
+content = re.sub(r"export const GlobalHeader = \(\{.*?\}\) => \{\n  const \{ hasPerm \} = useContext\(AppContext\);\n\n  return \(", new_comp, content, flags=re.DOTALL)
+
+# Replace title and subtitle rendering
+content = content.replace("{title}", "{displayTitle}")
+content = content.replace("{subtitle}", "{displaySubtitle}")
+
+with open(path, "w", encoding="utf-8") as f:
+    f.write(content)
+
+print("GlobalHeader is now dynamic!")

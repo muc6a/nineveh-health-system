@@ -279,6 +279,14 @@ export const LabDashboard = () => {
             </button>
           </div>
           <GlobalHeader
+            children={            <button
+              title="تخصيص العرض"
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5"
+            >
+              ⚙️ تخصيص العرض
+            </button>}
+
             icon="🧪"
             title={
               activeTab === 'stats' ? 'التقارير المختبرية والرقابية للعينات' :
