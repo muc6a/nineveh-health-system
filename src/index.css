@@ -141,3 +141,49 @@ html {
 
 /* Autofill Background Fix */
 input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active { transition: background-color 5000s ease-in-out 0s; -webkit-text-fill-color: inherit !important; }
+
+/* Modern Print Export Rules */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .no-print, header, nav, .sidebar, aside, [role="navigation"] {
+    display: none !important;
+  }
+  
+  main, .flex-1, .main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  
+  .glassmorphic-card, .bg-white, .dark\:bg-slate-900 {
+    background-color: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    color: black !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 20px;
+  }
+  
+  h1, h2, h3, h4, h5, h6, p, span, div {
+    color: black !important;
+  }
+  
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm;
+  }
+}

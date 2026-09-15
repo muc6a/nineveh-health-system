@@ -262,7 +262,11 @@ export const LabDashboard = () => {
         setIsSidebarOpen={setIsSidebarOpen} 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        
+      />
+      
+      <DisplayPreferencesModal 
+        isOpen={showDisplayPrefsModal} 
+        onClose={() => setShowDisplayPrefsModal(false)} 
       />
 
       {/* Main Content */}
