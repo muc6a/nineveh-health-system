@@ -430,61 +430,18 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         </div>
 
         {/* Welcome Headers */}
-        <div className="relative z-40 flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">
-              {activeTab === 'strategic' ? '⚙️' : activeTab === 'establishments' ? '🏢' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_management' ? '🧪' : '💼'}
-            </span>
-            <div>
-              <h2 className="text-xs font-black text-slate-800 dark:text-white">
-                {activeTab === 'establishments' ? (PERMISSIONS_TABS.find(t => t.id === 'establishments')?.label || 'المنشآت') : 
-                 activeTab === 'directives' ? 'التبليغات' : 
-                 activeTab === 'complaints' ? 'شكاوى المواطنين' :
-                 
-                 activeTab === 'lab_management' ? 'قرارات المختبر' :
-                 activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
-                 (activeTab === 'none' ? (PERMISSIONS_TABS.find(t => t.id === 'advanced')?.label || 'الإدارة المتقدمة') : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'المنظومة'}`))}
-              </h2>
-              <p className="text-[10px] text-slate-400 mt-1">
-                {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 
-                 activeTab === 'directives' ? 'إرسال الأوامر والتعميمات للفرق الرقابية' :
-                 activeTab === 'complaints' ? 'عرض شكاوى وملاحظات المواطنين الواردة من خلال مسح QR' :
-                 
-                 (activeTab === 'none' ? 'نظام إدارة الرقابة الصحية الموحد - محافظة نينوى' : 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة')}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+        <div className="relative z-40 mb-6">
+          <GlobalHeader showPrintButton={true}>
             <button 
               onClick={() => setShowDisplayPrefsModal(true)}
               className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
-              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-              <span className="font-bold text-[10px]">تخصيص العرض</span>
+              تخصيص العرض
             </button>
-            <NotificationBell />
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-              <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              <span className="text-slate-300">|</span>
-              <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-              <WeatherWidget variant="full" />
-            </div>
-            {hasPerm('exportData') && (
-              <button 
-                onClick={() => window.print()}
-                className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
-              >
-                🖨️ طباعة الموقف الإحصائي اليومي
-              </button>
-            )}
-          </div>
+          </GlobalHeader>
         </div>
-
-
-
-        {/* Tab Content Rendering */}
+        
+        {/* Dynamic Main Content */}
         {executiveTab === 'establishments' && hasPerm('manageEstablishments') ? (
           <EstablishmentsManager />
         ) : (

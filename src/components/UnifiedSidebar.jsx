@@ -194,10 +194,6 @@ const UnifiedSidebar = ({
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 mb-4 pr-1 pl-2">
-            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block px-3 mb-2">
-              الرئيسية
-            </span>
-
             {(customTabs ? customTabs : tabOrder.map(k => ({ id: k, ...tabConfig[k] }))).map(tab => {
               if (customTabs) {
                  if (tab.showCondition === false) return null;

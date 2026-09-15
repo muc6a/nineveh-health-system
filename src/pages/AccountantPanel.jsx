@@ -5,6 +5,7 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { WeatherWidget } from "../components/WeatherWidget";
 import { NotificationBell } from "../components/NotificationBell";
 import UnifiedSidebar from '../components/UnifiedSidebar';
+import { GlobalHeader } from '../components/GlobalHeader';
 
 import SmartTasks from '../components/SmartTasks';
 import OperationsRoom from '../components/OperationsRoom';
@@ -419,54 +420,15 @@ export const AccountantPanel = () => {
 
       {/* Main Panel Canvas */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-        {/* Welcome Headers with Date/Time and Mosul Weather */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">💰</span>
-            <div>
-              <h2 className="text-xs font-black text-slate-800 dark:text-white">
-                أهلاً بك سيدي المحاسب 👋
-              </h2>
-              <p className="text-[10px] text-slate-500">
-                طاب يومك، تتصفح الآن الإدارة المالية لـ {targetSector}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+        {/* Welcome Headers */}
+        <GlobalHeader showPrintButton={true}>
             <button 
               onClick={() => setShowDisplayPrefsModal(true)}
               className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
-              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-              <span className="font-bold text-[10px]">تخصيص العرض</span>
+              تخصيص العرض
             </button>
-            <NotificationBell />
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-              <span>
-                📅{" "}
-                {new Date().toLocaleDateString("en-GB", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "short",
-                  day: "2-digit",
-                })}
-              </span>
-              <span className="text-slate-300">|</span>
-              <span>
-                ⏰{" "}
-                {new Date().toLocaleTimeString("en-GB", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-              <WeatherWidget variant="full" />
-            </div>
-          </div>
-        </div>
-
+        </GlobalHeader>
         {/* Mobile Navbar Header */}
         <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
           <button

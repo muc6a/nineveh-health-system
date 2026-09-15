@@ -1,5 +1,6 @@
 import { ROLE_CORE_BASICS, PERMISSIONS_TABS } from '../utils/constants';
 import UnifiedSidebar from '../components/UnifiedSidebar';
+import { GlobalHeader } from '../components/GlobalHeader';
 import React, { useState, useContext, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { AppContext } from '../context/AppContext';
@@ -440,45 +441,17 @@ export const TeamDashboard = ({ embeddedTab }) => {
       {/* Main Panel Canvas */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         
-        {/* Welcome Headers with Date/Time and Mosul Weather */}
+        {/* Welcome Headers */}
         {!embeddedTab && (
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">👥</span>
-              <div>
-                <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
-                <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم {userSector}</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-              <button 
+          <GlobalHeader showPrintButton={true}>
+            <button 
               onClick={() => setShowDisplayPrefsModal(true)}
               className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
-              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-              <span className="font-bold text-[10px]">تخصيص العرض</span>
+              تخصيص العرض
             </button>
-            <NotificationBell />
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-                <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                <span className="text-slate-300">|</span>
-                <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
-              </div>
-              <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-                <WeatherWidget variant="full" />
-              </div>
-              {hasPerm('exportData') && (
-                <button 
-                  onClick={() => window.print()}
-                  className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
-                >
-                  🖨️ تصدير التقارير / طباعة
-                </button>
-              )}
-            </div>
-          </div>
+          </GlobalHeader>
         )}
-
         {/* Welcome / No Permissions State */}
         
         
