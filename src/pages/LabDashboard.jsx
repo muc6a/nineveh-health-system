@@ -273,7 +273,7 @@ export const LabDashboard = () => {
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
         
         {/* Header */}
-        <header className="shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex flex-col p-4 sticky top-0 z-30">
+        <div className="relative z-40 mb-6 mt-4 md:mt-0 px-4 md:px-6">
           <div className="flex items-center gap-3 md:hidden mb-4">
             <button 
               onClick={() => setIsSidebarOpen(true)}
@@ -282,26 +282,16 @@ export const LabDashboard = () => {
               <Menu className="w-5 h-5" />
             </button>
           </div>
-          <GlobalHeader
-            children={            <button
-              title="تخصيص العرض"
+          <GlobalHeader>
+            <button
               onClick={() => setShowDisplayPrefsModal(true)}
-              className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
+              <Eye className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-teal-600 transition-colors" />
               تخصيص العرض
-            </button>}
-
-            icon="🧪"
-            title={
-              activeTab === 'stats' ? 'التقارير المختبرية والرقابية للعينات' :
-              activeTab === 'incoming' ? 'الطلبات الواردة' :
-              activeTab === 'testing' ? 'إدخال نتائج الفحص' :
-              activeTab === 'archive' ? 'الأرشيف المختبري' : 'المختبر المركزي'
-            }
-            subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
-            showPrintButton={false}
-          />
-        </header>
+            </button>
+          </GlobalHeader>
+        </div>
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 custom-scrollbar">
