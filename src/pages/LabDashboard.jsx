@@ -273,7 +273,7 @@ export const LabDashboard = () => {
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
         
         {/* Header */}
-        <div className="relative z-40 mb-6 mt-4 md:mt-0 px-4 md:px-6">
+        <div className="relative z-40 mb-6 pt-6 lg:pt-8 px-4 lg:px-8 mt-4 md:mt-0">
           <div className="flex items-center gap-3 md:hidden mb-4">
             <button 
               onClick={() => setIsSidebarOpen(true)}
