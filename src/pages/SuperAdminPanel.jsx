@@ -2234,16 +2234,19 @@ export const SuperAdminPanel = () => {
                           <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4">اختر النغمة المفضلة لهذا الإجراء:</p>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {[
+                            {(isCitizen ? [
+                              { id: 'voice_male', label: 'صوت آلي (رجل)' }, 
+                              { id: 'voice_female', label: 'صوت آلي (فتاة)' }, 
+                              { id: 'voice_old', label: 'صوت آلي (رجل كبير وقور)' }, 
+                              { id: 'custom', label: 'رفع ملف مخصص' }
+                            ] : [
                               { id: 'beep_success', label: 'نغمة إشعار (نجاح لطيف)' }, 
                               { id: 'beep_alert', label: 'نغمة إشعار (رسمية)' }, 
                               { id: 'beep_error', label: 'نغمة إشعار (قوية)' }, 
                               { id: 'beep_chime', label: 'نغمة إشعار (رنين)' }, 
                               { id: 'beep_bell', label: 'نغمة إشعار (جرس)' }, 
-                              { id: 'voice_male', label: 'ذكاء اصطناعي (رجل)' }, 
-                              { id: 'voice_female', label: 'ذكاء اصطناعي (فتاة)' }, 
                               { id: 'custom', label: 'رفع صوت مخصص' }
-                            ].map(opt => (
+                            ]).map(opt => (
                               <div key={opt.id} className={`flex items-center justify-between p-3 border rounded-xl cursor-pointer transition-all ${resolvedPrefs.type === opt.id ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30'}`} onClick={() => {
                                  const updated = { ...resolvedPrefs, type: opt.id };
                                  if (isCitizen) {
@@ -2271,6 +2274,33 @@ export const SuperAdminPanel = () => {
                               </div>
                             ))}
                           </div>
+
+                          
+                          {isCitizen && ['voice_male', 'voice_female', 'voice_old'].includes(resolvedPrefs.type) && (
+                            <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-700">
+                              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 block mb-3">اختر النص الترحيبي المراد نطقه (بوابة الرقيب المدني):</label>
+                              <div className="space-y-2">
+                                {[
+                                  "عاشت إيدك، شكراً لمساعدتك إيانا في حماية مجتمعنا.",
+                                  "شكراً لك، بجهودك ودعمك نحمي مجتمعنا ونحافظ على صحتنا.",
+                                  "شكراً لك لمساعدتنا في حماية المجتمع، تم استلام بلاغك بنجاح."
+                                ].map((txt, idx) => (
+                                  <label key={idx} className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-slate-800 ${resolvedPrefs.messageText === txt || (!resolvedPrefs.messageText && idx === 0) ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/10' : 'border-slate-200 dark:border-slate-700'}`}>
+                                    <input 
+                                      type="radio" 
+                                      name="citizen_text" 
+                                      checked={resolvedPrefs.messageText === txt || (!resolvedPrefs.messageText && idx === 0)}
+                                      onChange={() => {
+                                          setSoundConfig({...resolvedPrefs, messageText: txt});
+                                      }}
+                                      className="mt-1"
+                                    />
+                                    <span className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-bold leading-relaxed">{txt}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                           {resolvedPrefs.type === 'custom' && (
                             <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-dashed border-slate-300 dark:border-slate-600">

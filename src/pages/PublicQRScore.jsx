@@ -136,12 +136,12 @@ export const PublicQRScore = () => {
         console.log('Custom audio failed', err);
         if (playBeep) playBeep('success');
       }
-    } else if (soundConf.type === 'voice_male' || soundConf.type === 'voice_female') {
+    } else if (soundConf.type === 'voice_male' || soundConf.type === 'voice_female' || soundConf.type === 'voice_old') {
       try {
         if ('speechSynthesis' in window) {
-          const msg = new SpeechSynthesisUtterance("عاشت ايدك. شكراً لمساهمتك في حماية المجتمع.");
+          const msgText = soundConf.messageText || "عاشت إيدك، شكراً لمساعدتك إيانا في حماية مجتمعنا.";
+          const msg = new SpeechSynthesisUtterance(msgText);
           msg.lang = 'ar-SA';
-          msg.rate = 0.9;
           
           let voices = window.speechSynthesis.getVoices();
           let isFemale = soundConf.type === 'voice_female';
@@ -149,7 +149,7 @@ export const PublicQRScore = () => {
           let selectedVoice = voices.find(v => {
               let name = v.name.toLowerCase();
               if (isFemale) {
-                  return name.includes('female') || name.includes('zira') || name.includes('amira') || name.includes('laila') || name.includes('salma') || name.includes('sana') || name.includes('zeina') || name.includes('mariam') || name.includes('tarik');
+                  return name.includes('female') || name.includes('zira') || name.includes('amira') || name.includes('laila') || name.includes('salma') || name.includes('sana') || name.includes('zeina') || name.includes('mariam');
               } else {
                   return (name.includes('male') && !name.includes('female')) || name.includes('shakir') || name.includes('maged') || name.includes('tarik') || name.includes('mehdi') || name.includes('hamid');
               }
@@ -164,8 +164,17 @@ export const PublicQRScore = () => {
           
           if (selectedVoice) {
               msg.voice = selectedVoice;
+          }
+          
+          if (soundConf.type === 'voice_old') {
+              msg.pitch = 0.5;
+              msg.rate = 0.75;
+          } else if (isFemale) {
+              msg.pitch = 1.5;
+              msg.rate = 0.9;
           } else {
-              msg.pitch = isFemale ? 1.5 : 0.8;
+              msg.pitch = 0.9;
+              msg.rate = 0.9;
           }
 
           window.speechSynthesis.speak(msg);
