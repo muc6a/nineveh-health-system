@@ -124,7 +124,19 @@ export const PublicQRScore = () => {
     setFeedbackPhoto(null);
     setFeedbackSubmitted(true);
     setCitizenPoints(prev => prev + 50); // Award 50 points
-    if (playBeep) playBeep('success'); // Audio feedback for Outstanding Citizen
+    
+    // Play celebratory sound and voice
+    if (playBeep) playBeep('success'); 
+    try {
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance("عاشت ايدك. شكراً لمساهمتك في حماية المجتمع.");
+        msg.lang = 'ar-SA';
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+      }
+    } catch (err) {
+      console.log('Speech synthesis failed', err);
+    }
     
     // Auto-generate certificate image after a short delay to allow DOM render and image loading
     setTimeout(() => {
@@ -434,10 +446,12 @@ export const PublicQRScore = () => {
                       </p>
                     </div>
 
-                    <div 
-                      ref={certificateRef}
-                      className="mx-auto w-[320px] sm:w-[360px] min-h-[400px] p-6 pb-8 rounded-2xl bg-gradient-to-tr from-emerald-700 via-teal-600 to-emerald-500 text-white text-center flex flex-col items-center justify-between shadow-2xl relative overflow-hidden border border-emerald-400/30"
-                    >
+                    <div className="w-full flex justify-center items-center">
+                      <div 
+                        ref={certificateRef}
+                        className="w-full max-w-[360px] min-h-[400px] p-6 pb-8 rounded-2xl bg-gradient-to-tr from-emerald-700 via-teal-600 to-emerald-500 text-white text-center flex flex-col items-center justify-between shadow-2xl relative overflow-hidden border border-emerald-400/30"
+                        style={{ direction: 'rtl' }}
+                      >
                       {/* Background decorations */}
                       <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                       <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-900/20 rounded-full blur-2xl transform -translate-x-10 translate-y-10"></div>
@@ -480,6 +494,7 @@ export const PublicQRScore = () => {
                         </div>
                         <span className="text-[9px] font-black text-white drop-shadow-md">وزارة الصحة</span>
                       </div>
+                    </div>
                     </div>
                   </div>
                   
