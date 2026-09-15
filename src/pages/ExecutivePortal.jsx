@@ -14,7 +14,6 @@ import OperationsRoom from '../components/OperationsRoom';
 import SmartTasks from '../components/SmartTasks';
 import { NotificationBell } from '../components/NotificationBell';
 import { CriticalAlertModal } from '../components/CriticalAlertModal';
-import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { FinancialReports } from '../components/FinancialReports';
 import { LabManager } from '../components/LabManager';
@@ -345,8 +344,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
   return (
     <>
-      <PrintableDailyReport />
-      <div className={`bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 print:hidden relative ${embeddedTab ? 'min-h-full rounded-2xl overflow-hidden' : 'min-h-screen'}`}>
+      <div className={`bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 relative ${embeddedTab ? 'min-h-full rounded-2xl overflow-hidden' : 'min-h-screen'}`}>
         <CriticalAlertModal />
         
         {/* Fixed Sticky Left Sidebar */}
