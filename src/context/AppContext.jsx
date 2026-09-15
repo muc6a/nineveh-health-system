@@ -693,7 +693,7 @@ export const AppProvider = ({ children }) => {
   // Super Admin Configuration parameters
   const [config, setConfig] = useState(() => {
     const saved = localStorage.getItem('systemConfig');
-    return saved ? JSON.parse(saved) : {
+    const parsedConfig = saved ? JSON.parse(saved) : {
       headerText: 'منظومة الرقابة الصحية الرقمية - محافظة نينوى',
       allowImageUpload: true,
       allowExternalReports: true,
@@ -715,6 +715,15 @@ export const AppProvider = ({ children }) => {
       ownersPortalDesc: "دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم.",
       ownersPortalBtn: "الدخول كصاحب منشأة"
     };
+    
+    if (!parsedConfig.citizenSuccessSound) {
+      parsedConfig.citizenSuccessSound = {
+        type: 'voice_male', // voice_male, voice_female, beep_success, custom
+        customDataUrl: null
+      };
+    }
+    
+    return parsedConfig;
   });
 
   // Audit Logs State

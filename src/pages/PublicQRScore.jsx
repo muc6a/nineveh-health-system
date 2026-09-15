@@ -125,17 +125,33 @@ export const PublicQRScore = () => {
     setFeedbackSubmitted(true);
     setCitizenPoints(prev => prev + 50); // Award 50 points
     
-    // Play celebratory sound and voice
-    if (playBeep) playBeep('success'); 
-    try {
-      if ('speechSynthesis' in window) {
-        const msg = new SpeechSynthesisUtterance("عاشت ايدك. شكراً لمساهمتك في حماية المجتمع.");
-        msg.lang = 'ar-SA';
-        msg.rate = 0.9;
-        window.speechSynthesis.speak(msg);
+    // Play celebratory sound and voice based on Admin Configuration
+    const soundConf = config?.citizenSuccessSound || { type: 'voice_male' };
+    
+    if (soundConf.type === 'custom' && soundConf.customDataUrl) {
+      try {
+        const audio = new Audio(soundConf.customDataUrl);
+        audio.play();
+      } catch (err) {
+        console.log('Custom audio failed', err);
+        if (playBeep) playBeep('success');
       }
-    } catch (err) {
-      console.log('Speech synthesis failed', err);
+    } else if (soundConf.type === 'voice_male' || soundConf.type === 'voice_female') {
+      try {
+        if ('speechSynthesis' in window) {
+          const msg = new SpeechSynthesisUtterance("عاشت ايدك. شكراً لمساهمتك في حماية المجتمع.");
+          msg.lang = 'ar-SA';
+          msg.rate = 0.9;
+          msg.pitch = soundConf.type === 'voice_female' ? 1.5 : 1.0;
+          window.speechSynthesis.speak(msg);
+        }
+      } catch (err) {
+        console.log('Speech synthesis failed', err);
+        if (playBeep) playBeep('success');
+      }
+    } else {
+      // standard beep
+      if (playBeep) playBeep('success'); 
     }
     
     // Auto-generate certificate image after a short delay to allow DOM render and image loading
