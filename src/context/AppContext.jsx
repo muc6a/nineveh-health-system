@@ -1095,13 +1095,71 @@ export const AppProvider = ({ children }) => {
   // --------------------------------
 
 
-  const playBeep = (type) => {
+  const playBeep = (typeOrObj) => {
     try {
-      if (soundPreferences && soundPreferences[type]) {
-        const audio = new Audio(soundPreferences[type]);
+      let soundObj = null;
+      let eventType = null;
+      
+      if (typeof typeOrObj === 'string') {
+        eventType = typeOrObj;
+        soundObj = soundPreferences?.[eventType];
+      } else if (typeof typeOrObj === 'object') {
+        soundObj = typeOrObj;
+      }
+      
+      // Handle legacy base64 strings directly
+      if (typeof soundObj === 'string') {
+        const audio = new Audio(soundObj);
         audio.play().catch(e => console.error("Error playing custom sound:", e));
         return;
       }
+
+      // Extract type and customDataUrl if it's an object
+      const actualType = soundObj?.type || eventType || 'beep_success';
+      const customUrl = soundObj?.customDataUrl;
+
+      if (actualType === 'custom' && customUrl) {
+        const audio = new Audio(customUrl);
+        audio.play().catch(e => console.error("Error playing custom sound:", e));
+        return;
+      }
+      
+      if (actualType === 'voice_male' || actualType === 'voice_female') {
+          if ('speechSynthesis' in window) {
+              const msg = new SpeechSynthesisUtterance("رسالة صوتية تجريبية للتأكد من عمل النظام بنجاح.");
+              msg.lang = 'ar-SA';
+              msg.rate = 0.9;
+              
+              let voices = window.speechSynthesis.getVoices();
+              let isFemale = actualType === 'voice_female';
+              
+              let selectedVoice = voices.find(v => {
+                  let name = v.name.toLowerCase();
+                  if (isFemale) {
+                      return name.includes('female') || name.includes('zira') || name.includes('amira') || name.includes('laila') || name.includes('salma') || name.includes('sana') || name.includes('zeina') || name.includes('mariam') || name.includes('tarik');
+                  } else {
+                      return (name.includes('male') && !name.includes('female')) || name.includes('shakir') || name.includes('maged') || name.includes('tarik') || name.includes('mehdi') || name.includes('hamid');
+                  }
+              });
+              
+              if (!selectedVoice) {
+                  let arabicVoices = voices.filter(v => v.lang.startsWith('ar'));
+                  if (arabicVoices.length > 0) {
+                      selectedVoice = isFemale ? arabicVoices[arabicVoices.length - 1] : arabicVoices[0];
+                  }
+              }
+              
+              if (selectedVoice) {
+                  msg.voice = selectedVoice;
+              } else {
+                  msg.pitch = isFemale ? 1.5 : 0.8;
+              }
+
+              window.speechSynthesis.speak(msg);
+          }
+          return;
+      }
+
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioCtx.createOscillator();
       const gainNode = audioCtx.createGain();
@@ -1109,8 +1167,8 @@ export const AppProvider = ({ children }) => {
       oscillator.connect(gainNode);
       gainNode.connect(audioCtx.destination);
       
-      // Different tone based on type
-      if (type === 'error') {
+      // Tone generator library
+      if (actualType === 'beep_error' || actualType === 'error') {
         oscillator.type = 'sawtooth';
         oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
         oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
@@ -1118,7 +1176,32 @@ export const AppProvider = ({ children }) => {
         gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.3);
+      } else if (actualType === 'beep_alert' || actualType === 'notification') {
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.25);
+      } else if (actualType === 'beep_bell') {
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1.0);
+      } else if (actualType === 'beep_chime') {
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+        oscillator.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(1320, audioCtx.currentTime + 0.2);
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.6);
       } else {
+        // Default beep_success / success
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
         oscillator.frequency.setValueAtTime(1760, audioCtx.currentTime + 0.08); // double beep
