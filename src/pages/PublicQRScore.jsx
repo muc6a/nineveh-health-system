@@ -142,13 +142,42 @@ export const PublicQRScore = () => {
           const msg = new SpeechSynthesisUtterance("عاشت ايدك. شكراً لمساهمتك في حماية المجتمع.");
           msg.lang = 'ar-SA';
           msg.rate = 0.9;
-          msg.pitch = soundConf.type === 'voice_female' ? 1.5 : 1.0;
+          
+          let voices = window.speechSynthesis.getVoices();
+          let isFemale = soundConf.type === 'voice_female';
+          
+          let selectedVoice = voices.find(v => {
+              let name = v.name.toLowerCase();
+              if (isFemale) {
+                  return name.includes('female') || name.includes('zira') || name.includes('amira') || name.includes('laila') || name.includes('salma') || name.includes('sana') || name.includes('zeina') || name.includes('mariam') || name.includes('tarik');
+              } else {
+                  return (name.includes('male') && !name.includes('female')) || name.includes('shakir') || name.includes('maged') || name.includes('tarik') || name.includes('mehdi') || name.includes('hamid');
+              }
+          });
+          
+          if (!selectedVoice) {
+              let arabicVoices = voices.filter(v => v.lang.startsWith('ar'));
+              if (arabicVoices.length > 0) {
+                  selectedVoice = isFemale ? arabicVoices[arabicVoices.length - 1] : arabicVoices[0];
+              }
+          }
+          
+          if (selectedVoice) {
+              msg.voice = selectedVoice;
+          } else {
+              msg.pitch = isFemale ? 1.5 : 0.8;
+          }
+
           window.speechSynthesis.speak(msg);
         }
       } catch (err) {
         console.log('Speech synthesis failed', err);
         if (playBeep) playBeep('success');
       }
+    } else if (soundConf.type === 'beep_alert') {
+      if (playBeep) playBeep('alert');
+    } else if (soundConf.type === 'beep_error') {
+      if (playBeep) playBeep('error');
     } else {
       // standard beep
       if (playBeep) playBeep('success'); 
@@ -517,9 +546,6 @@ export const PublicQRScore = () => {
                     {/* Overlay Generated Image for easy saving on iOS */}
                     {generatedCertUrl && (
                       <div className="mt-4 text-center relative mx-auto w-full">
-                        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-2">
-                          💡 تلميح: يمكنك الضغط مطولاً على الشهادة أعلاه لحفظها في الاستوديو مباشرة.
-                        </p>
                         <img src={generatedCertUrl} alt="شهادة قابلة للحفظ" className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer" />
                       </div>
                     )}
