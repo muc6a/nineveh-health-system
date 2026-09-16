@@ -1354,22 +1354,26 @@ export const SuperAdminPanel = () => {
                 </div>
 
                 {/* Metrics */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-right">
-                  <div className="p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/20">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-1">الفرق المسجلة</span>
-                    <span className="text-xl font-black text-slate-800 dark:text-white">{teams.length}</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-right">
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-xl border border-slate-700/50 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 group relative overflow-hidden">
+                    <Users className="absolute top-1/2 left-4 -translate-y-1/2 w-20 h-20 text-white/10 group-hover:scale-110 group-hover:text-white/20 transition-all duration-500" />
+                    <span className="text-[11px] text-slate-400 font-bold block mb-1">الفرق المسجلة</span>
+                    <span className="text-3xl font-black text-white">{teams.length}</span>
                   </div>
-                  <div className="p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/20">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-1">اللجان النشطة الآن</span>
-                    <span className="text-xl font-black text-emerald-500">{teams.filter(t => t.active).length}</span>
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white shadow-xl border border-emerald-800/40 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 group relative overflow-hidden">
+                    <CheckCircle className="absolute top-1/2 left-4 -translate-y-1/2 w-20 h-20 text-emerald-400/10 group-hover:scale-110 group-hover:text-emerald-400/20 transition-all duration-500" />
+                    <span className="text-[11px] text-emerald-400/80 font-bold block mb-1">اللجان النشطة الآن</span>
+                    <span className="text-3xl font-black text-emerald-400">{teams.filter(t => t.active).length}</span>
                   </div>
-                  <div className="p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/20">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-1">الحسابات المجمدة</span>
-                    <span className="text-xl font-black text-red-500">{teams.filter(t => !t.active).length}</span>
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-red-900 to-slate-900 text-white shadow-xl border border-red-800/40 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 group relative overflow-hidden">
+                    <Ban className="absolute top-1/2 left-4 -translate-y-1/2 w-20 h-20 text-red-400/10 group-hover:scale-110 group-hover:text-red-400/20 transition-all duration-500" />
+                    <span className="text-[11px] text-red-400/80 font-bold block mb-1">الحسابات المجمدة</span>
+                    <span className="text-3xl font-black text-red-400">{teams.filter(t => !t.active).length}</span>
                   </div>
-                  <div className="p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200/20">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-1">الالقطاعات المغطاة</span>
-                    <span className="text-xl font-black text-slate-800 dark:text-white">
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-xl border border-indigo-800/40 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 group relative overflow-hidden">
+                    <MapPin className="absolute top-1/2 left-4 -translate-y-1/2 w-20 h-20 text-indigo-400/10 group-hover:scale-110 group-hover:text-indigo-400/20 transition-all duration-500" />
+                    <span className="text-[11px] text-indigo-400/80 font-bold block mb-1">القطاعات المغطاة</span>
+                    <span className="text-3xl font-black text-indigo-400">
                       {new Set(teams.map(t => t.sector)).size}
                     </span>
                   </div>

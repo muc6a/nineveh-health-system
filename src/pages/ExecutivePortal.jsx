@@ -495,9 +495,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             onClick={() => setShowCategoryBreakdownModal(true)}
             className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-xl border border-slate-700/50 cursor-pointer hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 text-right group relative overflow-hidden"
           >
-            <div className="absolute top-2 left-2 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Building className="w-32 h-32 text-white" />
-            </div>
+            <Building className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-white/10 group-hover:scale-110 group-hover:text-white/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-teal-400 text-[10px] font-black tracking-wider uppercase bg-teal-500/10 px-2 py-0.5 rounded-lg border border-teal-500/20">منشآت نينوى</span>
               <span className="text-xs text-slate-400">اضغط للمعاينة بالتصنيف 🔍</span>
@@ -510,9 +508,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           <div 
             className="p-5 rounded-2xl bg-gradient-to-br from-teal-900 to-slate-900 text-white shadow-xl border border-teal-800/40 text-right relative overflow-hidden"
           >
-            <div className="absolute top-2 left-2 opacity-5">
-              <TrendingUp className="w-32 h-32 text-teal-400" />
-            </div>
+            <CheckCircle className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-teal-400/10 group-hover:scale-110 group-hover:text-teal-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-emerald-450 text-[10px] font-black tracking-wider uppercase bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">نسبة الإنجاز</span>
               <span className="text-emerald-400 text-xs font-bold">مؤشر أداء متميز</span>
@@ -527,9 +523,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           <div 
             className="p-5 rounded-2xl bg-gradient-to-br from-red-900 to-slate-900 text-white shadow-xl border border-red-800/40 text-right relative overflow-hidden"
           >
-            <div className="absolute top-2 left-2 opacity-5">
-              <AlertTriangle className="w-32 h-32 text-red-400" />
-            </div>
+            <Siren className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-red-400/10 group-hover:scale-110 group-hover:text-red-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-red-450 text-[10px] font-black tracking-wider uppercase bg-red-500/10 px-2 py-0.5 rounded-lg border border-red-500/20">منشآت حرجة</span>
               <span className="text-red-400 text-xs font-bold">تتطلب متابعة</span>
@@ -544,9 +538,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           <div 
             className="p-5 rounded-2xl bg-gradient-to-br from-orange-900 to-slate-900 text-white shadow-xl border border-orange-800/40 text-right relative overflow-hidden"
           >
-            <div className="absolute top-2 left-2 opacity-5">
-              <AlertTriangle className="w-32 h-32 text-orange-400" />
-            </div>
+            <Lock className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-orange-400/10 group-hover:scale-110 group-hover:text-orange-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-orange-450 text-[10px] font-black tracking-wider uppercase bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">إغلاق رسمي</span>
               <span className="text-orange-400 text-xs font-bold">محاسبة قانونية</span>
