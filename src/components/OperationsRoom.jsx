@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { AppContext } from '../context/AppContext';
-import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X, MessageCircle, Check, CheckCheck, Database, FlaskConical, ShieldAlert, AlertOctagon } from 'lucide-react';
+import { AlertCircle, Target, ShieldCheck, Users, Info, Edit, Trash2, Mail, Send, Camera, CheckCircle, XCircle, X, MessageCircle, Check, CheckCheck, Database, FlaskConical, ShieldAlert, AlertOctagon, Banknote, ClipboardCheck, Lock } from 'lucide-react';
 import AccountModal from './AccountModal';
 import { FinancialReports } from './FinancialReports';
 
