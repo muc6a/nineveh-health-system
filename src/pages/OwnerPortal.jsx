@@ -14,7 +14,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const OwnerPortal = () => {
-  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, fines, penaltyRequests , globalLogout, setActiveSidebarTabs } = useContext(AppContext);
+  const { navigate, establishments, config, ownerCMS, addSystemNotification, directives, setDirectives, setShowDisplayPrefsModal, inspectionTemplates, penaltyRequests, globalLogout, setActiveSidebarTabs } = useContext(AppContext);
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [ownerEst, setOwnerEst] = useState(null);
@@ -250,8 +250,9 @@ export const OwnerPortal = () => {
     if (!ref.current) return;
     try {
       setIsDownloading(true);
+      window.scrollTo(0, 0);
       await new Promise(resolve => setTimeout(resolve, 100));
-      const canvas = await html2canvas(ref.current, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+      const canvas = await html2canvas(ref.current, { scale: 3, useCORS: true, backgroundColor: '#ffffff', scrollY: -window.scrollY });
       const image = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = image;
@@ -318,9 +319,10 @@ export const OwnerPortal = () => {
     if (lastHistory?.ratings) {
       Object.entries(lastHistory.ratings).forEach(([id, val]) => {
         if (val < 5) {
+          const customNote = lastHistory.notes && lastHistory.notes[id] ? `ملاحظة المفتش: ${lastHistory.notes[id]}` : `تصحيح الخلل في المعيار ${id}`;
           todos.push({ 
             id, 
-            text: `تصحيح الخلل في المعيار ${id}`, 
+            text: customNote, 
             points: 5 - val,
             ...getTaskDetails(id)
           });
@@ -383,7 +385,13 @@ export const OwnerPortal = () => {
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
            {/* Removed Print Page Button as requested */}
            <button 
-             onClick={globalLogout}
+             onClick={() => {
+               localStorage.removeItem('ownerAuthToken');
+               setOwnerEst(null);
+               setAccessCode('');
+               setActiveTab('dashboard');
+               navigate('/');
+             }}
              className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 text-xs font-bold transition-all"
            >
              <LogOut className="w-4 h-4" /> تسجيل الخروج
@@ -646,8 +654,8 @@ export const OwnerPortal = () => {
             {activeTab === 'fines' && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
                 {(() => {
-                  const allMyFines = [...(fines || []), ...(penaltyRequests || [])]
-                    .filter(f => (f.type === 'fine' || f.type === 'closure' || !f.type) && (String(f.targetEstId) === String(ownerEst.id) || String(f.establishmentId) === String(ownerEst.id) || String(f.estId) === String(ownerEst.id)));
+                  const allMyFines = [...(penaltyRequests || [])]
+                    .filter(f => f && (f.type === 'fine' || f.type === 'closure' || !f.type) && (String(f.targetEstId) === String(ownerEst.id) || String(f.establishmentId) === String(ownerEst.id) || String(f.estId) === String(ownerEst.id)));
                   
                   // Deduplicate by ID
                   const uniqueFines = Array.from(new Map(allMyFines.map(item => [item.id, item])).values());
