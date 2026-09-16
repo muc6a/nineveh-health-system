@@ -1,4 +1,4 @@
-import { Activity, AlertCircle, Archive, BadgeInfo, Banknote, BarChart3, BellRing, Building, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ClipboardList, Clock, Cloud, Compass, CreditCard, DollarSign, Eye, FileSearch, FileText, Filter, FlaskConical, Inbox, LayoutDashboard, LogOut, Mail, Map, Menu, Moon, Printer, Search, ShieldAlert, Sun, TrendingUp, X } from 'lucide-react';
+import { Activity, AlertCircle, Archive, BadgeInfo, Banknote, BarChart3, BellRing, Building, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ClipboardList, Clock, Cloud, Compass, CreditCard, DollarSign, Eye, FileSearch, FileText, Filter, FlaskConical, Inbox, LayoutDashboard, LogOut, Mail, Map, Menu, Moon, Printer, Search, ShieldAlert, Sun, TrendingUp, X, Wallet } from 'lucide-react';
 import React, { useContext, useState, useMemo } from "react";
 import { AppContext } from "../context/AppContext";
 import { ThemeToggle } from "../components/ThemeToggle";

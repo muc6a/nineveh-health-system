@@ -17,7 +17,7 @@ import { CriticalAlertModal } from '../components/CriticalAlertModal';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { FinancialReports } from '../components/FinancialReports';
 import { LabManager } from '../components/LabManager';
-import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon , Eye } from 'lucide-react';
+import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon , Eye, Siren, Lock, Ban, ShieldX } from 'lucide-react';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
