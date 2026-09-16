@@ -157,7 +157,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     }
   };
 
-  const handleDispatch = (tId, eId) => {
+  const [dispatchNote, setDispatchNote] = useState("");
+  const handleDispatch = (tId, eId, note) => {
     if (!eId || !tId) {
       notify('الرجاء تحديد المنشأة واللجنة المطلوبة', 'error');
       return;

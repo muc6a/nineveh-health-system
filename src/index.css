@@ -198,3 +198,13 @@ input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:foc
   
   .no-print { display: none !important; }
 }
+
+@media print {
+  body { background: white !important; color: black !important; margin: 0; padding: 0; }
+  .no-print, aside, header, nav, button { display: none !important; }
+  main { margin: 0 !important; padding: 0 !important; width: 100% !important; overflow: visible !important; }
+  .glassmorphic-card { border: 1px solid #ccc !important; box-shadow: none !important; background: transparent !important; page-break-inside: avoid; margin-bottom: 20px; }
+  .grid { display: block !important; }
+  * { color: black !important; }
+  canvas, svg { max-width: 100% !important; }
+}
