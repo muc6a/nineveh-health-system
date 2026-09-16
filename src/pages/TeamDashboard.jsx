@@ -531,27 +531,36 @@ export const TeamDashboard = ({ embeddedTab }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div 
                 onClick={() => { setMetricModalType('all'); setShowMetricModal(true); }}
-                className="glassmorphic-card p-5 border border-teal-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 cursor-pointer select-none"
+                className="glassmorphic-card p-5 border border-teal-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
               >
+                <Building2 className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-teal-500/5 dark:text-teal-400/5 group-hover:scale-110 group-hover:text-teal-500/10 dark:group-hover:text-teal-400/10 transition-all duration-500 pointer-events-none" />
+                <div className="relative z-10">
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">إجمالي المنشآت المخصصة للجنة</span>
                 <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mt-3 relative z-10">{totalShops}</p>
-                <span className="text-[10px] text-teal-500 font-bold block mt-2 relative z-10">انقر للتفاصيل 👁️</span>
+                <span className="text-[10px] text-teal-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                </div>
               </div>
               <div 
                 onClick={() => { setMetricModalType('inspected'); setShowMetricModal(true); }}
-                className="glassmorphic-card p-5 border border-emerald-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer select-none"
+                className="glassmorphic-card p-5 border border-emerald-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
               >
+                <CheckCircle className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-emerald-500/5 dark:text-emerald-400/5 group-hover:scale-110 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-400/10 transition-all duration-500 pointer-events-none" />
+                <div className="relative z-10">
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت تم زيارتها بنجاح هذا الشهر 🟢</span>
                 <p className="text-4xl font-extrabold text-emerald-500 mt-3 relative z-10">{inspectedShops}</p>
-                <span className="text-[10px] text-emerald-500 font-bold block mt-2 relative z-10">انقر للتفاصيل 👁️</span>
+                <span className="text-[10px] text-emerald-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                </div>
               </div>
               <div 
                 onClick={() => { setMetricModalType('uninspected'); setShowMetricModal(true); }}
-                className="glassmorphic-card p-5 border border-red-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/5 transition-all duration-300 cursor-pointer select-none"
+                className="glassmorphic-card p-5 border border-red-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/5 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
               >
+                <AlertTriangle className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-red-500/5 dark:text-red-400/5 group-hover:scale-110 group-hover:text-red-500/10 dark:group-hover:text-red-400/10 transition-all duration-500 pointer-events-none" />
+                <div className="relative z-10">
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت متأخرة بانتظار الزيارة الفورية 🔴</span>
                 <p className="text-4xl font-extrabold text-red-500 mt-3 relative z-10">{uninspectedShops}</p>
-                <span className="text-[10px] text-red-500 font-bold block mt-2 relative z-10">انقر للتفاصيل 👁️</span>
+                <span className="text-[10px] text-red-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                </div>
               </div>
             </div>
 

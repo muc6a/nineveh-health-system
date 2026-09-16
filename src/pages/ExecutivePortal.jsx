@@ -506,7 +506,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
           {/* Card 2: Coverage Ratio */}
           <div 
-            className="p-5 rounded-2xl bg-gradient-to-br from-teal-900 to-slate-900 text-white shadow-xl border border-teal-800/40 text-right relative overflow-hidden"
+            className="p-5 rounded-2xl bg-gradient-to-br from-teal-900 to-slate-900 text-white shadow-xl border border-teal-800/40 text-right relative overflow-hidden group"
           >
             <CheckCircle className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-teal-400/10 group-hover:scale-110 group-hover:text-teal-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
@@ -521,7 +521,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
           {/* Card 3: Critical Violations */}
           <div 
-            className="p-5 rounded-2xl bg-gradient-to-br from-red-900 to-slate-900 text-white shadow-xl border border-red-800/40 text-right relative overflow-hidden"
+            className="p-5 rounded-2xl bg-gradient-to-br from-red-900 to-slate-900 text-white shadow-xl border border-red-800/40 text-right relative overflow-hidden group"
           >
             <Siren className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-red-400/10 group-hover:scale-110 group-hover:text-red-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
@@ -536,7 +536,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
           {/* Card 4: Closed Establishments */}
           <div 
-            className="p-5 rounded-2xl bg-gradient-to-br from-orange-900 to-slate-900 text-white shadow-xl border border-orange-800/40 text-right relative overflow-hidden"
+            className="p-5 rounded-2xl bg-gradient-to-br from-orange-900 to-slate-900 text-white shadow-xl border border-orange-800/40 text-right relative overflow-hidden group"
           >
             <Lock className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-orange-400/10 group-hover:scale-110 group-hover:text-orange-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
@@ -555,22 +555,28 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div 
               onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
-              className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none"
+              className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
             >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المنشآت المغلقة هذا الشهر 🔒</h3>
+              <Lock className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-rose-500/5 dark:text-rose-500/10 group-hover:scale-110 group-hover:text-rose-500/10 dark:group-hover:text-rose-500/20 transition-all duration-500 pointer-events-none" />
+              <div className="relative z-10">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المنشآت المغلقة هذا الشهر 🔒</h3>
               <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-rose-500">{allMonthlyClosures.length}</p>
               <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
+              </div>
             </div>
             
             <div 
               onClick={() => { setStatsModalType('fines'); setSelectedSector(null); setShowStatsModal(true); }}
-              className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none"
+              className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
             >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
+              <Banknote className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-amber-500/5 dark:text-amber-500/10 group-hover:scale-110 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/20 transition-all duration-500 pointer-events-none" />
+              <div className="relative z-10">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
               <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم تغريمها مالياً خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-amber-500">{allMonthlyFines.length}</p>
               <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
+              </div>
             </div>
           </div>
 

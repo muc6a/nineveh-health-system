@@ -290,17 +290,26 @@ export default function OperationsRoom() {
                   </div>
                   
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50 text-center">
-                      <span className="block text-2xl font-black text-slate-700 dark:text-slate-200">{teamEsts.length}</span>
-                      <span className="block text-[9px] font-bold text-slate-500 mt-1">الكشوفات</span>
+                    <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50 text-center relative overflow-hidden group">
+                      <ClipboardCheck className="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 text-slate-900/5 dark:text-white/5 group-hover:scale-110 group-hover:text-slate-900/10 dark:group-hover:text-white/10 transition-all duration-300 pointer-events-none" />
+                      <div className="relative z-10">
+                        <span className="block text-2xl font-black text-slate-700 dark:text-slate-200">{teamEsts.length}</span>
+                        <span className="block text-[9px] font-bold text-slate-500 mt-1">الكشوفات</span>
+                      </div>
                     </div>
-                    <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-xl border border-red-100 dark:border-red-500/10 text-center">
-                      <span className="block text-2xl font-black text-red-600">{teamClosures.length}</span>
-                      <span className="block text-[9px] font-bold text-red-500 mt-1">الإغلاقات</span>
+                    <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-xl border border-red-100 dark:border-red-500/10 text-center relative overflow-hidden group">
+                      <Lock className="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 text-red-500/10 dark:text-red-400/10 group-hover:scale-110 group-hover:text-red-500/20 dark:group-hover:text-red-400/20 transition-all duration-300 pointer-events-none" />
+                      <div className="relative z-10">
+                        <span className="block text-2xl font-black text-red-600">{teamClosures.length}</span>
+                        <span className="block text-[9px] font-bold text-red-500 mt-1">الإغلاقات</span>
+                      </div>
                     </div>
-                    <div className="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-100 dark:border-amber-500/10 text-center">
-                      <span className="block text-2xl font-black text-amber-600">{teamFines.length}</span>
-                      <span className="block text-[9px] font-bold text-amber-500 mt-1">الغرامات</span>
+                    <div className="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-100 dark:border-amber-500/10 text-center relative overflow-hidden group">
+                      <Banknote className="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 text-amber-500/10 dark:text-amber-400/10 group-hover:scale-110 group-hover:text-amber-500/20 dark:group-hover:text-amber-400/20 transition-all duration-300 pointer-events-none" />
+                      <div className="relative z-10">
+                        <span className="block text-2xl font-black text-amber-600">{teamFines.length}</span>
+                        <span className="block text-[9px] font-bold text-amber-500 mt-1">الغرامات</span>
+                      </div>
                     </div>
                   </div>
                 </div>
