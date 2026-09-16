@@ -22,7 +22,7 @@ import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
 
-  const { navigate, establishments, teams, user, setUser, hasPerm, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, hasPerm, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, trackers, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [complaintTab, setComplaintTab] = useState(hasPerm('showPublicEvalsPage') ? 'citizens' : 'delivery');
