@@ -90,7 +90,11 @@ export const LabDashboard = () => {
     if (setActiveSidebarTabs) {
       setActiveSidebarTabs([
         { id: 'stats', label: 'الرئيسية والتقارير' },
-        { id: 'testing', label: 'فحص العينات' }
+        { id: 'incoming', label: 'استلام العينات وتوزيعها' },
+        { id: 'testing', label: 'إدخال نتائج الفحص' },
+        { id: 'comprehensive_reports', label: 'التقارير المختبرية والرقابية' },
+        { id: 'archive', label: 'الأرشيف المختبري' },
+        { id: 'directives', label: 'التبليغات' }
       ]);
     }
   }, []);

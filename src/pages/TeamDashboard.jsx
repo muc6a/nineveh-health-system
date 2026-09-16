@@ -117,6 +117,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [dispatchTeamId, setDispatchTeamId] = useState('');
   const [dispatchEstId, setDispatchEstId] = useState('');
+  const [dispatchNote, setDispatchNote] = useState('');
 
   const handleSendDirective = (e) => {
     e.preventDefault();
@@ -130,16 +131,27 @@ export const TeamDashboard = ({ embeddedTab }) => {
     }
   };
 
-  const handleDispatch = (tId, eId) => {
+  const handleDispatch = (tId, eId, note) => {
     if(!tId || !eId) return notify('يرجى تحديد المنشأة المستهدفة للتوجيه', 'error');
     
     // Create directive to the specific team
     const est = establishments.find(e => e.id === parseInt(eId) || e.id === eId);
+    const team = teams.find(t => t.id === tId) || {};
     if(!est) return;
     
     const text = `توجيه ميداني عاجل: يرجى التوجه فوراً لإجراء كشف صحي على المنشأة (${est.name})`;
     addDirective(tId, text, user?.role === 'director' ? `المدير العام (${user?.name})` : (user?.name || 'الجهة الإدارية'), user?.id || user?.role);
-    notify('تم إرسال التوجيه للفريق الميداني بنجاح', 'success');
+    setTasks(prev => [{
+      id: 'tsk_' + Date.now(),
+      type: 'visit',
+      title: 'زيارة فورية موجهة',
+      desc: `تم توجيهكم من الإدارة لزيارة المنشأة (${est.name}) فوراً. الملاحظات: ${note || 'لا توجد ملاحظات'}`,
+      teamId: team.id || tId,
+      status: 'pending',
+      targetEstId: est.id,
+      createdAt: new Date().toISOString()
+    }, ...prev]);
+    notify('تم إرسال التوجيه للفريق الميداني وإضافته للمهام الذكية بنجاح', 'success');
     
     setDispatchEstId('');
   };
@@ -488,6 +500,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لـ {userSector}</p>
               </div>
+              {(!embeddedTab && user?.role === "team") && (
               <button 
                 onClick={() => setShowQRScanner(true)}
                 className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
@@ -495,6 +508,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 <QrCode className="w-5 h-5" />
                 <span>مسح كود QR لمنشأة 📸</span>
               </button>
+              )}
             </div>
 
             {myDirectives.filter(d => !d.isRead).length > 0 && (
@@ -657,6 +671,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   </p>
                 </div>
               </div>
+              {(!embeddedTab && user?.role === "team") && (
               <button 
                 onClick={() => setShowQRScanner(true)}
                 className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
@@ -664,6 +679,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 <QrCode className="w-5 h-5" />
                 <span>بدء التفتيش بمسح QR 📸</span>
               </button>
+              )}
             </div>
 
             {smartTasks.length > 0 ? (
@@ -1155,22 +1171,35 @@ export const TeamDashboard = ({ embeddedTab }) => {
                           </span>
                         </td>
                         <td className="p-3">
-                          <select 
+                          <input
+                            type="text"
+                            list={"estList-" + t.id}
+                            placeholder="ابحث عن المنشأة..."
                             onChange={(e) => {
-                              setDispatchEstId(e.target.value);
-                              setDispatchTeamId(t.id);
+                              const est = establishments.find(es => es.name === e.target.value);
+                              if (est) {
+                                setDispatchEstId(est.id);
+                                setDispatchTeamId(t.id);
+                              }
                             }}
-                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
-                          >
-                            <option value="">-- اختر المنشأة --</option>
+                            className="w-full mb-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
+                          <datalist id={"estList-" + t.id}>
                             {establishments.filter(e => e.sector === t.sector).map(est => (
-                              <option key={est.id} value={est.id}>{est.name}</option>
+                              <option key={est.id} value={est.name} />
                             ))}
-                          </select>
+                          </datalist>
+                          <input
+                            type="text"
+                            placeholder="ملاحظات التوجيه..."
+                            value={dispatchTeamId === t.id ? dispatchNote : ""}
+                            onChange={(e) => { setDispatchNote(e.target.value); setDispatchTeamId(t.id); }}
+                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
                         </td>
                         <td className="p-3 text-center">
                           <button
-                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId)}
+                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId, dispatchNote)}
                             className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
                           >
                             🚀 إرسال التوجيه
