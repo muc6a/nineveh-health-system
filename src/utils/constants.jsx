@@ -176,13 +176,13 @@ export const PERMISSION_DETAILS = {
 };
 
 export const ROLE_CORE_BASICS = {
-  director: ['showMainDashboard'],
-  central_director: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'showPublicEvalsPage', 'showDeliveryPage', 'manageSmartTasks', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'financialReports'],
-  accountant: ['financialReports', 'payFines', 'dailyInventory'],
-  financial_accountant: ['financialReports', 'payFines', 'dailyInventory'],
+  director: ['showMainDashboard', 'showDirectivesPage', 'sendDirective', 'replyDirective'],
+  central_director: ['manageSmartTasks', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'financialReports', 'showDirectivesPage', 'sendDirective', 'replyDirective', 'quickTeamDispatch'],
+  accountant: ['showDirectivesPage', 'financialReports', 'payFines', 'dailyInventory'],
+  financial_accountant: ['showDirectivesPage', 'financialReports', 'payFines', 'dailyInventory'],
   team: ['showTeamDashboard', 'executeSmartTasks', 'showSectorMap', 'createEst', 'addEval', 'manageEstablishments'],
-  lab: ['viewLabReports', 'receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive'],
-  tracker: ['monitorClosures', 'searchAndAddPreliminaryEst']
+  lab: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'viewLabReports', 'receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive'],
+  tracker: ['showDirectivesPage', 'monitorClosures', 'searchAndAddPreliminaryEst']
 };
 
 export const PERMISSION_ROLES = {

@@ -611,14 +611,27 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
                     <span className="w-3 h-3 rounded-full bg-teal-600"></span> الجولات التفتيشية
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
-                    <span className="w-3 h-3 rounded-full bg-amber-500"></span> الغرامات الفورية
-                  </div>
                 </div>
               </div>
             )}
 
-
+            {hasPerm('showSectorMap') && (
+              <div className="mt-8 glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
+                <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+                  <Map className="text-teal-600" />
+                  الخريطة التفاعلية لقاطع المسؤولية الميدانية ({userSector})
+                </h2>
+                <p className="text-xs text-slate-500 mb-4">هذه الخريطة تعرض حصراً المنشآت الواقعة ضمن الرقعة الجغرافية المكلف بها فريقكم لتسهيل التوجيه الميداني (اضغط على المنشأة للتفاصيل).</p>
+                <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white rounded-xl">
+                  <NinevehMap
+                    establishments={establishments}
+                    isTeamView={true}
+                    teamSector={userSector}
+                    fullHeight={true}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
 

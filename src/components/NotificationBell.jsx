@@ -5,6 +5,7 @@ import { Bell, Check, Trash2 } from 'lucide-react';
 export const NotificationBell = () => {
   const { user, systemNotifications, setSystemNotifications, playBeep } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -100,11 +101,28 @@ export const NotificationBell = () => {
             )}
           </div>
           
-          {myNotifications.length === 0 ? (
+          
+          <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 mb-3 overflow-x-auto hide-scrollbar">
+            <button onClick={() => setActiveTab('all')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'all' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>الكل</button>
+            <button onClick={() => setActiveTab('closures')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'closures' ? 'bg-white dark:bg-slate-700 shadow-sm text-red-600 dark:text-red-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>إغلاقات وعقوبات</button>
+            <button onClick={() => setActiveTab('tasks')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'tasks' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>مهام وكشوفات</button>
+            <button onClick={() => setActiveTab('directives')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'directives' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>تبليغات عامة</button>
+          </div>
+
+          {(() => {
+            const filteredNotifications = myNotifications.filter(n => {
+              if (activeTab === 'all') return true;
+              if (activeTab === 'closures' && (n.title?.includes('إغلاق') || n.title?.includes('تشميع') || n.title?.includes('غرامة') || n.title?.includes('عقوب'))) return true;
+              if (activeTab === 'tasks' && (n.title?.includes('تفتيش') || n.title?.includes('كشف') || n.title?.includes('مهمة') || n.title?.includes('رقاب') || n.title?.includes('عينة'))) return true;
+              if (activeTab === 'directives' && (n.title?.includes('تبليغ') || n.title?.includes('قرار') || n.title?.includes('توجيه') || n.title?.includes('إداري'))) return true;
+              return false;
+            });
+            return filteredNotifications.length === 0 ? (
+
             <div className="p-4 text-center text-xs text-slate-400 font-bold">لا توجد إشعارات حالياً.</div>
           ) : (
             <div className="space-y-1">
-              {myNotifications.map(notif => (
+              {filteredNotifications.map(notif => (
                 <div 
                   key={notif.id}
                   onClick={() => {
@@ -154,7 +172,8 @@ export const NotificationBell = () => {
                 </div>
               ))}
             </div>
-          )}
+          );
+          })()}
         </div>
       )}
 
