@@ -175,6 +175,17 @@ export const ExecutivePortal = ({ embeddedTab }) => {
       status: 'pending'
     }]);
 
+    setTasks(prev => [{
+      id: 'tsk_' + Date.now(),
+      type: 'visit',
+      title: 'زيارة فورية موجهة',
+      desc: `تم توجيهكم من الغرفة المركزية لزيارة المنشأة (${est.name}) فوراً. الملاحظات: ${note || 'لا توجد ملاحظات'}`,
+      teamId: team.id,
+      status: 'pending',
+      targetEstId: est.id,
+      createdAt: new Date().toISOString()
+    }, ...prev]);
+
     notify(`تم إرسال أمر توجيه عاجل إلى ${team.name} لزيارة ${est.name} فوراً!`, 'success', true);
   };
 
@@ -716,6 +727,11 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                       {allowedTeams.map(t => (
                         <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
                       ))}
+                      <option value="accountant">💰 المحاسب المالي</option>
+                      <option value="lab">🧪 مختبر الصحة المركزي</option>
+                      {trackers && trackers.map(tr => (
+                        <option key={tr.id} value={tr.id}>🕵️ المتابع: {tr.name}</option>
+                      ))}
                     </select>
                   </div>
 
@@ -879,22 +895,35 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                           </span>
                         </td>
                         <td className="p-3">
-                          <select 
+                          <input
+                            type="text"
+                            list={"estList-" + t.id}
+                            placeholder="ابحث عن المنشأة..."
                             onChange={(e) => {
-                              setDispatchEstId(e.target.value);
-                              setDispatchTeamId(t.id);
+                              const est = establishments.find(es => es.name === e.target.value);
+                              if (est) {
+                                setDispatchEstId(est.id);
+                                setDispatchTeamId(t.id);
+                              }
                             }}
-                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
-                          >
-                            <option value="">-- اختر المنشأة --</option>
+                            className="w-full mb-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
+                          <datalist id={"estList-" + t.id}>
                             {establishments.filter(e => e.sector === t.sector).map(est => (
-                              <option key={est.id} value={est.id}>{est.name}</option>
+                              <option key={est.id} value={est.name} />
                             ))}
-                          </select>
+                          </datalist>
+                          <input
+                            type="text"
+                            placeholder="ملاحظات التوجيه..."
+                            value={dispatchTeamId === t.id ? dispatchNote : ""}
+                            onChange={(e) => { setDispatchNote(e.target.value); setDispatchTeamId(t.id); }}
+                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
                         </td>
                         <td className="p-3 text-center">
                           <button
-                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId)}
+                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId, dispatchNote)}
                             className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
                           >
                             🚀 إرسال التوجيه

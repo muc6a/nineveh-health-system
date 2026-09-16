@@ -987,6 +987,11 @@ export const TeamDashboard = ({ embeddedTab }) => {
                       {teams.map(t => (
                         <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
                       ))}
+                      <option value="accountant">💰 المحاسب المالي</option>
+                      <option value="lab">🧪 مختبر الصحة المركزي</option>
+                      {trackers && trackers.map(tr => (
+                        <option key={tr.id} value={tr.id}>🕵️ المتابع: {tr.name}</option>
+                      ))}
                     </select>
                   </div>
 
