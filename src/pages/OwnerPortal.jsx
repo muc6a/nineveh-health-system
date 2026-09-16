@@ -7,7 +7,7 @@ import {
   Info, ArrowLeft, Download, Brain, TrendingUp, Award, Image as ImageIcon,
   CheckCircle2, XCircle, QrCode, Camera, FileText, ChevronRight, RefreshCw, Send,
   Settings, User, MapPin, Receipt, Activity, ShieldAlert, History
-, Eye } from 'lucide-react';
+, Eye, Archive } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { QRCodeSVG } from 'qrcode.react';
@@ -647,7 +647,7 @@ export const OwnerPortal = () => {
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
                 {(() => {
                   const allMyFines = [...(fines || []), ...(penaltyRequests || [])]
-                    .filter(f => (f.type === 'fine' || f.type === 'closure' || !f.type) && (f.targetEstId === ownerEst.id || f.establishmentId === ownerEst.id || f.estId === ownerEst.id));
+                    .filter(f => (f.type === 'fine' || f.type === 'closure' || !f.type) && (String(f.targetEstId) === String(ownerEst.id) || String(f.establishmentId) === String(ownerEst.id) || String(f.estId) === String(ownerEst.id)));
                   
                   // Deduplicate by ID
                   const uniqueFines = Array.from(new Map(allMyFines.map(item => [item.id, item])).values());
