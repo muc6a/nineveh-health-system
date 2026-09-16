@@ -534,24 +534,24 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 className="glassmorphic-card p-5 border border-teal-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 cursor-pointer select-none"
               >
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">إجمالي المنشآت المخصصة للجنة</span>
-                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mt-3">{totalShops}</p>
-                <span className="text-[10px] text-teal-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mt-3 relative z-10">{totalShops}</p>
+                <span className="text-[10px] text-teal-500 font-bold block mt-2 relative z-10">انقر للتفاصيل 👁️</span>
               </div>
               <div 
                 onClick={() => { setMetricModalType('inspected'); setShowMetricModal(true); }}
                 className="glassmorphic-card p-5 border border-emerald-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer select-none"
               >
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت تم زيارتها بنجاح هذا الشهر 🟢</span>
-                <p className="text-4xl font-extrabold text-emerald-500 mt-3">{inspectedShops}</p>
-                <span className="text-[10px] text-emerald-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                <p className="text-4xl font-extrabold text-emerald-500 mt-3 relative z-10">{inspectedShops}</p>
+                <span className="text-[10px] text-emerald-500 font-bold block mt-2 relative z-10">انقر للتفاصيل 👁️</span>
               </div>
               <div 
                 onClick={() => { setMetricModalType('uninspected'); setShowMetricModal(true); }}
                 className="glassmorphic-card p-5 border border-red-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/5 transition-all duration-300 cursor-pointer select-none"
               >
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت متأخرة بانتظار الزيارة الفورية 🔴</span>
-                <p className="text-4xl font-extrabold text-red-500 mt-3">{uninspectedShops}</p>
-                <span className="text-[10px] text-red-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                <p className="text-4xl font-extrabold text-red-500 mt-3 relative z-10">{uninspectedShops}</p>
+                <span className="text-[10px] text-red-500 font-bold block mt-2 relative z-10">انقر للتفاصيل 👁️</span>
               </div>
             </div>
 

@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import sys
+
+def main():
+    file_path = '/Users/admin/web/منظومة الرقابة الصحية الرقمية/src/components/DisplayPreferencesModal.jsx'
+    
+    content = """import React, { useState, useEffect, useContext } from 'react';
 import { Eye, X, GripVertical } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
@@ -227,3 +232,10 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
     </div>
   );
 };
+"""
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print("Re-wrote DisplayPreferencesModal.jsx")
+
+if __name__ == '__main__':
+    main()

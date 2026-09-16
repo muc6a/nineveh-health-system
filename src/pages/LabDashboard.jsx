@@ -364,11 +364,14 @@ export const LabDashboard = () => {
                   {(teams || []).map(team => {
                     const teamSamplesCount = (labRequests || []).filter(r => r.teamId === team.id || r.senderName === team.name).length;
                     return (
-                      <div key={team.id} className="bg-white/50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200/50 dark:border-slate-700/50 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all">
-                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{team.name}</span>
-                        <div className="flex items-end justify-between">
-                          <span className="text-2xl font-black text-slate-800 dark:text-white">{teamSamplesCount}</span>
-                          <span className="text-[10px] text-teal-600 bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-full font-bold">عينة</span>
+                      <div key={team.id} className="relative overflow-hidden group bg-white/50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200/50 dark:border-slate-700/50 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all">
+                        <Users className="absolute top-1/2 left-2 -translate-y-1/2 w-16 h-16 text-slate-100 dark:text-slate-700/30 group-hover:scale-110 group-hover:text-teal-500/10 transition-all duration-500 pointer-events-none" />
+                        <div className="relative z-10 flex flex-col gap-2">
+                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{team.name}</span>
+                          <div className="flex items-end justify-between">
+                            <span className="text-2xl font-black text-slate-800 dark:text-white">{teamSamplesCount}</span>
+                            <span className="text-[10px] text-teal-600 bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-full font-bold">عينة</span>
+                          </div>
                         </div>
                       </div>
                     );

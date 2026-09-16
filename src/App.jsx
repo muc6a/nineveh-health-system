@@ -6,7 +6,7 @@ import { Router } from './components/Router';
 import { BroadcastModal } from './components/BroadcastModal';
 import { LiveSupportWidget } from './components/LiveSupportWidget';
 import { Hammer } from 'lucide-react';
-import DisplayPreferencesModal from './components/DisplayPreferencesModal';
+import { DisplayPreferencesModal } from './components/DisplayPreferencesModal';
 
 // Sizing wrapper that reads the configuration globally
 const AppContent = () => {

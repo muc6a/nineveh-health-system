@@ -933,68 +933,7 @@ export const AccountantPanel = () => {
         {activeTab === "reconciliation" && (
           <div className="space-y-6 animate-fade-in-up">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm relative">
-              <button
-                onClick={() => {
-                  const testFines = [
-                    {
-                      id: `test_fine_${Date.now()}_1`,
-                      type: "fine",
-                      establishmentId: "est_1",
-                      establishmentName: "مطعم السعادة السريع",
-                      sector:
-                        targetSector === "الكل"
-                          ? "مركز المحافظة - الجانب الأيسر"
-                          : targetSector,
-                      amount: 250000,
-                      reason: "عدم تجديد الإجازة الصحية",
-                      paymentStatus: "paid",
-                      paymentDate: new Date().toISOString(),
-                      paymentMethod: "cash",
-                      date: new Date().toISOString(),
-                    },
-                    {
-                      id: `test_fine_${Date.now()}_2`,
-                      type: "fine",
-                      establishmentId: "est_2",
-                      establishmentName: "كافيه البستان الملكي",
-                      sector:
-                        targetSector === "الكل"
-                          ? "مركز المحافظة - الجانب الأيسر"
-                          : targetSector,
-                      amount: 100000,
-                      reason: "مخالفة شروط النظافة",
-                      paymentStatus: "paid",
-                      paymentDate: new Date().toISOString(),
-                      paymentMethod: "pos",
-                      date: new Date().toISOString(),
-                    },
-                    {
-                      id: `test_fine_${Date.now()}_3`,
-                      type: "fine",
-                      establishmentId: "est_3",
-                      establishmentName: "أسواق المدينة الكبرى",
-                      sector:
-                        targetSector === "الكل"
-                          ? "مركز المحافظة - الجانب الأيمن"
-                          : targetSector,
-                      amount: 150000,
-                      reason: "عرض مواد منتهية الصلاحية",
-                      paymentStatus: "paid",
-                      paymentDate: new Date().toISOString(),
-                      paymentMethod: "cash",
-                      date: new Date().toISOString(),
-                    },
-                  ];
-                  setPenaltyRequests((prev) => [...(prev || []), ...testFines]);
-                  notify(
-                    "تم توليد وصولات دفع وهمية بنجاح! يمكنك رؤيتها الآن في المطابقة.",
-                    "success",
-                  );
-                }}
-                className="absolute top-6 left-6 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-[10px] font-black transition-colors border border-indigo-200 dark:border-indigo-500/30 shadow-sm"
-              >
-                [Dev] توليد وصولات مسددة
-              </button>
+              
 
               <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-3">
                 <ClipboardList className="w-7 h-7 text-indigo-500" />
@@ -1006,7 +945,8 @@ export const AccountantPanel = () => {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-6 rounded-2xl text-center">
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-6 rounded-2xl text-center relative overflow-hidden group">
+                  <Banknote className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-emerald-400/10 group-hover:scale-110 group-hover:text-emerald-400/20 transition-all duration-500 pointer-events-none" />
                   <span className="block text-xs font-bold text-emerald-600 dark:text-emerald-500 mb-2">
                     إجمالي المبالغ النقدية المقبوضة اليوم
                   </span>
@@ -1017,7 +957,8 @@ export const AccountantPanel = () => {
                     دينار عراقي
                   </span>
                 </div>
-                <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-6 rounded-2xl text-center">
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-6 rounded-2xl text-center relative overflow-hidden group">
+                  <CreditCard className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-indigo-400/10 group-hover:scale-110 group-hover:text-indigo-400/20 transition-all duration-500 pointer-events-none" />
                   <span className="block text-xs font-bold text-indigo-600 dark:text-indigo-500 mb-2">
                     إجمالي الدفع الإلكتروني (POS) اليوم
                   </span>
