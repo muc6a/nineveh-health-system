@@ -193,58 +193,128 @@ const UnifiedSidebar = ({
             </div>
           </div>
 
+  const [openGroups, setOpenGroups] = React.useState({ lab: false, finance: false });
+
+  const renderTabs = () => {
+    const tabsToRender = customTabs ? customTabs : tabOrder.map(k => ({ id: k, ...tabConfig[k] }));
+    const visibleTabs = tabsToRender.filter(tab => customTabs ? tab.showCondition !== false : (tab && tab.showCondition));
+
+    const labKeys = ['stats', 'incoming', 'testing', 'archive'];
+    const financeKeys = ['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports'];
+
+    const labTabs = visibleTabs.filter(t => labKeys.includes(t.id));
+    const financeTabs = visibleTabs.filter(t => financeKeys.includes(t.id));
+    const otherTabs = visibleTabs.filter(t => !labKeys.includes(t.id) && !financeKeys.includes(t.id));
+
+    // Automatically open groups if their tab is active
+    React.useEffect(() => {
+      if (labTabs.some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, lab: true }));
+      if (financeTabs.some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, finance: true }));
+    }, [activeTab]);
+
+    const renderTabButton = (tab, isNested = false) => {
+      const isCurrentlyActive = (executiveTab && activeTab) 
+        ? (tab.isActive ? tab.isActive : (executiveTab === 'dashboard' && activeTab === tab.id) || (executiveTab === tab.id && activeTab === tab.id)) 
+        : activeTab === tab.id;
+
+      if (tab.id === 'establishments' && executiveTab === 'establishments') {
+         // handle establishments active state
+      }
+
+      const activeClass = customTabs 
+        ? (tab.activeBgClass || 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10')
+        : (tab.activeBgClass || 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10');
+
+      return (
+        <button
+          key={tab.id}
+          onClick={() => { if(tab.onClick) tab.onClick(); setIsSidebarOpen(false); }}
+          className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
+            isCurrentlyActive
+              ? activeClass
+              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+          } ${isNested ? 'pr-8 py-2.5 opacity-90' : ''}`}
+        >
+          <span>{tab.label}</span>
+          {tab.badge > 0 && (
+            <span className={`text-[10px] px-2 py-0.5 rounded-full mr-auto ${isCurrentlyActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>{tab.badge}</span>
+          )}
+        </button>
+      );
+    };
+
+    const elements = [];
+
+    // Render other tabs first, then lab, then finance (or based on order)
+    // To preserve order, we can iterate visibleTabs and skip grouped ones if already rendered
+    let labRendered = false;
+    let financeRendered = false;
+
+    visibleTabs.forEach(tab => {
+      if (labKeys.includes(tab.id)) {
+        if (!labRendered) {
+          labRendered = true;
+          if (labTabs.length > 1) {
+             const isLabActive = labTabs.some(t => t.id === activeTab);
+             elements.push(
+               <div key="group_lab" className="space-y-1">
+                 <button
+                   onClick={() => setOpenGroups(prev => ({ ...prev, lab: !prev.lab }))}
+                   className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${isLabActive && !openGroups.lab ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+                 >
+                   <div className="flex items-center gap-3">
+                     <span>التقارير والعمليات المختبرية</span>
+                   </div>
+                   <span className="text-xs">{openGroups.lab ? '▼' : '◀'}</span>
+                 </button>
+                 {openGroups.lab && (
+                   <div className="space-y-1 mt-1 border-r-2 border-indigo-100 dark:border-indigo-900/30 mr-4 pr-2">
+                     {labTabs.map(t => renderTabButton(t, true))}
+                   </div>
+                 )}
+               </div>
+             );
+          } else {
+             elements.push(renderTabButton(tab));
+          }
+        }
+      } else if (financeKeys.includes(tab.id)) {
+        if (!financeRendered) {
+          financeRendered = true;
+          if (financeTabs.length > 1) {
+             const isFinanceActive = financeTabs.some(t => t.id === activeTab);
+             elements.push(
+               <div key="group_finance" className="space-y-1">
+                 <button
+                   onClick={() => setOpenGroups(prev => ({ ...prev, finance: !prev.finance }))}
+                   className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${isFinanceActive && !openGroups.finance ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+                 >
+                   <div className="flex items-center gap-3">
+                     <span>التقارير والعمليات المالية</span>
+                   </div>
+                   <span className="text-xs">{openGroups.finance ? '▼' : '◀'}</span>
+                 </button>
+                 {openGroups.finance && (
+                   <div className="space-y-1 mt-1 border-r-2 border-emerald-100 dark:border-emerald-900/30 mr-4 pr-2">
+                     {financeTabs.map(t => renderTabButton(t, true))}
+                   </div>
+                 )}
+               </div>
+             );
+          } else {
+             elements.push(renderTabButton(tab));
+          }
+        }
+      } else {
+        elements.push(renderTabButton(tab));
+      }
+    });
+
+    return elements;
+  };
+
           <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 mb-4 pr-1 pl-2">
-            {(customTabs ? customTabs : tabOrder.map(k => ({ id: k, ...tabConfig[k] }))).map(tab => {
-              if (customTabs) {
-                 if (tab.showCondition === false) return null;
-                 const isCurrentlyActive = activeTab === tab.id;
-                 return (
-                  <button
-                    key={tab.id}
-                    onClick={() => { tab.onClick(); setIsSidebarOpen(false); }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      isCurrentlyActive
-                        ? tab.activeBgClass || 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                    }`}
-                  >
-                    
-                    <span>{tab.label}</span>
-                    {tab.badge > 0 && (
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full mr-auto ${isCurrentlyActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>{tab.badge}</span>
-                    )}
-                  </button>
-                 );
-              }
-
-              // Normal tabConfig rendering
-              const tabKey = tab.id;
-              const config = tab;
-              if (!config || !config.showCondition) return null;
-
-              let isCurrentlyActive = (executiveTab && activeTab) 
-                ? (config.isActive ? config.isActive : (executiveTab === 'dashboard' && activeTab === tabKey) || (executiveTab === tabKey && activeTab === tabKey)) 
-                : activeTab === tabKey;
-              
-              if (tabKey === 'establishments' && executiveTab) {
-                if (executiveTab === 'establishments') isCurrentlyActive = true;
-              }
-
-              return (
-                <button
-                  key={tabKey}
-                  onClick={() => { config.onClick(); setIsSidebarOpen(false); }}
-                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                    isCurrentlyActive
-                      ? config.activeBgClass
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-                  }`}
-                >
-                  
-                  <span>{config.label}</span>
-                </button>
-              );
-            })}
+            {renderTabs()}
           </div>
         </div>
 

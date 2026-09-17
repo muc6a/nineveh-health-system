@@ -320,7 +320,8 @@ export const ROLE_PERMISSIONS = {
     addEval: true,
     showSectorMap: true,
     executeSmartTasks: true,
-    showTeamDashboard: true
+    showTeamDashboard: true,
+    showDirectivesPage: true
   },
   tracker: {
     ...DEFAULT_PERMISSIONS,
