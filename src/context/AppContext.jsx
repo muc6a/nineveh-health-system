@@ -285,53 +285,78 @@ export const ROLE_PERMISSIONS = {
   director: {
     ...DEFAULT_PERMISSIONS,
     showMainDashboard: true,
-    showReportsPage: true,
-    showPublicEvalsPage: true,
     showDirectivesPage: true,
     sendDirective: true,
     replyDirective: true,
-    notify_closures: false,
-    notify_inspections: false,
-    notify_directives: true,
-    financialReports: true,
-    receiveSamples: true,
-    enterLabResults: true,
-    labArchive: true
+    notify_directives: true
   },
   central_director: {
     ...DEFAULT_PERMISSIONS,
-    showMainDashboard: true,
-    showReportsPage: true,
+    manageSmartTasks: true,
+    authenticatePenalties: true,
+    issueFine: true,
+    closeEst: true,
+    reopenEst: true,
+    manageEstablishments: true,
+    editEst: true,
+    deleteEst: true,
+    showPublicEvalsPage: true,
+    showDeliveryPage: true,
+    viewLabReports: true,
+    financialReports: true,
     showDirectivesPage: true,
     sendDirective: true,
+    replyDirective: true,
+    quickTeamDispatch: true,
     notify_closures: true,
     notify_inspections: true,
     notify_directives: true,
-    financialReports: true,
-    receiveSamples: true,
-    enterLabResults: true,
-    labArchive: true
+    showMainDashboard: true
   },
   team: {
     ...DEFAULT_PERMISSIONS,
     manageEstablishments: true,
-    showFieldTeamsStats: true,
-    showDirectivesPage: true,
-    replyDirective: true,
+    createEst: true,
     addEval: true,
-    editEst: true
+    showSectorMap: true,
+    executeSmartTasks: true,
+    showTeamDashboard: true
+  },
+  tracker: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
+    sendDirective: true,
+    replyDirective: true,
+    monitorClosures: true,
+    searchAndAddPreliminaryEst: true
   },
   lab: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
+    sendDirective: true,
+    replyDirective: true,
+    viewLabReports: true,
     receiveSamples: true,
     enterLabResults: true,
+    editLabResults: true,
     labArchive: true
   },
   accountant: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
+    financialReports: true,
+    payFines: true,
+    dailyInventory: true
+  },
+  financial_accountant: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
     financialReports: true,
     payFines: true,
     dailyInventory: true
   }
 };
+
 
 const INITIAL_TEAMS = [
   { 
