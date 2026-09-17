@@ -161,38 +161,6 @@ const UnifiedSidebar = ({
   }, [user?.permissions, uiPreferences?.tabOrder]);
 
 
-  return (
-    <>
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
-        isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
-      } right-0`}>
-        <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2 flex flex-col">
-          <AnimatedLogo variant="sidebar" className="mb-6" />
-
-                    {/* User Profile */}
-          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {user?.name}
-                </span>
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
-                  {user?.title || getRoleNameInArabic(user?.role)} {user?.sector ? ` - قطاع ${user.sector}` : ''}
-                </span>
-              </div>
-            </div>
-          </div>
-
   const [openGroups, setOpenGroups] = React.useState({ lab: false, finance: false });
 
   const renderTabs = () => {
@@ -204,26 +172,17 @@ const UnifiedSidebar = ({
 
     const labTabs = visibleTabs.filter(t => labKeys.includes(t.id));
     const financeTabs = visibleTabs.filter(t => financeKeys.includes(t.id));
-    const otherTabs = visibleTabs.filter(t => !labKeys.includes(t.id) && !financeKeys.includes(t.id));
 
-    // Automatically open groups if their tab is active
-    React.useEffect(() => {
-      if (labTabs.some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, lab: true }));
-      if (financeTabs.some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, finance: true }));
-    }, [activeTab]);
+    const elements = [];
+    let labRendered = false;
+    let financeRendered = false;
 
     const renderTabButton = (tab, isNested = false) => {
       const isCurrentlyActive = (executiveTab && activeTab) 
         ? (tab.isActive ? tab.isActive : (executiveTab === 'dashboard' && activeTab === tab.id) || (executiveTab === tab.id && activeTab === tab.id)) 
         : activeTab === tab.id;
 
-      if (tab.id === 'establishments' && executiveTab === 'establishments') {
-         // handle establishments active state
-      }
-
-      const activeClass = customTabs 
-        ? (tab.activeBgClass || 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10')
-        : (tab.activeBgClass || 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10');
+      const activeClass = tab.activeBgClass || 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10';
 
       return (
         <button
@@ -242,13 +201,6 @@ const UnifiedSidebar = ({
         </button>
       );
     };
-
-    const elements = [];
-
-    // Render other tabs first, then lab, then finance (or based on order)
-    // To preserve order, we can iterate visibleTabs and skip grouped ones if already rendered
-    let labRendered = false;
-    let financeRendered = false;
 
     visibleTabs.forEach(tab => {
       if (labKeys.includes(tab.id)) {
@@ -312,6 +264,49 @@ const UnifiedSidebar = ({
 
     return elements;
   };
+
+  React.useEffect(() => {
+    const tabsToRender = customTabs ? customTabs : tabOrder.map(k => ({ id: k, ...tabConfig[k] }));
+    const visibleTabs = tabsToRender.filter(tab => customTabs ? tab.showCondition !== false : (tab && tab.showCondition));
+    
+    const labKeys = ['stats', 'incoming', 'testing', 'archive'];
+    const financeKeys = ['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports'];
+    
+    if (visibleTabs.filter(t => labKeys.includes(t.id)).some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, lab: true }));
+    if (visibleTabs.filter(t => financeKeys.includes(t.id)).some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, finance: true }));
+  }, [activeTab, customTabs, tabOrder, user?.permissions]);
+
+  return (
+    <>
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
+        isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
+      } right-0`}>
+        <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2 flex flex-col">
+          <AnimatedLogo variant="sidebar" className="mb-6" />
+
+          {/* User Profile */}
+          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  {user?.name}
+                </span>
+                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
+                  {user?.title || getRoleNameInArabic(user?.role)} {user?.sector ? ` - قطاع ${user.sector}` : ''}
+                </span>
+              </div>
+            </div>
+          </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 mb-4 pr-1 pl-2">
             {renderTabs()}
