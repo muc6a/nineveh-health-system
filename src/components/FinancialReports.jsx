@@ -76,14 +76,30 @@ const [showPayModal, setShowPayModal] = useState(false);
   };
 
 
-  const allFines = (penaltyRequests || []).filter(r => r.type === 'fine' || r.type === 'closure');
-  const fines = selectedTeamFilter === 'all' 
-    ? allFines 
-    : allFines.filter(f => f.teamId === selectedTeamFilter || f.teamName === selectedTeamFilter);
-
-  const totalCollected = fines.filter(f => f.paymentStatus === 'paid').reduce((sum, f) => sum + (f.amount || 0), 0);
-  const totalPending = fines.filter(f => f.paymentStatus !== 'paid').reduce((sum, f) => sum + (f.amount || 0), 0);
-  const totalFines = fines.length;
+  const { allFines, fines, totalCollected, totalPending, totalFines } = React.useMemo(() => {
+    const all = (penaltyRequests || []).filter(r => r.type === 'fine' || r.type === 'closure');
+    const filteredFines = selectedTeamFilter === 'all' 
+      ? all 
+      : all.filter(f => f.teamId === selectedTeamFilter || f.teamName === selectedTeamFilter);
+    
+    let collected = 0;
+    let pending = 0;
+    for (let i = 0; i < filteredFines.length; i++) {
+      if (filteredFines[i].paymentStatus === 'paid') {
+        collected += (filteredFines[i].amount || 0);
+      } else {
+        pending += (filteredFines[i].amount || 0);
+      }
+    }
+    
+    return {
+      allFines: all,
+      fines: filteredFines,
+      totalCollected: collected,
+      totalPending: pending,
+      totalFines: filteredFines.length
+    };
+  }, [penaltyRequests, selectedTeamFilter]);
 
   return (
     <div className="space-y-6">
