@@ -209,22 +209,14 @@ const UnifiedSidebar = ({
           if (labTabs.length > 1) {
              const isLabActive = labTabs.some(t => t.id === activeTab);
              elements.push(
-               <div key="group_lab" className="space-y-1">
-                 <button
-                   onClick={() => setOpenGroups(prev => ({ ...prev, lab: !prev.lab }))}
-                   className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${isLabActive && !openGroups.lab ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
-                 >
-                   <div className="flex items-center gap-3">
-                     <span>التقارير والعمليات المختبرية</span>
-                   </div>
-                   <span className="text-xs">{openGroups.lab ? '▼' : '◀'}</span>
-                 </button>
-                 {openGroups.lab && (
-                   <div className="space-y-1 mt-1 border-r-2 border-indigo-100 dark:border-indigo-900/30 mr-4 pr-2">
-                     {labTabs.map(t => renderTabButton(t, true))}
-                   </div>
-                 )}
-               </div>
+                <button
+                  key="group_lab"
+                  onClick={() => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab(labTabs[0].id); if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=' + labTabs[0].id); setIsSidebarOpen(false); }}
+                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${isLabActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+                >
+                  <FlaskConical className={`w-5 h-5 ${isLabActive ? '' : 'text-indigo-500'}`} />
+                  <span>قسم المختبر</span>
+                </button>
              );
           } else {
              elements.push(renderTabButton(tab));
@@ -236,22 +228,14 @@ const UnifiedSidebar = ({
           if (financeTabs.length > 1) {
              const isFinanceActive = financeTabs.some(t => t.id === activeTab);
              elements.push(
-               <div key="group_finance" className="space-y-1">
-                 <button
-                   onClick={() => setOpenGroups(prev => ({ ...prev, finance: !prev.finance }))}
-                   className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${isFinanceActive && !openGroups.finance ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
-                 >
-                   <div className="flex items-center gap-3">
-                     <span>التقارير والعمليات المالية</span>
-                   </div>
-                   <span className="text-xs">{openGroups.finance ? '▼' : '◀'}</span>
-                 </button>
-                 {openGroups.finance && (
-                   <div className="space-y-1 mt-1 border-r-2 border-emerald-100 dark:border-emerald-900/30 mr-4 pr-2">
-                     {financeTabs.map(t => renderTabButton(t, true))}
-                   </div>
-                 )}
-               </div>
+                <button
+                  key="group_finance"
+                  onClick={() => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab(financeTabs[0].id); if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=' + financeTabs[0].id); setIsSidebarOpen(false); }}
+                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${isFinanceActive ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+                >
+                  <LayoutDashboard className={`w-5 h-5 ${isFinanceActive ? '' : 'text-emerald-500'}`} />
+                  <span>القسم المالي</span>
+                </button>
              );
           } else {
              elements.push(renderTabButton(tab));
@@ -271,9 +255,6 @@ const UnifiedSidebar = ({
     
     const labKeys = ['stats', 'incoming', 'testing', 'archive'];
     const financeKeys = ['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports'];
-    
-    if (visibleTabs.filter(t => labKeys.includes(t.id)).some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, lab: true }));
-    if (visibleTabs.filter(t => financeKeys.includes(t.id)).some(t => t.id === activeTab)) setOpenGroups(prev => ({ ...prev, finance: true }));
   }, [activeTab, customTabs, tabOrder, user?.permissions]);
 
   return (

@@ -107,8 +107,8 @@ export const OwnerPortal = () => {
       }
       
       if (addSystemNotification) {
-        addSystemNotification('مهمة ميدانية جديدة 📋', `المنشأة (${ownerEst.name}) تطلب إعادة كشف.`, 'team');
-        addSystemNotification('طلب إعادة كشف وارد 🔄', `صاحب المنشأة (${ownerEst.name}) يطلب إعادة كشف.`, 'admin');
+        addSystemNotification('مهمة ميدانية جديدة 📋', `المنشأة (${ownerEst.name}) تطلب إعادة كشف.`, 'team', 'tasks');
+        addSystemNotification('طلب إعادة كشف وارد 🔄', `صاحب المنشأة (${ownerEst.name}) يطلب إعادة كشف.`, 'admin', 'tasks');
       }
       
       setIsRequestingInspection(false);

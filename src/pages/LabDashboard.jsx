@@ -301,6 +301,30 @@ export const LabDashboard = () => {
         <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 custom-scrollbar">
           <div className="w-full max-w-full mx-auto space-y-6">
 
+            {/* In-page Tabs (Matching Operations Room) */}
+            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
+              {hasPerm('viewLabReports') && (
+                <button onClick={() => setActiveTab('stats')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'stats' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <BarChart3 className="w-4 h-4" />الرئيسية والتقارير
+                </button>
+              )}
+              {hasPerm('receiveSamples') && (
+                <button onClick={() => setActiveTab('incoming')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'incoming' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <Database className="w-4 h-4" />استلام العينات وتوزيعها
+                </button>
+              )}
+              {hasPerm('enterLabResults') && (
+                <button onClick={() => setActiveTab('testing')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'testing' ? 'border-b-2 border-rose-600 text-rose-600 dark:text-rose-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <FlaskConical className="w-4 h-4" />إدخال نتائج الفحص
+                </button>
+              )}
+              {hasPerm('labArchive') && (
+                <button onClick={() => setActiveTab('archive')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'archive' ? 'border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <Archive className="w-4 h-4" />الأرشيف المختبري
+                </button>
+              )}
+            </div>
+
             {/* STATS */}
             {activeTab === 'stats' && hasPerm('viewLabReports') && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

@@ -21,7 +21,6 @@ export const NotificationBell = () => {
 
   if (!user) return null;
 
-  // Filter notifications for the current user
   const myNotifications = systemNotifications.filter(notif => {
     const isTargeted = notif.targetRole === 'all' || notif.targetRole === user.role || notif.targetRole === user.id;
     if (!isTargeted) return false;
@@ -29,15 +28,18 @@ export const NotificationBell = () => {
     if (user.role === 'admin') return true; // Super admin sees everything targeted to him
 
     const t = notif.title || '';
-    const isClosureOrPenalty = t.includes('إغلاق') || t.includes('عقوب') || t.includes('غرامة') || t.includes('مخالفة');
-    const isInspection = t.includes('كشف') || t.includes('تفتيش') || t.includes('مهمة');
-    const isDirective = t.includes('قرار') || t.includes('تبليغ') || t.includes('توجيه') || t.includes('مجلس') || t.includes('SOS') || t.includes('استغاثة');
+    const isClosure = notif.type === 'closures' || (notif.type === undefined && (t.includes('إغلاق') || t.includes('تشميع')));
+    const isPenalty = notif.type === 'penalties' || (notif.type === undefined && (t.includes('عقوب') || t.includes('غرامة') || t.includes('مخالفة')));
+    const isInspectionOrTask = notif.type === 'tasks' || (notif.type === undefined && (t.includes('كشف') || t.includes('تفتيش') || t.includes('مهمة')));
+    const isDirective = notif.type === 'directives' || (notif.type === undefined && (t.includes('قرار') || t.includes('تبليغ') || t.includes('توجيه') || t.includes('مجلس') || t.includes('SOS') || t.includes('استغاثة')));
 
     let allowed = true;
 
-    if (isClosureOrPenalty) {
+    if (isClosure) {
       allowed = user.permissions?.notify_closures !== false;
-    } else if (isInspection) {
+    } else if (isPenalty) {
+      allowed = user.permissions?.notify_penalties !== false; // Assuming notify_penalties can be a separate permission if wanted, but defaulting to notify_closures if not exist, or true
+    } else if (isInspectionOrTask) {
       allowed = user.permissions?.notify_inspections !== false;
     } else if (isDirective) {
       allowed = user.permissions?.notify_directives !== false;
@@ -106,17 +108,28 @@ export const NotificationBell = () => {
             <button onClick={() => setActiveTab('all')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'all' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>الكل</button>
             <button onClick={() => setActiveTab('closures')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'closures' ? 'bg-white dark:bg-slate-700 shadow-sm text-red-600 dark:text-red-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>إشعارات الإغلاقات</button>
             <button onClick={() => setActiveTab('penalties')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'penalties' ? 'bg-white dark:bg-slate-700 shadow-sm text-orange-600 dark:text-orange-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>إشعارات العقوبات</button>
-            <button onClick={() => setActiveTab('tasks')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'tasks' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>مهام وكشوفات</button>
-            <button onClick={() => setActiveTab('directives')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'directives' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>تبليغات عامة</button>
+            <button onClick={() => setActiveTab('tasks')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'tasks' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>الكشوفات والمهام</button>
+            <button onClick={() => setActiveTab('directives')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'directives' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>التبليغات الإدارية</button>
           </div>
 
           {(() => {
             const filteredNotifications = myNotifications.filter(n => {
               if (activeTab === 'all') return true;
-              if (activeTab === 'closures' && (n.title?.includes('إغلاق') || n.title?.includes('تشميع'))) return true;
-              if (activeTab === 'penalties' && (n.title?.includes('غرامة') || n.title?.includes('عقوب'))) return true;
-              if (activeTab === 'tasks' && (n.title?.includes('تفتيش') || n.title?.includes('كشف') || n.title?.includes('مهمة') || n.title?.includes('رقاب') || n.title?.includes('عينة'))) return true;
-              if (activeTab === 'directives' && (n.title?.includes('تبليغ') || n.title?.includes('قرار') || n.title?.includes('توجيه') || n.title?.includes('إداري'))) return true;
+              
+              const t = n.title || '';
+              
+              if (activeTab === 'closures') {
+                return n.type === 'closures' || (n.type === undefined && (t.includes('إغلاق') || t.includes('تشميع')));
+              }
+              if (activeTab === 'penalties') {
+                return n.type === 'penalties' || (n.type === undefined && (t.includes('غرامة') || t.includes('عقوب')));
+              }
+              if (activeTab === 'tasks') {
+                return n.type === 'tasks' || (n.type === undefined && (t.includes('تفتيش') || t.includes('كشف') || t.includes('مهمة') || t.includes('رقاب') || t.includes('عينة')));
+              }
+              if (activeTab === 'directives') {
+                return n.type === 'directives' || (n.type === undefined && (t.includes('تبليغ') || t.includes('قرار') || t.includes('توجيه') || t.includes('إداري')));
+              }
               return false;
             });
             return filteredNotifications.length === 0 ? (
