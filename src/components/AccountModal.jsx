@@ -268,7 +268,9 @@ export const AccountModal = ({ isOpen, onClose, initialData, onSave, mode = 'add
         showTeamMonthlyStats: false,
         showOperationsRoom: false,
         notify_closures: true,
+        notify_penalties: true,
         notify_inspections: true,
+        notify_tasks: true,
         notify_directives: true
       };
 
