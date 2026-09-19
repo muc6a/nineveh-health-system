@@ -14,16 +14,15 @@ import OperationsRoom from '../components/OperationsRoom';
 import SmartTasks from '../components/SmartTasks';
 import { NotificationBell } from '../components/NotificationBell';
 import { CriticalAlertModal } from '../components/CriticalAlertModal';
-import { PrintableDailyReport } from '../components/PrintableDailyReport';
 import { EstablishmentsManager } from '../components/EstablishmentsManager';
 import { FinancialReports } from '../components/FinancialReports';
 import { LabManager } from '../components/LabManager';
-import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon , Eye } from 'lucide-react';
+import { LogOut, MapPin, AlertTriangle, X, CheckCircle, TrendingUp, Users, ShieldAlert, FileText, Send, Building, LayoutDashboard, Camera, Mail, Package, CheckSquare, Settings, Database, BarChart3, Map, Archive, Megaphone, ClipboardList, MessageSquareWarning, Target, FlaskConical, AlertOctagon , Eye, Siren, Lock, Ban, ShieldX, Banknote } from 'lucide-react';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const ExecutivePortal = ({ embeddedTab }) => {
 
-  const { navigate, establishments, teams, user, setUser, hasPerm, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
+  const { navigate, establishments, teams, user, setUser, hasPerm, directives, addDirective, markDirectiveRead, notify, reports, setReports, config, penaltyRequests, setShowDisplayPrefsModal, directors, trackers, tasks, setTasks, systemNotifications, setSystemNotifications, uiPreferences, labRequests, setLabRequests, setDispatches , globalLogout } = useContext(AppContext);
   // Core UI state
   const [selectedTeamId, setSelectedTeamId] = useState('all');
   const [complaintTab, setComplaintTab] = useState(hasPerm('showPublicEvalsPage') ? 'citizens' : 'delivery');
@@ -158,7 +157,8 @@ export const ExecutivePortal = ({ embeddedTab }) => {
     }
   };
 
-  const handleDispatch = (tId, eId) => {
+  const [dispatchNote, setDispatchNote] = useState("");
+  const handleDispatch = (tId, eId, note) => {
     if (!eId || !tId) {
       notify('الرجاء تحديد المنشأة واللجنة المطلوبة', 'error');
       return;
@@ -174,6 +174,17 @@ export const ExecutivePortal = ({ embeddedTab }) => {
       date: new Date().toISOString(),
       status: 'pending'
     }]);
+
+    setTasks(prev => [{
+      id: 'tsk_' + Date.now(),
+      type: 'visit',
+      title: 'زيارة فورية موجهة',
+      desc: `تم توجيهكم من الغرفة المركزية لزيارة المنشأة (${est.name}) فوراً. الملاحظات: ${note || 'لا توجد ملاحظات'}`,
+      teamId: team.id,
+      status: 'pending',
+      targetEstId: est.id,
+      createdAt: new Date().toISOString()
+    }, ...prev]);
 
     notify(`تم إرسال أمر توجيه عاجل إلى ${team.name} لزيارة ${est.name} فوراً!`, 'success', true);
   };
@@ -345,8 +356,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
   return (
     <>
-      <PrintableDailyReport />
-      <div className={`bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 print:hidden relative ${embeddedTab ? 'min-h-full rounded-2xl overflow-hidden' : 'min-h-screen'}`}>
+      <div className={`bg-slate-50 dark:bg-slate-950 flex transition-colors duration-300 relative ${embeddedTab ? 'min-h-full rounded-2xl overflow-hidden' : 'min-h-screen'}`}>
         <CriticalAlertModal />
         
         {/* Fixed Sticky Left Sidebar */}
@@ -430,61 +440,18 @@ export const ExecutivePortal = ({ embeddedTab }) => {
         </div>
 
         {/* Welcome Headers */}
-        <div className="relative z-40 flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 text-right">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">
-              {activeTab === 'strategic' ? '⚙️' : activeTab === 'establishments' ? '🏢' : activeTab === 'directives' ? '📢' : activeTab === 'complaints' ? '⚖️' : activeTab === 'field_dispatch' ? '🚀' : activeTab === 'lab_management' ? '🧪' : '💼'}
-            </span>
-            <div>
-              <h2 className="text-xs font-black text-slate-800 dark:text-white">
-                {activeTab === 'establishments' ? (PERMISSIONS_TABS.find(t => t.id === 'establishments')?.label || 'المنشآت') : 
-                 activeTab === 'directives' ? 'التبليغات' : 
-                 activeTab === 'complaints' ? 'شكاوى المواطنين' :
-                 
-                 activeTab === 'lab_management' ? 'قرارات المختبر' :
-                 activeTab === 'team_reports' ? `تقارير ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'الفريق الميداني'}` :
-                 (activeTab === 'none' ? (PERMISSIONS_TABS.find(t => t.id === 'advanced')?.label || 'الإدارة المتقدمة') : (selectedTeamId === 'all' ? 'الملخص الإحصائي العام للمحافظة' : `إحصائيات ${allowedTeams.find(t => t.id === selectedTeamId)?.name || 'المنظومة'}`))}
-              </h2>
-              <p className="text-[10px] text-slate-400 mt-1">
-                {activeTab === 'establishments' ? 'عرض وتعديل والتحكم الكامل بالمنشآت المضافة' : 
-                 activeTab === 'directives' ? 'إرسال الأوامر والتعميمات للفرق الرقابية' :
-                 activeTab === 'complaints' ? 'عرض شكاوى وملاحظات المواطنين الواردة من خلال مسح QR' :
-                 
-                 (activeTab === 'none' ? 'نظام إدارة الرقابة الصحية الموحد - محافظة نينوى' : 'عرض البيانات والأرقام الرقابية المحدثة في الوقت الفعلي للمنظومة')}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+        <div className="relative z-40 mb-6">
+          <GlobalHeader showPrintButton={true}>
             <button 
               onClick={() => setShowDisplayPrefsModal(true)}
               className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
-              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-              <span className="font-bold text-[10px]">تخصيص العرض</span>
+              تخصيص العرض
             </button>
-            <NotificationBell />
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-              <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              <span className="text-slate-300">|</span>
-              <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-              <WeatherWidget variant="full" />
-            </div>
-            {hasPerm('exportData') && (
-              <button 
-                onClick={() => window.print()}
-                className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
-              >
-                🖨️ طباعة الموقف الإحصائي اليومي
-              </button>
-            )}
-          </div>
+          </GlobalHeader>
         </div>
-
-
-
-        {/* Tab Content Rendering */}
+        
+        {/* Dynamic Main Content */}
         {executiveTab === 'establishments' && hasPerm('manageEstablishments') ? (
           <EstablishmentsManager />
         ) : (
@@ -540,9 +507,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
             onClick={() => setShowCategoryBreakdownModal(true)}
             className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-xl border border-slate-700/50 cursor-pointer hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 text-right group relative overflow-hidden"
           >
-            <div className="absolute top-2 left-2 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Building className="w-32 h-32 text-white" />
-            </div>
+            <Building className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-white/10 group-hover:scale-110 group-hover:text-white/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-teal-400 text-[10px] font-black tracking-wider uppercase bg-teal-500/10 px-2 py-0.5 rounded-lg border border-teal-500/20">منشآت نينوى</span>
               <span className="text-xs text-slate-400">اضغط للمعاينة بالتصنيف 🔍</span>
@@ -553,11 +518,9 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
           {/* Card 2: Coverage Ratio */}
           <div 
-            className="p-5 rounded-2xl bg-gradient-to-br from-teal-900 to-slate-900 text-white shadow-xl border border-teal-800/40 text-right relative overflow-hidden"
+            className="p-5 rounded-2xl bg-gradient-to-br from-teal-900 to-slate-900 text-white shadow-xl border border-teal-800/40 text-right relative overflow-hidden group"
           >
-            <div className="absolute top-2 left-2 opacity-5">
-              <TrendingUp className="w-32 h-32 text-teal-400" />
-            </div>
+            <CheckCircle className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-teal-400/10 group-hover:scale-110 group-hover:text-teal-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-emerald-450 text-[10px] font-black tracking-wider uppercase bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">نسبة الإنجاز</span>
               <span className="text-emerald-400 text-xs font-bold">مؤشر أداء متميز</span>
@@ -570,11 +533,9 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
           {/* Card 3: Critical Violations */}
           <div 
-            className="p-5 rounded-2xl bg-gradient-to-br from-red-900 to-slate-900 text-white shadow-xl border border-red-800/40 text-right relative overflow-hidden"
+            className="p-5 rounded-2xl bg-gradient-to-br from-red-900 to-slate-900 text-white shadow-xl border border-red-800/40 text-right relative overflow-hidden group"
           >
-            <div className="absolute top-2 left-2 opacity-5">
-              <AlertTriangle className="w-32 h-32 text-red-400" />
-            </div>
+            <Siren className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-red-400/10 group-hover:scale-110 group-hover:text-red-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-red-450 text-[10px] font-black tracking-wider uppercase bg-red-500/10 px-2 py-0.5 rounded-lg border border-red-500/20">منشآت حرجة</span>
               <span className="text-red-400 text-xs font-bold">تتطلب متابعة</span>
@@ -587,11 +548,9 @@ export const ExecutivePortal = ({ embeddedTab }) => {
 
           {/* Card 4: Closed Establishments */}
           <div 
-            className="p-5 rounded-2xl bg-gradient-to-br from-orange-900 to-slate-900 text-white shadow-xl border border-orange-800/40 text-right relative overflow-hidden"
+            className="p-5 rounded-2xl bg-gradient-to-br from-orange-900 to-slate-900 text-white shadow-xl border border-orange-800/40 text-right relative overflow-hidden group"
           >
-            <div className="absolute top-2 left-2 opacity-5">
-              <AlertTriangle className="w-32 h-32 text-orange-400" />
-            </div>
+            <Lock className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-orange-400/10 group-hover:scale-110 group-hover:text-orange-400/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
               <span className="text-orange-450 text-[10px] font-black tracking-wider uppercase bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">إغلاق رسمي</span>
               <span className="text-orange-400 text-xs font-bold">محاسبة قانونية</span>
@@ -608,22 +567,28 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div 
               onClick={() => { setStatsModalType('closures'); setSelectedSector(null); setShowStatsModal(true); }}
-              className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none"
+              className="glassmorphic-card p-6 border border-rose-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
             >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المنشآت المغلقة هذا الشهر 🔒</h3>
+              <Lock className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-rose-500/5 dark:text-rose-500/10 group-hover:scale-110 group-hover:text-rose-500/10 dark:group-hover:text-rose-500/20 transition-all duration-500 pointer-events-none" />
+              <div className="relative z-10">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المنشآت المغلقة هذا الشهر 🔒</h3>
               <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم اتخاذ قرار بإغلاقها خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-rose-500">{allMonthlyClosures.length}</p>
               <span className="text-[10px] text-rose-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
+              </div>
             </div>
             
             <div 
               onClick={() => { setStatsModalType('fines'); setSelectedSector(null); setShowStatsModal(true); }}
-              className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none"
+              className="glassmorphic-card p-6 border border-amber-500/20 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
             >
-              <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
+              <Banknote className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-amber-500/5 dark:text-amber-500/10 group-hover:scale-110 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/20 transition-all duration-500 pointer-events-none" />
+              <div className="relative z-10">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">الغرامات المالية هذا الشهر 💰</h3>
               <p className="text-[10px] text-slate-500 mb-4">إجمالي المنشآت التي تم تغريمها مالياً خلال الشهر الحالي في القطاعات المعنية.</p>
               <p className="text-5xl font-extrabold text-amber-500">{allMonthlyFines.length}</p>
               <span className="text-[10px] text-amber-500 font-bold block mt-3">انقر لعرض التفاصيل 👁️</span>
+              </div>
             </div>
           </div>
 
@@ -735,7 +700,7 @@ export const ExecutivePortal = ({ embeddedTab }) => {
           </div>
         ) : activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) ? (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+            <div className={`grid grid-cols-1 ${hasPerm('sendDirective') ? 'lg:grid-cols-2' : ''} gap-6 items-stretch`}>
             {/* Direct Command Directive Form */}
             {hasPerm('sendDirective') && (
               <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl h-full flex flex-col justify-start">
@@ -761,6 +726,11 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                       ))}
                       {allowedTeams.map(t => (
                         <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
+                      ))}
+                      <option value="accountant">💰 المحاسب المالي</option>
+                      <option value="lab">🧪 مختبر الصحة المركزي</option>
+                      {trackers && trackers.map(tr => (
+                        <option key={tr.id} value={tr.id}>🕵️ المتابع: {tr.name}</option>
                       ))}
                     </select>
                   </div>
@@ -925,22 +895,35 @@ export const ExecutivePortal = ({ embeddedTab }) => {
                           </span>
                         </td>
                         <td className="p-3">
-                          <select 
+                          <input
+                            type="text"
+                            list={"estList-" + t.id}
+                            placeholder="ابحث عن المنشأة..."
                             onChange={(e) => {
-                              setDispatchEstId(e.target.value);
-                              setDispatchTeamId(t.id);
+                              const est = establishments.find(es => es.name === e.target.value);
+                              if (est) {
+                                setDispatchEstId(est.id);
+                                setDispatchTeamId(t.id);
+                              }
                             }}
-                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
-                          >
-                            <option value="">-- اختر المنشأة --</option>
+                            className="w-full mb-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
+                          <datalist id={"estList-" + t.id}>
                             {establishments.filter(e => e.sector === t.sector).map(est => (
-                              <option key={est.id} value={est.id}>{est.name}</option>
+                              <option key={est.id} value={est.name} />
                             ))}
-                          </select>
+                          </datalist>
+                          <input
+                            type="text"
+                            placeholder="ملاحظات التوجيه..."
+                            value={dispatchTeamId === t.id ? dispatchNote : ""}
+                            onChange={(e) => { setDispatchNote(e.target.value); setDispatchTeamId(t.id); }}
+                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
                         </td>
                         <td className="p-3 text-center">
                           <button
-                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId)}
+                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId, dispatchNote)}
                             className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
                           >
                             🚀 إرسال التوجيه

@@ -7,6 +7,24 @@ export default function SmartTasks() {
   const [selectedEstId, setSelectedEstId] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
 
+  // Smart Auto-Routing: Auto-select team based on establishment's sector
+  React.useEffect(() => {
+    if (selectedEstId && establishments && teams) {
+      const est = establishments.find(e => e.id === selectedEstId);
+      if (est && est.sector) {
+        // Try to find a matching team by sector
+        const matchedTeam = teams.find(t => 
+           (t.name && t.name.includes(est.sector)) || 
+           (t.sector && t.sector === est.sector) ||
+           (t.sector && est.sector.includes(t.sector))
+        );
+        if (matchedTeam) {
+          setSelectedTeamId(matchedTeam.id);
+        }
+      }
+    }
+  }, [selectedEstId, establishments, teams]);
+
   const triggerAlert = (msg) => {
     if (notify) notify(msg, 'success', true);
     else alert(msg);

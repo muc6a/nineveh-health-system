@@ -1,17 +1,81 @@
+import { AlertTriangle, Archive, BarChart3, Building, Check, CheckCircle, ClipboardList, Clock, CreditCard, Database, Eye, FileEdit, FileSearch, FileText, FlaskConical, LayoutDashboard, LogOut, Mail, Menu, Plus, Power, ShieldAlert, TrendingUp, X, Users } from 'lucide-react';
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
+import UnifiedSidebar from '../components/UnifiedSidebar';
+import { TeamDashboard } from '../pages/TeamDashboard';
+import SmartTasks from '../components/SmartTasks';
+import OperationsRoom from '../components/OperationsRoom';
+import { EstablishmentsManager } from '../components/EstablishmentsManager';
+
+import { FinancialReports } from '../components/FinancialReports';
+
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { GlobalHeader } from '../components/GlobalHeader';
 import { NotificationBell } from '../components/NotificationBell';
-import { FlaskConical, CheckCircle, AlertTriangle, Clock, Archive, FileText, Check, X, ShieldAlert, FileSearch, Power, BarChart3, LayoutDashboard, Menu, LogOut, Plus , Eye } from 'lucide-react';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const LabDashboard = () => {
     const { user, setUser, navigate, notify, labRequests, setLabRequests, systemNotifications, setSystemNotifications, establishments, playBeep, uiPreferences, globalLogout, hasPerm, teams, setActiveSidebarTabs } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('stats');
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    return params.get('tab') || 'stats';
+  });
+
   const [showDisplayPrefsModal, setShowDisplayPrefsModal] = useState(false); // 'stats', 'incoming', 'testing', 'archive'
+
+  React.useEffect(() => {
+    let isAllowed = false;
+    const canSeeStats = hasPerm('viewLabReports');
+    const canSeeIncoming = hasPerm('receiveSamples');
+    const canSeeTesting = hasPerm('enterLabResults');
+    const canSeeArchive = hasPerm('labArchive');
+    
+    const canSeeDashboard = hasPerm('financialReports');
+    const canSeeFines = hasPerm('payFines');
+    const canSeeInventory = hasPerm('dailyInventory');
+    const canSeeCompReports = hasPerm('viewComprehensiveFinancialReports');
+    
+    const canSeeStrategic = hasPerm('showMainDashboard') || hasPerm('showReportsPage');
+    const canSeeSmartTasks = hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks');
+    const canSeeOps = hasPerm('authenticatePenalties');
+    const canSeeDirectives = hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective');
+    const canSeeComplaints = hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage');
+    const canSeeEst = hasPerm('manageEstablishments');
+
+    if (activeTab === 'stats' && canSeeStats) isAllowed = true;
+    if (activeTab === 'incoming' && canSeeIncoming) isAllowed = true;
+    if (activeTab === 'testing' && canSeeTesting) isAllowed = true;
+    if (activeTab === 'archive' && canSeeArchive) isAllowed = true;
+    if (activeTab === 'financials' && canSeeDashboard) isAllowed = true;
+    if (activeTab === 'ext_financials' && canSeeFines) isAllowed = true;
+    if (activeTab === 'reconciliation' && canSeeInventory) isAllowed = true;
+    if (activeTab === 'comprehensive_reports' && canSeeCompReports) isAllowed = true;
+    if (activeTab === 'strategic' && canSeeStrategic) isAllowed = true;
+    if (activeTab === 'smart_tasks' && canSeeSmartTasks) isAllowed = true;
+    if (activeTab === 'operations_room' && canSeeOps) isAllowed = true;
+    if (activeTab === 'directives' && canSeeDirectives) isAllowed = true;
+    if (activeTab === 'complaints' && canSeeComplaints) isAllowed = true;
+    if (activeTab === 'establishments' && canSeeEst) isAllowed = true;
+
+    if (!isAllowed) {
+       if (canSeeStats) setActiveTab('stats');
+       else if (canSeeIncoming) setActiveTab('incoming');
+       else if (canSeeTesting) setActiveTab('testing');
+       else if (canSeeArchive) setActiveTab('archive');
+       else if (canSeeDashboard) setActiveTab('financials');
+       else if (canSeeFines) setActiveTab('ext_financials');
+       else if (canSeeInventory) setActiveTab('reconciliation');
+       else if (canSeeCompReports) setActiveTab('comprehensive_reports');
+       else if (canSeeStrategic) setActiveTab('strategic');
+       else if (canSeeSmartTasks) setActiveTab('smart_tasks');
+       else if (canSeeOps) setActiveTab('operations_room');
+       else if (canSeeDirectives) setActiveTab('directives');
+       else if (canSeeComplaints) setActiveTab('complaints');
+       else if (canSeeEst) setActiveTab('establishments');
+    }
+  }, [user?.permissions, activeTab]);
   const [resultModal, setResultModal] = useState({ isOpen: false, request: null, mode: 'create' });
   const [resultStatus, setResultStatus] = useState('safe');
   const [resultNotes, setResultNotes] = useState('');
@@ -26,7 +90,11 @@ export const LabDashboard = () => {
     if (setActiveSidebarTabs) {
       setActiveSidebarTabs([
         { id: 'stats', label: 'الرئيسية والتقارير' },
-        { id: 'testing', label: 'فحص العينات' }
+        { id: 'incoming', label: 'استلام العينات وتوزيعها' },
+        { id: 'testing', label: 'إدخال نتائج الفحص' },
+        { id: 'comprehensive_reports', label: 'التقارير المختبرية والرقابية' },
+        { id: 'archive', label: 'الأرشيف المختبري' },
+        { id: 'directives', label: 'التبليغات' }
       ]);
     }
   }, []);
@@ -193,118 +261,23 @@ export const LabDashboard = () => {
       dir="rtl"
     >
       
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Fixed Sticky Sidebar */}
-      <aside className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
-        isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
-      } right-0`}>
-        <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
-          <AnimatedLogo variant="sidebar" className="mb-6" />
-
-                    {/* User Profile */}
-          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {user?.name}
-                </span>
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
-                  {user?.title || user?.role === 'lab' ? 'المختبر المركزي العام' : user?.role} {user?.sector ? ` - قطاع ${user.sector}` : ''}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-1 mb-6">
-            
-            <button
-              onClick={() => { setActiveTab('stats'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                activeTab === 'stats'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <BarChart3 className="w-4.5 h-4.5" />
-              <span>الرئيسية والتقارير</span>
-            </button>
-            
-            <button
-              onClick={() => { setActiveTab('incoming'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                activeTab === 'incoming'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Clock className="w-4.5 h-4.5" />
-                <span>الطلبات الواردة</span>
-              </div>
-              {incomingReqs.length > 0 && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'incoming' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700'}`}>{incomingReqs.length}</span>
-              )}
-            </button>
-
-            <button
-              onClick={() => { setActiveTab('testing'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                activeTab === 'testing'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <FlaskConical className="w-4.5 h-4.5" />
-                <span>قيد الفحص</span>
-              </div>
-              {testingReqs.length > 0 && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'testing' ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-700'}`}>{testingReqs.length}</span>
-              )}
-            </button>
-
-            <button
-              onClick={() => { setActiveTab('archive'); setIsSidebarOpen(false); }}
-              className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                activeTab === 'archive'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
-              }`}
-            >
-              <Archive className="w-4.5 h-4.5" />
-              <span>الأرشيف المختبري</span>
-            </button>
-          </div>
-        </div>
-
-        
-        {/* Bottom Controls */}
-          <div className="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between gap-2">
-            <button 
-              onClick={globalLogout}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border border-rose-100 dark:border-rose-900/30"
-            >
-              تسجيل الخروج
-            </button>
-            <div className="p-1 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50">
-              <ThemeToggle />
-            </div>
-          </div>
-      </aside>
+      <UnifiedSidebar 
+        isSidebarOpen={isSidebarOpen} 
+        setIsSidebarOpen={setIsSidebarOpen} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+      />
+      
+      <DisplayPreferencesModal 
+        isOpen={showDisplayPrefsModal} 
+        onClose={() => setShowDisplayPrefsModal(false)} 
+      />
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
         
         {/* Header */}
-        <header className="shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex flex-col p-4 sticky top-0 z-30">
+        <div className="relative z-40 mb-6 pt-6 lg:pt-8 px-4 lg:px-8 mt-4 md:mt-0">
           <div className="flex items-center gap-3 md:hidden mb-4">
             <button 
               onClick={() => setIsSidebarOpen(true)}
@@ -313,42 +286,99 @@ export const LabDashboard = () => {
               <Menu className="w-5 h-5" />
             </button>
           </div>
-          <GlobalHeader
-            icon="🧪"
-            title={
-              activeTab === 'stats' ? 'الرئيسية والتقارير' :
-              activeTab === 'incoming' ? 'الطلبات الواردة' :
-              activeTab === 'testing' ? 'عينات قيد الفحص' :
-              activeTab === 'archive' ? 'الأرشيف المختبري' : 'المختبر المركزي'
-            }
-            subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
-            showPrintButton={false}
-          />
-        </header>
+          <GlobalHeader>
+            <button
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              <Eye className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-teal-600 transition-colors" />
+              تخصيص العرض
+            </button>
+          </GlobalHeader>
+        </div>
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 custom-scrollbar">
           <div className="w-full max-w-full mx-auto space-y-6">
 
+            {/* In-page Tabs (Matching Operations Room) */}
+            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
+              {hasPerm('viewLabReports') && (
+                <button onClick={() => setActiveTab('stats')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'stats' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <BarChart3 className="w-4 h-4" />الرئيسية والتقارير
+                </button>
+              )}
+              {hasPerm('receiveSamples') && (
+                <button onClick={() => setActiveTab('incoming')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'incoming' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <Database className="w-4 h-4" />استلام العينات وتوزيعها
+                </button>
+              )}
+              {hasPerm('enterLabResults') && (
+                <button onClick={() => setActiveTab('testing')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'testing' ? 'border-b-2 border-rose-600 text-rose-600 dark:text-rose-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <FlaskConical className="w-4 h-4" />إدخال نتائج الفحص
+                </button>
+              )}
+              {hasPerm('labArchive') && (
+                <button onClick={() => setActiveTab('archive')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'archive' ? 'border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
+                  <Archive className="w-4 h-4" />الأرشيف المختبري
+                </button>
+              )}
+            </div>
+
             {/* STATS */}
-            {activeTab === 'stats' && (
+            {activeTab === 'stats' && hasPerm('viewLabReports') && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
-                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">إجمالي العينات المستلمة</h3>
-                    <p className="text-4xl font-black text-indigo-600 dark:text-indigo-400">{labRequests.length}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  {/* Card 1: Total */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-xl border border-slate-700/50 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 text-right group relative overflow-hidden">
+                    <div className="absolute top-2 left-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <FlaskConical className="w-32 h-32 text-white" />
+                    </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-slate-400 text-[10px] font-black tracking-wider uppercase bg-slate-500/10 px-2 py-0.5 rounded-lg border border-slate-500/20">عينات نينوى</span>
+                    </div>
+                    <h3 className="text-xs text-slate-300 font-bold">إجمالي العينات المستلمة</h3>
+                    <span className="text-4xl lg:text-5xl font-black text-white mt-1 block">{labRequests.length} <span className="text-sm text-slate-400 font-medium">عينة</span></span>
                   </div>
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
-                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات قيد الفحص</h3>
-                    <p className="text-4xl font-black text-amber-600 dark:text-amber-400">{testingReqs.length}</p>
+
+                  {/* Card 2: Pending */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-900 to-slate-900 text-white shadow-xl border border-amber-800/40 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 text-right group relative overflow-hidden">
+                    <div className="absolute top-2 left-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <Clock className="w-32 h-32 text-white" />
+                    </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-amber-400 text-[10px] font-black tracking-wider uppercase bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">قيد الفحص</span>
+                    </div>
+                    <h3 className="text-xs text-amber-300/70 font-bold">عينات تنتظر الفحص</h3>
+                    <span className="text-4xl lg:text-5xl font-black text-amber-500 mt-1 block">{testingReqs.length} <span className="text-sm text-amber-500/60 font-medium">عينة</span></span>
                   </div>
-                  <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-sm">
-                    <h3 className="text-slate-500 dark:text-slate-400 font-bold mb-2">عينات منجزة</h3>
-                    <p className="text-4xl font-black text-emerald-600 dark:text-emerald-400">{archivedReqs.length}</p>
+
+                  {/* Card 3: Completed */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-900 to-slate-900 text-white shadow-xl border border-emerald-800/40 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 text-right group relative overflow-hidden">
+                    <div className="absolute top-2 left-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <CheckCircle className="w-32 h-32 text-white" />
+                    </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-emerald-400 text-[10px] font-black tracking-wider uppercase bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">إنجاز</span>
+                    </div>
+                    <h3 className="text-xs text-emerald-300/70 font-bold">عينات منجزة بنجاح</h3>
+                    <span className="text-4xl lg:text-5xl font-black text-emerald-500 mt-1 block">{archivedReqs.length} <span className="text-sm text-emerald-500/60 font-medium">عينة</span></span>
+                  </div>
+
+                  {/* Card 4: Completion Rate */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-xl border border-indigo-800/40 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 text-right group relative overflow-hidden">
+                    <div className="absolute top-2 left-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <TrendingUp className="w-32 h-32 text-white" />
+                    </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-indigo-400 text-[10px] font-black tracking-wider uppercase bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">أداء</span>
+                    </div>
+                    <h3 className="text-xs text-indigo-300/70 font-bold">نسبة إنجاز المختبر</h3>
+                    <span className="text-4xl lg:text-5xl font-black text-indigo-500 mt-1 block">{labRequests.length > 0 ? ((archivedReqs.length / labRequests.length) * 100).toFixed(1) : 0} <span className="text-sm text-indigo-500/60 font-medium">%</span></span>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+                <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/20 text-teal-600 flex items-center justify-center">
                     <BarChart3 className="w-5 h-5" />
@@ -362,11 +392,14 @@ export const LabDashboard = () => {
                   {(teams || []).map(team => {
                     const teamSamplesCount = (labRequests || []).filter(r => r.teamId === team.id || r.senderName === team.name).length;
                     return (
-                      <div key={team.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 flex flex-col gap-2">
-                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{team.name}</span>
-                        <div className="flex items-end justify-between">
-                          <span className="text-2xl font-black text-slate-800 dark:text-white">{teamSamplesCount}</span>
-                          <span className="text-[10px] text-teal-600 bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-full font-bold">عينة</span>
+                      <div key={team.id} className="relative overflow-hidden group bg-white/50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200/50 dark:border-slate-700/50 flex flex-col gap-2 shadow-sm hover:shadow-md transition-all">
+                        <Users className="absolute top-1/2 left-2 -translate-y-1/2 w-16 h-16 text-slate-100 dark:text-slate-700/30 group-hover:scale-110 group-hover:text-teal-500/10 transition-all duration-500 pointer-events-none" />
+                        <div className="relative z-10 flex flex-col gap-2">
+                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{team.name}</span>
+                          <div className="flex items-end justify-between">
+                            <span className="text-2xl font-black text-slate-800 dark:text-white">{teamSamplesCount}</span>
+                            <span className="text-[10px] text-teal-600 bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-full font-bold">عينة</span>
+                          </div>
                         </div>
                       </div>
                     );
@@ -382,8 +415,8 @@ export const LabDashboard = () => {
             )}
 
             {/* INCOMING */}
-            {activeTab === 'incoming' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+            {activeTab === 'incoming' && hasPerm('receiveSamples') && (
+              <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex justify-end mb-6">
                   {hasPerm('receiveSamples') && (
                     <button 
@@ -436,8 +469,8 @@ export const LabDashboard = () => {
             )}
 
             {/* TESTING */}
-            {activeTab === 'testing' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+            {activeTab === 'testing' && hasPerm('enterLabResults') && (
+              <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="flex justify-end mb-6">
                   {hasPerm('receiveSamples') && (
                     <button 
@@ -489,8 +522,11 @@ export const LabDashboard = () => {
             )}
 
             {/* ARCHIVE */}
-            {activeTab === 'archive' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200/50 dark:border-white/5 shadow-sm min-h-[50vh] animate-in fade-in duration-500">
+            
+            
+    
+            {activeTab === 'archive' && hasPerm('labArchive') && (
+              <div className="glassmorphic-card rounded-3xl p-6 border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-900/50 min-h-[50vh] animate-in fade-in duration-500">
                 <div className="space-y-4">
                   {archivedReqs.length === 0 ? (
                     <div className="text-center p-12 text-slate-400 font-bold">الأرشيف فارغ.</div>
@@ -521,6 +557,24 @@ export const LabDashboard = () => {
 
           </div>
         </div>
+      
+                                                                            
+      
+                                                                                    
+                                                    
+      
+            {activeTab === 'financials' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
+            {activeTab === 'ext_financials' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
+            {activeTab === 'reconciliation' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
+            {activeTab === 'comprehensive_reports' && <div className="w-full h-full min-h-[85vh]"><FinancialReports /></div>}
+            
+            {activeTab === 'strategic' && <TeamDashboard embeddedTab="strategic" />}
+            {activeTab === 'smart_tasks' && <div className="w-full h-full min-h-[85vh]"><SmartTasks /></div>}
+            {activeTab === 'operations_room' && <div className="w-full h-full min-h-[85vh]"><OperationsRoom /></div>}
+            {activeTab === 'establishments' && <div className="w-full h-full min-h-[85vh]"><EstablishmentsManager /></div>}
+            {activeTab === 'directives' && <TeamDashboard embeddedTab="directives" />}
+            {activeTab === 'complaints' && <TeamDashboard embeddedTab="complaints" />}
+
       </main>
 
       {/* Result Modal */}

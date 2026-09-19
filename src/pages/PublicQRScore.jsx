@@ -6,7 +6,7 @@ import { Star, Shield, ShieldCheck, AlertOctagon, ChevronDown, ChevronUp, Camera
 import html2canvas from 'html2canvas';
 
 export const PublicQRScore = () => {
-  const { navigate, establishments, routeParams, addReport, user, inspectionTemplates, config } = useContext(AppContext);
+  const { navigate, establishments, routeParams, addReport, user, inspectionTemplates, config, playBeep } = useContext(AppContext);
   const [establishment, setEstablishment] = useState(null);
   
   // Accordion details toggle
@@ -125,6 +125,73 @@ export const PublicQRScore = () => {
     setFeedbackSubmitted(true);
     setCitizenPoints(prev => prev + 50); // Award 50 points
     
+    // Play celebratory sound and voice based on Admin Configuration
+    const soundConf = config?.citizenSuccessSound || { type: 'voice_male' };
+    
+    if (soundConf.type === 'custom' && soundConf.customDataUrl) {
+      try {
+        const audio = new Audio(soundConf.customDataUrl);
+        audio.play();
+      } catch (err) {
+        console.log('Custom audio failed', err);
+        if (playBeep) playBeep('success');
+      }
+    } else if (soundConf.type === 'voice_male' || soundConf.type === 'voice_female' || soundConf.type === 'voice_old') {
+      try {
+        if ('speechSynthesis' in window) {
+          const msgText = soundConf.messageText || "عاشت إيدك، شكراً لمساعدتك إيانا في حماية مجتمعنا.";
+          const msg = new SpeechSynthesisUtterance(msgText);
+          msg.lang = 'ar-SA';
+          
+          let voices = window.speechSynthesis.getVoices();
+          let isFemale = soundConf.type === 'voice_female';
+          
+          let selectedVoice = voices.find(v => {
+              let name = v.name.toLowerCase();
+              if (isFemale) {
+                  return name.includes('female') || name.includes('zira') || name.includes('amira') || name.includes('laila') || name.includes('salma') || name.includes('sana') || name.includes('zeina') || name.includes('mariam');
+              } else {
+                  return (name.includes('male') && !name.includes('female')) || name.includes('shakir') || name.includes('maged') || name.includes('tarik') || name.includes('mehdi') || name.includes('hamid');
+              }
+          });
+          
+          if (!selectedVoice) {
+              let arabicVoices = voices.filter(v => v.lang.startsWith('ar'));
+              if (arabicVoices.length > 0) {
+                  selectedVoice = isFemale ? arabicVoices[arabicVoices.length - 1] : arabicVoices[0];
+              }
+          }
+          
+          if (selectedVoice) {
+              msg.voice = selectedVoice;
+          }
+          
+          if (soundConf.type === 'voice_old') {
+              msg.pitch = 0.5;
+              msg.rate = 0.75;
+          } else if (isFemale) {
+              msg.pitch = 1.5;
+              msg.rate = 0.9;
+          } else {
+              msg.pitch = 0.9;
+              msg.rate = 0.9;
+          }
+
+          window.speechSynthesis.speak(msg);
+        }
+      } catch (err) {
+        console.log('Speech synthesis failed', err);
+        if (playBeep) playBeep('success');
+      }
+    } else if (soundConf.type === 'beep_alert') {
+      if (playBeep) playBeep('alert');
+    } else if (soundConf.type === 'beep_error') {
+      if (playBeep) playBeep('error');
+    } else {
+      // standard beep
+      if (playBeep) playBeep('success'); 
+    }
+    
     // Auto-generate certificate image after a short delay to allow DOM render and image loading
     setTimeout(() => {
       generateCertificateImage();
@@ -218,9 +285,11 @@ export const PublicQRScore = () => {
           <h1 className="text-lg md:text-xl font-black text-slate-800 dark:text-white leading-tight">
             {establishment.name}
           </h1>
+          {/* 
           <span className="inline-block mt-1 px-3 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold">
             نشاط المنشأة: {establishment.type}
           </span>
+          */}
           <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium">
             تاريخ التقييم الرسمي الصادر: {establishment.lastInspection}
           </p>
@@ -261,11 +330,11 @@ export const PublicQRScore = () => {
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">التقييم التفتيشي العام للمنشأة</span>
               
               {isClosed ? (
-                <span className="text-4xl md:text-5xl font-black text-rose-500 drop-shadow-[0_0_15px_rgba(225,29,72,0.5)] my-2">
+                <span className="text-5xl md:text-6xl font-black text-rose-500 drop-shadow-[0_0_15px_rgba(225,29,72,0.5)] my-2">
                   مغلق 🚫
                 </span>
               ) : (
-                <span className={`text-5xl font-black tracking-tight drop-shadow-[0_0_15px_rgba(13,148,136,0.3)] ${
+                <span className={`text-7xl md:text-8xl font-black tracking-tight drop-shadow-[0_0_15px_rgba(13,148,136,0.3)] ${
                   isCompliant ? 'text-emerald-500 dark:text-teal-400' :
                   isMonitoring ? 'text-amber-500' : 'text-red-500'
                 }`}>
@@ -418,17 +487,30 @@ export const PublicQRScore = () => {
               </div>
 
               {feedbackSubmitted ? (
-                <div className="flex flex-col gap-4">
-                  <div 
-                    ref={certificateRef}
-                    className="mx-auto w-[360px] min-h-[400px] p-6 pb-8 rounded-2xl bg-gradient-to-tr from-emerald-700 via-teal-600 to-emerald-500 text-white text-center flex flex-col items-center justify-between shadow-2xl relative overflow-hidden border border-emerald-400/30"
-                  >
-                    {/* Background decorations */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-900/20 rounded-full blur-2xl transform -translate-x-10 translate-y-10"></div>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-4 animate-in fade-in zoom-in duration-300">
+                  <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl shadow-2xl p-6 relative overflow-y-auto max-h-[90vh] custom-scrollbar flex flex-col items-center">
                     
-                    {/* Fixed Top Header (No Flex Space-Between to avoid text rendering issues) */}
-                    {/* Fixed Top Header */}
+                    <div className="text-center mb-6">
+                      <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Check className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                      </div>
+                      <h2 className="text-xl font-black text-slate-800 dark:text-white">تم إرسال بلاغك بنجاح</h2>
+                      <p className="text-xs font-bold text-teal-600 dark:text-teal-400 mt-2 bg-teal-50 dark:bg-teal-900/20 p-2 rounded-xl border border-teal-100 dark:border-teal-900/30 leading-relaxed">
+                        ✨ انشر هذه الشهادة على حساباتك في وسائل التواصل الاجتماعي لتشجيع الآخرين على مساعدة المجتمع وحماية الصحة العامة.
+                      </p>
+                    </div>
+
+                    <div className="w-full flex justify-center items-center">
+                      <div 
+                        ref={certificateRef}
+                        className="w-full max-w-[360px] min-h-[400px] p-6 pb-8 rounded-2xl bg-gradient-to-tr from-emerald-700 via-teal-600 to-emerald-500 text-white text-center flex flex-col items-center justify-between shadow-2xl relative overflow-hidden border border-emerald-400/30"
+                        style={{ direction: 'rtl' }}
+                      >
+                      {/* Background decorations */}
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-900/20 rounded-full blur-2xl transform -translate-x-10 translate-y-10"></div>
+                      
+                      {/* Fixed Top Header */}
                     <div className="w-full text-center relative z-10">
                       <p className="text-[10px] font-black text-emerald-100/90 mb-1">محافظة نينوى</p>
                       <p className="text-xs font-black text-white">منظومة الرقابة الصحية الرقمية</p>
@@ -467,35 +549,36 @@ export const PublicQRScore = () => {
                         <span className="text-[9px] font-black text-white drop-shadow-md">وزارة الصحة</span>
                       </div>
                     </div>
+                    </div>
                   </div>
                   
-                  {/* Overlay Generated Image for easy saving on iOS */}
-                  {generatedCertUrl && (
-                    <div className="mt-2 text-center relative mx-auto w-[360px]">
-                      <p className="text-[10px] font-bold text-teal-600 dark:text-teal-400 mb-2">
-                        💡 تلميح: يمكنك الضغط مطولاً على الشهادة أعلاه لحفظها في الاستوديو مباشرة.
-                      </p>
-                      <img src={generatedCertUrl} alt="شهادة قابلة للحفظ" className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer" />
-                    </div>
-                  )}
+                    {/* Overlay Generated Image for easy saving on iOS */}
+                    {generatedCertUrl && (
+                      <div className="mt-4 text-center relative mx-auto w-full">
+                        <img src={generatedCertUrl} alt="شهادة قابلة للحفظ" className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer" />
+                      </div>
+                    )}
 
-                  <button
-                    onClick={downloadCertificate}
-                    disabled={isGeneratingCert}
-                    className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
-                  >
-                    <Download className="w-4 h-4" />
-                    {isGeneratingCert ? 'جاري تجهيز الشهادة...' : 'مشاركة أو تنزيل الشهادة'}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setFeedbackSubmitted(false);
-                      setShowFeedbackForm(false);
-                    }}
-                    className="w-full py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition-all cursor-pointer"
-                  >
-                    العودة
-                  </button>
+                    <div className="w-full mt-6 space-y-3">
+                      <button
+                        onClick={downloadCertificate}
+                        disabled={isGeneratingCert}
+                        className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
+                      >
+                        <Download className="w-4 h-4" />
+                        {isGeneratingCert ? 'جاري تجهيز الشهادة...' : 'مشاركة أو تنزيل الشهادة'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setFeedbackSubmitted(false);
+                          setShowFeedbackForm(false);
+                        }}
+                        className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                      >
+                        العودة للوحة الرئيسية
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <>

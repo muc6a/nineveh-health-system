@@ -1,33 +1,73 @@
 import re
 
-with open("src/pages/ExecutivePortal.jsx", "r", encoding="utf-8") as f:
-    content = f.read()
+# 1. Update UnifiedSidebar.jsx
+path = "src/components/UnifiedSidebar.jsx"
+with open(path, "r", encoding="utf-8") as f:
+    sidebar = f.read()
 
-# 1. Fix validations in useEffect
-old_validations = """    if (activeTab === 'operations_room' && !hasPerm('showOperationsRoom')) needsRedirect = true;
-    if (activeTab === 'lab_management' && !(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'))) needsRedirect = true;
-    if (activeTab === 'financials' && !(hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory'))) needsRedirect = true;
-    
-    if (activeTab === 'directives' && !(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch'))) needsRedirect = true;
-    if (activeTab === 'complaints' && !hasPerm('showPublicEvalsPage')) needsRedirect = true;"""
+sidebar = sidebar.replace(
+    "const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs } = React.useContext(AppContext);",
+    "const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs, navigate } = React.useContext(AppContext);"
+)
 
-new_validations = """    if (activeTab === 'operations_room' && !(hasPerm('showOperationsRoom') || hasPerm('showPublicEvalsPage'))) needsRedirect = true;
-    if (activeTab === 'lab_management' && !(hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive') || hasPerm('authenticatePenalties'))) needsRedirect = true;
-    if (activeTab === 'financials' && !(hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory'))) needsRedirect = true;
-    
-    if (activeTab === 'directives' && !(hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch'))) needsRedirect = true;
-    if (activeTab === 'complaints' && !(hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage'))) needsRedirect = true;"""
-content = content.replace(old_validations, new_validations)
+# For lab tabs
+lab_tabs = ['stats', 'incoming', 'testing', 'archive', 'lab_management']
+for tab in lab_tabs:
+    # lab_management sets activeTab('lab_management')
+    old_click = f"setActiveTab('{tab}');"
+    new_click = f"setActiveTab('{tab}'); if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab={tab}');"
+    sidebar = sidebar.replace(old_click, new_click)
 
-# 2. Fix Rendering block
-old_rendering = """        {activeTab === 'financials' && <FinancialReports />}
-        
-        {activeTab !== 'operations_room' && activeTab !== 'financials' && ("""
-new_rendering = """        {activeTab === 'financials' && <FinancialReports />}
-        {activeTab === 'lab_management' && <LabManager />}
-        
-        {activeTab !== 'operations_room' && activeTab !== 'financials' && activeTab !== 'lab_management' && ("""
-content = content.replace(old_rendering, new_rendering)
+# For financial tabs
+fin_tabs = ['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports']
+for tab in fin_tabs:
+    old_click = f"setActiveTab('{tab}');"
+    new_click = f"setActiveTab('{tab}'); if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab={tab}');"
+    sidebar = sidebar.replace(old_click, new_click)
 
-with open("src/pages/ExecutivePortal.jsx", "w", encoding="utf-8") as f:
-    f.write(content)
+with open(path, "w", encoding="utf-8") as f:
+    f.write(sidebar)
+
+
+# 2. Update LabDashboard.jsx
+path = "src/pages/LabDashboard.jsx"
+with open(path, "r", encoding="utf-8") as f:
+    lab = f.read()
+
+url_effect = """
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, []);
+"""
+if "const tabParam = params.get('tab');" not in lab:
+    lab = lab.replace("const [activeTab, setActiveTab] = useState('stats');", f"const [activeTab, setActiveTab] = useState('stats');\n{url_effect}")
+
+with open(path, "w", encoding="utf-8") as f:
+    f.write(lab)
+
+
+# 3. Update AccountantPanel.jsx
+path = "src/pages/AccountantPanel.jsx"
+with open(path, "r", encoding="utf-8") as f:
+    acc = f.read()
+
+url_effect_acc = """
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, []);
+"""
+if "const tabParam = params.get('tab');" not in acc:
+    acc = acc.replace("const [activeTab, setActiveTab] = useState('dashboard');", f"const [activeTab, setActiveTab] = useState('dashboard');\n{url_effect_acc}")
+
+with open(path, "w", encoding="utf-8") as f:
+    f.write(acc)
+
+print("Routing fixed!")

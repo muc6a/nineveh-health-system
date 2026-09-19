@@ -1,41 +1,19 @@
+import { Activity, AlertCircle, Archive, BadgeInfo, Banknote, BarChart3, BellRing, Building, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ClipboardList, Clock, Cloud, Compass, CreditCard, DollarSign, Eye, FileSearch, FileText, Filter, FlaskConical, Inbox, LayoutDashboard, LogOut, Mail, Map, Menu, Moon, Printer, Search, ShieldAlert, Sun, TrendingUp, X, Wallet } from 'lucide-react';
 import React, { useContext, useState, useMemo } from "react";
 import { AppContext } from "../context/AppContext";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { WeatherWidget } from "../components/WeatherWidget";
 import { NotificationBell } from "../components/NotificationBell";
+import UnifiedSidebar from '../components/UnifiedSidebar';
+import { GlobalHeader } from '../components/GlobalHeader';
+
+import SmartTasks from '../components/SmartTasks';
+import OperationsRoom from '../components/OperationsRoom';
+import { EstablishmentsManager } from '../components/EstablishmentsManager';
+import { FinancialReports } from '../components/FinancialReports';
+import { LabManager } from '../components/LabManager';
+
 import { AnimatedLogo } from "../components/AnimatedLogo";
-import {
-  LogOut,
-  DollarSign,
-  Activity,
-  FileText,
-  CheckCircle2,
-  ShieldAlert,
-  BadgeInfo,
-  BellRing,
-  Sun,
-  Moon,
-  Cloud,
-  ChevronLeft,
-  CreditCard,
-  Banknote,
-  Search,
-  AlertCircle,
-  Eye,
-  ClipboardList,
-  Menu,
-  LayoutDashboard,
-  Printer,
-  Mail,
-  Inbox,
-  Archive,
-  Filter,
-  Building,
-  Compass,
-  Map,
-  CheckSquare,
-  X,
-} from "lucide-react";
 import { TeamDashboard } from "./TeamDashboard";
 import { ExecutivePortal } from "./ExecutivePortal";
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
@@ -60,7 +38,62 @@ export const AccountantPanel = () => {
     setActiveSidebarTabs
   } = useContext(AppContext);
 
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tab') || 'financials';
+  });
+
+  React.useEffect(() => {
+    let isAllowed = false;
+    const canSeeStats = hasPerm('viewLabReports');
+    const canSeeIncoming = hasPerm('receiveSamples');
+    const canSeeTesting = hasPerm('enterLabResults');
+    const canSeeArchive = hasPerm('labArchive');
+    
+    const canSeeDashboard = hasPerm('financialReports');
+    const canSeeFines = hasPerm('payFines');
+    const canSeeInventory = hasPerm('dailyInventory');
+    const canSeeCompReports = hasPerm('viewComprehensiveFinancialReports');
+    
+    const canSeeStrategic = hasPerm('showMainDashboard') || hasPerm('showReportsPage');
+    const canSeeSmartTasks = hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks');
+    const canSeeOps = hasPerm('authenticatePenalties');
+    const canSeeDirectives = hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective');
+    const canSeeComplaints = hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage');
+    const canSeeEst = hasPerm('manageEstablishments');
+
+    if (activeTab === 'stats' && canSeeStats) isAllowed = true;
+    if (activeTab === 'incoming' && canSeeIncoming) isAllowed = true;
+    if (activeTab === 'testing' && canSeeTesting) isAllowed = true;
+    if (activeTab === 'archive' && canSeeArchive) isAllowed = true;
+    if (activeTab === 'financials' && canSeeDashboard) isAllowed = true;
+    if (activeTab === 'ext_financials' && canSeeFines) isAllowed = true;
+    if (activeTab === 'reconciliation' && canSeeInventory) isAllowed = true;
+    if (activeTab === 'comprehensive_reports' && canSeeCompReports) isAllowed = true;
+    if (activeTab === 'strategic' && canSeeStrategic) isAllowed = true;
+    if (activeTab === 'smart_tasks' && canSeeSmartTasks) isAllowed = true;
+    if (activeTab === 'operations_room' && canSeeOps) isAllowed = true;
+    if (activeTab === 'directives' && canSeeDirectives) isAllowed = true;
+    if (activeTab === 'complaints' && canSeeComplaints) isAllowed = true;
+    if (activeTab === 'establishments' && canSeeEst) isAllowed = true;
+
+    if (!isAllowed) {
+       if (canSeeStats) setActiveTab('stats');
+       else if (canSeeIncoming) setActiveTab('incoming');
+       else if (canSeeTesting) setActiveTab('testing');
+       else if (canSeeArchive) setActiveTab('archive');
+       else if (canSeeDashboard) setActiveTab('financials');
+       else if (canSeeFines) setActiveTab('ext_financials');
+       else if (canSeeInventory) setActiveTab('reconciliation');
+       else if (canSeeCompReports) setActiveTab('comprehensive_reports');
+       else if (canSeeStrategic) setActiveTab('strategic');
+       else if (canSeeSmartTasks) setActiveTab('smart_tasks');
+       else if (canSeeOps) setActiveTab('operations_room');
+       else if (canSeeDirectives) setActiveTab('directives');
+       else if (canSeeComplaints) setActiveTab('complaints');
+       else if (canSeeEst) setActiveTab('establishments');
+    }
+  }, [user?.permissions, activeTab]);
   const [selectedReportType, setSelectedReportType] = useState(null); // 'dashboard', 'pay_fines', 'directives', 'reconciliation', 'comprehensive_reports'
 
   // States for Pay Fines
@@ -377,246 +410,25 @@ export const AccountantPanel = () => {
         "--ui-body-size": uiPreferences?.bodySize || "12px",
       }}
     >
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Fixed Sticky Sidebar */}
-      <aside
-        className={`w-80 shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl md:bg-white/60 md:dark:bg-slate-900/60 border-l border-slate-200/50 dark:border-slate-800/50 p-4 flex flex-col justify-between fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
-        } right-0`}
-      >
-        <div className="overflow-y-auto flex-1 pb-6 pr-2 -mr-2">
-          <AnimatedLogo variant="sidebar" className="mb-6" />
-
-          {/* User Profile */}
-          <div className="mb-6 bg-slate-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {user?.name}
-                </span>
-                <span className="text-[10px] text-teal-600 dark:text-teal-400 font-extrabold mt-1">
-                  {user?.role === "financial_accountant" ? "محاسب مالي" : "محاسب الدائرة"} {user?.sector ? ` - قطاع ${user.sector}` : ''}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-1 mb-6">
-            {sortedTabs.map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setIsSidebarOpen(false);
-                  }}
-                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${
-                    activeTab === tab.id
-                      ? "bg-teal-600 text-white shadow-md shadow-teal-500/10"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4.5 h-4.5" />
-                    <span>{tab.label}</span>
-                  </div>
-                  {tab.id === 'directives' && unreadDirectivesCount > 0 && (
-                    <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">
-                      {unreadDirectivesCount}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-
-            {hasPerm("viewComprehensiveFinancialReports") && (
-              <>
-                <div className="my-4 border-t border-slate-200 dark:border-slate-800" />
-                <span className="text-[11px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-wider block px-3 mb-2 flex items-center gap-2">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  صلاحيات رقابية متقدمة
-                </span>
-                <button
-                  onClick={() => {
-                    setActiveTab("comprehensive_reports");
-                    setIsSidebarOpen(false);
-                  }}
-                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                    activeTab === "comprehensive_reports"
-                      ? "bg-amber-600 text-white shadow-md shadow-amber-500/10"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                  }`}
-                >
-                  <Activity className="w-4.5 h-4.5" />
-                  <span>التقارير المالية الشاملة</span>
-                </button>
-              </>
-            )}
-
-            
-
-                {hasPerm("showMainDashboard") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_summary");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "strategic"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4.5 h-4.5" />
-                    <span>اللوحة الاستراتيجية</span>
-                  </button>
-                )}
-
-                {hasPerm("manageEstablishments") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_directory");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "establishments"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <Building className="w-4.5 h-4.5" />
-                    <span>إدارة المنشآت</span>
-                  </button>
-                )}
-
-                {hasPerm("showReportsPage") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_reports");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_reports"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <Compass className="w-4.5 h-4.5" />
-                    <span>التقارير الجغرافية</span>
-                  </button>
-                )}
-
-                {hasPerm("showSectorMap") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_map");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_map"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <Map className="w-4.5 h-4.5" />
-                    <span>خريطة القطاع</span>
-                  </button>
-                )}
-
-                {hasPerm("showSmartTasks") && (
-                  <button
-                    onClick={() => {
-                      setActiveTab("ext_smart_tasks");
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
-                      activeTab === "ext_smart_tasks"
-                        ? "bg-teal-600 text-white shadow-md"
-                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40"
-                    }`}
-                  >
-                    <CheckSquare className="w-4.5 h-4.5" />
-                    <span>مهام اليوم الذكية</span>
-                  </button>
-                )}
-
-          </div>
-        </div>
-
+      <UnifiedSidebar 
+        isSidebarOpen={isSidebarOpen} 
+        setIsSidebarOpen={setIsSidebarOpen} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
         
-        {/* Bottom Controls */}
-          <div className="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between gap-2">
-            <button 
-              onClick={globalLogout}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors border border-rose-100 dark:border-rose-900/30"
-            >
-              تسجيل الخروج
-            </button>
-            <div className="p-1 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50">
-              <ThemeToggle />
-            </div>
-          </div>
-      </aside>
+      />
 
       {/* Main Panel Canvas */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-        {/* Welcome Headers with Date/Time and Mosul Weather */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">💰</span>
-            <div>
-              <h2 className="text-xs font-black text-slate-800 dark:text-white">
-                أهلاً بك سيدي المحاسب 👋
-              </h2>
-              <p className="text-[10px] text-slate-500">
-                طاب يومك، تتصفح الآن الإدارة المالية لـ {targetSector}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+        {/* Welcome Headers */}
+        <GlobalHeader showPrintButton={true}>
             <button 
               onClick={() => setShowDisplayPrefsModal(true)}
               className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
-              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-              <span className="font-bold text-[10px]">تخصيص العرض</span>
+              تخصيص العرض
             </button>
-            <NotificationBell />
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-              <span>
-                📅{" "}
-                {new Date().toLocaleDateString("en-GB", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "short",
-                  day: "2-digit",
-                })}
-              </span>
-              <span className="text-slate-300">|</span>
-              <span>
-                ⏰{" "}
-                {new Date().toLocaleTimeString("en-GB", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-              <WeatherWidget variant="full" />
-            </div>
-          </div>
-        </div>
-
+        </GlobalHeader>
         {/* Mobile Navbar Header */}
         <div className="md:hidden flex items-center justify-between p-4 mb-6 glassmorphic-card rounded-2xl sticky top-4 z-30">
           <button
@@ -1121,68 +933,7 @@ export const AccountantPanel = () => {
         {activeTab === "reconciliation" && (
           <div className="space-y-6 animate-fade-in-up">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm relative">
-              <button
-                onClick={() => {
-                  const testFines = [
-                    {
-                      id: `test_fine_${Date.now()}_1`,
-                      type: "fine",
-                      establishmentId: "est_1",
-                      establishmentName: "مطعم السعادة السريع",
-                      sector:
-                        targetSector === "الكل"
-                          ? "مركز المحافظة - الجانب الأيسر"
-                          : targetSector,
-                      amount: 250000,
-                      reason: "عدم تجديد الإجازة الصحية",
-                      paymentStatus: "paid",
-                      paymentDate: new Date().toISOString(),
-                      paymentMethod: "cash",
-                      date: new Date().toISOString(),
-                    },
-                    {
-                      id: `test_fine_${Date.now()}_2`,
-                      type: "fine",
-                      establishmentId: "est_2",
-                      establishmentName: "كافيه البستان الملكي",
-                      sector:
-                        targetSector === "الكل"
-                          ? "مركز المحافظة - الجانب الأيسر"
-                          : targetSector,
-                      amount: 100000,
-                      reason: "مخالفة شروط النظافة",
-                      paymentStatus: "paid",
-                      paymentDate: new Date().toISOString(),
-                      paymentMethod: "pos",
-                      date: new Date().toISOString(),
-                    },
-                    {
-                      id: `test_fine_${Date.now()}_3`,
-                      type: "fine",
-                      establishmentId: "est_3",
-                      establishmentName: "أسواق المدينة الكبرى",
-                      sector:
-                        targetSector === "الكل"
-                          ? "مركز المحافظة - الجانب الأيمن"
-                          : targetSector,
-                      amount: 150000,
-                      reason: "عرض مواد منتهية الصلاحية",
-                      paymentStatus: "paid",
-                      paymentDate: new Date().toISOString(),
-                      paymentMethod: "cash",
-                      date: new Date().toISOString(),
-                    },
-                  ];
-                  setPenaltyRequests((prev) => [...(prev || []), ...testFines]);
-                  notify(
-                    "تم توليد وصولات دفع وهمية بنجاح! يمكنك رؤيتها الآن في المطابقة.",
-                    "success",
-                  );
-                }}
-                className="absolute top-6 left-6 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-[10px] font-black transition-colors border border-indigo-200 dark:border-indigo-500/30 shadow-sm"
-              >
-                [Dev] توليد وصولات مسددة
-              </button>
+              
 
               <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-3">
                 <ClipboardList className="w-7 h-7 text-indigo-500" />
@@ -1194,7 +945,8 @@ export const AccountantPanel = () => {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-6 rounded-2xl text-center">
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-6 rounded-2xl text-center relative overflow-hidden group">
+                  <Banknote className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-emerald-400/10 group-hover:scale-110 group-hover:text-emerald-400/20 transition-all duration-500 pointer-events-none" />
                   <span className="block text-xs font-bold text-emerald-600 dark:text-emerald-500 mb-2">
                     إجمالي المبالغ النقدية المقبوضة اليوم
                   </span>
@@ -1205,7 +957,8 @@ export const AccountantPanel = () => {
                     دينار عراقي
                   </span>
                 </div>
-                <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-6 rounded-2xl text-center">
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-6 rounded-2xl text-center relative overflow-hidden group">
+                  <CreditCard className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-indigo-400/10 group-hover:scale-110 group-hover:text-indigo-400/20 transition-all duration-500 pointer-events-none" />
                   <span className="block text-xs font-bold text-indigo-600 dark:text-indigo-500 mb-2">
                     إجمالي الدفع الإلكتروني (POS) اليوم
                   </span>
@@ -1479,11 +1232,23 @@ export const AccountantPanel = () => {
           </div>
         )}
 
-        {activeTab === "ext_smart_tasks" && (
+        {activeTab === "smart_tasks" && (
           <div className="w-full h-full min-h-[85vh]">
             <TeamDashboard embeddedTab="smart_tasks" />
           </div>
         )}
+      
+                                                            
+                                                                            
+      
+            {activeTab === 'stats' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            {activeTab === 'incoming' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            {activeTab === 'testing' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            {activeTab === 'archive' && <div className="w-full h-full min-h-[85vh]"><LabManager /></div>}
+            
+            {activeTab === 'operations_room' && <div className="w-full h-full min-h-[85vh]"><OperationsRoom /></div>}
+            {activeTab === 'complaints' && <TeamDashboard embeddedTab="complaints" />}
+
       </main>
 
       {selectedReportType && (

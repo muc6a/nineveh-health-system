@@ -1,5 +1,6 @@
 import { ROLE_CORE_BASICS, PERMISSIONS_TABS } from '../utils/constants';
 import UnifiedSidebar from '../components/UnifiedSidebar';
+import { GlobalHeader } from '../components/GlobalHeader';
 import React, { useState, useContext, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { AppContext } from '../context/AppContext';
@@ -8,7 +9,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
 import { usePersistentTab } from '../hooks/usePersistentTab';
 import { NotificationBell } from '../components/NotificationBell';
-import { Compass, Mail, Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send, FlaskConical, AlertOctagon, Target , Building2, CreditCard} from 'lucide-react';
+import { Compass, Mail, Plus, Search, FileText, LayoutDashboard, Database, AlertCircle, X, Check, Eye, Package, Trash, Printer, Menu, ShieldAlert, CheckSquare, MapPin, Edit, FilePlus, DollarSign, QrCode, Ban, ChevronDown, Map, Siren, Activity, MessageCircle, Send, FlaskConical, AlertOctagon, Target , Building2, CreditCard, Building, CheckCircle, AlertTriangle } from 'lucide-react';
 import { NinevehMap } from '../components/NinevehMap';
 import { EstablishmentModal } from '../components/EstablishmentModal';
 import { FinancialReports } from '../components/FinancialReports';
@@ -20,7 +21,7 @@ import { QRScannerModal } from '../components/QRScannerModal';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const TeamDashboard = ({ embeddedTab }) => {
-  const { navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests , hasPerm , tasks } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests , hasPerm , tasks, trackers } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -116,6 +117,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [dispatchTeamId, setDispatchTeamId] = useState('');
   const [dispatchEstId, setDispatchEstId] = useState('');
+  const [dispatchNote, setDispatchNote] = useState('');
 
   const handleSendDirective = (e) => {
     e.preventDefault();
@@ -129,16 +131,27 @@ export const TeamDashboard = ({ embeddedTab }) => {
     }
   };
 
-  const handleDispatch = (tId, eId) => {
+  const handleDispatch = (tId, eId, note) => {
     if(!tId || !eId) return notify('يرجى تحديد المنشأة المستهدفة للتوجيه', 'error');
     
     // Create directive to the specific team
     const est = establishments.find(e => e.id === parseInt(eId) || e.id === eId);
+    const team = teams.find(t => t.id === tId) || {};
     if(!est) return;
     
     const text = `توجيه ميداني عاجل: يرجى التوجه فوراً لإجراء كشف صحي على المنشأة (${est.name})`;
     addDirective(tId, text, user?.role === 'director' ? `المدير العام (${user?.name})` : (user?.name || 'الجهة الإدارية'), user?.id || user?.role);
-    notify('تم إرسال التوجيه للفريق الميداني بنجاح', 'success');
+    setTasks(prev => [{
+      id: 'tsk_' + Date.now(),
+      type: 'visit',
+      title: 'زيارة فورية موجهة',
+      desc: `تم توجيهكم من الإدارة لزيارة المنشأة (${est.name}) فوراً. الملاحظات: ${note || 'لا توجد ملاحظات'}`,
+      teamId: team.id || tId,
+      status: 'pending',
+      targetEstId: est.id,
+      createdAt: new Date().toISOString()
+    }, ...prev]);
+    notify('تم إرسال التوجيه للفريق الميداني وإضافته للمهام الذكية بنجاح', 'success');
     
     setDispatchEstId('');
   };
@@ -440,45 +453,17 @@ export const TeamDashboard = ({ embeddedTab }) => {
       {/* Main Panel Canvas */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         
-        {/* Welcome Headers with Date/Time and Mosul Weather */}
+        {/* Welcome Headers */}
         {!embeddedTab && (
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200/20 backdrop-blur-md text-right">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">👥</span>
-              <div>
-                <h2 className="text-xs font-black text-slate-800 dark:text-white">أهلاً بك سيدي رئيس اللجنة الرقابية 👋</h2>
-                <p className="text-[10px] text-slate-500">طاب يومك، تتصفح الآن لوحة تحكم {userSector}</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-              <button 
+          <GlobalHeader showPrintButton={true}>
+            <button 
               onClick={() => setShowDisplayPrefsModal(true)}
               className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
             >
-              <Eye className="w-4 h-4 group-hover:text-teal-500 transition-colors" />
-              <span className="font-bold text-[10px]">تخصيص العرض</span>
+              تخصيص العرض
             </button>
-            <NotificationBell />
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-                <span>📅 {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                <span className="text-slate-300">|</span>
-                <span>⏰ {new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}</span>
-              </div>
-              <div className="flex items-center gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-xl border border-amber-500/20">
-                <WeatherWidget variant="full" />
-              </div>
-              {hasPerm('exportData') && (
-                <button 
-                  onClick={() => window.print()}
-                  className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 no-print"
-                >
-                  🖨️ تصدير التقارير / طباعة
-                </button>
-              )}
-            </div>
-          </div>
+          </GlobalHeader>
         )}
-
         {/* Welcome / No Permissions State */}
         
         
@@ -515,6 +500,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">ملخص المهام والمناطق الغذائية للجنة</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تتبع التغطية الرقابية والجولات الاستقصائية لـ {userSector}</p>
               </div>
+              {(!embeddedTab && user?.role === "team") && (
               <button 
                 onClick={() => setShowQRScanner(true)}
                 className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
@@ -522,6 +508,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 <QrCode className="w-5 h-5" />
                 <span>مسح كود QR لمنشأة 📸</span>
               </button>
+              )}
             </div>
 
             {myDirectives.filter(d => !d.isRead).length > 0 && (
@@ -558,27 +545,36 @@ export const TeamDashboard = ({ embeddedTab }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div 
                 onClick={() => { setMetricModalType('all'); setShowMetricModal(true); }}
-                className="glassmorphic-card p-5 border border-teal-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 cursor-pointer select-none"
+                className="glassmorphic-card p-5 border border-teal-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-teal-500/5 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
               >
+                <Building2 className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-teal-500/5 dark:text-teal-400/5 group-hover:scale-110 group-hover:text-teal-500/10 dark:group-hover:text-teal-400/10 transition-all duration-500 pointer-events-none" />
+                <div className="relative z-10">
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">إجمالي المنشآت المخصصة للجنة</span>
-                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mt-3">{totalShops}</p>
+                <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mt-3 relative z-10">{totalShops}</p>
                 <span className="text-[10px] text-teal-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                </div>
               </div>
               <div 
                 onClick={() => { setMetricModalType('inspected'); setShowMetricModal(true); }}
-                className="glassmorphic-card p-5 border border-emerald-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer select-none"
+                className="glassmorphic-card p-5 border border-emerald-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
               >
+                <CheckCircle className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-emerald-500/5 dark:text-emerald-400/5 group-hover:scale-110 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-400/10 transition-all duration-500 pointer-events-none" />
+                <div className="relative z-10">
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت تم زيارتها بنجاح هذا الشهر 🟢</span>
-                <p className="text-4xl font-extrabold text-emerald-500 mt-3">{inspectedShops}</p>
+                <p className="text-4xl font-extrabold text-emerald-500 mt-3 relative z-10">{inspectedShops}</p>
                 <span className="text-[10px] text-emerald-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                </div>
               </div>
               <div 
                 onClick={() => { setMetricModalType('uninspected'); setShowMetricModal(true); }}
-                className="glassmorphic-card p-5 border border-red-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/5 transition-all duration-300 cursor-pointer select-none"
+                className="glassmorphic-card p-5 border border-red-500/10 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/5 transition-all duration-300 cursor-pointer select-none relative overflow-hidden group"
               >
+                <AlertTriangle className="absolute top-1/2 left-4 -translate-y-1/2 w-24 h-24 text-red-500/5 dark:text-red-400/5 group-hover:scale-110 group-hover:text-red-500/10 dark:group-hover:text-red-400/10 transition-all duration-500 pointer-events-none" />
+                <div className="relative z-10">
                 <span className="text-xs font-black text-slate-500 dark:text-slate-400">منشآت متأخرة بانتظار الزيارة الفورية 🔴</span>
-                <p className="text-4xl font-extrabold text-red-500 mt-3">{uninspectedShops}</p>
+                <p className="text-4xl font-extrabold text-red-500 mt-3 relative z-10">{uninspectedShops}</p>
                 <span className="text-[10px] text-red-500 font-bold block mt-2">انقر للتفاصيل 👁️</span>
+                </div>
               </div>
             </div>
 
@@ -615,14 +611,27 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
                     <span className="w-3 h-3 rounded-full bg-teal-600"></span> الجولات التفتيشية
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500">
-                    <span className="w-3 h-3 rounded-full bg-amber-500"></span> الغرامات الفورية
-                  </div>
                 </div>
               </div>
             )}
 
-
+            {hasPerm('showSectorMap') && (
+              <div className="mt-8 glassmorphic-card p-6 animate-fade-in-up flex flex-col min-h-[500px]">
+                <h2 className="text-xl font-black text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+                  <Map className="text-teal-600" />
+                  الخريطة التفاعلية لقاطع المسؤولية الميدانية ({userSector})
+                </h2>
+                <p className="text-xs text-slate-500 mb-4">هذه الخريطة تعرض حصراً المنشآت الواقعة ضمن الرقعة الجغرافية المكلف بها فريقكم لتسهيل التوجيه الميداني (اضغط على المنشأة للتفاصيل).</p>
+                <div className="flex-1 w-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800 bg-white rounded-xl">
+                  <NinevehMap
+                    establishments={establishments}
+                    isTeamView={true}
+                    teamSector={userSector}
+                    fullHeight={true}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -675,6 +684,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                   </p>
                 </div>
               </div>
+              {(!embeddedTab && user?.role === "team") && (
               <button 
                 onClick={() => setShowQRScanner(true)}
                 className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg shadow-teal-500/20 flex items-center gap-2 font-black transition-all active:scale-95 w-full md:w-auto justify-center"
@@ -682,6 +692,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
                 <QrCode className="w-5 h-5" />
                 <span>بدء التفتيش بمسح QR 📸</span>
               </button>
+              )}
             </div>
 
             {smartTasks.length > 0 ? (
@@ -978,7 +989,7 @@ export const TeamDashboard = ({ embeddedTab }) => {
         
         {activeTab === 'directives' && (hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch')) && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+            <div className={`grid grid-cols-1 ${hasPerm('sendDirective') ? 'lg:grid-cols-2' : ''} gap-6 items-stretch`}>
             {/* Direct Command Directive Form */}
             {hasPerm('sendDirective') && (
               <div className="glassmorphic-card p-5 border border-amber-500/20 bg-amber-500/5 dark:bg-amber-950/10 text-right rounded-3xl h-full flex flex-col justify-start">
@@ -1004,6 +1015,11 @@ export const TeamDashboard = ({ embeddedTab }) => {
                       ))}
                       {teams.map(t => (
                         <option key={t.id} value={t.id}>👥 {t.name} ({t.sector})</option>
+                      ))}
+                      <option value="accountant">💰 المحاسب المالي</option>
+                      <option value="lab">🧪 مختبر الصحة المركزي</option>
+                      {trackers && trackers.map(tr => (
+                        <option key={tr.id} value={tr.id}>🕵️ المتابع: {tr.name}</option>
                       ))}
                     </select>
                   </div>
@@ -1168,22 +1184,35 @@ export const TeamDashboard = ({ embeddedTab }) => {
                           </span>
                         </td>
                         <td className="p-3">
-                          <select 
+                          <input
+                            type="text"
+                            list={"estList-" + t.id}
+                            placeholder="ابحث عن المنشأة..."
                             onChange={(e) => {
-                              setDispatchEstId(e.target.value);
-                              setDispatchTeamId(t.id);
+                              const est = establishments.find(es => es.name === e.target.value);
+                              if (est) {
+                                setDispatchEstId(est.id);
+                                setDispatchTeamId(t.id);
+                              }
                             }}
-                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
-                          >
-                            <option value="">-- اختر المنشأة --</option>
+                            className="w-full mb-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
+                          <datalist id={"estList-" + t.id}>
                             {establishments.filter(e => e.sector === t.sector).map(est => (
-                              <option key={est.id} value={est.id}>{est.name}</option>
+                              <option key={est.id} value={est.name} />
                             ))}
-                          </select>
+                          </datalist>
+                          <input
+                            type="text"
+                            placeholder="ملاحظات التوجيه..."
+                            value={dispatchTeamId === t.id ? dispatchNote : ""}
+                            onChange={(e) => { setDispatchNote(e.target.value); setDispatchTeamId(t.id); }}
+                            className="w-full p-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px]"
+                          />
                         </td>
                         <td className="p-3 text-center">
                           <button
-                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId)}
+                            onClick={() => handleDispatch(dispatchTeamId || t.id, dispatchEstId, dispatchNote)}
                             className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold transition-all cursor-pointer text-[10px]"
                           >
                             🚀 إرسال التوجيه

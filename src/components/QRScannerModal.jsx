@@ -11,7 +11,7 @@ export const QRScannerModal = ({ isOpen, onClose, onScanSuccess }) => {
     // Initialize scanner
     const scanner = new Html5QrcodeScanner(
       "qr-reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
+      { fps: 10, qrbox: { width: 250, height: 250 }, videoConstraints: { facingMode: "environment" } },
       /* verbose= */ false
     );
 

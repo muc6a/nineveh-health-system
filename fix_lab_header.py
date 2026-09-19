@@ -1,12 +1,13 @@
 import re
 
-with open("src/pages/LabDashboard.jsx", "r", encoding="utf-8") as f:
+path = "src/pages/LabDashboard.jsx"
+with open(path, "r", encoding="utf-8") as f:
     content = f.read()
 
-# Replace header section
-header_pattern = re.compile(r'<header className="h-16 shrink-0 .*?</header>', re.DOTALL)
+# Replace the header block in LabDashboard
+pattern = r"<header className=\"shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex flex-col p-4 sticky top-0 z-30\">\n.*?<GlobalHeader[\s\S]*?/>\n\s*</header>"
 
-new_header = """<header className="shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 flex flex-col p-4 sticky top-0 z-30">
+replacement = """<div className="relative z-40 mb-6 mt-4 md:mt-0">
           <div className="flex items-center gap-3 md:hidden mb-4">
             <button 
               onClick={() => setIsSidebarOpen(true)}
@@ -15,31 +16,19 @@ new_header = """<header className="shrink-0 bg-white/80 dark:bg-slate-900/80 bac
               <Menu className="w-5 h-5" />
             </button>
           </div>
-          <GlobalHeader
-            icon="🧪"
-            title={
-              activeTab === 'stats' ? 'الرئيسية والتقارير' :
-              activeTab === 'incoming' ? 'الطلبات الواردة' :
-              activeTab === 'testing' ? 'عينات قيد الفحص' :
-              activeTab === 'archive' ? 'الأرشيف المختبري' : 'المختبر المركزي'
-            }
-            subtitle="نظام إدارة المختبر المركزي الذكي - محافظة نينوى"
-            showPrintButton={false}
-          />
-          {(activeTab === 'incoming' || activeTab === 'testing') && (
-            <div className="mt-2">
-              <button 
-                onClick={() => setNewSampleModal({ isOpen: true })}
-                className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5 cursor-pointer w-fit"
-              >
-                ➕ إنشاء عينة جديدة يدويًا
-              </button>
-            </div>
-          )}
-        </header>"""
+          <GlobalHeader>
+            <button
+              onClick={() => setShowDisplayPrefsModal(true)}
+              className="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              تخصيص العرض
+            </button>
+          </GlobalHeader>
+        </div>"""
 
-content = header_pattern.sub(new_header, content)
+content = re.sub(pattern, replacement, content)
 
-with open("src/pages/LabDashboard.jsx", "w", encoding="utf-8") as f:
+with open(path, "w", encoding="utf-8") as f:
     f.write(content)
 
+print("Fixed Lab Header")

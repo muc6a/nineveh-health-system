@@ -276,7 +276,9 @@ const DEFAULT_PERMISSIONS = {
   showOperationsRoom: false,
 
   notify_closures: true,
+  notify_penalties: true,
   notify_inspections: true,
+  notify_tasks: true,
   notify_directives: true
 };
 
@@ -285,53 +287,81 @@ export const ROLE_PERMISSIONS = {
   director: {
     ...DEFAULT_PERMISSIONS,
     showMainDashboard: true,
-    showReportsPage: true,
-    showPublicEvalsPage: true,
     showDirectivesPage: true,
     sendDirective: true,
     replyDirective: true,
-    notify_closures: false,
-    notify_inspections: false,
-    notify_directives: true,
-    financialReports: true,
-    receiveSamples: true,
-    enterLabResults: true,
-    labArchive: true
+    notify_directives: true
   },
   central_director: {
     ...DEFAULT_PERMISSIONS,
-    showMainDashboard: true,
-    showReportsPage: true,
+    manageSmartTasks: true,
+    authenticatePenalties: true,
+    issueFine: true,
+    closeEst: true,
+    reopenEst: true,
+    manageEstablishments: true,
+    editEst: true,
+    deleteEst: true,
+    showPublicEvalsPage: true,
+    showDeliveryPage: true,
+    viewLabReports: true,
+    financialReports: true,
     showDirectivesPage: true,
     sendDirective: true,
+    replyDirective: true,
+    quickTeamDispatch: true,
     notify_closures: true,
+    notify_penalties: true,
     notify_inspections: true,
+    notify_tasks: true,
     notify_directives: true,
-    financialReports: true,
-    receiveSamples: true,
-    enterLabResults: true,
-    labArchive: true
+    showMainDashboard: true
   },
   team: {
     ...DEFAULT_PERMISSIONS,
     manageEstablishments: true,
-    showFieldTeamsStats: true,
-    showDirectivesPage: true,
-    replyDirective: true,
+    createEst: true,
     addEval: true,
-    editEst: true
+    showSectorMap: true,
+    executeSmartTasks: true,
+    showTeamDashboard: true,
+    showDirectivesPage: true
+  },
+  tracker: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
+    sendDirective: true,
+    replyDirective: true,
+    monitorClosures: true,
+    searchAndAddPreliminaryEst: true
   },
   lab: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
+    sendDirective: true,
+    replyDirective: true,
+    viewLabReports: true,
     receiveSamples: true,
     enterLabResults: true,
+    editLabResults: true,
     labArchive: true
   },
   accountant: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
+    financialReports: true,
+    payFines: true,
+    dailyInventory: true
+  },
+  financial_accountant: {
+    ...DEFAULT_PERMISSIONS,
+    showDirectivesPage: true,
     financialReports: true,
     payFines: true,
     dailyInventory: true
   }
 };
+
 
 const INITIAL_TEAMS = [
   { 
@@ -469,7 +499,7 @@ export const AppProvider = ({ children }) => {
   // Theme State
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
-    return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    return saved === 'dark';
   });
 
   const [currentRoute, setCurrentRoute] = useState(() => {
@@ -568,8 +598,8 @@ export const AppProvider = ({ children }) => {
     }
 
     return [
-      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDirectivesPage: true, sendDirective: true, replyDirective: true, notify_closures: false, notify_inspections: false, notify_directives: true } },
-      { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, notify_closures: true, notify_inspections: true, notify_directives: true } }
+      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDirectivesPage: true, sendDirective: true, replyDirective: true, notify_closures: false, notify_penalties: false, notify_inspections: false, notify_tasks: false, notify_directives: true } },
+      { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, notify_closures: true, notify_penalties: true, notify_inspections: true, notify_tasks: true, notify_directives: true } }
     ];
   });
 
@@ -693,7 +723,7 @@ export const AppProvider = ({ children }) => {
   // Super Admin Configuration parameters
   const [config, setConfig] = useState(() => {
     const saved = localStorage.getItem('systemConfig');
-    return saved ? JSON.parse(saved) : {
+    const parsedConfig = saved ? JSON.parse(saved) : {
       headerText: 'منظومة الرقابة الصحية الرقمية - محافظة نينوى',
       allowImageUpload: true,
       allowExternalReports: true,
@@ -715,6 +745,15 @@ export const AppProvider = ({ children }) => {
       ownersPortalDesc: "دخول مخصص لأصحاب المنشآت لمتابعة التقييمات خطط العمل والشهادات الصحية الخاصة بهم.",
       ownersPortalBtn: "الدخول كصاحب منشأة"
     };
+    
+    if (!parsedConfig.citizenSuccessSound) {
+      parsedConfig.citizenSuccessSound = {
+        type: 'voice_male', // voice_male, voice_female, beep_success, custom
+        customDataUrl: null
+      };
+    }
+    
+    return parsedConfig;
   });
 
   // Audit Logs State
@@ -1043,12 +1082,13 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const addSystemNotification = (title, message, targetRole = 'all') => {
+  const addSystemNotification = (title, message, targetRole = 'all', type = 'general') => {
     const newNotif = {
       id: 'notif_' + Date.now() + Math.floor(Math.random() * 1000),
       title,
       message,
       targetRole, // 'all', 'admin', 'director', 'central_director', or specific team id
+      type,       // 'closures', 'penalties', 'tasks', 'directives', 'general'
       date: new Date().toISOString(),
       isRead: false
     };
@@ -1086,13 +1126,79 @@ export const AppProvider = ({ children }) => {
   // --------------------------------
 
 
-  const playBeep = (type) => {
+  const playBeep = (typeOrObj) => {
     try {
-      if (soundPreferences && soundPreferences[type]) {
-        const audio = new Audio(soundPreferences[type]);
+      let soundObj = null;
+      let eventType = null;
+      
+      if (typeof typeOrObj === 'string') {
+        eventType = typeOrObj;
+        soundObj = soundPreferences?.[eventType];
+      } else if (typeof typeOrObj === 'object') {
+        soundObj = typeOrObj;
+      }
+      
+      // Handle legacy base64 strings directly
+      if (typeof soundObj === 'string') {
+        const audio = new Audio(soundObj);
         audio.play().catch(e => console.error("Error playing custom sound:", e));
         return;
       }
+
+      // Extract type and customDataUrl if it's an object
+      const actualType = soundObj?.type || eventType || 'beep_success';
+      const customUrl = soundObj?.customDataUrl;
+
+      if (actualType === 'custom' && customUrl) {
+        const audio = new Audio(customUrl);
+        audio.play().catch(e => console.error("Error playing custom sound:", e));
+        return;
+      }
+      
+      if (actualType === 'voice_male' || actualType === 'voice_female' || actualType === 'voice_old') {
+          if ('speechSynthesis' in window) {
+              const msgText = soundObj?.messageText || "عاشت إيدك، شكراً لمساعدتك إيانا في حماية مجتمعنا.";
+              const msg = new SpeechSynthesisUtterance(msgText);
+              msg.lang = 'ar-SA';
+              msg.rate = actualType === 'voice_old' ? 0.7 : 0.9;
+              
+              let voices = window.speechSynthesis.getVoices();
+              let isFemale = actualType === 'voice_female';
+              
+              let selectedVoice = voices.find(v => {
+                  let name = v.name.toLowerCase();
+                  if (isFemale) {
+                      return name.includes('female') || name.includes('zira') || name.includes('amira') || name.includes('laila') || name.includes('salma') || name.includes('sana') || name.includes('zeina') || name.includes('mariam');
+                  } else {
+                      return (name.includes('male') && !name.includes('female')) || name.includes('shakir') || name.includes('maged') || name.includes('tarik') || name.includes('mehdi') || name.includes('hamid');
+                  }
+              });
+              
+              if (!selectedVoice) {
+                  let arabicVoices = voices.filter(v => v.lang.startsWith('ar'));
+                  if (arabicVoices.length > 0) {
+                      selectedVoice = isFemale ? arabicVoices[arabicVoices.length - 1] : arabicVoices[0];
+                  }
+              }
+              
+              if (selectedVoice) {
+                  msg.voice = selectedVoice;
+              }
+              
+              if (actualType === 'voice_old') {
+                  msg.pitch = 0.5;
+                  msg.rate = 0.75;
+              } else if (isFemale) {
+                  msg.pitch = 1.5;
+              } else {
+                  msg.pitch = 0.9;
+              }
+
+              window.speechSynthesis.speak(msg);
+          }
+          return;
+      }
+
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioCtx.createOscillator();
       const gainNode = audioCtx.createGain();
@@ -1100,8 +1206,8 @@ export const AppProvider = ({ children }) => {
       oscillator.connect(gainNode);
       gainNode.connect(audioCtx.destination);
       
-      // Different tone based on type
-      if (type === 'error') {
+      // Tone generator library
+      if (actualType === 'beep_error' || actualType === 'error') {
         oscillator.type = 'sawtooth';
         oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
         oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
@@ -1109,7 +1215,32 @@ export const AppProvider = ({ children }) => {
         gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.3);
+      } else if (actualType === 'beep_alert' || actualType === 'notification') {
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.25);
+      } else if (actualType === 'beep_bell') {
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.0);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1.0);
+      } else if (actualType === 'beep_chime') {
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+        oscillator.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(1320, audioCtx.currentTime + 0.2);
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.6);
       } else {
+        // Default beep_success / success
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
         oscillator.frequency.setValueAtTime(1760, audioCtx.currentTime + 0.08); // double beep
@@ -1391,7 +1522,8 @@ export const AppProvider = ({ children }) => {
     addSystemNotification(
       `تبليغ جديد من: ${senderName}`,
       text,
-      teamId
+      teamId,
+      'directives'
     );
   };
 
@@ -1462,6 +1594,18 @@ export const AppProvider = ({ children }) => {
   const hasPerm = (permName) => {
     if (!user) return false;
     if (user.role === 'admin' || user.isSuperAdmin) return true;
+    
+    // ENFORCED BASE PERMISSIONS (Cannot be overridden/disabled)
+    if (user.role === 'team' || user.role === 'tracker') {
+      if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
+    }
+    if (user.role === 'central_director') {
+      const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks'];
+      if (centralDirBase.includes(permName)) return true;
+    }
+    if (user.role === 'director' || user.role === 'lab' || user.role === 'accountant' || user.role === 'financial_accountant') {
+      if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
+    }
     
     // User-specific permissions override role permissions
     if (user.permissions && typeof user.permissions[permName] !== 'undefined') {

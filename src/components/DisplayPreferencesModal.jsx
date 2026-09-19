@@ -1,41 +1,54 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Eye, X, ChevronUp, ChevronDown, ListOrdered } from 'lucide-react';
+import { Eye, X, GripVertical } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
 export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
-  const { uiPreferences, setUiPreferences, notify, user, activeSidebarTabs } = useContext(AppContext);
+  const { uiPreferences, setUiPreferences, notify, activeSidebarTabs } = useContext(AppContext);
   const [draftUiPreferences, setDraftUiPreferences] = useState(uiPreferences);
+  const [draggedIdx, setDraggedIdx] = useState(null);
 
-  const hasPerm = (p) => user?.permissions?.[p] === true;
-
-  
   // Use activeSidebarTabs provided by the currently rendered dashboard
   const availableTabsMap = activeSidebarTabs.reduce((acc, tab) => {
     acc[tab.id] = tab.label;
     return acc;
   }, {});
 
-  
   const activeTabKeys = (draftUiPreferences?.tabOrder || Object.keys(availableTabsMap)).filter(k => availableTabsMap[k]);
   Object.keys(availableTabsMap).forEach(k => {
     if (!activeTabKeys.includes(k)) activeTabKeys.push(k);
   });
-
-  const moveTab = (index, direction) => {
-    const newOrder = [...activeTabKeys];
-    if (direction === 'up' && index > 0) {
-      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-    } else if (direction === 'down' && index < newOrder.length - 1) {
-      [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
-    }
-    setDraftUiPreferences({ ...draftUiPreferences, tabOrder: newOrder });
-  };
 
   useEffect(() => {
     if (isOpen) {
       setDraftUiPreferences(uiPreferences);
     }
   }, [isOpen, uiPreferences]);
+
+  const handleDragStart = (e, index) => {
+    setDraggedIdx(index);
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => {
+      if (e.target) e.target.style.opacity = '0.5';
+    }, 0);
+  };
+
+  const handleDragEnd = (e) => {
+    if (e.target) e.target.style.opacity = '1';
+    setDraggedIdx(null);
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === index) return;
+    
+    const newOrder = [...activeTabKeys];
+    const draggedItem = newOrder[draggedIdx];
+    newOrder.splice(draggedIdx, 1);
+    newOrder.splice(index, 0, draggedItem);
+    
+    setDraftUiPreferences({ ...draftUiPreferences, tabOrder: newOrder });
+    setDraggedIdx(index);
+  };
 
   if (!isOpen) return null;
 
@@ -54,7 +67,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
             <X className="w-4 h-4" />
           </button>
         </div>
-        
+
         <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
             تحكم بمقاسات الخطوط وكثافة عرض البيانات لراحتك. يتم حفظ هذه التفضيلات في حسابك الخاص ولا تؤثر على المستخدمين الآخرين.
@@ -132,32 +145,26 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
                   />
                 </div>
               </div>
-              {/* Tab Reordering Control */}
+
+              {/* Tab Reordering Control (Drag & Drop) */}
               <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <ListOrdered className="w-4 h-4 text-teal-600" />
-                  ترتيب قوائم الشريط الجانبي (Sidebar Tabs Order)
+                  ترتيب قوائم الشريط الجانبي (اسحب للترتيب)
                 </label>
-                <div className="grid grid-cols-2 gap-[10px] bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                  {activeTabKeys.map((tabKey, idx, arr) => (
-                    <div key={tabKey} className="flex items-center justify-between bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate pl-2">{availableTabsMap[tabKey]}</span>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          disabled={idx === 0}
-                          onClick={() => moveTab(idx, 'up')}
-                          className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/30 disabled:opacity-30 transition-all cursor-pointer"
-                        >
-                          <ChevronUp className="w-4 h-4" />
-                        </button>
-                        <button
-                          disabled={idx === arr.length - 1}
-                          onClick={() => moveTab(idx, 'down')}
-                          className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/30 disabled:opacity-30 transition-all cursor-pointer"
-                        >
-                          <ChevronDown className="w-4 h-4" />
-                        </button>
-                      </div>
+                <div className="flex flex-col gap-2 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                  {activeTabKeys.map((tabKey, index) => (
+                    <div 
+                      key={tabKey}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragEnd={handleDragEnd}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      className={`flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border transition-all cursor-grab active:cursor-grabbing ${draggedIdx === index ? 'border-teal-500 shadow-md ring-2 ring-teal-500/20' : 'border-slate-200 dark:border-slate-700'}`}
+                    >
+                      <GripVertical className="w-5 h-5 text-slate-400" />
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300 select-none">
+                        {availableTabsMap[tabKey]}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -170,7 +177,7 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
               
               <div 
                 className="bg-white dark:bg-slate-950 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800"
-                style={{
+                style={{ 
                   padding: draftUiPreferences?.density === 'compact' ? '0.75rem' : '1.5rem',
                 }}
               >
@@ -206,10 +213,10 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
             إلغاء
           </button>
           <button
-            onClick={() => { 
-              setUiPreferences(draftUiPreferences); 
-              onClose(); 
-              if (notify) notify('تم حفظ تفضيلات المظهر بنجاح', 'success'); 
+            onClick={() => {
+              setUiPreferences(draftUiPreferences);
+              onClose();
+              if (notify) notify('تم حفظ تفضيلات المظهر بنجاح', 'success');
             }}
             className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black shadow-md shadow-teal-500/20 transition-all text-sm"
           >
@@ -220,5 +227,3 @@ export const DisplayPreferencesModal = ({ isOpen, onClose }) => {
     </div>
   );
 };
-
-export default DisplayPreferencesModal;

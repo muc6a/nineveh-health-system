@@ -1,18 +1,29 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, Suspense, lazy } from 'react';
 import { AppContext } from '../context/AppContext';
 import { LoginGate } from '../pages/LoginGate';
-import { ExecutivePortal } from '../pages/ExecutivePortal';
-import { TeamDashboard } from '../pages/TeamDashboard';
-import { InspectionForm } from '../pages/InspectionForm';
+import { LandingPage } from '../pages/LandingPage';
 import { PublicQRScore } from '../pages/PublicQRScore';
-
-import { SuperAdminPanel } from '../pages/SuperAdminPanel';
 import { PublicSearch } from '../pages/PublicSearch';
 import { OwnerPortal } from '../pages/OwnerPortal';
-import { TrackerDashboard } from '../pages/TrackerDashboard';
-import { LandingPage } from '../pages/LandingPage';
-import { AccountantPanel } from '../pages/AccountantPanel';
-import { LabDashboard } from '../pages/LabDashboard';
+
+// Lazy loaded protected components for performance optimization
+const ExecutivePortal = lazy(() => import('../pages/ExecutivePortal').then(module => ({ default: module.ExecutivePortal })));
+const TeamDashboard = lazy(() => import('../pages/TeamDashboard').then(module => ({ default: module.TeamDashboard })));
+const InspectionForm = lazy(() => import('../pages/InspectionForm').then(module => ({ default: module.InspectionForm })));
+const SuperAdminPanel = lazy(() => import('../pages/SuperAdminPanel').then(module => ({ default: module.SuperAdminPanel })));
+const TrackerDashboard = lazy(() => import('../pages/TrackerDashboard').then(module => ({ default: module.TrackerDashboard })));
+const AccountantPanel = lazy(() => import('../pages/AccountantPanel').then(module => ({ default: module.AccountantPanel })));
+const LabDashboard = lazy(() => import('../pages/LabDashboard').then(module => ({ default: module.LabDashboard })));
+
+// A simple modern loading fallback
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-12 h-12 border-4 border-teal-500/20 border-t-teal-500 rounded-full animate-spin"></div>
+      <p className="text-slate-500 font-bold text-sm">جاري تحميل مساحة العمل...</p>
+    </div>
+  </div>
+);
 
 export const Router = () => {
   const { currentRoute, user, globalLogout } = useContext(AppContext);
@@ -21,7 +32,7 @@ export const Router = () => {
 
   // Strict Role Authentication Guard
   useEffect(() => {
-    if (currentRoute.startsWith('/dashboard/') || currentRoute.startsWith('/admin/') || currentRoute === '/owner') {
+    if (currentRoute.startsWith('/dashboard/') || currentRoute.startsWith('/admin/')) {
       if (!user) {
         // Not logged in but trying to access protected route
         globalLogout();
@@ -35,9 +46,9 @@ export const Router = () => {
         globalLogout();
       } else if (baseRoute === '/dashboard/tracker' && user.role !== 'tracker') {
         globalLogout();
-      } else if (baseRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant')) {
+      } else if (baseRoute === '/dashboard/accountant' && !(user.role === 'accountant' || user.role === 'financial_accountant' || user.permissions?.financialReports || user.permissions?.payFines || user.permissions?.dailyInventory || user.permissions?.viewComprehensiveFinancialReports)) {
         globalLogout();
-      } else if (baseRoute === '/dashboard/lab' && user.role !== 'lab' && !user.permissions?.receiveSamples && !user.permissions?.enterLabResults && !user.permissions?.labArchive) {
+      } else if (baseRoute === '/dashboard/lab' && user.role !== 'lab' && !user.permissions?.viewLabReports && !user.permissions?.receiveSamples && !user.permissions?.enterLabResults && !user.permissions?.labArchive) {
         globalLogout();
       } else if (baseRoute === '/admin/control' && !(user.role === 'admin' || user.isSuperAdmin)) {
         globalLogout();
@@ -46,47 +57,55 @@ export const Router = () => {
   }, [currentRoute, user]);
 
   // Simple state router rendering matching component
-  switch (baseRoute) {
-    case '/':
-      return <LandingPage />;
+  const renderRoute = () => {
+    switch (baseRoute) {
+      case '/':
+        return <LandingPage />;
+        
+      case '/login':
+        return <LoginGate />;
       
-    case '/login':
-      return <LoginGate />;
-    
-    case '/dashboard/director':
-      return user && (user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector) ? <ExecutivePortal /> : null;
-    
-    case '/dashboard/team':
-      return user && (user.role === 'team' || user.isTeam) ? <TeamDashboard /> : null;
-    
-    case '/dashboard/tracker':
-      return user && user.role === 'tracker' ? <TrackerDashboard /> : null;
+      case '/dashboard/director':
+        return user && (user.role === 'admin' || user.role === 'director' || user.role === 'central_director' || user.isDirector) ? <ExecutivePortal /> : null;
       
-    case '/dashboard/accountant':
-      return user && (user.role === 'accountant' || user.role === 'financial_accountant') ? <AccountantPanel /> : null;
+      case '/dashboard/team':
+        return user && (user.role === 'team' || user.isTeam) ? <TeamDashboard /> : null;
       
-    case '/dashboard/lab':
-      return user && (user.role === 'lab' || user.permissions?.receiveSamples || user.permissions?.enterLabResults || user.permissions?.labArchive) ? <LabDashboard /> : null;
-    
-    case '/inspection/new':
-      return <InspectionForm />;
-    
-    case '/scan/:qr_id':
-      return <PublicQRScore />;
-    
-    case '/admin/control':
-      return user && (user.role === 'admin' || user.isSuperAdmin) ? <SuperAdminPanel /> : null;
+      case '/dashboard/tracker':
+        return user && user.role === 'tracker' ? <TrackerDashboard /> : null;
+        
+      case '/dashboard/accountant':
+        return user && (user.role === 'accountant' || user.role === 'financial_accountant' || user.permissions?.financialReports || user.permissions?.payFines || user.permissions?.dailyInventory || user.permissions?.viewComprehensiveFinancialReports) ? <AccountantPanel /> : null;
+        
+      case '/dashboard/lab':
+        return user && (user.role === 'lab' || user.permissions?.viewLabReports || user.permissions?.receiveSamples || user.permissions?.enterLabResults || user.permissions?.labArchive) ? <LabDashboard /> : null;
       
-    case '/public-search':
-      return <PublicSearch />;
-    
-    case '/owner':
-      return <OwnerPortal />;
-    
-    default:
-      // Fallback
-      return <LoginGate />;
-  }
+      case '/inspection/new':
+        return <InspectionForm />;
+      
+      case '/scan/:qr_id':
+        return <PublicQRScore />;
+      
+      case '/admin/control':
+        return user && (user.role === 'admin' || user.isSuperAdmin) ? <SuperAdminPanel /> : null;
+        
+      case '/public-search':
+        return <PublicSearch />;
+      
+      case '/owner':
+        return <OwnerPortal />;
+      
+      default:
+        // Fallback
+        return <LoginGate />;
+    }
+  };
+
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      {renderRoute()}
+    </Suspense>
+  );
 };
 
 export default Router;

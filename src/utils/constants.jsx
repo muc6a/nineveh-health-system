@@ -114,7 +114,9 @@ export const DEFAULT_PERMISSIONS = {
   showSmartTasks: false,
   showTeamMonthlyStats: false,
   notify_closures: false,
+  notify_penalties: false,
   notify_inspections: false,
+  notify_tasks: false,
   notify_directives: false,
   exportData: false,
   viewAuditLogs: false,
@@ -127,10 +129,10 @@ export const PERMISSIONS_TABS = [
   { id: 'operations_room', label: 'غرفة العمليات المركزية', icon: <Target className="w-4 h-4 text-red-500"/>, keys: ['manageSmartTasks', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst'] },
   { id: 'establishments', label: 'المنشآت', icon: <Building className="w-4 h-4"/>, keys: ['manageEstablishments', 'createEst', 'addEval', 'editEst', 'deleteEst'] },
   { id: 'complaints', label: 'الشكاوى', icon: <Compass className="w-4 h-4 text-rose-500"/>, keys: ['showPublicEvalsPage', 'showDeliveryPage'] },
-  { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive'] },
+  { id: 'lab', label: 'المختبر', icon: <Activity className="w-4 h-4 text-teal-500"/>, keys: ['receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive', 'viewLabReports'] },
   { id: 'financials', label: 'المالية', icon: <Activity className="w-4 h-4 text-emerald-500"/>, keys: ['financialReports', 'payFines', 'dailyInventory'] },
   { id: 'directives', label: 'التبليغات', icon: <Mail className="w-4 h-4"/>, keys: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'quickTeamDispatch'] },
-  { id: 'notifications', label: 'الإشعارات', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_inspections', 'notify_directives'] },
+  { id: 'notifications', label: 'الإشعارات', icon: <Bell className="w-4 h-4 text-amber-500"/>, keys: ['notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks', 'notify_directives'] },
   { id: 'advanced', label: 'الإدارة المتقدمة', icon: <Settings className="w-4 h-4"/>, keys: ['showMainDashboard', 'showReportsPage', 'exportData'] },
 ];
 
@@ -150,6 +152,7 @@ export const PERMISSION_DETAILS = {
   receiveSamples: { title: 'استلام العينات', desc: 'يسمح للمختبر باستلام وجدولة العينات المسحوبة من المنشآت.' },
   enterLabResults: { title: 'إدخال نتائج الفحص', desc: 'يسمح بإدخال وتوثيق نتائج الفحوصات المختبرية.' },
   editLabResults: { title: 'تعديل نتائج المختبر المنجزة', desc: 'يسمح للمختبر بتعديل نتائج العينات بعد إنجازها وتوثيقها لتدارك الأخطاء البشرية.' },
+  viewLabReports: { title: 'عرض التقارير المختبرية والرقابية للعينات', desc: 'يسمح للجهات المختصة بالاطلاع على الإحصائيات ونتائج الفحوصات دون التدخل المباشر في إدخال النتائج.' },
   labArchive: { title: 'أرشيف المختبر', desc: 'يسمح بالاطلاع على السجل التاريخي لكافة الفحوصات المختبرية السابقة.' },
   centralLabView: { title: 'الرؤية المركزية لعينات المحافظة', desc: 'يسمح للحساب بالاطلاع على الإحصائيات الكلية وكافة العينات المسحوبة من جميع الفرق في المحافظة' },
   financialReports: { title: 'التقارير المالية', desc: 'يسمح للحساب بعرض التقارير المالية والإحصائيات الخاصة بالغرامات والواردات.' },
@@ -165,8 +168,10 @@ export const PERMISSION_DETAILS = {
   issueFine: { title: 'إصدار غرامة مالية', desc: 'يمنح هذا الحساب صلاحية فرض غرامات وعقوبات مالية على المنشآت المخالفة وتوثيقها.' },
   closeEst: { title: 'إصدار أمر إغلاق (تشميع)', desc: 'إذن خطير: يعطي الحساب صلاحية اتخاذ قرار بإغلاق المنشأة فوراً ومنعها من العمل.' },
   reopenEst: { title: 'إعادة فتح المنشأة', desc: 'يسمح برفع حظر الإغلاق عن المنشأة وإعادتها لحالة العمل الطبيعية بعد إزالة المخالفة.' },
-  notify_closures: { title: 'إشعارات الإغلاقات والعقوبات', desc: 'يسمح بوصول إشعارات المصادقة على الإغلاق أو إصدار الغرامات الميدانية.' },
-  notify_inspections: { title: 'إشعارات الكشوفات والمهام', desc: 'يسمح بوصول إشعارات إضافة كشف جديد أو طلبات إعادة الكشف.' },
+  notify_closures: { title: 'إشعارات الإغلاقات', desc: 'يسمح بوصول إشعارات حالات طلب وقبول وتنفيذ الإغلاقات.' },
+  notify_penalties: { title: 'إشعارات العقوبات', desc: 'يسمح بوصول الإشعارات عند صدور أو تحديث العقوبات والغرامات الميدانية.' },
+  notify_inspections: { title: 'إشعارات الكشوفات', desc: 'يسمح بوصول إشعارات إضافة كشف صحي جديد.' },
+  notify_tasks: { title: 'إشعارات المهام', desc: 'يسمح بوصول إشعارات طلبات المهام وحركة الفرق الميدانية.' },
   notify_directives: { title: 'إشعارات التبليغات الإدارية', desc: 'يسمح بوصول إشعارات القرارات الإدارية واجتماعات المجلس.' },
   exportData: { title: 'تصدير التقارير', desc: 'يسمح بتنزيل بيانات المنظومة وجداول المنشآت على شكل ملفات Excel أو PDF لغرض الأرشفة.' },
   showTeamDashboard: { title: 'اللوحة الميدانية', desc: 'يسمح للحساب بالوصول إلى لوحة المتابعة الميدانية والعمليات اليومية.' },
@@ -175,13 +180,13 @@ export const PERMISSION_DETAILS = {
 };
 
 export const ROLE_CORE_BASICS = {
-  director: ['showMainDashboard'],
-  central_director: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'showPublicEvalsPage', 'showDeliveryPage', 'manageSmartTasks', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'financialReports'],
-  accountant: ['financialReports', 'payFines', 'dailyInventory'],
-  financial_accountant: ['financialReports', 'payFines', 'dailyInventory'],
+  director: ['showMainDashboard', 'showDirectivesPage', 'sendDirective', 'replyDirective'],
+  central_director: ['manageSmartTasks', 'authenticatePenalties', 'issueFine', 'closeEst', 'reopenEst', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'financialReports', 'showDirectivesPage', 'sendDirective', 'replyDirective', 'quickTeamDispatch'],
+  accountant: ['showDirectivesPage', 'financialReports', 'payFines', 'dailyInventory'],
+  financial_accountant: ['showDirectivesPage', 'financialReports', 'payFines', 'dailyInventory'],
   team: ['showTeamDashboard', 'executeSmartTasks', 'showSectorMap', 'createEst', 'addEval', 'manageEstablishments'],
-  lab: ['receiveSamples', 'enterLabResults', 'labArchive'],
-  tracker: ['monitorClosures', 'searchAndAddPreliminaryEst']
+  lab: ['showDirectivesPage', 'sendDirective', 'replyDirective', 'viewLabReports', 'receiveSamples', 'enterLabResults', 'editLabResults', 'labArchive'],
+  tracker: ['showDirectivesPage', 'monitorClosures', 'searchAndAddPreliminaryEst']
 };
 
 export const PERMISSION_ROLES = {
