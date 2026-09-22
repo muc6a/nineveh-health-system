@@ -276,7 +276,9 @@ const DEFAULT_PERMISSIONS = {
   showOperationsRoom: false,
 
   notify_closures: true,
+  notify_penalties: true,
   notify_inspections: true,
+  notify_tasks: true,
   notify_directives: true
 };
 
@@ -309,7 +311,9 @@ export const ROLE_PERMISSIONS = {
     replyDirective: true,
     quickTeamDispatch: true,
     notify_closures: true,
+    notify_penalties: true,
     notify_inspections: true,
+    notify_tasks: true,
     notify_directives: true,
     showMainDashboard: true
   },
@@ -594,8 +598,8 @@ export const AppProvider = ({ children }) => {
     }
 
     return [
-      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDirectivesPage: true, sendDirective: true, replyDirective: true, notify_closures: false, notify_inspections: false, notify_directives: true } },
-      { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, notify_closures: true, notify_inspections: true, notify_directives: true } }
+      { id: 'dir_acc_1', name: 'د. عماد محمد عبد الله', role: 'director', title: 'مدير عام صحة نينوى', email: 'director@ninveh.health.gov.iq', phone: '07700000000', username: 'emad_dg', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showPublicEvalsPage: true, showDirectivesPage: true, sendDirective: true, replyDirective: true, notify_closures: false, notify_penalties: false, notify_inspections: false, notify_tasks: false, notify_directives: true } },
+      { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, notify_closures: true, notify_penalties: true, notify_inspections: true, notify_tasks: true, notify_directives: true } }
     ];
   });
 
@@ -1596,7 +1600,7 @@ export const AppProvider = ({ children }) => {
       if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
     }
     if (user.role === 'central_director') {
-      const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_inspections'];
+      const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks'];
       if (centralDirBase.includes(permName)) return true;
     }
     if (user.role === 'director' || user.role === 'lab' || user.role === 'accountant' || user.role === 'financial_accountant') {

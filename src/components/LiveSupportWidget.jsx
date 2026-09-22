@@ -21,6 +21,13 @@ export const LiveSupportWidget = () => {
   // Everyone EXCEPT operations can talk to operations
   if (!isOperations) {
     roles.push({ id: 'operations', label: 'الإدارة المركزية', sector: 'all' });
+  } else {
+    if (user?.role === 'director' || user?.role === 'admin') {
+      roles.push({ id: 'central_director', label: 'مدير الرقابة المركزية', sector: 'all' });
+    }
+    if (user?.role === 'central_director' || user?.role === 'admin') {
+      roles.push({ id: 'director', label: 'مدير عام صحة نينوى', sector: 'all' });
+    }
   }
 
   // Helper to check sector match
@@ -78,11 +85,14 @@ export const LiveSupportWidget = () => {
     if (isOperations) {
       // I am operations.
       if (targetRole === 'operations') {
-        // Chatting with other operations (if supported)
         return msg.targetRole === 'operations' && msgSenderOps;
+      } else if (targetRole === 'central_director' || targetRole === 'director') {
+        // Ops talking specifically to another Ops role
+        return (msg.senderRole === targetRole && (msg.targetRole === user?.role || msg.targetRole === 'operations' || msg.targetRole === user?.id)) || 
+               (msg.senderRole === user?.role && (msg.targetRole === targetRole || msg.targetRole === 'operations' || msg.targetRole === user?.id));
       } else {
-        // Chatting with a specific user
-        return (msg.senderId === targetRole && (msg.targetRole === 'operations' || msg.targetRole === user?.id)) ||
+        // Chatting with a normal user
+        return (msg.senderId === targetRole && (msg.targetRole === 'operations' || msg.targetRole === user?.role || msg.targetRole === user?.id)) ||
                (msgSenderOps && msg.targetRole === targetRole);
       }
     } else {
@@ -190,7 +200,7 @@ export const LiveSupportWidget = () => {
             {relevantMessages.map(msg => (
               <div key={msg.id} className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] rounded-2xl px-3 py-2 shadow-sm ${msg.senderId === user?.id ? 'bg-[#dcf8c6] dark:bg-teal-800 text-slate-800 dark:text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-bl-none'}`}>
-                  {msg.senderId !== user?.id && <span className="block text-[10px] font-bold text-teal-600 mb-1">{msg.senderName}</span>}
+                  {msg.senderId !== user?.id && <span className="block text-[10px] font-bold text-teal-600 mb-1">{msg.senderName} - {msg.senderRole === 'central_director' ? 'مدير الرقابة المركزية' : msg.senderRole === 'director' ? 'مدير عام صحة نينوى' : msg.senderRole === 'admin' ? 'مدير النظام' : msg.senderRole === 'financial_accountant' ? 'محاسب' : msg.senderRole === 'team_leader' ? 'مدير فريق' : 'الإدارة المركزية'}</span>}
                   <p className="text-xs font-bold leading-relaxed text-right">{msg.text}</p>
                   <span className={`text-[9px] block mt-1 text-left flex items-center justify-end gap-1 ${msg.senderId === user?.id ? 'text-teal-700 dark:text-teal-300' : 'text-slate-400'}`}>
                     {new Date(msg.timestamp).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}
