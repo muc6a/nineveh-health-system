@@ -203,47 +203,7 @@ const UnifiedSidebar = ({
     };
 
     visibleTabs.forEach(tab => {
-      if (labKeys.includes(tab.id)) {
-        if (!labRendered) {
-          labRendered = true;
-          if (labTabs.length > 1) {
-             const isLabActive = labTabs.some(t => t.id === activeTab);
-             elements.push(
-                <button
-                  key="group_lab"
-                  onClick={() => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab(labTabs[0].id); if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=' + labTabs[0].id); setIsSidebarOpen(false); }}
-                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${isLabActive ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
-                >
-                  <FlaskConical className={`w-5 h-5 ${isLabActive ? '' : 'text-indigo-500'}`} />
-                  <span>قسم المختبر</span>
-                </button>
-             );
-          } else {
-             elements.push(renderTabButton(tab));
-          }
-        }
-      } else if (financeKeys.includes(tab.id)) {
-        if (!financeRendered) {
-          financeRendered = true;
-          if (financeTabs.length > 1) {
-             const isFinanceActive = financeTabs.some(t => t.id === activeTab);
-             elements.push(
-                <button
-                  key="group_finance"
-                  onClick={() => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab(financeTabs[0].id); if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=' + financeTabs[0].id); setIsSidebarOpen(false); }}
-                  className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${isFinanceActive ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
-                >
-                  <LayoutDashboard className={`w-5 h-5 ${isFinanceActive ? '' : 'text-emerald-500'}`} />
-                  <span>القسم المالي</span>
-                </button>
-             );
-          } else {
-             elements.push(renderTabButton(tab));
-          }
-        }
-      } else {
-        elements.push(renderTabButton(tab));
-      }
+      elements.push(renderTabButton(tab));
     });
 
     return elements;
