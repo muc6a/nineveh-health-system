@@ -202,33 +202,17 @@ export const NotificationBell = () => {
     setSystemNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  const icons = [];
-  if (user.role === 'admin' || user.permissions?.notify_closures !== false) {
-    icons.push(<NotificationIcon key="closures" type="closures" icon={Lock} color="red" title="إشعارات الإغلاقات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
-  }
-  if (user.role === 'admin' || user.permissions?.notify_penalties !== false) {
-    icons.push(<NotificationIcon key="penalties" type="penalties" icon={FileWarning} color="orange" title="إشعارات العقوبات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
-  }
-  if (user.role === 'admin' || user.permissions?.notify_inspections !== false) {
-    icons.push(<NotificationIcon key="inspections" type="inspections" icon={ClipboardList} color="purple" title="إشعارات الكشوفات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
-  }
-  if (user.role === 'admin' || user.permissions?.notify_tasks !== false) {
-    icons.push(<NotificationIcon key="tasks" type="tasks" icon={ClipboardCheck} color="indigo" title="إشعارات المهام" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
-  }
-  if (user.role === 'admin' || user.permissions?.notify_directives !== false) {
-    icons.push(<NotificationIcon key="directives" type="directives" icon={Bell} color="amber" title="التبليغات الإدارية" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
-  }
-
-  if (icons.length === 0) return null;
-
   return (
     <div className="flex items-center gap-1.5 md:gap-3 bg-slate-100/50 dark:bg-slate-800/30 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
-      {icons.map((icon, index) => (
-        <React.Fragment key={icon.key}>
-          {icon}
-          {index < icons.length - 1 && <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>}
-        </React.Fragment>
-      ))}
+      <NotificationIcon type="closures" icon={Lock} color="red" title="إشعارات الإغلاقات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="penalties" icon={FileWarning} color="orange" title="إشعارات العقوبات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="inspections" icon={ClipboardList} color="purple" title="إشعارات الكشوفات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="tasks" icon={ClipboardCheck} color="indigo" title="إشعارات المهام" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="directives" icon={Bell} color="amber" title="التبليغات الإدارية" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
     </div>
   );
 };
