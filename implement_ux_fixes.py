@@ -1,101 +1,142 @@
-import re
+import os
 
-# 1. GlobalHeader.jsx: Add children prop
-path_gh = "src/components/GlobalHeader.jsx"
-with open(path_gh, "r", encoding="utf-8") as f:
-    gh = f.read()
-if "children" not in gh:
-    gh = gh.replace("export const GlobalHeader = ({ title, subtitle, icon, showPrintButton = false }) => {", 
-                    "export const GlobalHeader = ({ title, subtitle, icon, showPrintButton = false, children }) => {")
-    gh = gh.replace("        {(showPrintButton && hasPerm('exportData')) && (",
-                    "        {children}\n        {(showPrintButton && hasPerm('exportData')) && (")
-    with open(path_gh, "w", encoding="utf-8") as f:
-        f.write(gh)
+bell_path = "src/components/NotificationBell.jsx"
+sidebar_path = "src/components/UnifiedSidebar.jsx"
 
-# 2. LabDashboard.jsx: Add Display Prefs button
-path_lab = "src/pages/LabDashboard.jsx"
-with open(path_lab, "r", encoding="utf-8") as f:
-    lab = f.read()
+# --- Update NotificationBell.jsx ---
+with open(bell_path, 'r') as f:
+    bell_content = f.read()
 
-btn_code = """            <button
-              title="تخصيص العرض"
-              onClick={() => setShowDisplayPrefsModal(true)}
-              className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-[10px] transition-all shadow-md flex items-center gap-1.5"
-            >
-              ⚙️ تخصيص العرض
-            </button>"""
+old_bell_render = """  return (
+    <div className="flex items-center gap-1.5 md:gap-3 bg-slate-100/50 dark:bg-slate-800/30 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
+      <NotificationIcon type="closures" icon={Lock} color="red" title="إشعارات الإغلاقات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="penalties" icon={FileWarning} color="orange" title="إشعارات العقوبات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="inspections" icon={ClipboardList} color="purple" title="إشعارات الكشوفات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="tasks" icon={ClipboardCheck} color="indigo" title="إشعارات المهام" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+      <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>
+      <NotificationIcon type="directives" icon={Bell} color="amber" title="التبليغات الإدارية" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />
+    </div>
+  );"""
 
-if "⚙️ تخصيص العرض" not in lab:
-    lab = lab.replace('<GlobalHeader', f'<GlobalHeader\n            children={{{btn_code}}}\n')
-    
-    # Check if DisplayPrefsModal is imported and used
-    if 'DisplayPrefsModal' not in lab:
-        lab = lab.replace("import { GlobalHeader } from '../components/GlobalHeader';", "import { GlobalHeader } from '../components/GlobalHeader';\nimport DisplayPrefsModal from '../components/DisplayPrefsModal';")
-        lab = lab.replace("</Layout>", "  <DisplayPrefsModal isOpen={showDisplayPrefsModal} onClose={() => setShowDisplayPrefsModal(false)} />\n    </Layout>")
-        
-    with open(path_lab, "w", encoding="utf-8") as f:
-        f.write(lab)
+new_bell_render = """  const icons = [];
+  if (user.role === 'admin' || user.permissions?.notify_closures !== false) {
+    icons.push(<NotificationIcon key="closures" type="closures" icon={Lock} color="red" title="إشعارات الإغلاقات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
+  }
+  if (user.role === 'admin' || user.permissions?.notify_penalties !== false) {
+    icons.push(<NotificationIcon key="penalties" type="penalties" icon={FileWarning} color="orange" title="إشعارات العقوبات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
+  }
+  if (user.role === 'admin' || user.permissions?.notify_inspections !== false) {
+    icons.push(<NotificationIcon key="inspections" type="inspections" icon={ClipboardList} color="purple" title="إشعارات الكشوفات" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
+  }
+  if (user.role === 'admin' || user.permissions?.notify_tasks !== false) {
+    icons.push(<NotificationIcon key="tasks" type="tasks" icon={ClipboardCheck} color="indigo" title="إشعارات المهام" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
+  }
+  if (user.role === 'admin' || user.permissions?.notify_directives !== false) {
+    icons.push(<NotificationIcon key="directives" type="directives" icon={Bell} color="amber" title="التبليغات الإدارية" myNotifications={myNotifications} markAsRead={markAsRead} deleteNotification={deleteNotification} />);
+  }
 
-# 3. UnifiedSidebar.jsx: Fix strategic condition and Account Card UI
-path_sidebar = "src/components/UnifiedSidebar.jsx"
-with open(path_sidebar, "r", encoding="utf-8") as f:
-    sidebar = f.read()
+  if (icons.length === 0) return null;
 
-# Fix strategic condition
-sidebar = sidebar.replace("showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') || hasPerm('exportData')",
-                          "showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage')")
+  return (
+    <div className="flex items-center gap-1.5 md:gap-3 bg-slate-100/50 dark:bg-slate-800/30 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
+      {icons.map((icon, index) => (
+        <React.Fragment key={icon.key}>
+          {icon}
+          {index < icons.length - 1 && <div className="w-px h-6 bg-slate-300 dark:bg-slate-700"></div>}
+        </React.Fragment>
+      ))}
+    </div>
+  );"""
 
-# Fix Account Card UI
-old_account_ui = r"""<div className="flex flex-col text-right">\s*<span className="font-black text-xs">\{user\.name\}</span>\s*<span className="text-\[10px\] text-slate-500">\{getRoleNameInArabic\(user\.role\)\}\s*\{user\.sector \? `- \$\{user\.sector\}` : ''\}</span>\s*</div>"""
+if old_bell_render in bell_content:
+    bell_content = bell_content.replace(old_bell_render, new_bell_render)
+    with open(bell_path, 'w') as f:
+        f.write(bell_content)
+    print("Updated NotificationBell.jsx")
 
-new_account_ui = """<div className="flex flex-col text-right truncate">
-            <span className="font-bold text-[11px] truncate" title={`اسم الحساب: ${user.name}`}>اسم الحساب: {user.name}</span>
-            <span className="text-[9px] text-slate-500 truncate mt-0.5" title={`نوع الحساب: ${getRoleNameInArabic(user.role)} ${user.sector ? `- ${user.sector}` : ''}`}>
-              نوع الحساب: {getRoleNameInArabic(user.role)} {user.sector ? `- ${user.sector}` : ''}
-            </span>
-          </div>"""
+# --- Update UnifiedSidebar.jsx ---
+with open(sidebar_path, 'r') as f:
+    sidebar_content = f.read()
 
-sidebar = re.sub(old_account_ui, new_account_ui, sidebar, flags=re.DOTALL)
+old_sidebar_render = """    visibleTabs.forEach(tab => {
+      elements.push(renderTabButton(tab));
+    });"""
 
-with open(path_sidebar, "w", encoding="utf-8") as f:
-    f.write(sidebar)
+new_sidebar_render = """    const isLabSpecialist = user?.role === 'lab';
+    const isFinanceSpecialist = user?.role === 'accountant' || user?.role === 'financial_accountant';
 
-# 4. DirectivesManager.jsx: Full width if no send perm
-path_dir = "src/components/DirectivesManager.jsx"
-with open(path_dir, "r", encoding="utf-8") as f:
-    dirs = f.read()
-
-dirs = dirs.replace('<div className="lg:col-span-8">', '<div className={canSend ? "lg:col-span-8" : "lg:col-span-12"}>')
-with open(path_dir, "w", encoding="utf-8") as f:
-    f.write(dirs)
-
-# 5. Login.jsx: Enter key to login
-path_login = "src/pages/Login.jsx"
-with open(path_login, "r", encoding="utf-8") as f:
-    login = f.read()
-
-login = login.replace('type="password"\n                    value={password}', 'type="password"\n                    onKeyDown={(e) => e.key === \'Enter\' && handleLogin()}\n                    value={password}')
-with open(path_login, "w", encoding="utf-8") as f:
-    f.write(login)
-
-# 6. AppContext.jsx: Default light mode
-path_ctx = "src/context/AppContext.jsx"
-with open(path_ctx, "r", encoding="utf-8") as f:
-    ctx = f.read()
-
-# Replace the theme initialization block
-ctx = re.sub(r"const \[theme, setTheme\] = useState\(\(\) => \{.*?\n  \}\);", 
-             """const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        return savedTheme;
+    visibleTabs.forEach(tab => {
+      if (labKeys.includes(tab.id)) {
+        if (!labRendered) {
+          labRendered = true;
+          if (isLabSpecialist || labTabs.length === 1) {
+             labTabs.forEach(t => elements.push(renderTabButton(t)));
+          } else {
+             const isLabActive = labTabs.some(t => t.id === activeTab);
+             const isOpen = openGroups.lab || isLabActive;
+             
+             elements.push(
+                <div key="group_lab" className="flex flex-col gap-1">
+                  <button
+                    onClick={() => setOpenGroups(prev => ({ ...prev, lab: !prev.lab }))}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${isLabActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FlaskConical className={`w-5 h-5 ${isLabActive ? '' : 'text-indigo-500'}`} />
+                      <span>قسم المختبر</span>
+                    </div>
+                    <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+                  {isOpen && (
+                    <div className="flex flex-col gap-1 pr-6 border-r-2 border-indigo-100 dark:border-indigo-900/30 mr-4">
+                      {labTabs.map(t => renderTabButton(t, true))}
+                    </div>
+                  )}
+                </div>
+             );
+          }
+        }
+      } else if (financeKeys.includes(tab.id)) {
+        if (!financeRendered) {
+          financeRendered = true;
+          if (isFinanceSpecialist || financeTabs.length === 1) {
+             financeTabs.forEach(t => elements.push(renderTabButton(t)));
+          } else {
+             const isFinanceActive = financeTabs.some(t => t.id === activeTab);
+             const isOpen = openGroups.finance || isFinanceActive;
+             
+             elements.push(
+                <div key="group_finance" className="flex flex-col gap-1">
+                  <button
+                    onClick={() => setOpenGroups(prev => ({ ...prev, finance: !prev.finance }))}
+                    className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center justify-between ${isFinanceActive ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <LayoutDashboard className={`w-5 h-5 ${isFinanceActive ? '' : 'text-emerald-500'}`} />
+                      <span>القسم المالي</span>
+                    </div>
+                    <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  </button>
+                  {isOpen && (
+                    <div className="flex flex-col gap-1 pr-6 border-r-2 border-emerald-100 dark:border-emerald-900/30 mr-4">
+                      {financeTabs.map(t => renderTabButton(t, true))}
+                    </div>
+                  )}
+                </div>
+             );
+          }
+        }
+      } else {
+        elements.push(renderTabButton(tab));
       }
-    }
-    return 'light';
-  });""", ctx, flags=re.DOTALL)
+    });"""
 
-with open(path_ctx, "w", encoding="utf-8") as f:
-    f.write(ctx)
+if old_sidebar_render in sidebar_content:
+    sidebar_content = sidebar_content.replace(old_sidebar_render, new_sidebar_render)
+    with open(sidebar_path, 'w') as f:
+        f.write(sidebar_content)
+    print("Updated UnifiedSidebar.jsx")
 
-print("UX fixes applied!")

@@ -302,6 +302,7 @@ export const LabDashboard = () => {
           <div className="w-full max-w-full mx-auto space-y-6">
 
             {/* In-page Tabs (Matching Operations Room) */}
+            {['stats', 'incoming', 'testing', 'archive'].includes(activeTab) && (
             <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
               {hasPerm('viewLabReports') && (
                 <button onClick={() => setActiveTab('stats')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'stats' ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
@@ -324,6 +325,7 @@ export const LabDashboard = () => {
                 </button>
               )}
             </div>
+            )}
 
             {/* STATS */}
             {activeTab === 'stats' && hasPerm('viewLabReports') && (
