@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
-import { Bell, Check, Trash2 } from 'lucide-react';
+import { Bell, Check, Trash2, Lock, ShieldAlert, ClipboardList, Mail } from 'lucide-react';
 
 export const NotificationBell = () => {
   const { user, systemNotifications, setSystemNotifications, playBeep } = useContext(AppContext);
@@ -108,7 +108,42 @@ export const NotificationBell = () => {
             {myNotifications.length === 0 ? (
               <div className="p-4 text-center text-xs text-slate-400 font-bold">لا توجد إشعارات حالياً.</div>
             ) : (
-              myNotifications.sort((a, b) => new Date(b.date) - new Date(a.date)).map(notif => (
+              myNotifications.sort((a, b) => new Date(b.date) - new Date(a.date)).map(notif => {
+                const t = notif.title || '';
+                const isClosure = notif.type === 'closures' || (notif.type === undefined && (t.includes('إغلاق') || t.includes('تشميع')));
+                const isPenalty = notif.type === 'penalties' || (notif.type === undefined && (t.includes('عقوب') || t.includes('غرامة') || t.includes('مخالفة')));
+                const isInspectionOrTask = notif.type === 'tasks' || (notif.type === undefined && (t.includes('كشف') || t.includes('تفتيش') || t.includes('مهمة')));
+                const isDirective = notif.type === 'directives' || (notif.type === undefined && (t.includes('قرار') || t.includes('تبليغ') || t.includes('توجيه') || t.includes('مجلس') || t.includes('SOS') || t.includes('استغاثة')));
+
+                let Icon = Bell;
+                let iconColorClass = 'text-blue-600';
+                let bgClass = 'bg-blue-100 dark:bg-blue-900/30';
+
+                if (isClosure) {
+                  Icon = Lock;
+                  iconColorClass = 'text-rose-600';
+                  bgClass = 'bg-rose-100 dark:bg-rose-900/30';
+                } else if (isPenalty) {
+                  Icon = ShieldAlert;
+                  iconColorClass = 'text-red-600';
+                  bgClass = 'bg-red-100 dark:bg-red-900/30';
+                } else if (isInspectionOrTask) {
+                  Icon = ClipboardList;
+                  iconColorClass = 'text-emerald-600';
+                  bgClass = 'bg-emerald-100 dark:bg-emerald-900/30';
+                } else if (isDirective) {
+                  Icon = Mail;
+                  iconColorClass = 'text-amber-600';
+                  bgClass = 'bg-amber-100 dark:bg-amber-900/30';
+                }
+
+                if (notif.isRead) {
+                  iconColorClass = 'text-slate-500';
+                  bgClass = 'bg-slate-100 dark:bg-slate-800';
+                }
+
+                return (
+
                 <div 
                   key={notif.id}
                   onClick={() => {
@@ -140,8 +175,8 @@ export const NotificationBell = () => {
                   }}
                   className={`p-3 rounded-xl cursor-pointer transition-all border group flex gap-3 items-start ${notif.isRead ? 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30 shadow-sm'}`}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${notif.isRead ? 'bg-slate-100 dark:bg-slate-800 text-slate-500' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'}`}>
-                    <Bell className="w-4 h-4" />
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${bgClass} ${iconColorClass}`}>
+                    <Icon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className={`text-xs font-black truncate ${notif.isRead ? 'text-slate-700 dark:text-slate-300' : 'text-slate-900 dark:text-white'}`}>{notif.title}</h4>
@@ -158,7 +193,8 @@ export const NotificationBell = () => {
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
-              ))
+              );
+            })
             )}
           </div>
 
