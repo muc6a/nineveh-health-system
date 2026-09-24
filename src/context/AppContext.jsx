@@ -1600,7 +1600,7 @@ export const AppProvider = ({ children }) => {
       if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
     }
     if (user.role === 'central_director') {
-      const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks'];
+      const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks', 'authenticatePenalties', 'receiveSamples', 'enterLabResults', 'labArchive', 'payFines', 'dailyInventory'];
       if (centralDirBase.includes(permName)) return true;
     }
     if (user.role === 'director' || user.role === 'lab' || user.role === 'accountant' || user.role === 'financial_accountant') {
