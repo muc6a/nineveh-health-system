@@ -7,6 +7,11 @@ export const FinancialReports = () => {
   const { user, penaltyRequests, teams, setPenaltyRequests, notify, establishments , hasPerm } = useContext(AppContext);
 
   const [selectedTeamFilter, setSelectedTeamFilter] = useState('all');
+  const [visibleRows, setVisibleRows] = useState(50);
+  
+  React.useEffect(() => {
+    setVisibleRows(50);
+  }, [selectedTeamFilter, penaltyRequests]);
 
 const [showPayModal, setShowPayModal] = useState(false);
   const [payCode, setPayCode] = useState('');
@@ -252,7 +257,7 @@ const [showPayModal, setShowPayModal] = useState(false);
                           </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-            {fines.length > 0 ? fines.map((fine, idx) => (
+            {fines.length > 0 ? fines.slice(0, visibleRows).map((fine, idx) => (
               <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
                 <td className="py-4 px-2 font-black text-slate-700 dark:text-slate-300">{fine.establishmentName}</td>
                 <td className="py-4 px-2 text-slate-600 dark:text-slate-400">{fine.reason?.replace(/تطبيق كراس الغرامات - |تطبيق كراس الغرامة و |تطبيق كراس الغرامة /g, '') || (fine.type === 'closure' ? 'إغلاق وغرامة' : 'غرامة')}</td>
@@ -286,6 +291,16 @@ const [showPayModal, setShowPayModal] = useState(false);
             )}
           </tbody>
         </table>
+        {fines.length > visibleRows && (
+          <div className="flex justify-center mt-6">
+            <button 
+              onClick={() => setVisibleRows(prev => prev + 50)}
+              className="px-6 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs transition-colors"
+            >
+              عرض المزيد
+            </button>
+          </div>
+        )}
       </div>}
     </div>
   );

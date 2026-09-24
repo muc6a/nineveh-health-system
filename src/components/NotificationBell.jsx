@@ -5,8 +5,7 @@ import { Bell, Check, Trash2 } from 'lucide-react';
 export const NotificationBell = () => {
   const { user, systemNotifications, setSystemNotifications, playBeep } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('all');
-  const dropdownRef = useRef(null);
+    const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -104,57 +103,30 @@ export const NotificationBell = () => {
           </div>
           
           
-          <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 mb-3 overflow-x-auto hide-scrollbar">
-            <button onClick={() => setActiveTab('all')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'all' ? 'bg-white dark:bg-slate-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>الكل</button>
-            <button onClick={() => setActiveTab('closures')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'closures' ? 'bg-white dark:bg-slate-700 shadow-sm text-red-600 dark:text-red-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>إشعارات الإغلاقات</button>
-            <button onClick={() => setActiveTab('penalties')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'penalties' ? 'bg-white dark:bg-slate-700 shadow-sm text-orange-600 dark:text-orange-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>إشعارات العقوبات</button>
-            <button onClick={() => setActiveTab('tasks')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'tasks' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>الكشوفات والمهام</button>
-            <button onClick={() => setActiveTab('directives')} className={`flex-1 text-[10px] font-bold py-1.5 px-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'directives' ? 'bg-white dark:bg-slate-700 shadow-sm text-amber-600 dark:text-amber-400' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700/50'}`}>التبليغات الإدارية</button>
-          </div>
-
-          {(() => {
-            const filteredNotifications = myNotifications.filter(n => {
-              if (activeTab === 'all') return true;
-              
-              const t = n.title || '';
-              
-              if (activeTab === 'closures') {
-                return n.type === 'closures' || (n.type === undefined && (t.includes('إغلاق') || t.includes('تشميع')));
-              }
-              if (activeTab === 'penalties') {
-                return n.type === 'penalties' || (n.type === undefined && (t.includes('غرامة') || t.includes('عقوب')));
-              }
-              if (activeTab === 'tasks') {
-                return n.type === 'tasks' || (n.type === undefined && (t.includes('تفتيش') || t.includes('كشف') || t.includes('مهمة') || t.includes('رقاب') || t.includes('عينة')));
-              }
-              if (activeTab === 'directives') {
-                return n.type === 'directives' || (n.type === undefined && (t.includes('تبليغ') || t.includes('قرار') || t.includes('توجيه') || t.includes('إداري')));
-              }
-              return false;
-            });
-            return filteredNotifications.length === 0 ? (
-
-            <div className="p-4 text-center text-xs text-slate-400 font-bold">لا توجد إشعارات حالياً.</div>
-          ) : (
-            <div className="space-y-1">
-              {filteredNotifications.map(notif => (
+          
+          <div className="space-y-1 mt-2">
+            {myNotifications.length === 0 ? (
+              <div className="p-4 text-center text-xs text-slate-400 font-bold">لا توجد إشعارات حالياً.</div>
+            ) : (
+              myNotifications.sort((a, b) => new Date(b.date) - new Date(a.date)).map(notif => (
                 <div 
                   key={notif.id}
                   onClick={() => {
                     markAsRead(notif.id);
                     setIsOpen(false);
-                    if (notif.title?.includes('إغلاق') || notif.title?.includes('عقوب') || notif.title?.includes('غرامة')) {
+                    const t = notif.title || '';
+                    if (t.includes('إغلاق') || t.includes('عقوب') || t.includes('غرامة')) {
                       if (user.role === 'admin' || user.role === 'central_director' || user.role === 'operations') {
                         if (user.role === 'central_director' || user.role === 'operations') window.location.hash = '/dashboard/director';
                         else window.location.hash = '/admin/control';
                         setTimeout(() => window.dispatchEvent(new CustomEvent('navToPenalties')), 100);
                       }
-                    } else if (notif.title?.includes('تبليغ') || notif.title?.includes('قرار') || notif.title?.includes('توجيه') || notif.title?.includes('رد') || notif.title?.includes('تفتيش')) {
+                    } else if (t.includes('تبليغ') || t.includes('قرار') || t.includes('توجيه') || t.includes('رد') || t.includes('تفتيش')) {
                       if (user.role === 'director' || user.role === 'central_director') {
                         window.location.hash = '/dashboard/director';
                       }
                       setTimeout(() => window.dispatchEvent(new CustomEvent('navToDirectives')), 100);
-                    } else if (notif.title?.includes('تلوث') || notif.title?.includes('مختبر') || notif.title?.includes('عينة')) {
+                    } else if (t.includes('تلوث') || t.includes('مختبر') || t.includes('عينة')) {
                       if (user.role === 'operations' || user.role === 'central_director' || user.role === 'director' || user.isDirector) {
                         window.location.hash = '/dashboard/director';
                         setTimeout(() => window.dispatchEvent(new CustomEvent('navToLabResults')), 100);
@@ -166,29 +138,30 @@ export const NotificationBell = () => {
                       }
                     }
                   }}
-                  className={`p-3 rounded-xl cursor-pointer transition-all border group ${notif.isRead ? 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'bg-teal-50/50 dark:bg-teal-900/10 border-teal-100 dark:border-teal-900/30'}`}
+                  className={`p-3 rounded-xl cursor-pointer transition-all border group flex gap-3 items-start ${notif.isRead ? 'bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30 shadow-sm'}`}
                 >
-                  <div className="flex justify-between items-start gap-2">
-                    <div>
-                      <h4 className={`text-xs font-black ${notif.isRead ? 'text-slate-700 dark:text-slate-300' : 'text-teal-700 dark:text-teal-400'}`}>{notif.title}</h4>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed break-words whitespace-normal">{notif.message}</p>
-                      <p className="text-[9px] text-slate-400 mt-2 font-bold">{new Date(notif.date).toLocaleString('ar-IQ')}</p>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteNotification(notif.id);
-                      }}
-                      className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${notif.isRead ? 'bg-slate-100 dark:bg-slate-800 text-slate-500' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'}`}>
+                    <Bell className="w-4 h-4" />
                   </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className={`text-xs font-black truncate ${notif.isRead ? 'text-slate-700 dark:text-slate-300' : 'text-slate-900 dark:text-white'}`}>{notif.title}</h4>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed break-words whitespace-normal line-clamp-2">{notif.message}</p>
+                    <p className={`text-[9px] mt-1.5 font-bold ${notif.isRead ? 'text-slate-400' : 'text-blue-500'}`}>{new Date(notif.date).toLocaleString('ar-IQ')}</p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteNotification(notif.id);
+                    }}
+                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full opacity-0 group-hover:opacity-100 transition-all cursor-pointer shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              ))}
-            </div>
-          );
-          })()}
+              ))
+            )}
+          </div>
+
         </div>
       )}
 

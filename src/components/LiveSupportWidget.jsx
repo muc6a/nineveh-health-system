@@ -15,19 +15,19 @@ export const LiveSupportWidget = () => {
   const isOperations = user?.role === 'admin' || user?.role === 'central_director' || user?.role === 'director';
   const isAccountant = user?.role === 'financial_accountant';
   
+  
   // Build contact list (roles)
   const roles = [];
   
-  // Everyone EXCEPT operations can talk to operations
-  if (!isOperations) {
-    roles.push({ id: 'operations', label: 'الإدارة المركزية', sector: 'all' });
-  } else {
-    if (user?.role === 'director' || user?.role === 'admin') {
-      roles.push({ id: 'central_director', label: 'مدير الرقابة المركزية', sector: 'all' });
-    }
-    if (user?.role === 'central_director' || user?.role === 'admin') {
-      roles.push({ id: 'director', label: 'مدير عام صحة نينوى', sector: 'all' });
-    }
+  // Add Operations roles
+  if (user?.role !== 'operations') {
+    roles.push({ id: 'operations', label: 'غرفة العمليات المركزية', sector: 'all' });
+  }
+  if (user?.role !== 'central_director') {
+    roles.push({ id: 'central_director', label: 'مدير الرقابة المركزية', sector: 'all' });
+  }
+  if (user?.role !== 'director') {
+    roles.push({ id: 'director', label: 'مدير عام صحة نينوى', sector: 'all' });
   }
 
   // Helper to check sector match
@@ -64,8 +64,19 @@ export const LiveSupportWidget = () => {
   // Add Labs to contacts
   (labs || []).forEach(l => {
     if (l.id === user?.id) return;
-    if (isOperations) {
+    if (isOperations || matchesSector(l.sector)) {
       roles.push({ id: l.id, label: `المختبر: ${l.name}`, sector: 'all' });
+    }
+  });
+  
+  // Also add anyone who has actively sent us a message recently if they aren't in the list
+  (chatMessages || []).forEach(msg => {
+    // If msg is sent to me or my role
+    if (msg.targetRole === user?.id || msg.targetRole === user?.role || (isOperations && msg.targetRole === 'operations')) {
+       // if the sender is not me, and not already in roles
+       if (msg.senderId !== user?.id && !roles.find(r => r.id === msg.senderId) && !roles.find(r => r.id === msg.senderRole)) {
+           roles.push({ id: msg.senderId || msg.senderRole, label: msg.senderName || 'جهة اتصال غير معروفة', sector: 'all' });
+       }
     }
   });
 
@@ -78,34 +89,23 @@ export const LiveSupportWidget = () => {
     }
   }, [roles, targetRole]);
 
+  
   // Isolate conversation to prevent crosstalk
   const relevantMessages = (chatMessages || []).filter(msg => {
-    const msgSenderOps = msg.senderRole === 'admin' || msg.senderRole === 'director' || msg.senderRole === 'central_director' || msg.senderRole === 'operations';
+    // Basic definition of me
+    const toMe = msg.targetRole === user?.id || msg.targetRole === user?.role || (isOperations && msg.targetRole === 'operations');
+    const fromMe = msg.senderId === user?.id || msg.senderRole === user?.role;
     
-    if (isOperations) {
-      // I am operations.
-      if (targetRole === 'operations') {
-        return msg.targetRole === 'operations' && msgSenderOps;
-      } else if (targetRole === 'central_director' || targetRole === 'director') {
-        // Ops talking specifically to another Ops role
-        return (msg.senderRole === targetRole && (msg.targetRole === user?.role || msg.targetRole === 'operations' || msg.targetRole === user?.id)) || 
-               (msg.senderRole === user?.role && (msg.targetRole === targetRole || msg.targetRole === 'operations' || msg.targetRole === user?.id));
-      } else {
-        // Chatting with a normal user
-        return (msg.senderId === targetRole && (msg.targetRole === 'operations' || msg.targetRole === user?.role || msg.targetRole === user?.id)) ||
-               (msgSenderOps && msg.targetRole === targetRole);
-      }
+    // Target could be an ID (user id) or a Role (e.g. operations)
+    const toTarget = msg.targetRole === targetRole;
+    const fromTarget = msg.senderId === targetRole || msg.senderRole === targetRole;
+    
+    if (targetRole === 'operations' || targetRole === 'central_director' || targetRole === 'director') {
+       // Chatting with a role
+       return (fromMe && toTarget) || (fromTarget && toMe);
     } else {
-      // I am a normal user
-      if (targetRole === 'operations') {
-        // Chatting with operations
-        return (msg.senderId === user?.id && msg.targetRole === 'operations') ||
-               (msgSenderOps && (msg.targetRole === user?.id || msg.targetRole === user?.role));
-      } else {
-        // Chatting with another specific user
-        return (msg.senderId === user?.id && msg.targetRole === targetRole) ||
-               (msg.senderId === targetRole && msg.targetRole === user?.id);
-      }
+       // Chatting with a specific user (id)
+       return (fromMe && msg.targetRole === targetRole) || (msg.senderId === targetRole && toMe);
     }
   }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
