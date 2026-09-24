@@ -111,8 +111,12 @@ const UnifiedSidebar = ({
       iconColorClass: 'text-blue-500',
       activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
       showCondition: hasPerm('manageEstablishments'),
-      isActive: activeTab === 'establishments' || activeTab === 'directory',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('establishments'); else setActiveTab('establishments'); if(setSelectedTeamId) setSelectedTeamId(''); }
+      isActive: activeTab === 'establishments' || activeTab === 'directory' || executiveTab === 'establishments',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('establishments'); 
+        setActiveTab('establishments'); 
+        if(setSelectedTeamId) setSelectedTeamId(''); 
+      }
     },
     lab_dashboard: {
       label: 'قسم المختبر',

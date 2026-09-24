@@ -42,18 +42,15 @@ export const ExecutivePortal = ({ embeddedTab }) => {
   const initialUrlTab = currentRoute.includes('?tab=') ? currentRoute.split('?tab=')[1].split('&')[0] : null;
 
   useEffect(() => {
-    if (initialUrlTab && tabConfig[initialUrlTab]) {
-      const config = tabConfig[initialUrlTab];
-      if (!config.permission || hasPerm(config.permission)) {
-        if (initialUrlTab === 'establishments') {
-          setExecutiveTab('establishments');
-        } else {
-          setExecutiveTab('dashboard');
-          setActiveTab(initialUrlTab);
-        }
+    if (initialUrlTab) {
+      if (initialUrlTab === 'establishments') {
+        setExecutiveTab('establishments');
+      } else {
+        setExecutiveTab('dashboard');
+        setActiveTab(initialUrlTab);
       }
     }
-  }, [initialUrlTab, user?.permissions]);
+  }, [initialUrlTab]);
 
   const getInitialExecutiveTab = () => {
     if (hasPerm('showMainDashboard')) return 'strategic';

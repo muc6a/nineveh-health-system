@@ -19,8 +19,12 @@ export const EstablishmentsManager = () => {
     if (est.lastInspection === 'تحت المعالجة ⏳') return { text: 'تحت المعالجة ⏳', color: 'bg-amber-100 text-amber-700' };
 
     // Check for active legal action (pending penalties)
-    const hasPendingPenalty = penaltyRequests && penaltyRequests.some(pr => pr.establishmentId === est.id && pr.status === 'pending');
+    const hasPendingPenalty = penaltyRequests && penaltyRequests.some(pr => (pr.establishmentId === est.id || pr.targetEstId === est.id || pr.estName === est.name) && pr.status === 'pending');
     if (hasPendingPenalty) return { text: 'قيد الإجراء القانوني ⚖️', color: 'bg-rose-100 text-rose-700 font-bold' };
+
+    // Check for approved fines
+    const hasApprovedFine = penaltyRequests && penaltyRequests.some(pr => (pr.establishmentId === est.id || pr.targetEstId === est.id || pr.estName === est.name) && pr.status === 'approved' && pr.type === 'fine');
+    if (hasApprovedFine) return { text: 'تم التغريم 💰', color: 'bg-orange-100 text-orange-700 font-bold' };
 
     // Check for active lab requests
     const hasActiveLab = labRequests && labRequests.some(lr => lr.establishmentId === est.id && lr.status !== 'finished');
