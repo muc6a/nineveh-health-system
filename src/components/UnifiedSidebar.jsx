@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import { ChevronDown, 
   TrendingUp, Users, ShieldAlert, Mail, FlaskConical, Database, Building, LogOut, CheckCircle, BarChart3, Clock, Archive, LayoutDashboard, CreditCard, ClipboardList, FileSearch
 } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
@@ -26,6 +26,12 @@ const UnifiedSidebar = ({
   customTabs = null
 }) => {
   const { user, hasPerm, globalLogout, uiPreferences, setActiveSidebarTabs, navigate } = React.useContext(AppContext);
+  const [openGroups, setOpenGroups] = React.useState({});
+  
+  const toggleGroup = (groupName) => {
+    setOpenGroups(prev => ({...prev, [groupName]: !prev[groupName]}));
+  };
+
 
   // Definition of all possible tabs
   const tabConfig = {
@@ -173,6 +179,10 @@ const UnifiedSidebar = ({
     const visibleTabs = tabsToRender.filter(tab => customTabs ? tab.showCondition !== false : (tab && tab.showCondition));
 
     const elements = [];
+    const processedKeys = new Set();
+    
+    const labKeys = ['stats', 'incoming', 'testing', 'archive'];
+    const financeKeys = ['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports'];
 
     const renderTabButton = (tab, isNested = false) => {
       const isCurrentlyActive = (executiveTab && activeTab) 
@@ -189,7 +199,7 @@ const UnifiedSidebar = ({
           className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${
             isCurrentlyActive
               ? activeClass
-              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'
+              : (isNested ? 'text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/40 border-r-2 border-transparent hover:border-indigo-500' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40')
           }`}
         >
           {IconComponent && <IconComponent className={`w-5 h-5 ${isCurrentlyActive ? '' : (tab.iconColorClass || 'text-slate-500')}`} />}
@@ -201,8 +211,68 @@ const UnifiedSidebar = ({
       );
     };
 
+    const isPrimaryLab = user?.role === 'lab';
+    const isPrimaryAccountant = user?.role === 'accountant';
+
     visibleTabs.forEach(tab => {
+      if (processedKeys.has(tab.id)) return;
+
+      // Group Lab for secondary users
+      if (!isPrimaryLab && labKeys.includes(tab.id)) {
+        const availableLabTabs = visibleTabs.filter(t => labKeys.includes(t.id));
+        if (availableLabTabs.length > 0) {
+          const isAnyLabActive = availableLabTabs.some(t => activeTab === t.id);
+          elements.push(
+            <div key="group_lab" className="flex flex-col gap-1">
+              <button 
+                onClick={() => toggleGroup('lab')}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${isAnyLabActive ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+              >
+                <FlaskConical className={`w-5 h-5 ${isAnyLabActive ? 'text-indigo-600' : 'text-indigo-500'}`} />
+                <span>قسم المختبر</span>
+                <ChevronDown className={`w-4 h-4 mr-auto transition-transform duration-300 ${openGroups['lab'] ? 'rotate-180' : ''}`} />
+              </button>
+              {openGroups['lab'] && (
+                <div className="flex flex-col gap-1 pr-6 pb-2">
+                  {availableLabTabs.map(t => renderTabButton(t, true))}
+                </div>
+              )}
+            </div>
+          );
+          availableLabTabs.forEach(t => processedKeys.add(t.id));
+        }
+        return;
+      }
+
+      // Group Finance for secondary users
+      if (!isPrimaryAccountant && financeKeys.includes(tab.id)) {
+        const availableFinanceTabs = visibleTabs.filter(t => financeKeys.includes(t.id));
+        if (availableFinanceTabs.length > 0) {
+          const isAnyFinanceActive = availableFinanceTabs.some(t => activeTab === t.id);
+          elements.push(
+            <div key="group_finance" className="flex flex-col gap-1">
+              <button 
+                onClick={() => toggleGroup('finance')}
+                className={`w-full text-right px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-3 ${isAnyFinanceActive ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
+              >
+                <LayoutDashboard className={`w-5 h-5 ${isAnyFinanceActive ? 'text-emerald-600' : 'text-emerald-500'}`} />
+                <span>القسم المالي</span>
+                <ChevronDown className={`w-4 h-4 mr-auto transition-transform duration-300 ${openGroups['finance'] ? 'rotate-180' : ''}`} />
+              </button>
+              {openGroups['finance'] && (
+                <div className="flex flex-col gap-1 pr-6 pb-2">
+                  {availableFinanceTabs.map(t => renderTabButton(t, true))}
+                </div>
+              )}
+            </div>
+          );
+          availableFinanceTabs.forEach(t => processedKeys.add(t.id));
+        }
+        return;
+      }
+
       elements.push(renderTabButton(tab));
+      processedKeys.add(tab.id);
     });
 
     return elements;
