@@ -456,40 +456,42 @@ export const AccountantPanel = () => {
         </div>
 
                 {/* Horizontal Navigation Tabs for Finance */}
-        <div className="mb-6 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-print px-1">
-          {hasPerm('financialReports') && (
-            <button
-              onClick={() => setActiveTab('financials')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'financials' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-            >
-              <LayoutDashboard className="w-4 h-4" /> التقارير
-            </button>
-          )}
-          {hasPerm('payFines') && (
-            <button
-              onClick={() => setActiveTab('ext_financials')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'ext_financials' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-            >
-              <CreditCard className="w-4 h-4" /> الغرامات والإيرادات
-            </button>
-          )}
-          {hasPerm('dailyInventory') && (
-            <button
-              onClick={() => setActiveTab('reconciliation')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'reconciliation' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-            >
-              <ClipboardList className="w-4 h-4" /> جرد اليومية والمطابقة
-            </button>
-          )}
-          {hasPerm('viewComprehensiveFinancialReports') && (
-            <button
-              onClick={() => setActiveTab('comprehensive_reports')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'comprehensive_reports' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-            >
-              <BarChart3 className="w-4 h-4" /> التقارير الشاملة
-            </button>
-          )}
-        </div>
+        {['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports'].includes(activeTab) && (
+          <div className="mb-6 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-print px-1">
+            {hasPerm('financialReports') && (
+              <button
+                onClick={() => setActiveTab('financials')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'financials' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+              >
+                <LayoutDashboard className="w-4 h-4" /> التقارير
+              </button>
+            )}
+            {hasPerm('payFines') && (
+              <button
+                onClick={() => setActiveTab('ext_financials')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'ext_financials' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+              >
+                <CreditCard className="w-4 h-4" /> الغرامات والإيرادات
+              </button>
+            )}
+            {hasPerm('dailyInventory') && (
+              <button
+                onClick={() => setActiveTab('reconciliation')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'reconciliation' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+              >
+                <ClipboardList className="w-4 h-4" /> جرد اليومية والمطابقة
+              </button>
+            )}
+            {hasPerm('viewComprehensiveFinancialReports') && (
+              <button
+                onClick={() => setActiveTab('comprehensive_reports')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'comprehensive_reports' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+              >
+                <BarChart3 className="w-4 h-4" /> التقارير الشاملة
+              </button>
+            )}
+          </div>
+        )}
 
         {/* --- Tab: Dashboard & Reports --- */}
         {activeTab === "financials" && (

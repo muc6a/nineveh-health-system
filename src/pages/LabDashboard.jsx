@@ -304,40 +304,42 @@ export const LabDashboard = () => {
 
 
                         {/* Horizontal Navigation Tabs for Lab */}
-            <div className="mb-6 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-print px-1">
-              {hasPerm('viewLabReports') && (
-                <button
-                  onClick={() => setActiveTab('stats')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'stats' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  <BarChart3 className="w-4 h-4" /> التقارير والإحصائيات
-                </button>
-              )}
-              {hasPerm('receiveSamples') && (
-                <button
-                  onClick={() => setActiveTab('incoming')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'incoming' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  <Clock className="w-4 h-4" /> استلام العينات
-                </button>
-              )}
-              {hasPerm('enterLabResults') && (
-                <button
-                  onClick={() => setActiveTab('testing')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'testing' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  <FlaskConical className="w-4 h-4" /> إدخال النتائج
-                </button>
-              )}
-              {hasPerm('labArchive') && (
-                <button
-                  onClick={() => setActiveTab('archive')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'archive' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  <Archive className="w-4 h-4" /> الأرشيف
-                </button>
-              )}
-            </div>
+            {['stats', 'incoming', 'testing', 'archive'].includes(activeTab) && (
+              <div className="mb-6 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-print px-1">
+                {hasPerm('viewLabReports') && (
+                  <button
+                    onClick={() => setActiveTab('stats')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'stats' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                  >
+                    <BarChart3 className="w-4 h-4" /> التقارير والإحصائيات
+                  </button>
+                )}
+                {hasPerm('receiveSamples') && (
+                  <button
+                    onClick={() => setActiveTab('incoming')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'incoming' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                  >
+                    <Clock className="w-4 h-4" /> استلام العينات
+                  </button>
+                )}
+                {hasPerm('enterLabResults') && (
+                  <button
+                    onClick={() => setActiveTab('testing')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'testing' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                  >
+                    <FlaskConical className="w-4 h-4" /> إدخال النتائج
+                  </button>
+                )}
+                {hasPerm('labArchive') && (
+                  <button
+                    onClick={() => setActiveTab('archive')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'archive' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                  >
+                    <Archive className="w-4 h-4" /> الأرشيف
+                  </button>
+                )}
+              </div>
+            )}
             
             {/* STATS */}
             {activeTab === 'stats' && hasPerm('viewLabReports') && (
