@@ -29,6 +29,7 @@ export const OwnerPortal = () => {
   const [isPrintingCert, setIsPrintingCert] = useState(false);
   
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [evidenceLightbox, setEvidenceLightbox] = useState(null);
 
   React.useEffect(() => {
     if (setActiveSidebarTabs) {
@@ -250,15 +251,14 @@ export const OwnerPortal = () => {
     if (!ref.current) return;
     try {
       setIsDownloading(true);
-      window.scrollTo(0, 0);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      const canvas = await html2canvas(ref.current, { scale: 3, useCORS: true, backgroundColor: '#ffffff', scrollY: -window.scrollY });
+      const canvas = await html2canvas(ref.current, { scale: 3, useCORS: true, backgroundColor: '#ffffff', logging: false });
       const image = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = image;
       link.download = filename;
       link.click();
     } catch (error) {
+      console.error(error);
       alert("حدث خطأ أثناء التنزيل.");
     } finally {
       setIsDownloading(false);
@@ -485,8 +485,8 @@ export const OwnerPortal = () => {
                   </div>
                   
                   <div className="flex flex-col w-full gap-2">
-                    <button onClick={() => handleDownloadImage(qrPosterRef, `QR_Poster_${ownerEst.name}.png`)} className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-black text-xs transition-all flex items-center justify-center gap-2">
-                      <ImageIcon className="w-4 h-4" /> تنزيل الصورة
+                    <button onClick={() => handleDownloadImage(qrPosterRef, `QR_Poster_${ownerEst.name}.png`)} disabled={isDownloading} className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-black text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                      {isDownloading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />} {isDownloading ? 'جاري التحميل...' : 'تنزيل الصورة'}
                     </button>
                     <button onClick={handlePrintQR} className="w-full py-2 rounded-xl bg-teal-50 dark:bg-teal-500/10 hover:bg-teal-100 text-teal-700 dark:text-teal-400 font-black text-xs transition-all flex items-center justify-center gap-2">
                       <Download className="w-4 h-4" /> تحميل ملصق (PDF)
@@ -754,26 +754,51 @@ export const OwnerPortal = () => {
             {/* TAB: EVIDENCE */}
             {activeTab === 'evidence' && (
               <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm border border-slate-200/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-bottom-4">
-                <p className="text-sm font-bold text-slate-500 mb-8">هذه الصور تم التقاطها من قبل فرق التفتيش كأدلة قانونية للمخالفات المرصودة.</p>
-                
-                {!isCompliant ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[1, 2, 3].map((item) => (
-                      <div key={item} className="aspect-square bg-slate-100 dark:bg-slate-800 rounded-2xl flex flex-col items-center justify-center border border-slate-200 dark:border-slate-700/50 group cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors relative overflow-hidden">
-                        <ImageIcon className="w-8 h-8 text-slate-400 mb-2" />
-                        <span className="text-[10px] font-bold text-slate-500">صورة مخالفة {item}</span>
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-white text-xs font-black">تكبير</span>
+                {ownerEst.evidenceImages && ownerEst.evidenceImages.length > 0 ? (
+                  <>
+                    <p className="text-sm font-bold text-slate-500 mb-8">هذه الصور تم التقاطها من قبل فرق التفتيش كأدلة قانونية للمخالفات المرصودة.</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {ownerEst.evidenceImages.map((imgUrl, idx) => (
+                        <div 
+                          key={idx} 
+                          onClick={() => setEvidenceLightbox(imgUrl)}
+                          className="aspect-square bg-slate-100 dark:bg-slate-800 rounded-2xl flex flex-col items-center justify-center border border-slate-200 dark:border-slate-700/50 group cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors relative overflow-hidden"
+                        >
+                          <img src={imgUrl} alt={`دليل ${idx + 1}`} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-white text-xs font-black">تكبير</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-16 opacity-70">
-                    <Camera className="w-16 h-16 text-slate-300 dark:text-slate-600 mb-4" />
-                    <p className="text-lg font-black text-slate-700 dark:text-slate-300">لا توجد أدلة مرئية للمخالفات</p>
+                    <Camera className="w-16 h-16 text-emerald-500/50 mb-4" />
+                    <p className="text-lg font-black text-slate-700 dark:text-slate-300">لا توجد إثباتات مرئية أو مخالفات مسجلة خلال هذه الفترة</p>
+                    <p className="text-sm font-bold text-slate-500 mt-2">سجلك نظيف من ناحية الأدلة المصورة للمخالفات.</p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Evidence Lightbox Modal */}
+            {evidenceLightbox && (
+              <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={() => setEvidenceLightbox(null)}>
+                <div className="relative max-w-4xl max-h-screen w-full flex flex-col items-center justify-center">
+                  <button 
+                    onClick={() => setEvidenceLightbox(null)}
+                    className="absolute -top-12 right-0 p-2 text-white/70 hover:text-white transition-colors"
+                  >
+                    <XCircle className="w-8 h-8" />
+                  </button>
+                  <img 
+                    src={evidenceLightbox} 
+                    alt="إثبات مكبر" 
+                    className="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain border-4 border-white/10"
+                    onClick={(e) => e.stopPropagation()} 
+                  />
+                </div>
               </div>
             )}
 
@@ -860,6 +885,23 @@ export const OwnerPortal = () => {
           </div>
         </div>
 
+        {/* Hidden QR Poster for Image Export */}
+        <div className="fixed top-[-9999px] left-[-9999px] opacity-0 pointer-events-none no-print z-[-1]">
+          <div ref={qrPosterRef} className="relative w-[794px] h-[1122px] bg-white text-slate-900 origin-top overflow-hidden">
+            <img src="/poster_bg.jpg" alt="Poster Background" crossOrigin="anonymous" className="absolute inset-0 w-[794px] h-[1122px] object-contain z-0" />
+            
+            <div className="absolute top-[300px] left-0 right-0 flex justify-center px-12 z-10">
+              <h2 className="text-[3.5rem] font-black text-[#108c7f] text-center leading-tight drop-shadow-sm">{ownerEst.name}</h2>
+            </div>
+            
+            <div className="absolute top-[500px] left-0 right-0 flex justify-center z-10">
+              <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border-[8px] border-[#108c7f]">
+                <QRCodeSVG value={`https://nineveh-health.gov.iq/est/${ownerEst.id}`} size={320} bgColor="#ffffff" fgColor="#0f172a" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* QR Poster Print View */}
         {isPrintingQR && (
           <div className="fixed inset-0 z-[200] bg-slate-200 overflow-y-auto">
@@ -872,7 +914,7 @@ export const OwnerPortal = () => {
               </button>
             </div>
             <div className="p-8 flex justify-center">
-              <div ref={qrPosterRef} className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 origin-top overflow-hidden shadow-2xl">
+              <div className="print-only-qr relative w-[794px] h-[1122px] bg-white text-slate-900 origin-top overflow-hidden shadow-2xl">
                 {/* User's Custom Design Background */}
                 <img src="/poster_bg.jpg" alt="Poster Background" className="absolute inset-0 w-[794px] h-[1122px] object-contain z-0" />
                 
