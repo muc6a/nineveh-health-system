@@ -456,7 +456,7 @@ export const AccountantPanel = () => {
         </div>
 
                 {/* Horizontal Navigation Tabs for Finance */}
-        {['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports'].includes(activeTab) && (
+        {user?.role !== 'accountant' && ['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports'].includes(activeTab) && (
           <div className="mb-6 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-print px-1">
             {hasPerm('financialReports') && (
               <button

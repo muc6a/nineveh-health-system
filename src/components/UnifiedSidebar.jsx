@@ -119,7 +119,7 @@ const UnifiedSidebar = ({
       icon: FlaskConical,
       iconColorClass: 'text-indigo-500',
       activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
-      showCondition: hasPerm('viewLabReports') || hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'),
+      showCondition: user?.role !== 'lab' && (hasPerm('viewLabReports') || hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive')),
       isActive: ['stats', 'incoming', 'testing', 'archive', 'lab_dashboard', 'lab_management'].includes(activeTab),
       onClick: () => { 
         if(setExecutiveTab) setExecutiveTab('dashboard'); 
@@ -138,12 +138,64 @@ const UnifiedSidebar = ({
         }
       }
     },
+    lab_stats: {
+      label: 'التقارير والإحصائيات (المختبر)',
+      icon: BarChart3,
+      iconColorClass: 'text-indigo-500',
+      activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
+      showCondition: user?.role === 'lab' && hasPerm('viewLabReports'),
+      isActive: activeTab === 'stats',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('stats');
+        if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=stats');
+      }
+    },
+    lab_incoming: {
+      label: 'النماذج الواردة',
+      icon: FileSearch,
+      iconColorClass: 'text-blue-500',
+      activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
+      showCondition: user?.role === 'lab' && hasPerm('receiveSamples'),
+      isActive: activeTab === 'incoming',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('incoming');
+        if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=incoming');
+      }
+    },
+    lab_testing: {
+      label: 'قيد الفحص',
+      icon: Clock,
+      iconColorClass: 'text-amber-500',
+      activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10',
+      showCondition: user?.role === 'lab' && hasPerm('enterLabResults'),
+      isActive: activeTab === 'testing',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('testing');
+        if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=testing');
+      }
+    },
+    lab_archive: {
+      label: 'الأرشيف',
+      icon: Archive,
+      iconColorClass: 'text-emerald-500',
+      activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
+      showCondition: user?.role === 'lab' && hasPerm('labArchive'),
+      isActive: activeTab === 'archive',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('archive');
+        if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=archive');
+      }
+    },
     finance_dashboard: {
       label: 'القسم المالي',
       icon: Banknote,
       iconColorClass: 'text-emerald-500',
       activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
-      showCondition: hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory') || hasPerm('viewComprehensiveFinancialReports'),
+      showCondition: user?.role !== 'accountant' && (hasPerm('financialReports') || hasPerm('payFines') || hasPerm('dailyInventory') || hasPerm('viewComprehensiveFinancialReports')),
       isActive: ['financials', 'ext_financials', 'reconciliation', 'comprehensive_reports', 'finance_dashboard', 'accountant'].includes(activeTab),
       onClick: () => { 
         if(setExecutiveTab) setExecutiveTab('dashboard'); 
@@ -160,6 +212,58 @@ const UnifiedSidebar = ({
         else if (window.location.pathname === '/dashboard/team' && navigate) {
           setActiveTab('financials');
         }
+      }
+    },
+    finance_stats: {
+      label: 'التقارير والإحصائيات (المالية)',
+      icon: BarChart3,
+      iconColorClass: 'text-emerald-500',
+      activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
+      showCondition: user?.role === 'accountant' && hasPerm('financialReports'),
+      isActive: activeTab === 'financials',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('financials');
+        if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=financials');
+      }
+    },
+    finance_fines: {
+      label: 'المبالغ المستوفاة',
+      icon: Banknote,
+      iconColorClass: 'text-teal-500',
+      activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/10',
+      showCondition: user?.role === 'accountant' && hasPerm('payFines'),
+      isActive: activeTab === 'ext_financials',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('ext_financials');
+        if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=ext_financials');
+      }
+    },
+    finance_reconciliation: {
+      label: 'المطابقة والجرد',
+      icon: ClipboardList,
+      iconColorClass: 'text-blue-500',
+      activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
+      showCondition: user?.role === 'accountant' && hasPerm('dailyInventory'),
+      isActive: activeTab === 'reconciliation',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('reconciliation');
+        if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=reconciliation');
+      }
+    },
+    finance_comprehensive: {
+      label: 'تقارير شاملة',
+      icon: FileSearch,
+      iconColorClass: 'text-purple-500',
+      activeBgClass: 'bg-purple-600 text-white shadow-md shadow-purple-500/10',
+      showCondition: user?.role === 'accountant' && hasPerm('viewComprehensiveFinancialReports'),
+      isActive: activeTab === 'comprehensive_reports',
+      onClick: () => { 
+        if(setExecutiveTab) setExecutiveTab('dashboard'); 
+        setActiveTab('comprehensive_reports');
+        if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=comprehensive_reports');
       }
     }
   };

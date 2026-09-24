@@ -304,7 +304,7 @@ export const LabDashboard = () => {
 
 
                         {/* Horizontal Navigation Tabs for Lab */}
-            {['stats', 'incoming', 'testing', 'archive'].includes(activeTab) && (
+            {user?.role !== 'lab' && ['stats', 'incoming', 'testing', 'archive'].includes(activeTab) && (
               <div className="mb-6 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-print px-1">
                 {hasPerm('viewLabReports') && (
                   <button
