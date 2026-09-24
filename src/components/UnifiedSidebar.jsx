@@ -53,27 +53,18 @@ const UnifiedSidebar = ({
 
 
   const tabConfig = {
-    summary: {
-      label: 'الرئيسية (لوحة التحكم)',
-      icon: LayoutDashboard,
-      iconColorClass: 'text-indigo-500',
-      activeBgClass: 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10',
-      showCondition: hasPerm('showMainDashboard'),
-      isActive: activeTab === 'summary',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('summary'); }
-    },
     strategic: {
-      label: 'ملخص العمليات الرقابية',
-      icon: BarChart3,
-      iconColorClass: 'text-teal-500',
-      activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/10',
+      label: 'الإدارة المتقدمة',
+      icon: TrendingUp,
+      iconColorClass: '',
+      activeBgClass: 'bg-teal-600 text-white shadow-md shadow-teal-500/20',
       showCondition: hasPerm('showMainDashboard') || hasPerm('showReportsPage') || hasPerm('exportData'),
       isActive: activeTab === 'strategic',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('strategic'); if (window.location.pathname !== '/dashboard/team' && navigate) navigate('/dashboard/team?tab=strategic'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('strategic'); }
     },
     smart_tasks: {
-      label: 'المهام الذكية الموجهة',
-      icon: CheckSquare,
+      label: 'المهام الذكية',
+      icon: CheckCircle,
       iconColorClass: 'text-blue-500',
       activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
       showCondition: hasPerm('manageSmartTasks') || hasPerm('executeSmartTasks'),
@@ -81,56 +72,47 @@ const UnifiedSidebar = ({
              (establishments?.filter(e => matchSector(userSector, e.sector) && e.lastInspection === 'لم يزر بعد').length || 0) : null,
       badgeColor: 'bg-blue-500',
       isActive: activeTab === 'smart_tasks',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('smart_tasks'); if (window.location.pathname !== '/dashboard/team' && navigate) navigate('/dashboard/team?tab=smart_tasks'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('smart_tasks'); }
     },
     operations_room: {
       label: 'غرفة العمليات المركزية',
       icon: ShieldAlert,
-      iconColorClass: 'text-rose-500',
-      activeBgClass: 'bg-rose-600 text-white shadow-md shadow-rose-500/10',
+      iconColorClass: 'text-fuchsia-500',
+      activeBgClass: 'bg-fuchsia-600 text-white shadow-md shadow-fuchsia-500/10',
       showCondition: hasPerm('authenticatePenalties'),
       badge: hasPerm('authenticatePenalties') ? (penaltyRequests?.filter(r => r.status === 'pending').length || 0) : null,
       badgeColor: 'bg-rose-500',
       isActive: activeTab === 'operations_room',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('operations_room'); if (window.location.pathname !== '/dashboard/team' && navigate) navigate('/dashboard/team?tab=operations_room'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('operations_room'); }
     },
     complaints: {
-      label: 'شكاوى المواطنين والتوصيل',
-      icon: MessageCircle,
-      iconColorClass: 'text-purple-500',
-      activeBgClass: 'bg-purple-600 text-white shadow-md shadow-purple-500/10',
+      label: 'الشكاوى',
+      icon: ShieldAlert,
+      iconColorClass: 'text-red-500',
+      activeBgClass: 'bg-red-600 text-white shadow-md shadow-red-500/10',
       showCondition: hasPerm('showPublicEvalsPage') || hasPerm('showDeliveryPage'),
       isActive: activeTab === 'complaints',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('complaints'); if (window.location.pathname !== '/dashboard/team' && navigate) navigate('/dashboard/team?tab=complaints'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('complaints'); }
     },
     directives: {
-      label: 'بوابة التبليغات الإدارية',
+      label: 'التبليغات',
       icon: Mail,
       iconColorClass: 'text-amber-500',
       activeBgClass: 'bg-amber-600 text-white shadow-md shadow-amber-500/10',
-      showCondition: hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective'),
+      showCondition: hasPerm('showDirectivesPage') || hasPerm('sendDirective') || hasPerm('replyDirective') || hasPerm('quickTeamDispatch'),
       badge: unreadDirectivesCount > 0 ? unreadDirectivesCount : null,
       badgeColor: 'bg-amber-500',
       isActive: activeTab === 'directives',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('directives'); if (window.location.pathname !== '/dashboard/team' && navigate) navigate('/dashboard/team?tab=directives'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('directives'); }
     },
     establishments: {
       label: 'إدارة المنشآت',
-      icon: Store,
-      iconColorClass: 'text-emerald-500',
-      activeBgClass: 'bg-emerald-600 text-white shadow-md shadow-emerald-500/10',
+      icon: Building,
+      iconColorClass: 'text-blue-500',
+      activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',
       showCondition: hasPerm('manageEstablishments'),
       isActive: activeTab === 'establishments' || activeTab === 'directory',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('establishments'); if (window.location.pathname !== '/dashboard/team' && navigate) navigate('/dashboard/team?tab=establishments'); }
-    },
-    map: {
-      label: 'الخريطة التفاعلية (GPS)',
-      icon: Map,
-      iconColorClass: 'text-sky-500',
-      activeBgClass: 'bg-sky-600 text-white shadow-md shadow-sky-500/10',
-      showCondition: hasPerm('showSectorMap'),
-      isActive: activeTab === 'map',
-      onClick: () => { if(setExecutiveTab) setExecutiveTab('dashboard'); setActiveTab('map'); if (window.location.pathname !== '/dashboard/team' && navigate) navigate('/dashboard/team?tab=map'); }
+      onClick: () => { if(setExecutiveTab) setExecutiveTab('establishments'); else setActiveTab('establishments'); if(setSelectedTeamId) setSelectedTeamId(''); }
     },
     lab_dashboard: {
       label: 'قسم المختبر',
