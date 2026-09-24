@@ -27,6 +27,8 @@ export const OwnerPortal = () => {
   
   const [isPrintingQR, setIsPrintingQR] = useState(false);
   const [isPrintingCert, setIsPrintingCert] = useState(false);
+  const [paymentFine, setPaymentFine] = useState(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   
   const [activeTab, setActiveTab] = useState('dashboard');
   const [evidenceLightbox, setEvidenceLightbox] = useState(null);
@@ -687,11 +689,19 @@ export const OwnerPortal = () => {
                                     <p className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">السبب: {fine.reason || fine.violationType}</p>
                                     <p className="text-xs text-red-600/70 dark:text-red-400/70 font-medium">تاريخ الإصدار: {new Date(fine.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                                   </div>
-                                  <div className="bg-white/80 dark:bg-slate-900/50 p-4 rounded-xl border border-red-100 dark:border-red-500/20 md:w-64">
-                                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">إجراء مطلوب:</p>
-                                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                                      يرجى مراجعة <strong className="text-slate-800 dark:text-slate-200">دائرة صحة نينوى - قسم الحسابات</strong> لتسديد المبلغ تجنباً لإغلاق المنشأة.
-                                    </p>
+                                  <div className="bg-white/80 dark:bg-slate-900/50 p-4 rounded-xl border border-red-100 dark:border-red-500/20 md:w-64 flex flex-col justify-between">
+                                    <div>
+                                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">إجراء مطلوب:</p>
+                                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                                        يرجى مراجعة <strong className="text-slate-800 dark:text-slate-200">دائرة صحة نينوى - قسم الحسابات</strong>، أو استخدم الدفع الإلكتروني لتسديد المبلغ.
+                                      </p>
+                                    </div>
+                                    <button 
+                                      onClick={() => setPaymentFine(fine)}
+                                      className="w-full py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-black text-xs transition-colors flex items-center justify-center gap-2 shadow-md"
+                                    >
+                                      تسديد إلكتروني (Online)
+                                    </button>
                                   </div>
                                 </div>
                               </div>
@@ -982,6 +992,70 @@ export const OwnerPortal = () => {
                   className="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-black text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-teal-600/20"
                 >
                   <CheckCircle2 className="w-5 h-5" /> أنا متأكد، تم حل المشكلة
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Modal */}
+        {paymentFine && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-slate-900 rounded-[2rem] w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
+              <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+                <h3 className="font-black text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                  <Receipt className="w-5 h-5 text-teal-600" />
+                  تسديد غرامة مالية
+                </h3>
+                <button onClick={() => setPaymentFine(null)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500">
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div className="text-center p-6 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-700">
+                  <p className="text-xs font-bold text-slate-500 mb-2">المبلغ الكلي المطلوب تسديده</p>
+                  <h4 className="text-3xl font-black text-red-600 dark:text-red-400 mb-1" dir="ltr">
+                    {paymentFine.amount?.toLocaleString()} IQD
+                  </h4>
+                  <p className="text-xs text-slate-400 font-bold">{paymentFine.reason || paymentFine.violationType}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-black text-slate-800 dark:text-slate-200 mb-3">اختر طريقة الدفع الإلكتروني</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all focus:border-teal-500 focus:bg-teal-50 dark:focus:bg-teal-900/20 group">
+                      <img src="https://cdn-icons-png.flaticon.com/512/5968/5968322.png" className="w-8 h-8 grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" alt="Zain Cash" />
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-400 group-hover:text-teal-700">زين كاش</span>
+                    </button>
+                    <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all focus:border-teal-500 focus:bg-teal-50 dark:focus:bg-teal-900/20 group">
+                      <img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" className="w-8 h-8 grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" alt="Visa/Mastercard" />
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-400 group-hover:text-teal-700">بطاقة مصرفية</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-teal-50 dark:bg-teal-900/20 rounded-xl border border-teal-100 dark:border-teal-800">
+                  <p className="text-[10px] font-bold text-teal-700 dark:text-teal-400 leading-relaxed text-center">
+                    سيتم توجيهك إلى بوابة الدفع الآمنة المعتمدة. عند إتمام الدفع بنجاح، سيتم تحديث حالة الغرامة إلى "مسددة" فوراً في المنظومة.
+                  </p>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    setIsProcessingPayment(true);
+                    setTimeout(() => {
+                      setIsProcessingPayment(false);
+                      setPaymentFine(null);
+                      if (addSystemNotification) addSystemNotification('بوابة الدفع', 'عذراً، بوابة الدفع قيد الربط التجريبي حالياً.', 'admin', 'payment');
+                      alert('عذراً، بوابة الدفع الإلكتروني قيد الإنجاز والربط البنكي. يرجى مراجعة الدائرة حالياً للتسديد.');
+                    }, 1500);
+                  }}
+                  disabled={isProcessingPayment}
+                  className="w-full py-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                >
+                  {isProcessingPayment ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ShieldCheck className="w-5 h-5" />}
+                  {isProcessingPayment ? 'جاري التحويل لبوابة الدفع...' : 'المتابعة والانتقال للدفع'}
                 </button>
               </div>
             </div>
