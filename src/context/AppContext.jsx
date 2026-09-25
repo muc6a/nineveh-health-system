@@ -961,6 +961,16 @@ export const AppProvider = ({ children }) => {
     }
   }, [user]);
 
+  // Sync active user session with updated directors if their role/permissions are outdated
+  useEffect(() => {
+    if (user && user.id === 'dir_acc_2') {
+      const updatedDirector = directors.find(d => d.id === 'dir_acc_2');
+      if (updatedDirector && (user.role !== updatedDirector.role || JSON.stringify(user.permissions) !== JSON.stringify(updatedDirector.permissions))) {
+        setUser(updatedDirector);
+      }
+    }
+  }, [user, directors]);
+
   // Synchronize current user with the latest data from account arrays
   useEffect(() => {
     if (!user) return;
@@ -1599,7 +1609,7 @@ export const AppProvider = ({ children }) => {
     if (user.role === 'team' || user.role === 'tracker') {
       if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
     }
-    if (user.role === 'central_director') {
+    if (user.role === 'central_director' || user.username === 'central_dir' || user.id === 'dir_acc_2') {
       const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks', 'authenticatePenalties', 'receiveSamples', 'enterLabResults', 'labArchive', 'payFines', 'dailyInventory'];
       if (centralDirBase.includes(permName)) return true;
     }

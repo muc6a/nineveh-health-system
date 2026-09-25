@@ -83,7 +83,7 @@ export default function OperationsRoom() {
 
   useEffect(() => {
     if (activeChatTarget) {
-      const unreadInActiveChat = activeChatTarget.msgs.filter(m => m.senderId !== user?.id && !m.isRead).map(m => m.id);
+      const unreadInActiveChat = (activeChatTarget.msgs || []).filter(m => m.senderId !== user?.id && !m.isRead).map(m => m.id);
       if (unreadInActiveChat.length > 0) {
         markChatRead(unreadInActiveChat);
       }
@@ -191,7 +191,7 @@ export default function OperationsRoom() {
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
             <p className="text-[10px] text-slate-500 mb-6">طلبات الإغلاق المعلقة من الفرق الميدانية والتي تنتظر مصادقتك لتنفيذها قانونياً.</p>
             <div className="space-y-4">
-              {penaltyRequests.filter(req => req.status === 'pending').map(req => (
+              {(penaltyRequests || []).filter(req => req.status === 'pending').map(req => (
                 <div key={req.id} className={`p-4 rounded-xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${req.type === 'fine' ? 'border-orange-500/30 bg-orange-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
                   <div>
                     <h4 className={`text-xs font-black ${req.type === 'fine' ? 'text-orange-600 dark:text-orange-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -205,7 +205,7 @@ export default function OperationsRoom() {
                   </div>
                 </div>
               ))}
-              {penaltyRequests.filter(req => req.status === 'pending').length === 0 && (
+              {(penaltyRequests || []).filter(req => req.status === 'pending').length === 0 && (
                 <p className="text-center text-xs text-slate-500 py-4">لا توجد طلبات معلقة حالياً.</p>
               )}
             </div>
@@ -216,7 +216,7 @@ export default function OperationsRoom() {
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">أرشيف القرارات (آخر 30 يوماً)</h3>
             <p className="text-[10px] text-slate-500 mb-6">يمكنك مراجعة القرارات المصادق عليها حديثاً والتراجع عنها أو تعديلها في حال وجود خطأ.</p>
             <div className="space-y-4">
-              {penaltyRequests.filter(req => req.status === 'approved' || req.status === 'rejected').slice(-15).reverse().map(req => (
+              {(penaltyRequests || []).filter(req => req.status === 'approved' || req.status === 'rejected').slice(-15).reverse().map(req => (
                 <div key={req.id} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
                     <h4 className="text-xs font-black text-slate-700 dark:text-slate-300">
@@ -242,7 +242,7 @@ export default function OperationsRoom() {
                   </div>
                 </div>
               ))}
-              {penaltyRequests.filter(req => req.status === 'approved' || req.status === 'rejected').length === 0 && (
+              {(penaltyRequests || []).filter(req => req.status === 'approved' || req.status === 'rejected').length === 0 && (
                 <p className="text-center text-xs text-slate-500 py-4">لا توجد قرارات مؤرشفة حالياً.</p>
               )}
             </div>
@@ -266,11 +266,11 @@ export default function OperationsRoom() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {teams.filter(t => t.active && (selectedPerfTeam === 'all' || t.id === selectedPerfTeam)).map(team => {
+            {(teams || []).filter(t => t.active && (selectedPerfTeam === 'all' || t.id === selectedPerfTeam)).map(team => {
               // Calculate stats dynamically from data
-              const teamEsts = establishments.filter(e => e.sector === team.sector);
-              const teamFines = penaltyRequests.filter(req => req.type === 'fine' && req.status === 'approved' && teamEsts.some(e => e.name === req.estName));
-              const teamClosures = penaltyRequests.filter(req => req.type === 'closure' && req.status === 'approved' && teamEsts.some(e => e.name === req.estName));
+              const teamEsts = (establishments || []).filter(e => e.sector === team.sector);
+              const teamFines = (penaltyRequests || []).filter(req => req.type === 'fine' && req.status === 'approved' && teamEsts.some(e => e.name === req.estName));
+              const teamClosures = (penaltyRequests || []).filter(req => req.type === 'closure' && req.status === 'approved' && teamEsts.some(e => e.name === req.estName));
               
               return (
                 <div key={team.id} className="glassmorphic-card p-5 border border-indigo-500/10 hover:border-indigo-500/30 transition-all group">
@@ -316,7 +316,7 @@ export default function OperationsRoom() {
               );
             })}
             
-            {teams.filter(t => t.active && (selectedPerfTeam === 'all' || t.id === selectedPerfTeam)).length === 0 && (
+            {(teams || []).filter(t => t.active && (selectedPerfTeam === 'all' || t.id === selectedPerfTeam)).length === 0 && (
               <div className="col-span-full p-8 text-center text-slate-500 font-bold bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
                 لا توجد بيانات متاحة لهذا الفريق.
               </div>
