@@ -6,7 +6,7 @@ import AccountModal from './AccountModal';
 import { FinancialReports } from './FinancialReports';
 
 export default function OperationsRoom() {
-  const { notify, teams, trackers, setTeams, setTrackers, penaltyRequests, setPenaltyRequests, establishments, setEstablishments, setSosAlerts, chatMessages, addChatMessage, markChatRead, user, labRequests, setLabRequests, addSystemNotification, sosAlerts, setDispatches, setClosureVerifications, closureVerifications } = useContext(AppContext);
+  const { hasPerm, notify, teams, trackers, setTeams, setTrackers, penaltyRequests, setPenaltyRequests, establishments, setEstablishments, setSosAlerts, chatMessages, addChatMessage, markChatRead, user, labRequests, setLabRequests, addSystemNotification, sosAlerts, setDispatches, setClosureVerifications, closureVerifications } = useContext(AppContext);
   const [activeTab, setActiveTab] = usePersistentTab('opsActiveTab', 'penalties');
   const [selectedPerfTeam, setSelectedPerfTeam] = useState('all');
   const [closureModalData, setClosureModalData] = useState(null);
@@ -162,7 +162,7 @@ export default function OperationsRoom() {
 
   return (
     <div className="space-y-6 text-right">
-      {(!user?.permissions?.authenticatePenalties && !user?.permissions?.showFieldTeamsStats && !user?.permissions?.showSectorMap && !user?.permissions?.executeSmartTasks && !user?.permissions?.manageSmartTasks && user?.role !== 'admin' && user?.role !== 'director') ? (
+      {(!hasPerm('authenticatePenalties') && !hasPerm('showFieldTeamsStats') && !hasPerm('showSectorMap') && !hasPerm('executeSmartTasks') && !hasPerm('manageSmartTasks') && user?.role !== 'admin' && user?.role !== 'director') ? (
         <div className="text-center p-10 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
           <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
           <h2 className="text-xl font-black text-slate-700 dark:text-slate-300">لا توجد صلاحيات لعرض هذه الغرفة</h2>
@@ -170,12 +170,12 @@ export default function OperationsRoom() {
         </div>
       ) : (
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
-        {(user?.permissions?.authenticatePenalties || user?.role === 'admin' || user?.role === 'director') && (
+        {(hasPerm('authenticatePenalties') || user?.role === 'admin' || user?.role === 'director') && (
           <button onClick={() => setActiveTab('penalties')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'penalties' ? 'border-b-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
             <AlertCircle className="w-4 h-4" />المصادقة على العقوبات
           </button>
         )}
-        {(user?.permissions?.showFieldTeamsStats || user?.role === 'admin' || user?.role === 'director') && (
+        {(hasPerm('showFieldTeamsStats') || user?.role === 'admin' || user?.role === 'director') && (
           <button onClick={() => setActiveTab('team_performance')} className={`pb-2 text-xs font-black transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'team_performance' ? 'border-b-2 border-teal-600 text-teal-600 dark:text-teal-400 font-extrabold' : 'text-slate-400 hover:text-slate-600'}`}>
             <Target className="w-4 h-4" />أداء الفرق الميدانية
           </button>
@@ -185,7 +185,7 @@ export default function OperationsRoom() {
       </div>
       )}
 
-      {(user?.permissions?.authenticatePenalties || user?.role === 'admin' || user?.role === 'director') && activeTab === 'penalties' && (
+      {(hasPerm('authenticatePenalties') || user?.role === 'admin' || user?.role === 'director') && activeTab === 'penalties' && (
         <div className="space-y-6">
           <div className="glassmorphic-card p-6 border border-red-500/20">
             <h3 className="text-sm font-black text-slate-800 dark:text-white mb-2">المصادقة المركزية على الإغلاقات والغرامات الكبرى</h3>
@@ -252,7 +252,7 @@ export default function OperationsRoom() {
       </div>
       )}
 
-            {(user?.permissions?.showFieldTeamsStats || user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director') && activeTab === 'team_performance' && (
+            {(hasPerm('showFieldTeamsStats') || user?.role === 'admin' || user?.role === 'director' || user?.role === 'central_director') && activeTab === 'team_performance' && (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div>

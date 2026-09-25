@@ -178,7 +178,7 @@ const UnifiedSidebar = ({
       onClick: () => { 
         if(setExecutiveTab) setExecutiveTab('dashboard'); 
         setActiveTab('testing');
-        if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=testing');
+        if (window.location.pathname !== '/dashboard/lab' && window.location.pathname !== '/dashboard/director' && navigate) navigate('/dashboard/lab?tab=testing');
       }
     },
     lab_archive: {
@@ -191,7 +191,7 @@ const UnifiedSidebar = ({
       onClick: () => { 
         if(setExecutiveTab) setExecutiveTab('dashboard'); 
         setActiveTab('archive');
-        if (window.location.pathname !== '/dashboard/lab' && navigate) navigate('/dashboard/lab?tab=archive');
+        if (window.location.pathname !== '/dashboard/lab' && window.location.pathname !== '/dashboard/director' && navigate) navigate('/dashboard/lab?tab=archive');
       }
     },
     finance_dashboard: {
@@ -228,7 +228,7 @@ const UnifiedSidebar = ({
       onClick: () => { 
         if(setExecutiveTab) setExecutiveTab('dashboard'); 
         setActiveTab('financials');
-        if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=financials');
+        if (window.location.pathname !== '/dashboard/accountant' && window.location.pathname !== '/dashboard/director' && navigate) navigate('/dashboard/accountant?tab=financials');
       }
     },
     finance_fines: {
@@ -241,7 +241,7 @@ const UnifiedSidebar = ({
       onClick: () => { 
         if(setExecutiveTab) setExecutiveTab('dashboard'); 
         setActiveTab('ext_financials');
-        if (window.location.pathname !== '/dashboard/accountant' && navigate) navigate('/dashboard/accountant?tab=ext_financials');
+        if (window.location.pathname !== '/dashboard/accountant' && window.location.pathname !== '/dashboard/director' && navigate) navigate('/dashboard/accountant?tab=ext_financials');
       }
     },
     finance_reconciliation: {

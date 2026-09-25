@@ -21,7 +21,7 @@ import { QRScannerModal } from '../components/QRScannerModal';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const TeamDashboard = ({ embeddedTab }) => {
-  const { navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests , hasPerm , tasks, trackers } = useContext(AppContext);
+  const { hasPerm, navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests , hasPerm , tasks, trackers } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -92,8 +92,8 @@ export const TeamDashboard = ({ embeddedTab }) => {
   // Mobile Sidebar Toggle
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [directiveTab, setDirectiveTab] = useState(() => {
-    if (user?.permissions?.showDirectivesPage) return 'inbox';
-    if (user?.permissions?.sendDirective) return 'send';
+    if (hasPerm('showDirectivesPage')) return 'inbox';
+    if (hasPerm('sendDirective')) return 'send';
     
     return 'inbox';
   });

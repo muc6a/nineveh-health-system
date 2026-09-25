@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { CheckCircle, Send, AlertCircle } from 'lucide-react';
 
 export default function SmartTasks() {
-  const { user, establishments, teams, notify, addSystemNotification, setDispatches } = useContext(AppContext);
+  const { hasPerm, user, establishments, teams, notify, addSystemNotification, setDispatches } = useContext(AppContext);
   const [selectedEstId, setSelectedEstId] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
 
@@ -66,7 +66,7 @@ export default function SmartTasks() {
           المهام الذكية (Smart Tasks)
         </h3>
         
-        {(user?.permissions?.manageSmartTasks || user?.role === 'admin' || user?.role === 'director') ? (
+        {(hasPerm('manageSmartTasks') || user?.role === 'admin' || user?.role === 'director') ? (
           <div className="space-y-6">
             <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30">
               <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">توجيه أوامر التفتيش (إدارة المهام)</h4>

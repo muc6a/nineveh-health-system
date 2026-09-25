@@ -19,7 +19,7 @@ export const LabManager = () => {
   const [manualSampleType, setManualSampleType] = useState('');
 
   // Filter requests
-  const hasCentralView = user?.role === 'admin' || user?.permissions?.centralLabView === true;
+  const hasCentralView = user?.role === 'admin' || hasPerm('centralLabView') === true;
   const safeLabRequests = hasCentralView 
     ? (labRequests || [])
     : (labRequests || []).filter(r => r.teamId === user?.id || r.teamId === user?.role);
