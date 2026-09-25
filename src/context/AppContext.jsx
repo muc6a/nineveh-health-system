@@ -1608,7 +1608,7 @@ export const AppProvider = ({ children }) => {
     if (user.role === 'team' || user.role === 'tracker') {
       if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
     }
-    if (user.role === 'central_director' || user.username === 'central_dir' || user.id === 'dir_acc_2') {
+    if (user.role === 'central_director' || user.username === 'central_dir' || user.id === 'dir_acc_2' || (user.name && user.name.includes('المركزية')) || (user.title && user.title.includes('المركزية'))) {
       const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks', 'authenticatePenalties', 'receiveSamples', 'enterLabResults', 'labArchive', 'payFines', 'dailyInventory'];
       if (centralDirBase.includes(permName)) return true;
     }
