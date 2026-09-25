@@ -21,7 +21,7 @@ import { QRScannerModal } from '../components/QRScannerModal';
 import { DisplayPreferencesModal } from '../components/DisplayPreferencesModal';
 
 export const TeamDashboard = ({ embeddedTab }) => {
-  const { hasPerm, navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests , hasPerm , tasks, trackers } = useContext(AppContext);
+  const { navigate, establishments, addEstablishment, directors, updateEstablishment, deleteEstablishment, reports, user, setUser, teams, directives, addDirective, markDirectiveRead, logAudit, notify, config, penaltyRequests, setPenaltyRequests, dispatches, setDispatches, addSystemNotification, systemNotifications, setSystemNotifications, uiPreferences, setUiPreferences, setShowDisplayPrefsModal , globalLogout, labRequests, setLabRequests , hasPerm , tasks, trackers } = useContext(AppContext);
   
   // Live Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
