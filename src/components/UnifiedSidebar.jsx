@@ -277,6 +277,16 @@ const UnifiedSidebar = ({
 
   React.useEffect(() => {
     if (setActiveSidebarTabs) {
+      const visibleTabs = tabOrder
+        .filter(key => tabConfig[key] && tabConfig[key].showCondition)
+        .map(key => ({ id: key, label: tabConfig[key].label }));
+      setActiveSidebarTabs(visibleTabs);
+    }
+  }, [user?.permissions, uiPreferences?.tabOrder]);
+
+
+  React.useEffect(() => {
+    if (setActiveSidebarTabs) {
       const tabsToRender = customTabs ? customTabs : tabOrder.map(k => ({ id: k, ...tabConfig[k] }));
       const visibleTabs = tabsToRender
         .filter(tab => customTabs ? tab.showCondition !== false : (tab && tab.showCondition))

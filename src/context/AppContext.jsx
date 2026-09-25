@@ -642,6 +642,10 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [dailyInventories, setDailyInventories] = useState(() => {
+    const saved = localStorage.getItem('nineveh_daily_inventories');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [fineTransactions, setFineTransactions] = useState(() => {
     const saved = localStorage.getItem('nineveh_fine_transactions');
     return saved ? JSON.parse(saved) : [];
@@ -902,6 +906,7 @@ export const AppProvider = ({ children }) => {
       setupFirebaseSync('nineveh_lab_requests', setLabRequests, labRequests);
       setupFirebaseSync('nineveh_fines_booklet', setFinesBooklet, finesBooklet);
       setupFirebaseSync('nineveh_fine_transactions', setFineTransactions, fineTransactions);
+      setupFirebaseSync('nineveh_daily_inventories', setDailyInventories, dailyInventories);
       setupFirebaseSync('nineveh_daily_inventories', setDailyInventories, dailyInventories);
 
     } catch (err) {
@@ -1717,6 +1722,7 @@ export const AppProvider = ({ children }) => {
       labRequests,
       setLabRequests,
       finesBooklet, setFinesBooklet,
+      dailyInventories, setDailyInventories,
       dailyInventories, setDailyInventories, fineTransactions, setFineTransactions, hasPerm, ROLE_PERMISSIONS}}>
       {children}
     </AppContext.Provider>

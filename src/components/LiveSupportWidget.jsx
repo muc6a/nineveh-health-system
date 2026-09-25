@@ -21,7 +21,7 @@ export const LiveSupportWidget = () => {
   
   // Add Operations roles
   if (user?.role !== 'operations') {
-    roles.push({ id: 'operations', label: 'غرفة العمليات المركزية', sector: 'all' });
+    roles.push({ id: 'operations', label: 'الرقابة المركزية', sector: 'all' });
   }
   if (user?.role !== 'central_director') {
     roles.push({ id: 'central_director', label: 'مدير الرقابة المركزية', sector: 'all' });
