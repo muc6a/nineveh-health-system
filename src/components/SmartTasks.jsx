@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { CheckCircle, Send, AlertCircle } from 'lucide-react';
 
 export default function SmartTasks() {
-  const { user, establishments, teams, notify, addSystemNotification, setDispatches } = useContext(AppContext);
+  const { hasPerm, user, establishments, teams, notify, addSystemNotification, setDispatches } = useContext(AppContext);
   const [selectedEstId, setSelectedEstId] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
 
