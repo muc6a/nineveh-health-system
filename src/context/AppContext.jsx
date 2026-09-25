@@ -580,13 +580,13 @@ export const AppProvider = ({ children }) => {
     
     if (parsed) {
       // Force migration for dir_acc_2 from Jassim to Dr. Ibtihal
-      const hasJassim = parsed.some(d => d.id === 'dir_acc_2' && d.name.includes('جاسم'));
+            const needsUpdate = parsed.some(d => d.id === 'dir_acc_2' && (d.name.includes('جاسم') || d.role !== 'central_director' || !d.permissions || !d.permissions.notify_tasks));
       let needsMigration = false;
-      
+
       parsed = parsed.map(d => {
-        if (d.id === 'dir_acc_2' && hasJassim) {
+        if (d.id === 'dir_acc_2' && needsUpdate) {
           needsMigration = true;
-          return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true } };
+          return { id: 'dir_acc_2', name: 'دكتورة ابتهال غازي', role: 'central_director', title: 'مدير الرقابة المركزية', email: 'central_director@ninveh.health.gov.iq', phone: '07711223344', username: 'central_dir', password: 'password123', active: true, permissions: { ...DEFAULT_PERMISSIONS, showMainDashboard: true, showReportsPage: true, showDirectivesPage: true, sendDirective: true, notify_closures: true, notify_penalties: true, notify_inspections: true, notify_tasks: true, notify_directives: true } };
         }
         return d;
       });

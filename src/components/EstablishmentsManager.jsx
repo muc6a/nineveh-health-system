@@ -23,8 +23,8 @@ export const EstablishmentsManager = () => {
     if (hasPendingPenalty) return { text: 'قيد الإجراء القانوني ⚖️', color: 'bg-rose-100 text-rose-700 font-bold' };
 
     // Check for approved fines in penaltyRequests OR active fines in financial records
-    const hasApprovedFine = penaltyRequests && penaltyRequests.some(pr => (pr.establishmentId === est.id || pr.targetEstId === est.id || pr.estName === est.name) && pr.status === 'approved' && pr.type === 'fine');
-    const hasFinancialFine = fines && fines.some(f => (f.targetEstId === est.id || f.establishmentId === est.id) && f.status !== 'paid');
+    const hasApprovedFine = penaltyRequests && penaltyRequests.some(pr => (pr.establishmentId === est.id || pr.targetEstId === est.id || pr.estId === est.id || pr.estName === est.name) && pr.status === 'approved' && pr.type === 'fine' && pr.paymentStatus !== 'paid');
+    const hasFinancialFine = fines && fines.some(f => (f.targetEstId === est.id || f.establishmentId === est.id || f.estId === est.id) && f.status !== 'paid');
     
     if (hasApprovedFine || hasFinancialFine) return { text: 'تم التغريم 💰', color: 'bg-orange-100 text-orange-700 font-bold' };
 
@@ -149,7 +149,7 @@ export const EstablishmentsManager = () => {
                 .filter(e => {
                   if (smartFilter === 'closed') return e.status === 'closed';
                   if (smartFilter === 'low_score') return e.score < 50 && e.status !== 'closed' && e.lastInspection !== 'لم يزر بعد';
-                  if (smartFilter === 'fined') return (penaltyRequests && penaltyRequests.some(pr => pr.establishmentId === e.id || pr.targetEstId === e.id)) || (fines && fines.some(f => f.targetEstId === e.id || f.establishmentId === e.id));
+                  if (smartFilter === 'fined') return (penaltyRequests && penaltyRequests.some(pr => pr.establishmentId === e.id || pr.targetEstId === e.id || pr.estId === e.id || pr.estName === e.name)) || (fines && fines.some(f => f.targetEstId === e.id || f.establishmentId === e.id || f.estId === e.id));
                   return true;
                 })
                 .filter(e => 
