@@ -1941,8 +1941,11 @@ export const SuperAdminPanel = () => {
                     <label className="text-xs font-bold text-slate-500 block">عنوان الترويسة الرئيسي للواجهات</label>
                     <input
                       type="text"
-                      value={headerInput}
-                      onChange={(e) => setHeaderInput(e.target.value)}
+                      value={config.headerText || ''}
+                      onChange={(e) => {
+                         setHeaderInput(e.target.value);
+                         setConfig(prev => ({...prev, headerText: e.target.value}));
+                      }}
                       className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                     />
                     <p className="text-[10px] text-slate-400 mt-2 mb-4">
@@ -1954,8 +1957,11 @@ export const SuperAdminPanel = () => {
                     <label className="text-xs font-bold text-slate-500 block">نص حقوق النشر (تذييل الصفحة)</label>
                     <input
                       type="text"
-                      value={landingSettings.copyrightText || ''}
-                      onChange={(e) => setLandingSettings({ ...landingSettings, copyrightText: e.target.value })}
+                      value={config.copyrightText || ''}
+                      onChange={(e) => {
+                         setLandingSettings({ ...landingSettings, copyrightText: e.target.value });
+                         setConfig(prev => ({...prev, copyrightText: e.target.value}));
+                      }}
                       placeholder="مديرية صحة نينوى - قسم الرقابة الصحية"
                       className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                     />

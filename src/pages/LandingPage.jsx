@@ -117,8 +117,8 @@ export const LandingPage = () => {
       </main>
       
       {/* Footer minimal */}
-      <footer className="relative z-10 text-left p-6 text-xs font-bold text-slate-400 w-full dir-ltr" dir="ltr">
-        &copy; {new Date().getFullYear()} {config?.copyrightText || 'مديرية صحة نينوى - قسم الرقابة الصحية'}
+      <footer className="relative z-10 text-left p-6 text-xs font-bold text-slate-400 w-full" dir="ltr">
+        &copy; {new Date().getFullYear()} {(config?.copyrightText && config.copyrightText.trim() !== '') ? config.copyrightText : 'مديرية صحة نينوى - قسم الرقابة الصحية'}
       </footer>
     </div>
   );
