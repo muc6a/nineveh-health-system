@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { AppContext } from '../context/AppContext';
+import { AppContext, ROLE_PERMISSIONS } from '../context/AppContext';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { WeatherWidget } from '../components/WeatherWidget';
@@ -133,6 +133,7 @@ export const SuperAdminPanel = () => {
   // Zero-Code Branding Configuration States
   const [headerInput, setHeaderInput] = useState(config.headerText);
   const [landingSettings, setLandingSettings] = useState({
+    copyrightText: config.copyrightText || "",
     landingGreeting: config.landingGreeting || "مرحباً بكم في",
     landingTitle: config.landingTitle || "منظومة الرقابة الصحية",
     landingSubtitle: config.landingSubtitle || "نافذتكم الموثوقة لضمان بيئة صحية آمنة. اختر البوابة المناسبة لك للوصول إلى الخدمات الرقمية بكل سهولة وسرعة.",
@@ -1253,7 +1254,15 @@ export const SuperAdminPanel = () => {
                         const fallbackTitle = key;
                         const title = permDef?.title || fallbackTitle;
                         const desc = permDef?.desc || '';
-                        const isGranted = !!selectedPermissionsAccount?.permissions?.[key];
+                        
+                        let isGranted = false;
+                        if (selectedPermissionsAccount?.permissions && typeof selectedPermissionsAccount.permissions[key] !== 'undefined') {
+                          isGranted = !!selectedPermissionsAccount.permissions[key];
+                        } else {
+                          const savedRoles = JSON.parse(localStorage.getItem('nineveh_role_permissions') || '{}');
+                          const rolePerms = savedRoles[roleKey] || ROLE_PERMISSIONS[roleKey] || {};
+                          isGranted = !!rolePerms[key];
+                        }
 
                         return (
                           <div key={key} className={`p-4 rounded-2xl border transition-all duration-300 ${isGranted ? 'bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-purple-200 dark:border-purple-800/50 shadow-sm' : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5'}`}>
@@ -1945,8 +1954,8 @@ export const SuperAdminPanel = () => {
                     <label className="text-xs font-bold text-slate-500 block">نص حقوق النشر (تذييل الصفحة)</label>
                     <input
                       type="text"
-                      value={config.copyrightText || ''}
-                      onChange={(e) => setConfig({ ...config, copyrightText: e.target.value })}
+                      value={landingSettings.copyrightText || ''}
+                      onChange={(e) => setLandingSettings({ ...landingSettings, copyrightText: e.target.value })}
                       placeholder="مديرية صحة نينوى - قسم الرقابة الصحية"
                       className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
                     />

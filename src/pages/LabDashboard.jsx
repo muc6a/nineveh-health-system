@@ -120,7 +120,7 @@ export const LabDashboard = () => {
 
   // Protect route
   useEffect(() => {
-    const hasLabAccess = user && (user.role === 'lab' || user.permissions?.receiveSamples || user.permissions?.enterLabResults || user.permissions?.labArchive);
+    const hasLabAccess = user && (user.role === 'lab' || hasPerm('viewLabReports') || hasPerm('receiveSamples') || hasPerm('enterLabResults') || hasPerm('labArchive'));
     if (!hasLabAccess) {
       navigate('/login');
     }
