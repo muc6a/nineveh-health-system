@@ -156,7 +156,7 @@ const UnifiedSidebar = ({
       }
     },
     lab_incoming: {
-      label: 'النماذج الواردة',
+      label: 'استلام العينات الواردة',
       icon: FileSearch,
       iconColorClass: 'text-blue-500',
       activeBgClass: 'bg-blue-600 text-white shadow-md shadow-blue-500/10',

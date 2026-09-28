@@ -129,14 +129,7 @@ export const OwnerPortal = () => {
         <div className="absolute top-4 left-4 z-50">
           <ThemeToggle />
         </div>
-        <div className="absolute top-4 right-4 z-50">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> العودة للرئيسية
-          </button>
-        </div>
+
 
         <div className="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10">
           <ShieldAlert className="w-20 h-20 text-red-500 mx-auto mb-6" />
@@ -161,14 +154,7 @@ export const OwnerPortal = () => {
         <div className="absolute top-4 left-4 z-50">
           <ThemeToggle />
         </div>
-        <div className="absolute top-4 right-4 z-50">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> العودة للرئيسية
-          </button>
-        </div>
+
 
         <div className="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-white/50 dark:border-slate-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10">
           <AnimatedLogo variant="login" className="mb-8" />
@@ -212,6 +198,14 @@ export const OwnerPortal = () => {
 
             <button type="submit" className="w-full py-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-sm shadow-xl shadow-teal-900/20 hover:shadow-2xl transition-all flex items-center justify-center gap-2">
               تسجيل الدخول <ArrowLeft className="w-4 h-4 rotate-180" />
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="w-full py-4 mt-4 rounded-2xl bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-black text-sm shadow-xl shadow-slate-900/20 hover:shadow-2xl transition-all flex items-center justify-center gap-2"
+            >
+              العودة للرئيسية
             </button>
           </form>
         </div>

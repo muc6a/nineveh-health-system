@@ -1940,6 +1940,20 @@ export const SuperAdminPanel = () => {
                       هذا هو العنوان الرئيسي الذي سيظهر في أعلى الشاشة في كافة أرجاء المنظومة.
                     </p>
                   </div>
+
+                  <div className="space-y-1.5 mt-4">
+                    <label className="text-xs font-bold text-slate-500 block">نص حقوق النشر (تذييل الصفحة)</label>
+                    <input
+                      type="text"
+                      value={config.copyrightText || ''}
+                      onChange={(e) => setConfig({ ...config, copyrightText: e.target.value })}
+                      placeholder="مديرية صحة نينوى - قسم الرقابة الصحية"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none text-slate-800 dark:text-slate-200 focus:border-teal-500"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-2 mb-4">
+                      هذا النص سيظهر في تذييل الصفحة الرئيسية وحقوق النشر.
+                    </p>
+                  </div>
                   
                   <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
                     <h3 className="text-sm font-black text-slate-700 dark:text-white mb-4">نصوص واجهة الهبوط (الصفحة الرئيسية)</h3>

@@ -174,8 +174,8 @@ export const NinevehMap = ({ establishments, selectedSector, onSectorSelect, isT
       <div className={`w-full ${fullHeight ? 'flex-1 min-h-[400px]' : 'h-96'} rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-10`} style={{ isolation: 'isolate' }}>
         <MapContainer center={defaultCenter} zoom={10} style={{ width: '100%', height: '100%', zIndex: 1 }} zoomAnimation={false} markerZoomAnimation={false} fadeAnimation={false}>
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors'
+            url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+            attribution="Google Maps"
           />
           <MapBounds establishments={filteredEsts} />
           {filteredEsts.map(est => {

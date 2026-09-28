@@ -1604,18 +1604,6 @@ export const AppProvider = ({ children }) => {
     if (!user) return false;
     if (user.role === 'admin' || user.isSuperAdmin) return true;
     
-    // ENFORCED BASE PERMISSIONS (Cannot be overridden/disabled)
-    if (user.role === 'team' || user.role === 'tracker') {
-      if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
-    }
-    if (user.role === 'central_director' || user.username === 'central_dir' || user.id === 'dir_acc_2' || (user.name && user.name.includes('لمركزي')) || (user.title && user.title.includes('لمركزي'))) {
-      const centralDirBase = ['showOperationsRoom', 'manageEstablishments', 'editEst', 'deleteEst', 'showPublicEvalsPage', 'showDeliveryPage', 'viewLabReports', 'viewComprehensiveFinancialReports', 'financialReports', 'showDirectivesPage', 'notify_directives', 'notify_closures', 'notify_penalties', 'notify_inspections', 'notify_tasks', 'authenticatePenalties', 'receiveSamples', 'enterLabResults', 'labArchive', 'payFines', 'dailyInventory'];
-      if (centralDirBase.includes(permName)) return true;
-    }
-    if (user.role === 'director' || user.role === 'lab' || user.role === 'accountant' || user.role === 'financial_accountant') {
-      if (['showDirectivesPage', 'notify_directives'].includes(permName)) return true;
-    }
-    
     // User-specific permissions override role permissions
     if (user.permissions && typeof user.permissions[permName] !== 'undefined') {
        return user.permissions[permName] === true;

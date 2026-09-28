@@ -449,8 +449,8 @@ export const LabDashboard = () => {
                       <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 mb-4">
                         <CheckCircle className="w-8 h-8" />
                       </div>
-                      <h3 className="text-slate-600 dark:text-slate-300 font-bold text-lg mb-1">لا توجد عينات قيد الوصول</h3>
-                      <p className="text-slate-400 text-sm">تم استلام جميع العينات بنجاح.</p>
+                      <h3 className="text-slate-600 dark:text-slate-300 font-bold text-lg mb-1">لا توجد عينات جديدة قيد الانتظار</h3>
+                      <p className="text-slate-400 text-sm">جميع العينات المرسلة من الفرق الميدانية تم استلامها وإحالتها للفحص.</p>
                     </div>
                   ) : (
                     incomingReqs.map(req => (
